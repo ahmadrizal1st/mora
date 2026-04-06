@@ -10,7 +10,7 @@ import { RecentActivitiesCard } from '../components/cards/RecentActivitiesCard';
 
 export default function DashboardAssets() {
   return (
-    <BaseLayout pageTitle="Asset Breakdown" pagePretitle="Dashboards">
+    <BaseLayout pageTitle="Asset Breakdown">
       <div className="row row-cards g-3">
         {/* COLUMN 1 & 2 Combined (6/12 total width) - Used for small stats, wide chart, and table */}
         <div className="col-lg-6">

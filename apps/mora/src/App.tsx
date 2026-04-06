@@ -12,7 +12,6 @@ import { AuthProvider } from './context/AuthContext'
 import { ThemeSettings } from './components/layout/ThemeSettings'
 import { BottomNav } from './components/layout/BottomNav'
 
-
 // Until real data is wired up, pass empty arrays.
 // The components handle empty arrays gracefully with default fallbacks.
 export default function App() {

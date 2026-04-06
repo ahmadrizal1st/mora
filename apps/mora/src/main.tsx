@@ -25,11 +25,11 @@ window.ApexCharts = ApexCharts as any
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <GoogleOAuthProvider clientId={clientId}>
+  <GoogleOAuthProvider clientId={clientId}>
+    <React.StrictMode>
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </GoogleOAuthProvider>
-  </React.StrictMode>
+    </React.StrictMode>
+  </GoogleOAuthProvider>
 )

@@ -8,6 +8,22 @@ interface SignInFormProps {
   fieldErrors?: Record<string, string[]>;
 }
 
+/** Inline field-level error message with icon */
+function FieldError({ messages }: { messages?: string[] }) {
+  if (!messages?.length) return null;
+  return (
+    <p className="field-error-msg">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      {messages[0]}
+    </p>
+  );
+}
+
 export function SignInForm({
   onSubmit,
   forgotPasswordHref = '/forgot-password',
@@ -27,6 +43,7 @@ export function SignInForm({
 
   return (
     <form onSubmit={handleSubmit} autoComplete="off" noValidate>
+      {/* Email */}
       <div className="mb-3">
         <label className="form-label">Email address</label>
         <input
@@ -39,11 +56,10 @@ export function SignInForm({
           required
           disabled={isLoading}
         />
-        {fieldErrors?.email && (
-          <div className="invalid-feedback">{fieldErrors.email[0]}</div>
-        )}
+        <FieldError messages={fieldErrors?.email} />
       </div>
 
+      {/* Password */}
       <div className="mb-2">
         <label className="form-label">
           Password
@@ -67,7 +83,6 @@ export function SignInForm({
               href="#"
               className="link-secondary"
               title={showPassword ? 'Hide password' : 'Show password'}
-              data-bs-toggle="tooltip"
               onClick={(e) => {
                 e.preventDefault();
                 setShowPassword(!showPassword);
@@ -77,11 +92,10 @@ export function SignInForm({
             </a>
           </span>
         </div>
-        {fieldErrors?.password && (
-          <div className="invalid-feedback d-block">{fieldErrors.password[0]}</div>
-        )}
+        <FieldError messages={fieldErrors?.password} />
       </div>
 
+      {/* Remember me */}
       <div className="mb-2">
         <label className="form-check">
           <input type="checkbox" className="form-check-input" disabled={isLoading} />

@@ -62,7 +62,7 @@ export default function TrackerPage() {
   ];
 
   return (
-    <BaseLayout pageTitle="Financial Tracker" pagePretitle="Overview">
+    <BaseLayout pageTitle="Financial Tracker">
       <div className="row row-cards g-3">
         {/* SUMMARY CARDS */}
         <div className="col-sm-6 col-lg-3">

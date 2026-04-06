@@ -1,6 +1,6 @@
 import { GoogleLogin } from '@react-oauth/google'
-import { Icon } from '../ui/Icon'
 import { SignInForm } from '../forms/SignInForm'
+import { ErrorAlert } from '../ui/ErrorAlert'
  
 interface SignInCardProps {
   title?: string
@@ -37,16 +37,7 @@ export function SignInCard({
           {!showHeader && <h2 className="h2 text-center mb-4">{title}</h2>}
   
           {error && (
-            <div className="alert alert-danger mb-4" role="alert">
-              <div className="d-flex">
-                <div>
-                  <Icon icon="alert-circle" className="me-2" />
-                </div>
-                <div>
-                  {error}
-                </div>
-              </div>
-            </div>
+            <ErrorAlert message={error} fieldErrors={fieldErrors} />
           )}
   
           <SignInForm onSubmit={onSubmit} isLoading={isLoading} fieldErrors={fieldErrors} />
@@ -56,23 +47,28 @@ export function SignInCard({
   
         <div className="card-body">
           <div className="d-flex justify-content-center">
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <GoogleLogin
               onSuccess={onGoogleSuccess}
               onError={onGoogleError}
-              useOneTap
               theme="outline"
               size="large"
-              width="100%"
             />
+          </div>
           </div>
         </div>
       </div>
 
-      {subtitle && (
-        <div className="text-center text-secondary mt-3">
-          {subtitle}
-        </div>
-      )}
+      <div className="text-center text-secondary mt-3">
+        {subtitle ? (
+          subtitle
+        ) : (
+          <>
+            Don't have an account?{' '}
+            <a href="/sign-up" className="fw-medium">Sign up</a>
+          </>
+        )}
+      </div>
     </>
   )
 }

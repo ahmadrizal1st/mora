@@ -20,9 +20,21 @@ export default function SignUp() {
       await register(data)
       navigate('/dashboard')
     } catch (err: any) {
-      const responseData = err.response?.data
-      setError(responseData?.message || 'Registration failed. Please check your data.')
-      setFieldErrors(responseData?.errors)
+      console.error('[SignUp] Registration error:', err)
+      console.error('[SignUp] err.response:', err.response)
+      console.error('[SignUp] err.response?.data:', err.response?.data)
+
+      const responseData = err?.response?.data ?? err?.data ?? null
+
+      const message =
+        responseData?.message ||
+        (typeof responseData === 'string' ? responseData : null) ||
+        'Registration failed. Please check your data.'
+
+      const errors = responseData?.errors ?? null
+
+      setError(message)
+      setFieldErrors(errors)
     } finally {
       setIsLoading(false)
     }

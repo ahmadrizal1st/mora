@@ -60,7 +60,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [token])
 
   const login = async (credentials: LoginCredentials) => {
-    setIsLoading(true)
     try {
       const response = await AuthService.login(credentials)
       setUser(response.user)
@@ -69,8 +68,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('user', JSON.stringify(response.user))
     } catch (error) {
       throw error
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -90,7 +87,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const register = async (credentials: RegisterCredentials) => {
-    setIsLoading(true)
     try {
       const response = await AuthService.register(credentials)
       // Note: If backend requires OTP, this will need to be handled.
@@ -103,8 +99,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     } catch (error) {
       throw error
-    } finally {
-      setIsLoading(false)
     }
   }
 

@@ -5,8 +5,6 @@ import { Navbar } from '../components/layout/Navbar'
 import { Sidebar } from '../components/layout/Sidebar'
 import { PageHeader } from '../components/layout/PageHeader'
 import { Footer } from '../components/layout/Footer'
-import { BottomNavbar } from '../components/layout/BottomNavbar'
-import { useAuth } from '../context/AuthContext'
 
 interface BaseLayoutProps {
   children: ReactNode
@@ -62,7 +60,6 @@ export default function BaseLayout({
   hideFooter = false,
   dir,
 }: BaseLayoutProps) {
-  const { isAuthenticated, user, isLoading } = useAuth()
   const location = useLocation()
   const isDashboard = location.pathname === '/dashboard' || location.pathname === '/' || location.pathname === '/dashboard-crypto'
 
@@ -115,7 +112,6 @@ export default function BaseLayout({
 
         {!hideFooter && <Footer />}
       </div>
-      {isAuthenticated && user && !isLoading && <BottomNavbar />}
     </div>
   )
 }
