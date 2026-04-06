@@ -26,6 +26,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
+    const isMobile = window.innerWidth < 768
+    if (isMobile) {
+      return <Navigate to="/welcome" replace />
+    }
     return <Navigate to="/sign-in" state={{ from: location }} replace />
   }
 

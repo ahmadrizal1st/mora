@@ -21,6 +21,7 @@ const SignInLink = load(() => import('../pages/SignInLink'))
 const TwoStepVerification = load(() => import('../pages/TwoStepVerification'))
 const TwoStepVerificationCode = load(() => import('../pages/TwoStepVerificationCode'))
 const AuthLock = load(() => import('../pages/AuthLock'))
+const Welcome = load(() => import('../pages/Welcome'))
 
 // Errors
 const Error429 = load(() => import('../pages/Error429'))
@@ -204,6 +205,7 @@ export default function AppRoutes({
 
       {/* Auth */}
       <Route path="/sign-in" element={<GuestRoute><SignIn /></GuestRoute>} />
+      <Route path="/welcome" element={<GuestRoute><Welcome /></GuestRoute>} />
       <Route path="/sign-up" element={<GuestRoute><SignUp /></GuestRoute>} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/sign-in-cover" element={<GuestRoute><SignInCover /></GuestRoute>} />

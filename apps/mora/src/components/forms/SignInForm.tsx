@@ -78,7 +78,7 @@ export function SignInForm({
           </span>
         </div>
         {fieldErrors?.password && (
-          <div className="invalid-feedback">{fieldErrors.password[0]}</div>
+          <div className="invalid-feedback d-block">{fieldErrors.password[0]}</div>
         )}
       </div>
 

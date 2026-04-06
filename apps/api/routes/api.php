@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -27,6 +28,8 @@ Route::prefix('auth')->group(function () {
 
     Route::post('/login', [LoginController::class, 'login'])
         ->middleware('throttle:login');
+
+    Route::post('/google', [GoogleAuthController::class, 'googleLogin']);
 
     Route::post('/forgot-password', [PasswordController::class, 'forgotPassword'])
         ->middleware('throttle:forgot-password');

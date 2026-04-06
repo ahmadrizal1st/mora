@@ -6,12 +6,12 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
 export default function SignIn() {
-  const { login } = useAuth()
+  const { login, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
-
+ 
   const handleLogin = async (_e: React.FormEvent, data: any) => {
     setError(null)
     setFieldErrors(undefined)
@@ -27,10 +27,35 @@ export default function SignIn() {
       setIsLoading(false)
     }
   }
-
+ 
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    setError(null)
+    setIsLoading(true)
+    try {
+      await loginWithGoogle(credentialResponse.credential)
+      navigate('/dashboard')
+    } catch (err: any) {
+      const responseData = err.response?.data
+      setError(responseData?.message || 'Google login failed.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+ 
+  const handleGoogleError = () => {
+    setError('Google login failed. Please try again.')
+  }
+ 
   return (
     <SingleLayout>
-      <SignInCard onSubmit={handleLogin} isLoading={isLoading} error={error} fieldErrors={fieldErrors} />
+      <SignInCard
+        onSubmit={handleLogin}
+        onGoogleSuccess={handleGoogleSuccess}
+        onGoogleError={handleGoogleError}
+        isLoading={isLoading}
+        error={error}
+        fieldErrors={fieldErrors}
+      />
     </SingleLayout>
   )
 }

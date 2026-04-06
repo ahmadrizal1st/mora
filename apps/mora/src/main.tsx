@@ -2,6 +2,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import App from './App'
 
 import '@tabler/core/dist/css/tabler.min.css'
@@ -21,10 +22,14 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 // Initialize ApexCharts globally for use in components
 window.ApexCharts = ApexCharts as any
 
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <GoogleOAuthProvider clientId={clientId}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 )

@@ -7,7 +7,7 @@ import { Trending } from '../ui/Trending'
 import { ChartSparkline } from '../ui/ChartSparkline'
 
 interface Person {
-  id?: number
+  id?: number | string
   full_name?: string
   photo?: string
   job_title?: string

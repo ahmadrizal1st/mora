@@ -165,6 +165,60 @@ class AuthService
     }
 
     /**
+     * Login or register user using Google ID Token.
+     *
+     * @return array{user: User, access_token: string}
+     */
+    public static function loginWithGoogle(string $idToken): array
+    {
+        $client = new \Google_Client(['client_id' => config('services.google.client_id')]);
+        $payload = $client->verifyIdToken($idToken);
+
+        if (! $payload) {
+            throw ValidationException::withMessages([
+                'credential' => [__('Token Google tidak valid atau sudah kedaluwarsa.')],
+            ]);
+        }
+
+        $email = $payload['email'];
+        $googleId = $payload['sub'];
+        $name = $payload['name'];
+        $avatar = $payload['picture'] ?? null;
+
+        $user = User::where('google_id', $googleId)
+            ->orWhere('email', $email)
+            ->first();
+
+        if (! $user) {
+            $user = User::create([
+                'name' => $name,
+                'email' => $email,
+                'google_id' => $googleId,
+                'avatar' => $avatar,
+                'password' => Hash::make(str()->random(24)),
+                'role' => User::ROLE_EMPLOYEE,
+            ]);
+            $user->markEmailAsVerified();
+        } else {
+            // Update google_id if it was null
+            if (! $user->google_id) {
+                $user->update(['google_id' => $googleId]);
+            }
+            // Update avatar if provided
+            if ($avatar && $user->avatar !== $avatar) {
+                $user->update(['avatar' => $avatar]);
+            }
+        }
+
+        $token = $user->createToken('access_token')->plainTextToken;
+
+        return [
+            'user' => $user,
+            'access_token' => $token,
+        ];
+    }
+
+    /**
      * Send OTP to the given email.
      */
     public static function sendOtp(string $email, string $type): void
