@@ -83,8 +83,7 @@ class AuthService
             ]);
         }
 
-        // Revoke existing tokens and issue a new one
-        $user->tokens()->delete();
+        // Issue a new access token
         $token = $user->createToken('access_token')->plainTextToken;
 
         return [
@@ -94,11 +93,11 @@ class AuthService
     }
 
     /**
-     * Logout user by revoking all their tokens.
+     * Logout user by revoking current token.
      */
     public static function logout(User $user): void
     {
-        $user->tokens()->delete();
+        $user->currentAccessToken()->delete();
     }
 
     /**
