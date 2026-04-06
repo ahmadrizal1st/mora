@@ -9,6 +9,7 @@ interface PageHeaderProps {
   className?: string
   containerClass?: string
   actions?: React.ReactNode
+  showBackButton?: boolean
 }
 
 export function PageHeader({
@@ -19,6 +20,7 @@ export function PageHeader({
   className,
   containerClass,
   actions,
+  showBackButton,
 }: PageHeaderProps) {
   if (!title) return null
 
@@ -29,17 +31,23 @@ export function PageHeader({
           <div className="col">
             {pretitle && <div className="page-pretitle">{pretitle}</div>}
             <h1 className="page-title">
-              {icon && (
+              {showBackButton && (
                 <a 
                   href="#" 
-                  className={clsx('text-reset me-2', icon === 'arrow-left' && 'd-md-none')}
+                  className="text-reset me-2 d-md-none"
                   onClick={(e) => {
                     e.preventDefault();
                     window.history.back();
                   }}
+                  aria-label="Go back"
                 >
-                  <Icon icon={icon} />
+                  <Icon icon="arrow-left" />
                 </a>
+              )}
+              {icon && (
+                <span className={clsx('text-reset me-2', (icon === 'arrow-left' && !showBackButton) && 'd-md-none')}>
+                  <Icon icon={icon} />
+                </span>
               )}
               {title}
             </h1>

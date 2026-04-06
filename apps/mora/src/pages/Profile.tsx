@@ -23,43 +23,48 @@ export default function Profile() {
   }
 
   return (
-    <BaseLayout>
+    <BaseLayout flush>
       {/* Profile Page Header */}
-      <div className="page-header">
+      <div className="page-header pt-0">
+        <div className="d-flex justify-content-between align-items-center d-md-none mt-n6">
+          <Button icon="plus" iconOnly ghost size="md" className="p-0 text-secondary" />
+          <Button icon="menu-2" iconOnly ghost size="md" className="p-0 text-secondary" />
+        </div>
         <div className="container-xl">
-          <div className="row align-items-center">
+          <div className="row g-3 align-items-center flex-column flex-md-row text-center text-md-start">
+
             <div className="col-auto">
               <Avatar
                 person={person as any}
-                size="lg"
+                size="xl"
                 shape="rounded"
               />
             </div>
             <div className="col">
               <h1 className="fw-bold m-0">{person.full_name}</h1>
-              <div className="my-2">
+              <div className="my-2 text-secondary">
                 Unemployed. Building a $1M solo business while traveling the world. Currently at $400k/yr.
               </div>
-              <div className="list-inline list-inline-dots text-secondary">
+              <div className="list-inline list-inline-dots text-secondary justify-content-center justify-content-md-start">
                 <div className="list-inline-item">
-                  <Icon icon="map" inline />
+                  <Icon icon="map-pin" inline />
                   {' '}{person.university}, {person.country}
                 </div>
                 <div className="list-inline-item">
                   <Icon icon="mail" inline />
                   {' '}<a href="#" className="text-reset">{person.email}</a>
                 </div>
-                <div className="list-inline-item">
+                <div className="list-inline-item d-none d-sm-inline-block">
                   <Icon icon="cake" inline />
                   {' '}{person.birth_date}
                 </div>
               </div>
             </div>
-            <div className="col-auto ms-auto">
-              <div className="btn-list">
+            <div className="col-auto ms-md-auto w-100 w-md-auto">
+              <div className="btn-list justify-content-center justify-content-md-start">
                 <Button icon="dots" iconOnly />
                 <Button icon="message" iconOnly />
-                <Button icon="check" color="primary" text="Following" />
+                <Button icon="check" color="primary" text="Following" className="flex-fill flex-md-grow-0" />
               </div>
             </div>
           </div>

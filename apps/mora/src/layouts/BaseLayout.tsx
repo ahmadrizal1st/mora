@@ -32,6 +32,8 @@ interface BaseLayoutProps {
   bodyClass?: string
   hideFooter?: boolean
   dir?: 'ltr' | 'rtl'
+  showBackButton?: boolean
+  flush?: boolean
 }
 
 export default function BaseLayout({
@@ -57,8 +59,11 @@ export default function BaseLayout({
   pagePretitle,
   pageDescription,
   pageActions,
+  bodyClass,
   hideFooter = false,
   dir,
+  showBackButton = true,
+  flush = false,
 }: BaseLayoutProps) {
   const location = useLocation()
   const isDashboard = location.pathname === '/dashboard' || location.pathname === '/' || location.pathname === '/dashboard-crypto'
@@ -95,12 +100,13 @@ export default function BaseLayout({
             pretitle={pagePretitle}
             description={pageDescription}
             actions={pageActions}
+            showBackButton={showBackButton}
             containerClass={containerFlushMobile ? 'px-2 px-md-2' : undefined}
             className={clsx((navbarOverlap && navbarDark) && 'text-white')}
           />
         )}
 
-        <main id="content" className="page-body">
+        <main id="content" className={clsx('page-body', bodyClass, flush && 'pt-0')}>
           {wrapperFull || noContainer ? (
             children
           ) : (

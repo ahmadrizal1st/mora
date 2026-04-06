@@ -3,9 +3,9 @@ import { NavbarNotifications } from '../components/cards/NavbarNotifications';
 
 export default function Notifications() {
   return (
-    <BaseLayout pageTitle="Notification" pageIcon="arrow-left" containerFlushMobile={true}>
+    <BaseLayout pageTitle="Notification" containerFlushMobile={true}>
       <div className="row justify-content-center g-0">
-        <div className="col-12 col-lg-7 col-xl-6">
+        <div className="col-12 col-lg-8 col-xl-7">
           <NavbarNotifications isPage={true} />
         </div>
       </div>

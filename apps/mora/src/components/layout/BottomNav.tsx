@@ -19,8 +19,10 @@ export function BottomNav() {
   ]
 
   const isActive = (href: string) => {
-    if (href === '/dashboard' && (currentPath === '/dashboard' || currentPath === '/')) return true
-    return currentPath.startsWith(href)
+    if (href === '/dashboard') {
+      return currentPath === '/dashboard' || currentPath === '/'
+    }
+    return currentPath === href || currentPath.startsWith(href + '/')
   }
 
   return (
