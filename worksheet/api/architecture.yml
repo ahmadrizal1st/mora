@@ -1,0 +1,1094 @@
+request_flow:
+  order:
+    1: "Client (Vista/Mora) → HTTPS Request"
+    2: "Nginx → Reverse Proxy → api.vistamora.id:4000"
+    3: "Laravel Router → Route Matching"
+    4: "Middleware Stack (Global → Route-level)"
+    5: "Guard (Auth + AI Token)"
+    6: "Interceptor (Cache + Logging)"
+    7: "Pipe (Validation + Transform)"
+    8: "Controller → Handler"
+    9: "Service → Business Logic"
+    10: "Repository → Model → Database Query"
+    11: "Response → JSON"
+
+
+middleware:
+
+  global_Laravel Router_plugins:
+    description: "Dipasang saat bootstrap app di main.ts — berlaku untuk semua route"
+    plugins:
+      helmet:
+        package: "@Laravel Router/helmet"
+        purpose: "Security HTTP headers"
+        headers_set:
+          - "X-Content-Type-Options: nosniff"
+          - "X-Frame-Options: DENY"
+          - "X-XSS-Protection: 1; mode=block"
+          - "Strict-Transport-Security"
+          - "Content-Security-Policy"
+
+      cors:
+        package: "@Laravel Router/cors"
+        purpose: "Izinkan request dari Vista dan Mora"
+        config:
+          origin:
+            - "https://vista.vistamora.id"
+            - "https://mora.vistamora.id"
+          methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+          credentials: true
+          allowedHeaders: ["Content-Type", "Authorization"]
+
+      rate_limit:
+        package: "@Laravel Router/rate-limit"
+        purpose: "Proteksi brute force login dan OTP"
+        global_config:
+          max: 100
+          timeWindow: "1 minute"
+        route_overrides:
+          "/api/auth/login":    { max: 5,  timeWindow: "15 minutes" }
+          "/api/auth/otp":      { max: 5,  timeWindow: "10 minutes" }
+          "/api/auth/register": { max: 10, timeWindow: "1 hour" }
+
+      multipart:
+        package: "@Laravel Router/multipart"
+        purpose: "Handle file upload: selfie, dokumen, foto nota"
+        limits:
+          fileSize: "10MB"
+          files: 5
+
+      cookie:
+        package: "@Laravel Router/cookie"
+        purpose: "httpOnly cookie untuk refresh token"
+        config:
+          secret: "${SANCTUM_STATELESS_DOMAINS}"
+          parseOptions: {}
+
+  Laravel_global_middleware:
+    description: "Berlaku untuk semua request via Laravel middleware pipeline"
+
+    guards:
+      sanctum_auth_guard:
+        type: "Guard"
+        class: "auth:sanctum"
+        decorator: "@UseGuards(auth:sanctum)"
+        behavior: "Verifikasi Bearer token Sanctum di Authorization header"
+        on_fail: "HTTP 401 Unauthorized"
+        skip_routes:
+          - "POST /api/auth/login"
+          - "POST /api/auth/register"
+          - "GET  /api/auth/google"
+          - "GET  /health"
+
+      roles_guard:
+        type: "Guard"
+        class: "RolesGuard"
+        decorator: "@UseGuards(auth:sanctum, RolesGuard)"
+        decorator_companion: "@Roles('admin', 'hr', 'owner')"
+        behavior: "Cek role user dari Sanctum payload"
+        on_fail: "HTTP 403 Forbidden"
+
+      ai_token_guard:
+        type: "Guard"
+        class: "AiTokenGuard"
+        decorator: "@UseGuards(auth:sanctum, AiTokenGuard)"
+        behavior: |
+          1. Baca plan user dari Sanctum
+          2. INCR Redis key: ai_token:{userId}:{YYYY-MM-DD}
+          3. Set TTL 86400 jika key baru
+          4. Jika melebihi limit → throw 429
+          5. Inject aiTokenUsed + aiTokenLimit ke request
+        limits:
+          mora_free:     5
+          mora_pro:      50
+          vista_starter: 100
+          vista_growth:  500
+        redis_key: "ai_token:{userId}:{YYYY-MM-DD}"
+        on_fail:
+          status: 429
+          body:
+            error: "AI_LIMIT_REACHED"
+            message: "Batas AI request harian tercapai"
+            upgrade_url: "https://mora.vistamora.id/upgrade"
+
+    interceptors:
+      logging_interceptor:
+        type: "Interceptor"
+        class: "LoggingInterceptor"
+        scope: "Global"
+        logs:
+          before: "→ {method} {url} | user:{userId} | ip:{ip}"
+          after:  "← {method} {url} | {statusCode} | {duration}ms"
+        library: "pino"
+
+      ai_cache_interceptor:
+        type: "Interceptor"
+        class: "AiCacheInterceptor"
+        decorator: "@UseInterceptors(AiCacheInterceptor)"
+        behavior: |
+          1. Hash input request ke cache key
+          2. Cek Redis: ai_cache:{feature}:{hash}
+          3. Cache HIT → return langsung, TIDAK kurangi AI token
+          4. Cache MISS → lanjut ke controller → simpan hasil ke Redis
+        ttl:
+          kategorisasi:   2592000  # 30 hari
+          persona:        2592000  # 30 hari
+          insight:        86400    # 1 hari
+          forecast:       3600     # 1 jam
+          ocr_enrichment: 2592000  # 30 hari
+
+      transform_interceptor:
+        type: "Interceptor"
+        class: "TransformInterceptor"
+        scope: "Global"
+        wraps_response_in:
+          success: true
+          data: "<original_response>"
+          timestamp: "<ISO8601>"
+
+      sentry_interceptor:
+        type: "Interceptor"
+        class: "SentryInterceptor"
+        scope: "Global"
+        behavior: "Tangkap semua exception → kirim ke GlitchTip self-hosted"
+
+    pipes:
+      validation_pipe:
+        type: "Pipe"
+        class: "ValidationPipe"
+        scope: "Global"
+        config:
+          whitelist: true          # strip unknown properties
+          forbidNonWhitelisted: true
+          transform: true          # auto-cast string → number, string → boolean
+          transformOptions:
+            enableImplicitConversion: true
+        uses: ["class-validator", "class-transformer"]
+
+    filters:
+      http_exception_filter:
+        type: "Filter"
+        class: "HttpExceptionFilter"
+        scope: "Global"
+        catches: "HttpException"
+        response_format:
+          success: false
+          statusCode: "<number>"
+          error: "<string>"
+          message: "<string | string[]>"
+          timestamp: "<ISO8601>"
+          path: "<url>"
+
+      all_exceptions_filter:
+        type: "Filter"
+        class: "AllExceptionsFilter"
+        scope: "Global"
+        catches: "Error (non-HTTP)"
+        behavior: "Log ke pino + kirim ke GlitchTip, return HTTP 500"
+
+
+controller:
+  description: >
+    Controller hanya bertugas: terima request, validasi DTO,
+    panggil service, return response. Tidak ada business logic di sini.
+  convention: "Satu controller per resource, method handler ringkas"
+
+  modules:
+
+    auth_controller:
+      file: "src/auth/auth.controller.ts"
+      base_route: "/api/auth"
+      guards: []
+      endpoints:
+        - method: POST
+          route: "/register"
+          dto: "RegisterDto"
+          calls: "authService.register(dto)"
+          response: "{ user, accessToken }"
+
+        - method: POST
+          route: "/login"
+          dto: "LoginDto"
+          rate_limit: "5 req / 15 menit"
+          calls: "authService.login(dto)"
+          response: "{ user, accessToken } + set httpOnly cookie refreshToken"
+
+        - method: POST
+          route: "/refresh"
+          dto: "cookie: refreshToken"
+          calls: "authService.refreshToken(token)"
+          response: "{ accessToken }"
+
+        - method: POST
+          route: "/logout"
+          guard: "auth:sanctum"
+          calls: "authService.logout(userId)"
+          response: "{ success: true } + clear cookie"
+
+        - method: GET
+          route: "/google"
+          calls: "passport Google OAuth redirect"
+
+        - method: GET
+          route: "/google/callback"
+          calls: "authService.googleLogin(profile)"
+          response: "redirect ke frontend + accessToken"
+
+        - method: POST
+          route: "/verify-otp"
+          dto: "VerifyOtpDto"
+          calls: "authService.verifyOtp(dto)"
+          response: "{ verified: true }"
+
+    employee_controller:
+      file: "src/employees/employees.controller.ts"
+      base_route: "/api/employees"
+      guards: ["auth:sanctum", "RolesGuard"]
+      endpoints:
+        - method: GET
+          route: "/"
+          roles: ["admin", "hr", "owner"]
+          query: "FindEmployeesDto (page, limit, search, status)"
+          calls: "employeesService.findAll(workspaceId, query)"
+          response: "{ data: Employee[], total, page, limit }"
+
+        - method: GET
+          route: "/:id"
+          roles: ["admin", "hr", "owner"]
+          calls: "employeesService.findOne(id)"
+          response: "Employee"
+
+        - method: POST
+          route: "/"
+          roles: ["admin", "hr"]
+          dto: "CreateEmployeeDto"
+          calls: "employeesService.create(dto)"
+          response: "Employee"
+
+        - method: PATCH
+          route: "/:id"
+          roles: ["admin", "hr"]
+          dto: "UpdateEmployeeDto"
+          calls: "employeesService.update(id, dto)"
+          response: "Employee"
+
+        - method: DELETE
+          route: "/:id"
+          roles: ["admin"]
+          calls: "employeesService.softDelete(id)"
+          response: "{ success: true }"
+
+        - method: POST
+          route: "/:id/documents"
+          roles: ["admin", "hr"]
+          decorator: "@UseInterceptors(FileInterceptor)"
+          calls: "employeesService.uploadDocument(id, file)"
+          response: "Document"
+
+    payroll_controller:
+      file: "src/payroll/payroll.controller.ts"
+      base_route: "/api/payroll"
+      guards: ["auth:sanctum", "RolesGuard"]
+      endpoints:
+        - method: GET
+          route: "/runs"
+          roles: ["admin", "owner"]
+          query: "FindPayrollRunsDto (month, year, status)"
+          calls: "payrollService.findAllRuns(workspaceId, query)"
+          response: "PayrollRun[]"
+
+        - method: POST
+          route: "/runs"
+          roles: ["admin", "owner"]
+          dto: "CreatePayrollRunDto"
+          calls: "payrollService.createRun(dto) → Laravel Horizon payroll queue"
+          response: "{ runId, status: 'queued' }"
+          note: "Async via Laravel Horizon — tidak timeout HTTP"
+
+        - method: GET
+          route: "/runs/:runId/progress"
+          roles: ["admin", "owner"]
+          decorator: "@Sse()"
+          calls: "payrollService.progressStream(runId)"
+          response: "SSE stream: { processed, total, currentEmployee }"
+
+        - method: GET
+          route: "/runs/:runId/items"
+          roles: ["admin", "owner"]
+          calls: "payrollService.findRunItems(runId)"
+          response: "PayrollItem[]"
+
+        - method: POST
+          route: "/runs/:runId/approve"
+          roles: ["owner"]
+          calls: "payrollService.approveRun(runId) → emit payroll.processed"
+          response: "PayrollRun"
+
+    transaction_controller:
+      file: "src/transactions/transactions.controller.ts"
+      base_route: "/api/transactions"
+      guards: ["auth:sanctum"]
+      endpoints:
+        - method: GET
+          route: "/"
+          query: "FindTransactionsDto (page, limit, startDate, endDate, category, type)"
+          calls: "transactionsService.findAll(userId, query)"
+          response: "{ data: Transaction[], total, summary }"
+
+        - method: POST
+          route: "/"
+          dto: "CreateTransactionDto"
+          calls: "transactionsService.create(dto) → Groq kategorisasi"
+          response: "Transaction"
+
+        - method: GET
+          route: "/summary"
+          query: "SummaryDto (month, year)"
+          calls: "transactionsService.getMonthlySummary(userId, query)"
+          response: "{ income, expense, balance, byCategory[] }"
+
+        - method: PATCH
+          route: "/:id"
+          dto: "UpdateTransactionDto"
+          calls: "transactionsService.update(id, dto)"
+          response: "Transaction"
+
+        - method: DELETE
+          route: "/:id"
+          calls: "transactionsService.delete(id)"
+          response: "{ success: true }"
+
+    receipt_controller:
+      file: "src/receipts/receipts.controller.ts"
+      base_route: "/api/receipts"
+      guards: ["auth:sanctum"]
+      endpoints:
+        - method: POST
+          route: "/scan"
+          decorator: "@UseInterceptors(FileInterceptor('photo'))"
+          calls: "receiptsService.scan(file, userId) → Laravel Horizon receipt_ocr"
+          response: "{ receiptId, status: 'processing' }"
+          note: "Async — OCR di background worker"
+
+        - method: GET
+          route: "/:id"
+          calls: "receiptsService.findOne(id)"
+          response: "Receipt + pre-signed URL foto"
+
+        - method: POST
+          route: "/:id/confirm"
+          dto: "ConfirmReceiptDto"
+          calls: "receiptsService.confirm(id, dto) → buat Transaction"
+          response: "Transaction"
+
+        - method: GET
+          route: "/:id/items"
+          calls: "receiptsService.getItems(id)"
+          response: "ReceiptItem[] (untuk split item-based)"
+
+    ai_controller:
+      file: "src/ai/ai.controller.ts"
+      base_route: "/api/ai"
+      guards: ["auth:sanctum", "AiTokenGuard"]
+      interceptors: ["AiCacheInterceptor"]
+      endpoints:
+        - method: POST
+          route: "/chat"
+          dto: "ChatDto"
+          calls: "aiService.chat(userId, dto) → Gemini"
+          response: "{ reply, from_cache: false }"
+          decorator: "@AiFeature('chat_advisor')"
+
+        - method: POST
+          route: "/categorize"
+          dto: "CategorizeDto"
+          calls: "aiService.categorize(dto) → Groq"
+          response: "{ category, confidence, from_cache: bool }"
+          decorator: "@AiFeature('kategorisasi')"
+
+        - method: GET
+          route: "/persona"
+          calls: "aiService.getPersona(userId) → Gemini"
+          response: "{ persona, description, tips[], from_cache: bool }"
+          decorator: "@AiFeature('persona')"
+
+        - method: GET
+          route: "/forecast"
+          calls: "aiService.getForecast(userId) → Gemini/Ollama"
+          response: "{ forecast_30d, forecast_60d, forecast_90d, narrative }"
+          decorator: "@AiFeature('forecast_narasi')"
+
+    split_controller:
+      file: "src/split/split.controller.ts"
+      base_route: "/api/split"
+      guards: ["auth:sanctum"]
+      endpoints:
+        - method: GET
+          route: "/groups"
+          calls: "splitService.findGroups(userId)"
+          response: "SplitGroup[]"
+
+        - method: POST
+          route: "/groups"
+          dto: "CreateSplitGroupDto"
+          calls: "splitService.createGroup(dto)"
+          response: "SplitGroup"
+
+        - method: POST
+          route: "/groups/:groupId/bills"
+          dto: "CreateSplitBillDto"
+          calls: "splitService.createBill(groupId, dto) → emit split.bill_created"
+          response: "SplitBill + SplitAssignment[]"
+
+        - method: POST
+          route: "/bills/:billId/pay"
+          dto: "PaySplitDto"
+          calls: "splitService.markPaid(billId, userId) → emit split.paid"
+          response: "SplitAssignment"
+
+        - method: GET
+          route: "/groups/:groupId/balance"
+          calls: "splitService.getBalance(groupId)"
+          response: "{ balances[], simplified_transfers[] }"
+
+    notification_controller:
+      file: "src/notifications/notifications.controller.ts"
+      base_route: "/api/notifications"
+      guards: ["auth:sanctum"]
+      endpoints:
+        - method: GET
+          route: "/stream"
+          decorator: "@Sse()"
+          calls: "notificationsService.stream(userId)"
+          response: "SSE stream: Notification events"
+
+        - method: GET
+          route: "/"
+          calls: "notificationsService.findAll(userId)"
+          response: "Notification[]"
+
+        - method: PATCH
+          route: "/:id/read"
+          calls: "notificationsService.markRead(id)"
+          response: "Notification"
+
+
+service:
+  description: >
+    Business logic ada di sini. Service tidak tahu tentang HTTP.
+    Service bisa dipanggil dari Controller, Laravel Horizon Worker, atau Scheduler.
+
+  modules:
+
+    auth_service:
+      file: "src/auth/auth.service.ts"
+      injects: ["UsersRepository", "SanctumGuard", "RedisService", "EmailService"]
+      methods:
+        register:
+          steps:
+            - "Cek email sudah terdaftar"
+            - "Hash password dengan bcrypt (rounds: 12)"
+            - "Buat user baru via usersRepository.create()"
+            - "Generate OTP 6 digit via otplib"
+            - "Simpan OTP di Redis: otp:{email} TTL 600 detik"
+            - "Kirim email verifikasi via emailService"
+            - "Return user + accessToken"
+
+        login:
+          steps:
+            - "Cari user by email via usersRepository.findByEmail()"
+            - "Bandingkan password dengan bcrypt.compare()"
+            - "Jika gagal → throw UnauthorizedException"
+            - "Generate accessToken (15m) + refreshToken (7d)"
+            - "Simpan refreshToken di Redis: session:{userId} TTL 7d"
+            - "Return tokens"
+
+        refresh_token:
+          steps:
+            - "Verifikasi refreshToken Sanctum"
+            - "Cek di Redis session masih valid"
+            - "Generate accessToken baru"
+            - "Return accessToken"
+
+        google_login:
+          steps:
+            - "Cari user by googleId atau email"
+            - "Jika belum ada → create user baru (verified langsung)"
+            - "Generate tokens"
+
+    employees_service:
+      file: "src/employees/employees.service.ts"
+      injects: ["EmployeesRepository", "StorageService", "EventEmitter2"]
+      methods:
+        find_all:
+          steps:
+            - "Query employeesRepository.findAll() dengan filter workspace + pagination"
+            - "Return data + total count"
+
+        create:
+          steps:
+            - "Validasi workspaceId exist"
+            - "Cek NIK tidak duplikat"
+            - "Buat employee record"
+            - "Buat wallet Mora jika email tersedia"
+            - "Kirim email invite ke Mora via emailService"
+
+        upload_document:
+          steps:
+            - "Validasi file type (PDF, JPG, PNG)"
+            - "Compress image via sharp jika gambar"
+            - "Upload ke Cloudflare R2 via storageService"
+            - "Simpan metadata dokumen ke DB"
+            - "Schedule reminder expired H-30 & H-7"
+
+    payroll_service:
+      file: "src/payroll/payroll.service.ts"
+      injects: ["PayrollRepository", "EmployeesRepository", "Laravel Horizon payroll queue", "EventEmitter2"]
+      methods:
+        create_run:
+          steps:
+            - "Validasi period (bulan/tahun belum ada run)"
+            - "Buat PayrollRun record status: pending"
+            - "Enqueue job ke Laravel Horizon payroll queue"
+            - "Return runId"
+
+        process_run:
+          description: "Dieksekusi oleh Laravel Horizon Worker — bukan HTTP handler"
+          steps:
+            - "Fetch semua karyawan aktif workspace"
+            - "Per karyawan: hitung gaji pokok + tunjangan"
+            - "Hitung potongan: BPJS Kesehatan (1%), BPJS TK (2%), kasbon, absensi"
+            - "Hitung PPh 21 progresif"
+            - "Buat PayrollItem per karyawan"
+            - "Update progress via Redis pub/sub → SSE stream"
+            - "Setelah semua selesai → update PayrollRun status: completed"
+
+        approve_run:
+          steps:
+            - "Update status PayrollRun: approved"
+            - "Enqueue payslip jobs (Laravel Horizon payslip queue)"
+            - "Emit event: payroll.processed"
+
+    transaction_service:
+      file: "src/transactions/transactions.service.ts"
+      injects: ["TransactionsRepository", "AiService", "RedisService", "EventEmitter2"]
+      methods:
+        create:
+          steps:
+            - "Validasi walletId milik userId"
+            - "Kategorisasi otomatis via aiService.categorize() — Groq + cache"
+            - "Simpan transaksi"
+            - "Update saldo wallet"
+            - "Cek apakah ada goal allocation → emit bridge event"
+            - "Return transaction"
+
+        get_monthly_summary:
+          steps:
+            - "Cek cache Redis: summary:{userId}:{month} TTL 5 menit"
+            - "Jika miss → query DB aggregate income/expense/by_category"
+            - "Simpan ke cache"
+            - "Return summary"
+
+    ai_service:
+      file: "src/ai/ai.service.ts"
+      injects: ["GeminiProvider", "GroqProvider", "OllamaProvider", "RedisService"]
+      methods:
+        categorize:
+          provider: "Groq (primary) → Gemini (fallback)"
+          steps:
+            - "Generate cache key: ai_cache:cat:{hash(description)}"
+            - "Cek Redis → HIT: return hasil, token tidak berkurang"
+            - "MISS: call Groq API"
+            - "Simpan hasil ke Redis TTL 30 hari"
+            - "Return { category, confidence }"
+
+        chat:
+          provider: "Gemini"
+          steps:
+            - "Build system prompt: advisor keuangan personal Bahasa Indonesia"
+            - "Sertakan konteks: saldo, pengeluaran bulan ini, goals aktif"
+            - "Call Gemini API dengan history percakapan"
+            - "Return reply"
+
+        get_persona:
+          provider: "Gemini"
+          steps:
+            - "Aggregate data transaksi 3 bulan terakhir"
+            - "Cek cache Redis TTL 30 hari"
+            - "MISS: kirim ke Gemini → klasifikasi spending persona"
+            - "Return { persona: 'Penabung Cerdas', description, tips[] }"
+
+        batch_monthly_insight:
+          provider: "Ollama (Qwen2.5:7b)"
+          schedule: "Cron 02:30 setiap hari"
+          steps:
+            - "Ambil semua user aktif"
+            - "Per user: siapkan data ringkas transaksi bulan lalu"
+            - "Kirim ke Ollama via fetch localhost:11434"
+            - "Simpan hasil ke Redis TTL 1 hari"
+
+    receipt_service:
+      file: "src/receipts/receipts.service.ts"
+      injects: ["ReceiptsRepository", "Laravel Horizon receipt_ocr queue", "StorageService"]
+      methods:
+        scan:
+          steps:
+            - "Validasi file adalah gambar"
+            - "Simpan foto mentah sementara"
+            - "Enqueue job ke Laravel Horizon receipt_ocr queue"
+            - "Return receiptId + status: processing"
+
+        process_ocr:
+          description: "Dieksekusi Laravel Horizon Worker"
+          steps:
+            - "Load foto via sharp → grayscale + threshold + denoise"
+            - "Deteksi 4 sudut nota via OpenCV (contour detection)"
+            - "Perspective transform → dokumen lurus"
+            - "Simpan gambar bersih ke Cloudflare R2"
+            - "OCR via tesseract.js: ekstrak merchant, items[], total"
+            - "Enrichment via Groq: koreksi typo + kategorisasi + merchant"
+            - "Simpan hasil ke DB sebagai Receipt draft"
+            - "Hapus foto mentah"
+            - "Emit SSE notif ke user: receipt ready"
+
+    split_service:
+      file: "src/split/split.service.ts"
+      injects: ["SplitRepository", "TransactionsService", "Laravel Horizon split_notif queue", "EventEmitter2"]
+      methods:
+        create_bill:
+          steps:
+            - "Validasi semua userId anggota terdaftar di group"
+            - "Hitung porsi per anggota sesuai split_mode (equal/custom/percentage/item)"
+            - "Buat SplitBill + SplitAssignment[] records"
+            - "Emit split.bill_created → SSE notif ke semua anggota"
+            - "Enqueue reminder: split_notif queue H+1, H+3, H+7"
+
+        mark_paid:
+          steps:
+            - "Update SplitAssignment.is_paid = true + paid_at"
+            - "Emit split.paid → catat transaksi masuk/keluar kedua pihak"
+            - "Cek apakah semua sudah bayar → update SplitBill.status: settled"
+
+        get_balance:
+          steps:
+            - "Hitung net balance semua anggota di grup"
+            - "Jalankan debt simplification algorithm"
+            - "Return simplified transfers (minimum transaksi)"
+
+
+model:
+  description: >
+    Schema TypeScript native via Eloquent ORM.
+    Tidak ada code generation step. Type-safe langsung dari schema.
+  file_location: "apps/api/src/db/schema/"
+  orm: "Eloquent ORM"
+  convention: "snake_case kolom, camelCase TypeScript"
+
+  schemas:
+
+    users:
+      file: "src/db/schema/users.ts"
+      table: "users"
+      columns:
+        id:           { type: "varchar(26)", primaryKey: true, default: "nanoid()" }
+        email:        { type: "varchar(255)", unique: true, notNull: true }
+        password:     { type: "varchar(255)", nullable: true, note: "null jika OAuth" }
+        google_id:    { type: "varchar(255)", unique: true, nullable: true }
+        is_verified:  { type: "boolean", default: false }
+        created_at:   { type: "timestamp", default: "now()" }
+        updated_at:   { type: "timestamp", default: "now()" }
+      indexes:
+        - "email (unique)"
+        - "google_id"
+
+    profiles:
+      file: "src/db/schema/profiles.ts"
+      table: "profiles"
+      columns:
+        id:           { type: "varchar(26)", primaryKey: true }
+        user_id:      { type: "varchar(26)", foreignKey: "users.id", onDelete: "CASCADE" }
+        full_name:    { type: "varchar(255)", notNull: true }
+        phone:        { type: "varchar(20)", nullable: true }
+        avatar_url:   { type: "text", nullable: true }
+        date_of_birth: { type: "date", nullable: true }
+        gender:       { type: "varchar(10)", nullable: true }
+
+    workspaces:
+      file: "src/db/schema/workspaces.ts"
+      table: "workspaces"
+      description: "Perusahaan/bisnis di Vista"
+      columns:
+        id:           { type: "varchar(26)", primaryKey: true }
+        name:         { type: "varchar(255)", notNull: true }
+        owner_id:     { type: "varchar(26)", foreignKey: "users.id" }
+        plan:         { type: "varchar(50)", default: "starter", enum: ["starter", "growth", "enterprise"] }
+        logo_url:     { type: "text", nullable: true }
+        created_at:   { type: "timestamp", default: "now()" }
+
+    workspace_members:
+      file: "src/db/schema/workspaces.ts"
+      table: "workspace_members"
+      columns:
+        workspace_id: { type: "varchar(26)", foreignKey: "workspaces.id" }
+        user_id:      { type: "varchar(26)", foreignKey: "users.id" }
+        role:         { type: "varchar(20)", enum: ["owner", "admin", "hr", "staff"] }
+        joined_at:    { type: "timestamp", default: "now()" }
+      primaryKey: ["workspace_id", "user_id"]
+
+    employees:
+      file: "src/db/schema/employees.ts"
+      table: "employees"
+      columns:
+        id:               { type: "varchar(26)", primaryKey: true }
+        workspace_id:     { type: "varchar(26)", foreignKey: "workspaces.id" }
+        user_id:          { type: "varchar(26)", foreignKey: "users.id", nullable: true, note: "null jika belum daftar Mora" }
+        nik:              { type: "varchar(16)", notNull: true }
+        full_name:        { type: "varchar(255)", notNull: true }
+        position:         { type: "varchar(100)" }
+        department:       { type: "varchar(100)" }
+        employment_type:  { type: "varchar(20)", enum: ["permanent", "contract", "freelance"] }
+        join_date:        { type: "date" }
+        base_salary:      { type: "numeric(15,2)" }
+        bank_name:        { type: "varchar(50)", nullable: true }
+        bank_account:     { type: "varchar(30)", nullable: true }
+        status:           { type: "varchar(20)", default: "active", enum: ["active", "inactive", "terminated"] }
+        deleted_at:       { type: "timestamp", nullable: true, note: "soft delete" }
+      indexes:
+        - "workspace_id"
+        - "nik (unique per workspace)"
+        - "user_id"
+
+    transactions:
+      file: "src/db/schema/transactions.ts"
+      table: "transactions"
+      columns:
+        id:           { type: "varchar(26)", primaryKey: true }
+        user_id:      { type: "varchar(26)", foreignKey: "users.id" }
+        wallet_id:    { type: "varchar(26)", foreignKey: "wallets.id" }
+        type:         { type: "varchar(10)", enum: ["income", "expense", "transfer"] }
+        amount:       { type: "numeric(15,2)", notNull: true }
+        category:     { type: "varchar(50)" }
+        description:  { type: "text" }
+        date:         { type: "date", notNull: true }
+        receipt_id:   { type: "varchar(26)", foreignKey: "receipts.id", nullable: true }
+        is_split:     { type: "boolean", default: false }
+        ai_categorized: { type: "boolean", default: false }
+        created_at:   { type: "timestamp", default: "now()" }
+      indexes:
+        - "user_id"
+        - "wallet_id"
+        - "date (DESC)"
+        - "category"
+        - "(user_id, date) composite"
+
+    payroll_runs:
+      file: "src/db/schema/payroll.ts"
+      table: "payroll_runs"
+      columns:
+        id:               { type: "varchar(26)", primaryKey: true }
+        workspace_id:     { type: "varchar(26)", foreignKey: "workspaces.id" }
+        period_month:     { type: "integer", notNull: true }
+        period_year:      { type: "integer", notNull: true }
+        status:           { type: "varchar(20)", enum: ["pending", "processing", "completed", "approved", "failed"] }
+        total_gross:      { type: "numeric(15,2)" }
+        total_deductions: { type: "numeric(15,2)" }
+        total_net:        { type: "numeric(15,2)" }
+        processed_by:     { type: "varchar(26)", foreignKey: "users.id" }
+        processed_at:     { type: "timestamp", nullable: true }
+        approved_at:      { type: "timestamp", nullable: true }
+        created_at:       { type: "timestamp", default: "now()" }
+      indexes:
+        - "(workspace_id, period_year, period_month) unique"
+
+    payroll_items:
+      file: "src/db/schema/payroll.ts"
+      table: "payroll_items"
+      columns:
+        id:                   { type: "varchar(26)", primaryKey: true }
+        payroll_run_id:       { type: "varchar(26)", foreignKey: "payroll_runs.id" }
+        employee_id:          { type: "varchar(26)", foreignKey: "employees.id" }
+        base_salary:          { type: "numeric(15,2)" }
+        allowances:           { type: "jsonb", default: "{}", note: "{ transport, meal, etc }" }
+        deductions:           { type: "jsonb", default: "{}", note: "{ bpjs_kesehatan, bpjs_tk, kasbon, absensi }" }
+        bpjs_kesehatan:       { type: "numeric(15,2)" }
+        bpjs_tk:              { type: "numeric(15,2)" }
+        pph21:                { type: "numeric(15,2)" }
+        kasbon_deduction:     { type: "numeric(15,2)", default: 0 }
+        gross_salary:         { type: "numeric(15,2)" }
+        net_salary:           { type: "numeric(15,2)" }
+
+    receipts:
+      file: "src/db/schema/receipts.ts"
+      table: "receipts"
+      columns:
+        id:               { type: "varchar(26)", primaryKey: true }
+        user_id:          { type: "varchar(26)", foreignKey: "users.id" }
+        storage_url:      { type: "text", note: "Cloudflare R2 path" }
+        status:           { type: "varchar(20)", enum: ["processing", "ready", "confirmed", "failed"] }
+        merchant:         { type: "varchar(255)", nullable: true }
+        total_amount:     { type: "numeric(15,2)", nullable: true }
+        date:             { type: "date", nullable: true }
+        ocr_raw:          { type: "jsonb", nullable: true, note: "raw tesseract output" }
+        ai_enriched:      { type: "jsonb", nullable: true, note: "groq enrichment result" }
+        confidence_score: { type: "numeric(5,2)", nullable: true }
+        created_at:       { type: "timestamp", default: "now()" }
+
+    receipt_items:
+      file: "src/db/schema/receipts.ts"
+      table: "receipt_items"
+      columns:
+        id:           { type: "varchar(26)", primaryKey: true }
+        receipt_id:   { type: "varchar(26)", foreignKey: "receipts.id" }
+        name:         { type: "varchar(255)" }
+        quantity:     { type: "numeric(10,2)", default: 1 }
+        unit_price:   { type: "numeric(15,2)" }
+        total_price:  { type: "numeric(15,2)" }
+
+    split_groups:
+      file: "src/db/schema/split.ts"
+      table: "split_groups"
+      columns:
+        id:           { type: "varchar(26)", primaryKey: true }
+        name:         { type: "varchar(100)", notNull: true }
+        photo_url:    { type: "text", nullable: true }
+        created_by:   { type: "varchar(26)", foreignKey: "users.id" }
+        created_at:   { type: "timestamp", default: "now()" }
+
+    split_bills:
+      file: "src/db/schema/split.ts"
+      table: "split_bills"
+      columns:
+        id:           { type: "varchar(26)", primaryKey: true }
+        group_id:     { type: "varchar(26)", foreignKey: "split_groups.id" }
+        paid_by:      { type: "varchar(26)", foreignKey: "users.id" }
+        total:        { type: "numeric(15,2)", notNull: true }
+        description:  { type: "text" }
+        split_mode:   { type: "varchar(20)", enum: ["equal", "custom", "percentage", "item_based"] }
+        receipt_id:   { type: "varchar(26)", foreignKey: "receipts.id", nullable: true }
+        status:       { type: "varchar(20)", enum: ["pending", "partial", "settled"] }
+        created_at:   { type: "timestamp", default: "now()" }
+
+    split_assignments:
+      file: "src/db/schema/split.ts"
+      table: "split_assignments"
+      columns:
+        id:           { type: "varchar(26)", primaryKey: true }
+        bill_id:      { type: "varchar(26)", foreignKey: "split_bills.id" }
+        user_id:      { type: "varchar(26)", foreignKey: "users.id" }
+        amount:       { type: "numeric(15,2)", notNull: true }
+        is_paid:      { type: "boolean", default: false }
+        paid_at:      { type: "timestamp", nullable: true }
+      indexes:
+        - "(bill_id, user_id) unique"
+
+    goals:
+      file: "src/db/schema/goals.ts"
+      table: "goals"
+      columns:
+        id:               { type: "varchar(26)", primaryKey: true }
+        user_id:          { type: "varchar(26)", foreignKey: "users.id" }
+        name:             { type: "varchar(255)" }
+        emoji:            { type: "varchar(10)", nullable: true }
+        target_amount:    { type: "numeric(15,2)" }
+        current_amount:   { type: "numeric(15,2)", default: 0 }
+        target_date:      { type: "date", nullable: true }
+        status:           { type: "varchar(20)", enum: ["active", "paused", "completed"] }
+        auto_allocate:    { type: "boolean", default: false }
+        allocation_pct:   { type: "numeric(5,2)", nullable: true }
+        created_at:       { type: "timestamp", default: "now()" }
+
+    notifications:
+      file: "src/db/schema/notifications.ts"
+      table: "notifications"
+      columns:
+        id:           { type: "varchar(26)", primaryKey: true }
+        user_id:      { type: "varchar(26)", foreignKey: "users.id" }
+        type:         { type: "varchar(50)", note: "payroll_ready, kasbon_approved, leave_result, split_reminder, etc" }
+        title:        { type: "varchar(255)" }
+        body:         { type: "text" }
+        data:         { type: "jsonb", nullable: true, note: "payload spesifik per type" }
+        is_read:      { type: "boolean", default: false }
+        created_at:   { type: "timestamp", default: "now()" }
+      indexes:
+        - "(user_id, is_read)"
+        - "(user_id, created_at DESC)"
+
+    subscriptions:
+      file: "src/db/schema/subscriptions.ts"
+      table: "subscriptions"
+      columns:
+        id:               { type: "varchar(26)", primaryKey: true }
+        user_id:          { type: "varchar(26)", foreignKey: "users.id", nullable: true }
+        workspace_id:     { type: "varchar(26)", foreignKey: "workspaces.id", nullable: true }
+        plan:             { type: "varchar(50)" }
+        status:           { type: "varchar(20)", enum: ["active", "cancelled", "expired", "trial"] }
+        current_period_start: { type: "timestamp" }
+        current_period_end:   { type: "timestamp" }
+        tripay_order_id:  { type: "varchar(100)", nullable: true }
+        created_at:       { type: "timestamp", default: "now()" }
+
+
+database:
+  engine: "PostgreSQL 16"
+  deployment: "VPS / Docker container (DigitalOcean/Hetzner)"
+  image: "postgres:16-alpine"
+
+  connection:
+    pool_library: "pg (node-postgres)"
+    pool_config:
+      max: 20
+      idleTimeoutMillis: 30000
+      connectionTimeoutMillis: 2000
+    Eloquent ORM_client: |
+      import { Eloquent ORM } from 'Eloquent ORM-orm/node-postgres'
+      import { Pool } from 'pg'
+      const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 20 })
+      export const db = Eloquent ORM(pool, { schema })
+
+  tuning:
+    shared_buffers:         "2GB"
+    effective_cache_size:   "6GB"
+    work_mem:               "32MB"
+    maintenance_work_mem:   "512MB"
+    max_connections:        100
+    wal_buffers:            "64MB"
+    checkpoint_completion_target: 0.9
+    why_shared_buffers_2gb: "Data payroll & transaksi sering ter-cache di memory → query laporan lebih cepat"
+
+  migrations:
+    tool: "Eloquent ORM-kit"
+    commands:
+      generate: "npx Eloquent ORM-kit generate"
+      migrate:  "npx Eloquent ORM-kit migrate"
+      studio:   "npx Eloquent ORM-kit studio"
+    config_file: "Eloquent ORM.config.ts"
+    migrations_folder: "apps/api/Eloquent ORM/"
+    ci_cd: "Otomatis dijalankan saat deploy via GitHub Actions"
+
+  repositories:
+    description: "Layer antara Service dan Database — abstraksi query Eloquent ORM"
+    convention: "Satu repository per schema utama"
+
+    users_repository:
+      file: "src/users/users.repository.ts"
+      methods:
+        - "findById(id: string): Promise<User>"
+        - "findByEmail(email: string): Promise<User | null>"
+        - "findByGoogleId(googleId: string): Promise<User | null>"
+        - "create(data: NewUser): Promise<User>"
+        - "update(id: string, data: Partial<User>): Promise<User>"
+
+    employees_repository:
+      file: "src/employees/employees.repository.ts"
+      methods:
+        - "findAll(workspaceId, opts: PaginationOpts): Promise<{ data, total }>"
+        - "findById(id: string): Promise<Employee>"
+        - "findByNik(workspaceId, nik): Promise<Employee | null>"
+        - "findActiveByWorkspace(workspaceId): Promise<Employee[]>"
+        - "create(data: NewEmployee): Promise<Employee>"
+        - "update(id, data): Promise<Employee>"
+        - "softDelete(id): Promise<void>"
+
+    payroll_repository:
+      file: "src/payroll/payroll.repository.ts"
+      methods:
+        - "findRuns(workspaceId, opts): Promise<{ data, total }>"
+        - "findRunById(id): Promise<PayrollRun>"
+        - "createRun(data: NewPayrollRun): Promise<PayrollRun>"
+        - "updateRunStatus(id, status): Promise<void>"
+        - "createItems(items: NewPayrollItem[]): Promise<void>"
+        - "findItemsByRun(runId): Promise<PayrollItem[]>"
+
+    transactions_repository:
+      file: "src/transactions/transactions.repository.ts"
+      methods:
+        - "findAll(userId, opts: TransactionQueryOpts): Promise<{ data, total }>"
+        - "findById(id): Promise<Transaction>"
+        - "create(data: NewTransaction): Promise<Transaction>"
+        - "update(id, data): Promise<Transaction>"
+        - "delete(id): Promise<void>"
+        - "getMonthlySummary(userId, month, year): Promise<Summary>"
+        - "getSumByCategory(userId, startDate, endDate): Promise<CategorySum[]>"
+
+    receipts_repository:
+      file: "src/receipts/receipts.repository.ts"
+      methods:
+        - "create(data: NewReceipt): Promise<Receipt>"
+        - "findById(id): Promise<Receipt>"
+        - "update(id, data): Promise<Receipt>"
+        - "createItems(items: NewReceiptItem[]): Promise<void>"
+        - "findItems(receiptId): Promise<ReceiptItem[]>"
+
+  backup:
+    strategy: "pg_dump harian via cron"
+    schedule: "Cron 03:00 setiap hari"
+    destination: "Cloudflare R2 bucket: vistamora-backup"
+    retention: "30 hari terakhir"
+    command: |
+      pg_dump $DATABASE_URL | gzip > backup_$(date +%Y%m%d).sql.gz
+
+  monitoring:
+    DigitalOcean: "Netdata / Datadog / Cloud Provider Monitoring"
+    healthcheck: |
+      pg_isready -U ${DB_USER} -d vistamora
+    slow_query_log:
+      enabled: true
+      threshold: "log_min_duration_statement = 1000ms"
+
+
+module_map:
+  description: "Ringkasan ketergantungan antar layer per modul"
+
+  auth_module:
+    controller: "AuthController"
+    service:    "AuthService"
+    repository: "UsersRepository"
+    external:   ["SanctumGuard", "RedisService", "EmailService", "PassportStrategy"]
+
+  employees_module:
+    controller: "EmployeesController"
+    service:    "EmployeesService"
+    repository: "EmployeesRepository"
+    external:   ["StorageService", "EventEmitter2", "EmailService"]
+
+  payroll_module:
+    controller: "PayrollController"
+    service:    "PayrollService"
+    repository: "PayrollRepository"
+    worker:     "PayrollProcessor (Laravel Horizon)"
+    external:   ["EventEmitter2", "PdfService", "EmailService", "RedisService"]
+
+  transactions_module:
+    controller: "TransactionsController"
+    service:    "TransactionsService"
+    repository: "TransactionsRepository"
+    external:   ["AiService", "RedisService", "EventEmitter2"]
+
+  receipts_module:
+    controller: "ReceiptsController"
+    service:    "ReceiptsService"
+    repository: "ReceiptsRepository"
+    worker:     "ReceiptOcrProcessor (Laravel Horizon)"
+    external:   ["StorageService", "AiService", "TransactionsService"]
+
+  split_module:
+    controller: "SplitController"
+    service:    "SplitService"
+    repository: "SplitRepository"
+    worker:     "SplitNotifProcessor (Laravel Horizon)"
+    external:   ["TransactionsService", "EventEmitter2", "NotificationsService"]
+
+  ai_module:
+    controller: "AiController"
+    service:    "AiService"
+    providers:  ["GeminiProvider", "GroqProvider", "OllamaProvider"]
+    external:   ["RedisService (cache + token bucket)"]
+    guards:     ["AiTokenGuard"]
+    interceptors: ["AiCacheInterceptor"]
+
+  notifications_module:
+    controller: "NotificationsController"
+    service:    "NotificationsService"
+    repository: "NotificationsRepository"
+    realtime:   "SSE via @Sse() decorator + RxJS Subject"
+    external:   ["EventEmitter2 (subscribe semua events)"]

@@ -1,0 +1,178 @@
+meta:
+  host: "vista.vistamora.id"
+  framework: "Tabler React App Router"
+  layout: "Semua halaman pakai layout.tsx"
+  auth_guard: "middleware.ts — redirect ke /login jika tidak ada access_token"
+
+
+pages:
+
+  public:
+    - path: /login
+      file: app/(auth)/login/page.tsx
+      desc: "Login email / Google OAuth"
+      components: [LoginForm, GoogleOAuthButton]
+
+    - path: /register
+      file: app/(auth)/register/page.tsx
+      desc: "Daftar akun owner"
+      components: [RegisterForm]
+
+    - path: /verify-otp
+      file: app/(auth)/verify-otp/page.tsx
+      desc: "Verifikasi OTP setelah register"
+      query_params: "?email=xxx"
+      components: [OtpInput]
+
+    - path: /forgot-password
+      file: app/(auth)/forgot-password/page.tsx
+      desc: "Form email untuk reset password"
+
+    - path: /reset-password
+      file: app/(auth)/reset-password/page.tsx
+      desc: "Form password baru"
+      query_params: "?email=xxx&otp=xxxxxx"
+
+    - path: /join/:token
+      file: app/(auth)/join/[token]/page.tsx
+      desc: "Halaman join workspace via invite link"
+
+  dashboard:
+    - path: /
+      file: app/(dashboard)/page.tsx
+      desc: "Dashboard utama — ringkasan workspace aktif"
+      components: [WorkspaceSwitcher, StatsCard, QuickActions, RecentActivity]
+      data_fetched:
+        - GET /workspaces
+        - GET /payroll/runs?limit=3
+        - GET /invoices?status=overdue
+
+  workspace:
+    - path: /workspace/new
+      file: app/(dashboard)/workspace/new/page.tsx
+      desc: "Buat workspace baru"
+
+    - path: /workspace/settings
+      file: app/(dashboard)/workspace/settings/page.tsx
+      desc: "Pengaturan workspace aktif"
+      tabs: [Umum, Anggota, Langganan, Integrasi]
+
+    - path: /workspace/settings/members
+      file: app/(dashboard)/workspace/settings/members/page.tsx
+      desc: "Kelola anggota & role"
+      components: [MemberTable, InviteModal, RoleSelector]
+
+  karyawan:
+    - path: /employees
+      file: app/(dashboard)/employees/page.tsx
+      desc: "Daftar karyawan — table dengan filter, search, sort"
+      query_params: "?search=&department=&status=active&page=1"
+      components: [EmployeeTable, FilterBar, SearchInput, CommandPaletteShortcut]
+      data_fetched: "GET /employees"
+
+    - path: /employees/new
+      file: app/(dashboard)/employees/new/page.tsx
+      desc: "Form tambah karyawan baru"
+      components: [EmployeeForm, BpjsCalculator, UmkSelector]
+
+    - path: /employees/:id
+      file: app/(dashboard)/employees/[id]/page.tsx
+      desc: "Detail karyawan — tab profil, dokumen, absensi, cuti, kasbon"
+      tabs: [Profil, Dokumen, Absensi, Cuti, Kasbon, Payroll]
+      components: [EmployeeHeader, DocumentList, AttendanceSummary]
+
+    - path: /employees/:id/edit
+      file: app/(dashboard)/employees/[id]/edit/page.tsx
+      desc: "Edit data karyawan"
+
+  absensi:
+    - path: /attendance
+      file: app/(dashboard)/attendance/page.tsx
+      desc: "Rekap absensi semua karyawan + live map check-in"
+      tabs: [Live Map, Rekap Harian, Rekap Bulanan]
+      components: [LeafletMap, AttendanceTable, DatePicker]
+      realtime: "WebSocket subscribe_live_map"
+
+    - path: /shifts
+      file: app/(dashboard)/shifts/page.tsx
+      desc: "Jadwal shift — kalender drag-and-drop"
+      query_params: "?week=2026-W10"
+      components: [ShiftCalendar, DnKitSortable, EmployeeSelector, ShiftModal]
+
+  payroll:
+    - path: /payroll
+      file: app/(dashboard)/payroll/page.tsx
+      desc: "Daftar riwayat run payroll"
+      query_params: "?month=&status="
+      components: [PayrollRunTable, RunPayrollButton]
+
+    - path: /payroll/run
+      file: app/(dashboard)/payroll/run/page.tsx
+      desc: "Halaman inisiasi & monitoring run payroll"
+      components: [PayrollRunForm, ProgressBar, WebSocketProvider]
+      realtime: "WebSocket payroll_progress"
+
+    - path: /payroll/:run_id
+      file: app/(dashboard)/payroll/[run_id]/page.tsx
+      desc: "Detail hasil run payroll + daftar slip gaji"
+      components: [PayrollSummaryCard, PayrollItemTable, ExportButton, SendPayslipsButton]
+
+  cuti:
+    - path: /leave
+      file: app/(dashboard)/leave/page.tsx
+      desc: "Daftar pengajuan cuti"
+      query_params: "?status=pending&employee_id="
+      components: [LeaveRequestTable, ApproveRejectActions, LeaveBalanceSidebar]
+
+  kasbon:
+    - path: /kasbon
+      file: app/(dashboard)/kasbon/page.tsx
+      desc: "Daftar pengajuan kasbon"
+      query_params: "?status=pending"
+      components: [KasbonTable, ApproveModal, RejectModal]
+
+  invoices:
+    - path: /invoices
+      file: app/(dashboard)/invoices/page.tsx
+      desc: "Daftar invoice"
+      query_params: "?status=&client_id=&date_from=&date_to="
+      components: [InvoiceTable, FilterBar, CreateInvoiceButton, ExportButton]
+
+    - path: /invoices/new
+      file: app/(dashboard)/invoices/new/page.tsx
+      desc: "Form buat invoice baru"
+      components: [ClientSelector, InvoiceItemsForm, TaxCalculator, PreviewButton]
+
+    - path: /invoices/:id
+      file: app/(dashboard)/invoices/[id]/page.tsx
+      desc: "Detail invoice + aksi kirim/follow-up/tandai lunas"
+      components: [InvoicePreview, StatusBadge, SendButton, FollowUpButton, MarkPaidButton]
+
+    - path: /invoices/:id/edit
+      file: app/(dashboard)/invoices/[id]/edit/page.tsx
+      desc: "Edit invoice (hanya draft)"
+
+  clients:
+    - path: /clients
+      file: app/(dashboard)/clients/page.tsx
+      desc: "Daftar klien"
+      components: [ClientTable, SearchInput, AddClientButton]
+
+    - path: /clients/:id
+      file: app/(dashboard)/clients/[id]/page.tsx
+      desc: "Detail klien + riwayat invoice"
+
+  reports:
+    - path: /reports
+      file: app/(dashboard)/reports/page.tsx
+      desc: "Pusat laporan — shortcut ke semua export"
+      components: [ReportCard, DateRangePicker, ExportButton]
+
+  settings:
+    - path: /settings/profile
+      file: app/(dashboard)/settings/profile/page.tsx
+      desc: "Profil akun user"
+
+    - path: /settings/notifications
+      file: app/(dashboard)/settings/notifications/page.tsx
+      desc: "Preferensi notifikasi email / WA"

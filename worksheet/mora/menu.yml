@@ -1,0 +1,201 @@
+menu:
+  - id: dashboard
+    label: Dashboard
+    icon: home
+    path: /dashboard
+
+  - id: transactions
+    label: Transactions
+    icon: arrow-left-right
+    children:
+      - id: transaction-list
+        label: All Transactions
+        path: /transactions/list
+      - id: transaction-add
+        label: Add Transaction
+        path: /transactions/add
+      - id: transaction-scan
+        label: Scan Receipt
+        path: /transactions/scan
+      - id: transaction-history
+        label: History
+        path: /transactions/history
+
+  - id: wallet
+    label: Wallet
+    icon: wallet
+    children:
+      - id: wallet-overview
+        label: Overview
+        path: /wallet/overview
+      - id: wallet-accounts
+        label: My Accounts
+        path: /wallet/accounts
+      - id: wallet-transfer
+        label: Transfer
+        path: /wallet/transfer
+
+  - id: budget
+    label: Budget
+    icon: pie-chart
+    children:
+      - id: budget-overview
+        label: Budget Overview
+        path: /budget/overview
+      - id: budget-categories
+        label: Categories
+        path: /budget/categories
+      - id: budget-monthly
+        label: Monthly Budget
+        path: /budget/monthly
+
+  - id: goals
+    label: Goals & Savings
+    icon: target
+    children:
+      - id: goal-list
+        label: My Goals
+        path: /goals/list
+      - id: goal-create
+        label: Create Goal
+        path: /goals/create
+      - id: goal-pockets
+        label: Savings Pockets
+        path: /goals/pockets
+      - id: goal-allocation
+        label: Auto Allocation
+        path: /goals/allocation
+
+  - id: debt
+    label: Debt Tracker
+    icon: credit-card
+    children:
+      - id: debt-list
+        label: My Debts
+        path: /debt/list
+      - id: debt-add
+        label: Add Debt
+        path: /debt/add
+      - id: debt-payment
+        label: Payment History
+        path: /debt/payment
+      - id: debt-recommendation
+        label: AI Payoff Plan
+        path: /debt/recommendation
+
+  - id: split-bill
+    label: Split Bill
+    icon: users
+    children:
+      - id: split-groups
+        label: My Groups
+        path: /split/groups
+      - id: split-create
+        label: Create Bill
+        path: /split/create
+      - id: split-settlement
+        label: Settlement
+        path: /split/settlement
+      - id: split-history
+        label: History
+        path: /split/history
+
+  - id: payslip
+    label: Payslip
+    icon: file-text
+    children:
+      - id: payslip-latest
+        label: Latest Payslip
+        path: /payslip/latest
+      - id: payslip-history
+        label: Payslip History
+        path: /payslip/history
+      - id: payslip-kasbon
+        label: Cash Advance (Kasbon)
+        path: /payslip/kasbon
+
+  - id: leave
+    label: Leave
+    icon: calendar-off
+    children:
+      - id: leave-request
+        label: Request Leave
+        path: /leave/request
+      - id: leave-balance
+        label: Leave Balance
+        path: /leave/balance
+      - id: leave-history
+        label: Leave History
+        path: /leave/history
+
+  - id: attendance
+    label: Attendance
+    icon: clock
+    children:
+      - id: attendance-checkin
+        label: Check In / Out
+        path: /attendance/checkin
+      - id: attendance-recap
+        label: My Recap
+        path: /attendance/recap
+      - id: attendance-schedule
+        label: My Schedule
+        path: /attendance/schedule
+
+  - id: forecast
+    label: Cash Flow Forecast
+    icon: trending-up
+    children:
+      - id: forecast-overview
+        label: Forecast Overview
+        path: /forecast/overview
+      - id: forecast-30days
+        label: 30 Days
+        path: /forecast/30
+      - id: forecast-90days
+        label: 90 Days
+        path: /forecast/90
+
+  - id: ai-advisor
+    label: AI Financial Advisor
+    icon: bot
+    path: /ai-advisor
+
+  - id: insight
+    label: Insights & Reports
+    icon: bar-chart-2
+    children:
+      - id: insight-monthly
+        label: Monthly Report
+        path: /insight/monthly
+      - id: insight-weekly
+        label: Weekly Digest
+        path: /insight/weekly
+      - id: insight-persona
+        label: Spending Persona
+        path: /insight/persona
+      - id: insight-subscription
+        label: Subscription Tracker
+        path: /insight/subscription
+
+  - id: notifications
+    label: Notifications
+    icon: bell
+    path: /notifications
+
+  - id: settings
+    label: Settings
+    icon: settings
+    children:
+      - id: settings-profile
+        label: Profile
+        path: /settings/profile
+      - id: settings-security
+        label: Security
+        path: /settings/security
+      - id: settings-notification
+        label: Notification Preferences
+        path: /settings/notification
+      - id: settings-plan
+        label: Subscription Plan
+        path: /settings/plan

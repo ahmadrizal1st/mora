@@ -1,0 +1,113 @@
+// src/styles/gradients.scss
+
+@property --tblr-card-gradient-direction {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 180deg;
+}
+
+@keyframes gradient-animation {
+  0% {
+    --tblr-card-gradient-direction: 180deg;
+  }
+
+  100% {
+    --tblr-card-gradient-direction: 540deg;
+  }
+}
+
+.card-gradient {
+  --tblr-card-gradient-direction: 180deg;
+  --tblr-card-gradient-opacity: 86%;
+  --tblr-card-gradient: var(--tblr-primary), var(--tblr-primary);
+
+  background:
+    radial-gradient(ellipse at center, var(--tblr-card-bg, var(--tblr-bg-surface)) 0%, color-mix(in srgb, var(--tblr-card-bg, var(--tblr-bg-surface)) 0%, transparent) 80%) border-box,
+    linear-gradient(var(--tblr-card-gradient-direction), color-mix(in srgb, var(--tblr-card-bg, var(--tblr-bg-surface)) var(--tblr-card-gradient-opacity), transparent) 0%, var(--tblr-card-bg, var(--tblr-bg-surface)) 40%) border-box,
+    linear-gradient(var(--tblr-card-gradient-direction), var(--tblr-card-gradient)) border-box;
+}
+
+.bg-white-opacity-10 {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+// Support for standard colors
+$colors: (
+  "blue": #066fd1,
+  "azure": #4299e1,
+  "indigo": #4263eb,
+  "purple": #ae3ec9,
+  "pink": #d6336c,
+  "red": #d63939,
+  "orange": #f76707,
+  "yellow": #f59f00,
+  "lime": #74b816,
+  "green": #2fb344,
+  "teal": #0ca678,
+  "cyan": #17a2b8,
+  "danger": #d63939,
+  "success": #2fb344,
+);
+
+@each $name, $value in $colors {
+  .card-gradient-#{$name} {
+    --tblr-card-gradient: #{$value}, #{$value};
+  }
+}
+
+.card-gradient-rainbow {
+  --tblr-card-gradient: #78c5d6, #459ba8, #79c267, #c5d647, #f5d63d, #f08b33, #e868a2, #be61a5;
+}
+
+.card-gradient-sun {
+  --tblr-card-gradient: #fd1d1d, #fcb045;
+}
+
+.card-gradient-snow {
+  --tblr-card-gradient: #333, #e9ecef;
+}
+
+.card-gradient-ocean {
+  --tblr-card-gradient: #1cb5e0, #000851;
+}
+
+.card-gradient-mellow {
+  --tblr-card-gradient: #f8ff00, #3ad59f;
+}
+
+.card-gradient-disco {
+  --tblr-card-gradient: #fc466b, #3f5efb;
+}
+
+.card-gradient-psychedelic {
+  --tblr-card-gradient: #fcc5e4, #fda34b, #ff7882, #c8699e, #7046aa, #0c1db8, #020f75;
+}
+
+.card-gradient-love {
+  --tblr-card-gradient: #f235e6, #bc0707;
+}
+
+.card-gradient-gold {
+  --tblr-card-gradient: #9d4100, #bf7122, #f59f00, #ffd700;
+}
+
+// Special case for "rain" from weather.html
+.card-gradient-rain {
+  --tblr-card-gradient: var(--tblr-blue), var(--tblr-blue);
+}
+
+.card-gradient-animated {
+  animation: gradient-animation 15s linear infinite;
+}
+
+.card-gradient-bottom {
+  --tblr-card-gradient-direction: 0deg;
+}
+
+.card-gradient-end {
+  --tblr-card-gradient-direction: 270deg;
+}
+
+.card-gradient-start {
+  --tblr-card-gradient-direction: 90deg;
+}

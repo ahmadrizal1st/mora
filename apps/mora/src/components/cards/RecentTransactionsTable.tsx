@@ -1,0 +1,78 @@
+interface InvoiceRow {
+  id?: string;
+  subject: string;
+  client: string;
+  vatNo?: string;
+  date?: string;
+  status: string;
+  statusColor?: string;
+  price: string;
+}
+
+interface RecentTransactionsTableProps {
+  invoices?: InvoiceRow[];
+  hideHeader?: boolean;
+  hideFooter?: boolean;
+}
+
+export function RecentTransactionsTable({
+  invoices = [],
+  hideHeader = false,
+  hideFooter = false,
+}: RecentTransactionsTableProps) {
+  return (
+    <div className={hideHeader && hideFooter ? "" : "card"}>
+      {!hideHeader && (
+        <div className="card-header">
+          <h3 className="card-title">Recent Transactions</h3>
+        </div>
+      )}
+      
+      <div className="table-responsive">
+        <table className="table table-vcenter card-table text-nowrap">
+          <thead>
+            <tr className="text-mobile-xs">
+              <th className="w-1">No.</th>
+              <th>Subject</th>
+              <th>Client</th>
+              <th className="d-none d-md-table-cell">VAT No.</th>
+              <th className="d-none d-md-table-cell">Created</th>
+              <th className="d-none d-sm-table-cell">Status</th>
+              <th className="text-end">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.map((inv, i) => (
+              <tr key={i} className="text-mobile-xs">
+                <td><span className="text-secondary">{inv.id?.slice(-3) || (i + 1).toString().padStart(3, '0')}</span></td>
+                <td className="text-truncate" style={{ maxWidth: '120px' }}>
+                  <a href="#" className="text-reset fw-medium">{inv.subject}</a>
+                </td>
+                <td className="text-truncate" style={{ maxWidth: '100px' }}>{inv.client}</td>
+                <td className="d-none d-md-table-cell text-secondary">{inv.vatNo || '-'}</td>
+                <td className="d-none d-md-table-cell text-secondary">{inv.date}</td>
+                <td className="d-none d-sm-table-cell">
+                  {inv.status && (
+                    <>
+                      <span className={`badge bg-${inv.statusColor || 'secondary'} me-1`} />
+                      <span className="d-none d-lg-inline">{inv.status}</span>
+                    </>
+                  )}
+                </td>
+                <td className="fw-bold text-end">{inv.price}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {!hideFooter && (
+        <div className="card-footer d-flex align-items-center">
+          <p className="m-0 text-secondary">
+            Showing <strong>{invoices.length}</strong> entries
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}

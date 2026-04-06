@@ -1,0 +1,271 @@
+{
+  "summary": {
+    "balance": "Rp 562,000",
+    "income": "Rp 78,000",
+    "expense": "Rp 43,000",
+    "savings": "Rp 56,000",
+    "incomeTrend": 1.75,
+    "expenseTrend": -2.15,
+    "savingsTrend": 3.24,
+    "incomeSeries": [
+      {
+        "name": "Income",
+        "data": [
+          10,
+          15,
+          12,
+          18,
+          20,
+          22,
+          25
+        ]
+      }
+    ],
+    "expenseSeries": [
+      {
+        "name": "Expense",
+        "data": [
+          8,
+          12,
+          10,
+          15,
+          14,
+          18,
+          16
+        ]
+      }
+    ],
+    "savingsSeries": [
+      {
+        "name": "Savings",
+        "data": [
+          2,
+          3,
+          2,
+          3,
+          6,
+          4,
+          9
+        ]
+      }
+    ]
+  },
+  "limits": {
+    "daily": {
+      "spent": "Rp 2,500.00",
+      "total": "Rp 20,000.00",
+      "progress": 12.5
+    }
+  },
+  "savingsPlans": [
+    {
+      "name": "Emergency Fund",
+      "current": "Rp 5,000",
+      "target": "Rp 10,000",
+      "progress": 50,
+      "icon": "shield-check"
+    },
+    {
+      "name": "Vacation Fund",
+      "current": "Rp 3,000",
+      "target": "Rp 5,000",
+      "progress": 60,
+      "icon": "plane-departure"
+    },
+    {
+      "name": "Home Down Payment",
+      "current": "Rp 7,250",
+      "target": "Rp 20,000",
+      "progress": 36.25,
+      "icon": "home"
+    }
+  ],
+  "cashflow": {
+    "series": [
+      {
+        "name": "Income",
+        "data": [
+          6000,
+          4000,
+          5000,
+          7000,
+          4500,
+          6000,
+          3000,
+          4500,
+          7200,
+          5500,
+          3500,
+          4500
+        ],
+        "color": "teal"
+      },
+      {
+        "name": "Expense",
+        "data": [
+          -4500,
+          -6000,
+          -5800,
+          -2500,
+          -4500,
+          -3800,
+          -5500,
+          -5000,
+          -5500,
+          -4200,
+          -6300,
+          -3500
+        ],
+        "color": "lime"
+      }
+    ],
+    "months": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ]
+  },
+  "statistics": {
+    "total": "Rp 3,500",
+    "series": [
+      {
+        "name": "Rent & Living",
+        "data": [
+          2100
+        ],
+        "color": "primary"
+      },
+      {
+        "name": "Investment",
+        "data": [
+          525
+        ],
+        "color": "green"
+      },
+      {
+        "name": "Education",
+        "data": [
+          420
+        ],
+        "color": "blue"
+      },
+      {
+        "name": "Food & Drink",
+        "data": [
+          280
+        ],
+        "color": "orange"
+      },
+      {
+        "name": "Entertainment",
+        "data": [
+          175
+        ],
+        "color": "red"
+      }
+    ]
+  },
+  "recentTransactions": [
+    {
+      "id": "TX-001",
+      "subject": "Electricity Bill",
+      "client": "Payments",
+      "date": "2024-03-01 04:24:45",
+      "status": "Failed",
+      "statusColor": "danger",
+      "price": "Rp 295.81",
+      "note": "Payment for monthly electricity bill"
+    },
+    {
+      "id": "TX-002",
+      "subject": "Weekly Groceries",
+      "client": "Shopping",
+      "date": "2024-03-04 04:24:45",
+      "status": "Completed",
+      "statusColor": "success",
+      "price": "Rp 204.07",
+      "note": "Groceries at nearest mall"
+    },
+    {
+      "id": "TX-003",
+      "subject": "Movie Night",
+      "client": "Entertainment",
+      "date": "2024-02-27 04:24:45",
+      "status": "Pending",
+      "statusColor": "warning",
+      "price": "Rp 87.84",
+      "note": "Tickets for movies and snacks"
+    },
+    {
+      "id": "TX-004",
+      "subject": "Medical Check-up",
+      "client": "Healthcare",
+      "date": "2024-02-07 04:24:45",
+      "status": "Pending",
+      "statusColor": "warning",
+      "price": "Rp 123.12",
+      "note": "Routine health check-up"
+    }
+  ],
+  "activities": [
+    {
+      "id": 1,
+      "text": "Jamie Smith updated account settings",
+      "time": "14:05",
+      "type": "info",
+      "user": {
+        "name": "Jamie Smith",
+        "avatar": "https://i.pravatar.cc/150?u=jamie"
+      }
+    },
+    {
+      "id": 2,
+      "text": "Alex Johnson logged in",
+      "time": "12:05",
+      "type": "success",
+      "user": {
+        "name": "Alex Johnson",
+        "avatar": "https://i.pravatar.cc/150?u=alex"
+      }
+    },
+    {
+      "id": 3,
+      "text": "Morgan Lee added a new savings goal",
+      "time": "02:05",
+      "type": "warning",
+      "user": {
+        "name": "Morgan Lee",
+        "avatar": "https://i.pravatar.cc/150?u=morgan"
+      }
+    },
+    {
+      "id": 4,
+      "text": "Taylor Kim completed a transaction",
+      "time": "Yesterday",
+      "type": "success",
+      "user": {
+        "name": "Taylor Kim",
+        "avatar": "https://i.pravatar.cc/150?u=taylor"
+      }
+    },
+    {
+      "id": 5,
+      "text": "Drew Barry connected a new bank account",
+      "time": "2 days ago",
+      "type": "info",
+      "user": {
+        "name": "Drew Barry",
+        "avatar": "https://i.pravatar.cc/150?u=drew"
+      }
+    }
+  ]
+}

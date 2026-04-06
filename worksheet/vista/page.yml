@@ -1,0 +1,59 @@
+vista:
+  meta:
+    name: "Vista"
+    type: "Web Dashboard (B2B HR & Finance)"
+    framework: "Tabler React (App Router)"
+    styling: "Tailwind CSS + Tabler UI"
+  
+  pages:
+    auth:
+      - path: /login
+        components: [LoginForm, GoogleOAuthButton]
+        apis: [POST /auth/login, GET /auth/google]
+      - path: /register
+        components: [RegisterForm]
+        apis: [POST /auth/register]
+      - path: /verify-otp
+        components: [OtpInput]
+        apis: [POST /auth/verify-otp, POST /auth/resend-otp]
+    
+    dashboard:
+      - path: /
+        desc: "Overview & Analytics"
+        components: [WorkspaceSwitcher, StatsCard, RecentActivityList, QuickActionGrid]
+        apis: [GET /workspaces, GET /payroll/runs?limit=3, GET /invoices?status=overdue]
+      - path: /workspace/settings
+        components: [SettingsTabs, MemberTable, InviteModal, SubscriptionCard]
+        apis: [GET /workspaces/:id, GET /workspaces/:id/members, POST /workspaces/:id/invite]
+    
+    management:
+      employees:
+        - path: /employees
+          components: [EmployeeTable, FilterBar, SearchInput, ExportButton]
+          apis: [GET /employees, GET /employees/export]
+        - path: /employees/:id
+          components: [EmployeeHeader, TabbedContent, DocumentList, AttendanceSummary]
+          apis: [GET /employees/:id, GET /employees/:id/documents]
+      attendance:
+        - path: /attendance
+          components: [LeafletMap, AttendanceTable, DateRangePicker]
+          apis: [GET /attendance, GET /attendance/live-map]
+          features: [WebSocket: subscribe_live_map]
+        - path: /shifts
+          components: [ShiftCalendar, DragDropManager, ShiftModal]
+          apis: [GET /shifts, POST /shifts, PATCH /shifts/:id]
+      payroll:
+        - path: /payroll/run
+          components: [PayrollRunForm, ProgressStepper, LiveStatusIndicator]
+          apis: [POST /payroll/runs, GET /payroll/runs/:id]
+          features: [WebSocket: payroll_progress]
+    
+    finance:
+      invoices:
+        - path: /invoices/new
+          components: [ClientSelector, InvoiceItemsForm, TaxCalculator, PDFPreview]
+          apis: [GET /clients, POST /invoices]
+        - path: /invoices/:id
+          components: [InvoiceDetailView, ActionButtons, HistoryTimeline]
+          apis: [GET /invoices/:id, POST /invoices/:id/send, POST /invoices/:id/follow-up]
+          features: [AI: Adaptive tone generation for follow-up]

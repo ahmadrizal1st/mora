@@ -1,0 +1,79 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "icon": "home",
+    "children": {
+      "summary": { "url": "dashboard", "title": "Summary Status" },
+      "assets": { "url": "dashboard-assets", "title": "Asset Breakdown" }
+    }
+  },
+  "cashflow": {
+    "title": "Cashflow",
+    "icon": "cash",
+    "columns": 2,
+    "children": {
+      "tracker": { "url": "tracker", "title": "Finance Tracker" },
+      "input": { "url": "tracker/input", "title": "Input Manual" },
+      "receipts": { "url": "tracker/photo", "title": "AI Scan Receipt" },
+      "budget": { "url": "budget", "title": "Budgeting Control" },
+      "subscriptions": { "url": "subscription", "title": "Subscription Hub" },
+      "split": { "url": "split", "title": "Split Bill" },
+      "history": { "url": "tracker/history", "title": "Full History" }
+    }
+  },
+  "wealth": {
+    "title": "Wealth",
+    "icon": "building-bank",
+    "columns": 2,
+    "children": {
+      "portfolio": { "url": "portfolio", "title": "My Portfolio" },
+      "comparison": { "url": "portfolio/compare", "title": "Compare Strategy" },
+      "market": { "url": "market", "title": "Market Prices" },
+      "watchlist": { "url": "market/watchlist", "title": "My Watchlist" },
+      "halal": { "url": "market/halal-screener", "title": "Halal Screener" },
+      "dividend": { "url": "portfolio/dividend", "title": "Dividend Calendar" },
+      "converter": { "url": "converter", "title": "Forex & Crypto Conv" }
+    }
+  },
+  "credit": {
+    "title": "Credit",
+    "icon": "credit-card",
+    "columns": 2,
+    "children": {
+      "summary": { "url": "credit", "title": "Credit Overview" },
+      "personal_loan": { "url": "credit/personal-loan", "title": "Personal Loans" },
+      "mortgage": { "url": "credit/mortgage", "title": "Home Mortgage" },
+      "cards": { "url": "credit/cards", "title": "Credit Cards" },
+      "paylater": { "url": "credit/paylater", "title": "Paylater Manage" },
+      "planner": { "url": "credit/debt-planner", "title": "Debt Payoff Plan" },
+      "score": { "url": "credit/score", "title": "Credit Score" }
+    }
+  },
+  "planning": {
+    "title": "Planning",
+    "icon": "target",
+    "columns": 2,
+    "children": {
+      "goals": { "url": "goals", "title": "Financial Goals" },
+      "emergency": { "url": "goals/emergency-fund", "title": "Emergency Fund" },
+      "retirement": { "url": "goals/retirement", "title": "Retirement Simulation" },
+      "reminders": { "url": "reminder", "title": "Bill Reminders" },
+      "ai_advisor": { "url": "ai", "title": "AI Copilot" },
+      "zakat_tax": { "url": "zakat", "title": "Zakat & Tax" },
+      "hajj": { "url": "goals/hajj-saving", "title": "Hajj Planning" }
+    }
+  },
+  "ecosystem": {
+    "title": "Ecosystem",
+    "icon": "grid-dots",
+    "children": {
+      "bank_sync": { "url": "bank-sync", "title": "Bank Integration" },
+      "vault": { "url": "vault", "title": "File Vault" },
+      "learn": { "url": "learn", "title": "Academy Hub" },
+      "challenges": { "url": "challenges", "title": "Social Challenges" },
+      "news": { "url": "news", "title": "Financial News" },
+      "profile": { "url": "profile", "title": "My Account" },
+      "settings": { "url": "settings", "title": "System Settings" }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{"timestamp": "2026-04-02T16:00:00+07:00", "action": "project_init", "detail": "Laravel 13 (v13.1.2) terinstall di /api via composer create-project"}
+{"timestamp": "2026-04-02T16:05:00+07:00", "action": "docs_update", "detail": "Tech stack difinalisasi: Hetzner CX22, Cloudflare R2, Sanctum, ULID"}
+{"timestamp": "2026-04-02T16:10:00+07:00", "action": "docs_update", "detail": "Semua referensi OCI dan JWT dihapus dari worksheet dan .agent"}
+{"timestamp": "2026-04-02T16:15:00+07:00", "action": "cleanup", "detail": ".agent dibersihkan dari 98 file ke struktur minimal (context + rules)"}
+{"timestamp": "2026-04-02T16:20:00+07:00", "action": "docs_update", "detail": "Arsitektur backend ditetapkan: MVC + Service + Repository pattern"}
+{"timestamp": "2026-04-02T19:20:00+07:00", "action": "restructure", "detail": ".agent dikonversi dari YAML ke Markdown dan dikembangkan"}
+{"timestamp": "2026-04-02T19:31:00+07:00", "action": "restructure", "detail": ".agent direstruktur ke format baru (config, prompts, tools, memory, schemas, evals)"}

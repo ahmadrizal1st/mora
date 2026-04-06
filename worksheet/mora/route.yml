@@ -1,0 +1,234 @@
+meta:
+  host: "mora.vistamora.id"
+  framework: "Tabler React App Router PWA"
+  layout: "App Router — installable, offline-capable via Serwist"
+  auth_guard: "middleware.ts — redirect ke /login jika tidak ada token"
+  pwa: "manifest.json + sw.js (Serwist) — installable ke home screen"
+
+
+pages:
+
+  public:
+    - path: /login
+      file: app/(auth)/login/page.tsx
+      desc: "Login email / Google OAuth"
+
+    - path: /register
+      file: app/(auth)/register/page.tsx
+      desc: "Daftar akun karyawan"
+
+    - path: /verify-otp
+      file: app/(auth)/verify-otp/page.tsx
+      desc: "Verifikasi OTP setelah register"
+      query_params: "?email=xxx"
+
+    - path: /forgot-password
+      file: app/(auth)/forgot-password/page.tsx
+      desc: "Form email untuk reset password"
+
+  dashboard:
+    - path: /
+      file: app/(app)/page.tsx
+      desc: "Dashboard utama Mora — saldo total, ringkasan bulan, quick actions"
+      components: [BalanceCard, QuickActionGrid, RecentTransactions, BudgetProgress, GoalHighlight]
+      data_fetched:
+        - GET /wallets
+        - GET /transactions?limit=5
+        - GET /budgets?month=current
+        - GET /goals?limit=3
+
+  transaksi:
+    - path: /transactions
+      file: app/(app)/transactions/page.tsx
+      desc: "Riwayat transaksi dengan filter lengkap"
+      query_params: "?wallet_id=&category=&type=&date_from=&date_to=&page=1"
+      components: [TransactionList, FilterDrawer, SearchInput, ScanReceiptFAB]
+
+    - path: /transactions/new
+      file: app/(app)/transactions/new/page.tsx
+      desc: "Catat transaksi manual"
+      query_params: "?type=expense&wallet_id="
+      components: [TransactionForm, CategoryPicker, WalletSelector, DatePicker, AiCategorizeButton]
+
+    - path: /transactions/:id
+      file: app/(app)/transactions/[id]/page.tsx
+      desc: "Detail transaksi + nota scan (jika ada)"
+      components: [TransactionDetail, ReceiptViewer, EditButton]
+
+    - path: /transactions/:id/edit
+      file: app/(app)/transactions/[id]/edit/page.tsx
+      desc: "Edit transaksi"
+
+  scan:
+    - path: /scan
+      file: app/(app)/scan/page.tsx
+      desc: "Kamera scan nota — full screen camera UI"
+      components: [WebcamCapture, ScanGuideOverlay, GalleryPickerButton, ProcessingIndicator]
+      flow: |
+        1. Ambil foto → compress client-side
+        2. POST /receipts/scan → dapat receipt_id
+        3. Listen SSE receipt:done atau poll /receipts/:id/status
+        4. Redirect ke /scan/review/:receipt_id
+
+    - path: /scan/review/:receipt_id
+      file: app/(app)/scan/review/[receipt_id]/page.tsx
+      desc: "Review hasil OCR + form konfirmasi transaksi"
+      components: [CleanReceiptImage, DraftTransactionForm, ConfidenceIndicator, ItemList]
+      flow: |
+        Tampilkan nota bersih + draft field yang sudah ter-isi.
+        Field dengan confidence rendah di-highlight kuning.
+        User koreksi jika perlu → POST /receipts/:id/confirm
+
+  wallets:
+    - path: /wallets
+      file: app/(app)/wallets/page.tsx
+      desc: "Daftar wallet + total balance"
+      components: [WalletCards, AddWalletButton, TransferButton]
+
+    - path: /wallets/new
+      file: app/(app)/wallets/new/page.tsx
+      desc: "Buat wallet baru"
+
+    - path: /wallets/:id
+      file: app/(app)/wallets/[id]/page.tsx
+      desc: "Detail wallet + transaksi dalam wallet ini"
+      query_params: "?month=current&page=1"
+      components: [WalletHeader, TransactionList, MonthlyChart]
+
+  budget:
+    - path: /budget
+      file: app/(app)/budget/page.tsx
+      desc: "Anggaran bulan ini per kategori"
+      query_params: "?month=current"
+      components: [BudgetProgressList, OverBudgetAlert, AddBudgetButton]
+
+    - path: /budget/new
+      file: app/(app)/budget/new/page.tsx
+      desc: "Buat anggaran baru"
+      components: [CategorySelector, AmountInput, MonthPicker]
+
+  goals:
+    - path: /goals
+      file: app/(app)/goals/page.tsx
+      desc: "Daftar goal tabungan"
+      components: [GoalCardList, AddGoalButton, TotalProgressSummary]
+
+    - path: /goals/new
+      file: app/(app)/goals/new/page.tsx
+      desc: "Buat goal baru"
+      components: [GoalForm, TargetDatePicker, IconPicker]
+
+    - path: /goals/:id
+      file: app/(app)/goals/[id]/page.tsx
+      desc: "Detail goal — progress, pockets, riwayat alokasi"
+      components: [GoalProgressRing, PocketList, AllocateButton, ConfettiOnComplete]
+
+    - path: /goals/:id/allocate
+      file: app/(app)/goals/[id]/allocate/page.tsx
+      desc: "Form alokasi dana ke goal"
+      components: [WalletSelector, AmountInput, PocketSelector, AiRecommendButton]
+
+  debts:
+    - path: /debts
+      file: app/(app)/debts/page.tsx
+      desc: "Daftar utang — owe & owed"
+      tabs: [Saya Berutang, Piutang Saya]
+      components: [DebtList, TotalSummary, AddDebtButton]
+
+    - path: /debts/new
+      file: app/(app)/debts/new/page.tsx
+      desc: "Catat utang baru"
+
+    - path: /debts/:id
+      file: app/(app)/debts/[id]/page.tsx
+      desc: "Detail utang + cicilan + rekomendasi AI"
+      components: [DebtDetail, PaymentHistory, AiPayoffRecommendation, AddPaymentButton]
+
+  subscriptions:
+    - path: /subscriptions
+      file: app/(app)/subscriptions/page.tsx
+      desc: "Daftar langganan bulanan + total cost"
+      components: [SubscriptionList, TotalCostBadge, WorthItScoreButton, AddSubButton]
+
+    - path: /subscriptions/new
+      file: app/(app)/subscriptions/new/page.tsx
+      desc: "Catat langganan baru"
+
+  patungan:
+    - path: /split
+      file: app/(app)/split/page.tsx
+      desc: "Daftar grup patungan + summary owe/owed"
+      components: [GroupList, OweSummaryCard, CreateGroupButton, JoinGroupButton]
+
+    - path: /split/new
+      file: app/(app)/split/new/page.tsx
+      desc: "Buat grup patungan baru"
+
+    - path: /split/join/:invite_code
+      file: app/(app)/split/join/[invite_code]/page.tsx
+      desc: "Preview & konfirmasi bergabung ke grup"
+
+    - path: /split/:group_id
+      file: app/(app)/split/[group_id]/page.tsx
+      desc: "Detail grup — tagihan, anggota, settlement"
+      tabs: [Tagihan, Anggota, Settlement]
+      components: [BillList, MemberAvatars, SimplifyDebtsSummary, AddBillButton]
+
+    - path: /split/:group_id/bill/new
+      file: app/(app)/split/[group_id]/bill/new/page.tsx
+      desc: "Buat tagihan baru dalam grup"
+      components: [BillForm, SplitModeSelector, SplitAssignmentEditor, ScanReceiptButton]
+      flow: |
+        Pilih mode split → assign per orang.
+        Jika item_based: scan nota dulu → /scan → kembali ke sini dengan item ter-isi.
+
+    - path: /split/:group_id/bill/:bill_id
+      file: app/(app)/split/[group_id]/bill/[bill_id]/page.tsx
+      desc: "Detail tagihan + status pembayaran anggota"
+      components: [BillDetail, AssignmentStatusList, PayButton, ConfirmPaidButton, ReceiptViewer]
+
+  ai:
+    - path: /ai/chat
+      file: app/(app)/ai/chat/page.tsx
+      desc: "AI Financial Advisor chat (Gemini streaming)"
+      components: [ChatMessages, ChatInput, StreamingIndicator, TokenUsageBadge]
+      note: "Gunakan React-markdown untuk render response AI"
+
+    - path: /ai/insight
+      file: app/(app)/ai/insight/page.tsx
+      desc: "Monthly insight + anomaly detection"
+      components: [InsightCard, AnomalyAlertList, CashFlowForecastChart]
+
+    - path: /ai/persona
+      file: app/(app)/ai/persona/page.tsx
+      desc: "Spending persona reveal + share card"
+      components: [PersonaRevealAnimation, PersonaCard, ShareCardButton, HtmlToImageExport]
+
+  notifications:
+    - path: /notifications
+      file: app/(app)/notifications/page.tsx
+      desc: "Riwayat notifikasi"
+      components: [NotificationList, ReadAllButton, TypeFilterTabs]
+
+  settings:
+    - path: /settings
+      file: app/(app)/settings/page.tsx
+      desc: "Menu pengaturan"
+      links: [Profil, Notifikasi, Workspace, Keamanan, Tentang]
+
+    - path: /settings/profile
+      file: app/(app)/settings/profile/page.tsx
+      desc: "Edit profil user"
+
+    - path: /settings/notifications
+      file: app/(app)/settings/notifications/page.tsx
+      desc: "Preferensi notifikasi + aktifkan push notif PWA"
+      components: [PushNotifToggle, EmailPreference, SseStatus]
+
+    - path: /settings/workspace
+      file: app/(app)/settings/workspace/page.tsx
+      desc: "Pilih / ganti workspace yang terhubung ke akun Mora"
+
+    - path: /settings/security
+      file: app/(app)/settings/security/page.tsx
+      desc: "Ubah password, sesi aktif"

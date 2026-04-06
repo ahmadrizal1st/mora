@@ -1,0 +1,82 @@
+{
+  "id": "test_02",
+  "name": "CRUD Employee",
+  "description": "Verifikasi operasi CRUD employee dalam konteks workspace",
+  "scope": "api",
+  "prerequisites": ["Authenticated user dengan role admin/hr", "Workspace sudah dibuat"],
+  "steps": [
+    {
+      "action": "POST /employees",
+      "headers": {
+        "Authorization": "Bearer {access_token}",
+        "X-Workspace-ID": "{workspace_id}"
+      },
+      "input": {
+        "nik": "3201234567890001",
+        "full_name": "Budi Santoso",
+        "position": "Software Engineer",
+        "department": "Engineering",
+        "employment_type": "permanent",
+        "join_date": "2026-01-15",
+        "base_salary": 15000000
+      },
+      "expected": {
+        "status": 201,
+        "body_contains": ["id", "nik", "full_name", "position"]
+      }
+    },
+    {
+      "action": "GET /employees",
+      "headers": {
+        "Authorization": "Bearer {access_token}",
+        "X-Workspace-ID": "{workspace_id}"
+      },
+      "query": "?page=1&limit=20",
+      "expected": {
+        "status": 200,
+        "body_contains": ["data", "meta"],
+        "data_min_length": 1
+      }
+    },
+    {
+      "action": "GET /employees/{id}",
+      "headers": {
+        "Authorization": "Bearer {access_token}",
+        "X-Workspace-ID": "{workspace_id}"
+      },
+      "expected": {
+        "status": 200,
+        "body_contains": ["id", "nik", "full_name"]
+      }
+    },
+    {
+      "action": "PATCH /employees/{id}",
+      "headers": {
+        "Authorization": "Bearer {access_token}",
+        "X-Workspace-ID": "{workspace_id}"
+      },
+      "input": {
+        "position": "Senior Software Engineer",
+        "base_salary": 20000000
+      },
+      "expected": {
+        "status": 200,
+        "body_match": {
+          "position": "Senior Software Engineer",
+          "base_salary": 20000000
+        }
+      }
+    },
+    {
+      "action": "DELETE /employees/{id}",
+      "headers": {
+        "Authorization": "Bearer {access_token}",
+        "X-Workspace-ID": "{workspace_id}"
+      },
+      "expected": {
+        "status": 200,
+        "note": "Soft delete — record masih ada di DB dengan deleted_at terisi"
+      }
+    }
+  ]
+}

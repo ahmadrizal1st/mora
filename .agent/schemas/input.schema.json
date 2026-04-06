@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Vista Mora Agent Input",
+  "description": "Schema validasi untuk input request ke agent",
+  "type": "object",
+  "required": ["task"],
+  "properties": {
+    "task": {
+      "type": "object",
+      "required": ["title", "type", "scope", "description"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Judul task yang jelas dan deskriptif",
+          "minLength": 5,
+          "maxLength": 200
+        },
+        "type": {
+          "type": "string",
+          "enum": ["feature", "bugfix", "refactor", "docs", "test", "chore"],
+          "description": "Tipe task"
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["api", "vista", "mora", "core", "shared", "full-stack", "db", "docs"],
+          "description": "Scope/area task"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "default": "medium"
+        },
+        "description": {
+          "type": "string",
+          "description": "Deskripsi lengkap task"
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Kriteria keberhasilan task"
+        },
+        "references": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "File referensi yang relevan"
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "related_files": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "related_tasks": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
