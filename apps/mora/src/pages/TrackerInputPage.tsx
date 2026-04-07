@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import BaseLayout from '../layouts/BaseLayout';
 import { Icon } from '../components/ui/Icon';
 import { Button } from '../components/ui/Button';
@@ -33,7 +34,16 @@ const amountInputStyle = `
 `;
 
 export default function TrackerInputPage() {
-  const [type, setType] = useState<'income' | 'expense' | 'transfer'>('expense');
+  const location = useLocation();
+  const prefill = location.state?.prefill;
+
+  const [type, setType] = useState<'income' | 'expense' | 'transfer'>(prefill?.type || 'expense');
+  const [amount, setAmount] = useState<string>(prefill?.amount ? String(prefill.amount) : '');
+  const [date, setDate] = useState<string>(prefill?.date || new Date().toISOString().split('T')[0]);
+  const [category, setCategory] = useState<string>(prefill?.category || 'food');
+  const [description, setDescription] = useState<string>(prefill?.description || '');
+  const [scannedImage, setScannedImage] = useState<string | null>(prefill?.image || null);
+
   const [showBankDetails, setShowBankDetails] = useState(false);
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
 
@@ -104,8 +114,21 @@ export default function TrackerInputPage() {
               </div>
             </div>
 
+            {/* SCANNED IMAGE PREVIEW */}
+            {scannedImage && (
+              <div className="mb-5 text-center">
+                <div className="d-inline-block position-relative">
+                  <span className="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm">Scanned Receipt</span>
+                  <img src={scannedImage} alt="Scanned" className="rounded-3 shadow-sm border border-light" style={{ maxHeight: '200px', width: 'auto' }} />
+                  <button type="button" className="btn btn-icon btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle shadow" onClick={() => setScannedImage(null)}>
+                    <Icon icon="x" size="sm" />
+                  </button>
+                </div>
+              </div>
+            )}
+
             <style>{amountInputStyle}</style>
-            <form>
+            <form onSubmit={(e) => e.preventDefault()}>
               {/* CORE FIELDS */}
               <div className="mb-5 text-center amount-input-container">
                 <label className="form-label text-muted small text-uppercase fw-bold mb-3 ls-1">Transaction Amount</label>
@@ -117,6 +140,8 @@ export default function TrackerInputPage() {
                     type="number" 
                     className="form-control form-control-flush fw-bold text-dark p-0 border-0 amount-input" 
                     placeholder="000,000" 
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
                     style={{ 
                       fontSize: 'clamp(2.5rem, 8vw, 4rem)', 
                       width: 'auto', 
@@ -135,11 +160,13 @@ export default function TrackerInputPage() {
               <div className="row g-3 g-md-4">
                 <div className="col-md-6 mb-3">
                   <label className="form-label text-uppercase fw-bold text-dark opacity-75 mb-2 ls-1">Date & Time</label>
-                  <Datepicker layout="icon" id="tx-date" value={new Date().toISOString().split('T')[0]} />
+                  <Datepicker layout="icon" id="tx-date" value={date} onChange={(val) => setDate(val)} />
                 </div>
                 <div className="col-md-6 mb-3">
                   <label className="form-label text-uppercase fw-bold text-dark opacity-75 mb-2 ls-1">Category</label>
                   <Select 
+                    value={category}
+                    onChange={(val) => setCategory(Array.isArray(val) ? val[0] : val)}
                     options={[
                       { value: 'food', label: '🍕 Food & Drink' },
                       { value: 'shopping', label: '🛍️ Shopping' },
@@ -196,7 +223,13 @@ export default function TrackerInputPage() {
 
                 <div className="col-12 mb-3">
                   <label className="form-label text-uppercase fw-bold text-dark opacity-75 mb-2 ls-1">Note / Description</label>
-                  <textarea className="form-control border-2-hover shadow-none" rows={3} placeholder="What was this for?"></textarea>
+                  <textarea 
+                    className="form-control border-2-hover shadow-none" 
+                    rows={3} 
+                    placeholder="What was this for?"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  ></textarea>
                 </div>
               </div>
 

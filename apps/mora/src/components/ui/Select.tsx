@@ -33,6 +33,7 @@ export interface SelectProps {
   value?: string | string[]
   onChange?: (value: string | string[]) => void
   indicator?: 'avatar' | 'flag' | 'label'
+  placement?: 'start' | 'end'
 }
 
 function isOptGroup(item: SelectOption | SelectOptGroup): item is SelectOptGroup {
@@ -52,6 +53,7 @@ export function Select({
   value,
   onChange,
   indicator,
+  placement = 'start',
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -316,7 +318,24 @@ export function Select({
       </div>
 
       {isOpen && (
-        <div className={clsx("dropdown-menu", "show", "w-100", "mt-1", "shadow-sm", "overflow-auto")} style={{ maxHeight: '250px', zIndex: 1050 }}>
+        <div 
+          className={clsx(
+            "dropdown-menu", 
+            "show", 
+            placement === 'start' && "w-100", 
+            placement === 'end' && "dropdown-menu-end",
+            "mt-1", 
+            "shadow-sm", 
+            "overflow-auto"
+          )} 
+          style={{ 
+            maxHeight: '250px', 
+            zIndex: 1050,
+            left: placement === 'end' ? 'auto' : undefined,
+            right: placement === 'end' ? 0 : undefined,
+            minWidth: '100%'
+          }}
+        >
           {!multiple && allOptions.length > 5 && (
             <div className="p-2 border-bottom">
               <input 

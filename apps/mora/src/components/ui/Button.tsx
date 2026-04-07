@@ -33,6 +33,7 @@ export interface ButtonProps {
   className?: string
   onClick?: () => void
   children?: React.ReactNode
+  [key: string]: any
 }
 
 export function Button({
@@ -66,6 +67,7 @@ export function Button({
   className,
   onClick,
   children,
+  ...props
 }: ButtonProps) {
   const El = element || 'a'
   const hasContent = !iconOnly && (children || text)
@@ -126,6 +128,7 @@ export function Button({
       className={classes}
       onClick={onClick}
       {...extraProps}
+      {...props}
     >
       {spinner && (
         <Spinner size="sm" className={spinnerClass} element="span" />

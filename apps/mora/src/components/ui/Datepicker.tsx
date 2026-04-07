@@ -9,6 +9,7 @@ export interface DatepickerProps {
   placeholder?: string
   value?: string
   className?: string
+  onChange?: (value: string) => void
 }
 
 export function Datepicker({
@@ -18,6 +19,7 @@ export function Datepicker({
   placeholder = 'Select date',
   value,
   className,
+  onChange,
 }: DatepickerProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -38,8 +40,12 @@ export function Datepicker({
         format: 'YYYY-MM-DD',
         setup: (picker) => {
           picker.on('selected', (date: any) => {
+            const formatted = date.format('YYYY-MM-DD')
             if (inputRef.current) {
-              inputRef.current.value = date.format('YYYY-MM-DD')
+              inputRef.current.value = formatted
+            }
+            if (onChange) {
+              onChange(formatted)
             }
           })
         },

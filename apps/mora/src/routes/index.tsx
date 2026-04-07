@@ -43,6 +43,7 @@ const DashboardCrypto = load(() => import('../pages/DashboardCrypto'))
 const DashboardAssets = load(() => import('../pages/DashboardAssets'))
 const TrackerPage = load(() => import('../pages/TrackerPage'))
 const TrackerInputPage = load(() => import('../pages/TrackerInputPage'))
+const TrackerPhotoPage = load(() => import('../pages/TrackerPhotoPage'))
 
 // UI Components
 const AllElementsPage = load(() => import('../pages/AllElementsPage'))
@@ -236,6 +237,7 @@ export default function AppRoutes({
       <Route path="/dashboard-assets" element={<ProtectedRoute><DashboardAssets /></ProtectedRoute>} />
       <Route path="/tracker" element={<ProtectedRoute><TrackerPage /></ProtectedRoute>} />
       <Route path="/tracker/input" element={<ProtectedRoute><TrackerInputPage /></ProtectedRoute>} />
+      <Route path="/tracker/photo" element={<ProtectedRoute><TrackerPhotoPage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
