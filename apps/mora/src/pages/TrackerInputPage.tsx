@@ -134,25 +134,47 @@ export default function TrackerInputPage() {
                     className="d-inline-block position-relative border rounded-3 p-1 bg-white shadow-sm transition-all hover-shadow-md"
                     style={{ cursor: 'zoom-in' }}
                   >
-                    <Badge
-                      color="orange"
-                      pill
-                      icon="scan"
-                      className="position-absolute top-0 start-0 m-2 shadow-sm"
+                    <div 
+                      className="position-absolute top-0 start-0 m-2 shadow-sm d-flex align-items-center overflow-hidden"
+                      style={{ 
+                        zIndex: 4, 
+                        maxWidth: 'calc(100% - 42px)',
+                        pointerEvents: 'none'
+                      }}
                     >
-                      Scanned Receipt
-                    </Badge>
+                      <Badge
+                        color="orange"
+                        pill
+                        icon="scan"
+                        className="d-flex align-items-center py-1 overflow-hidden"
+                      >
+                        <span 
+                          style={{ 
+                            display: 'inline-block',
+                            maxWidth: '70px',
+                            overflow: 'hidden',
+                            textOverflow: 'clip',
+                            whiteSpace: 'nowrap',
+                            marginLeft: '4px',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <span className="d-none d-sm-inline">Receipt</span>
+                          <span className="d-inline d-sm-none">Scan</span>
+                        </span>
+                      </Badge>
+                    </div>
                     <img
                       src={scannedImage}
                       alt="Scanned"
                       className="rounded-2"
-                      style={{ maxHeight: '180px', width: 'auto', display: 'block' }}
+                      style={{ maxHeight: '180px', width: 'auto', display: 'block', minWidth: '120px' }}
                       onClick={() => setShowPreview(true)}
                     />
                     <button
                       type="button"
                       className="btn btn-icon btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle shadow-sm"
-                      style={{ width: '22px', height: '22px', padding: 0, zIndex: 5, border: '2px solid white' }}
+                      style={{ width: '22px', height: '22px', padding: 0, zIndex: 10, border: '2px solid white' }}
                       onClick={(e) => {
                         e.stopPropagation();
                         setScannedImage(null);
