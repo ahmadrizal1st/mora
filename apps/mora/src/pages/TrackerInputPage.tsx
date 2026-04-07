@@ -6,6 +6,8 @@ import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
 import { Datepicker } from '../components/ui/Datepicker';
 import { InputIcon } from '../components/ui/InputIcon';
+import { Badge } from '../components/ui/Badge';
+import { Modal, ModalHeader } from '../components/ui/Modal';
 
 interface CustomField {
   id: string;
@@ -45,6 +47,7 @@ export default function TrackerInputPage() {
   const [scannedImage, setScannedImage] = useState<string | null>(prefill?.image || null);
 
   const [showBankDetails, setShowBankDetails] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
 
   const addCustomField = () => {
@@ -57,7 +60,7 @@ export default function TrackerInputPage() {
   };
 
   const updateCustomField = (id: string, key: 'label' | 'value', val: string) => {
-    setCustomFields(customFields.map(field => 
+    setCustomFields(customFields.map(field =>
       field.id === id ? { ...field, [key]: val } : field
     ));
   };
@@ -68,47 +71,56 @@ export default function TrackerInputPage() {
         <div className="card shadow-sm border-0">
           <div className="card-body p-3 p-md-5">
             <h2 className="card-title h3 text-center mb-5 fw-bold text-secondary text-uppercase ls-1">Manual Transaction</h2>
-            
+
             {/* TRANSACTION TYPE SELECTOR */}
             <div className="mb-4">
-              <div className="form-selectgroup form-selectgroup-pills d-flex justify-content-center">
+              <div className="form-selectgroup form-selectgroup-pills d-flex justify-content-center gap-2">
                 <label className="form-selectgroup-item flex-fill cursor-pointer">
-                  <input 
-                    type="radio" 
-                    name="type" 
-                    value="expense" 
-                    className="form-selectgroup-input" 
-                    checked={type === 'expense'} 
+                  <input
+                    type="radio"
+                    name="type"
+                    value="expense"
+                    className="form-selectgroup-input"
+                    checked={type === 'expense'}
                     onChange={() => setType('expense')}
                   />
-                  <span className="form-selectgroup-button d-flex align-items-center justify-content-center py-2">
-                    <Icon icon="minus" size="sm" className="me-2 text-danger" /> Expense
+                  <span
+                    className={`form-selectgroup-button d-flex align-items-center justify-content-center py-2 transition-all fw-bold ${type === 'expense' ? 'bg-danger text-white border-danger shadow-sm' : 'bg-white text-danger border-danger'}`}
+                    style={{ borderRadius: '14px', borderWidth: '1.5px' }}
+                  >
+                    <Icon icon="minus" size="sm" className="me-2" /> Expense
                   </span>
                 </label>
                 <label className="form-selectgroup-item flex-fill cursor-pointer">
-                  <input 
-                    type="radio" 
-                    name="type" 
-                    value="income" 
-                    className="form-selectgroup-input" 
-                    checked={type === 'income'} 
+                  <input
+                    type="radio"
+                    name="type"
+                    value="income"
+                    className="form-selectgroup-input"
+                    checked={type === 'income'}
                     onChange={() => setType('income')}
                   />
-                  <span className="form-selectgroup-button d-flex align-items-center justify-content-center py-2">
-                    <Icon icon="plus" size="sm" className="me-2 text-success" /> Income
+                  <span
+                    className={`form-selectgroup-button d-flex align-items-center justify-content-center py-2 transition-all fw-bold ${type === 'income' ? 'bg-success text-white border-success shadow-sm' : 'bg-white text-success border-success'}`}
+                    style={{ borderRadius: '14px', borderWidth: '1.5px' }}
+                  >
+                    <Icon icon="plus" size="sm" className="me-2" /> Income
                   </span>
                 </label>
                 <label className="form-selectgroup-item flex-fill cursor-pointer">
-                  <input 
-                    type="radio" 
-                    name="type" 
-                    value="transfer" 
-                    className="form-selectgroup-input" 
-                    checked={type === 'transfer'} 
+                  <input
+                    type="radio"
+                    name="type"
+                    value="transfer"
+                    className="form-selectgroup-input"
+                    checked={type === 'transfer'}
                     onChange={() => setType('transfer')}
                   />
-                  <span className="form-selectgroup-button d-flex align-items-center justify-content-center py-2">
-                    <Icon icon="arrows-right-left" size="sm" className="me-2 text-primary" /> Transfer
+                  <span
+                    className={`form-selectgroup-button d-flex align-items-center justify-content-center py-2 transition-all fw-bold ${type === 'transfer' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white text-primary border-primary'}`}
+                    style={{ borderRadius: '14px', borderWidth: '1.5px' }}
+                  >
+                    <Icon icon="arrows-right-left" size="sm" className="me-2" /> Transfer
                   </span>
                 </label>
               </div>
@@ -116,15 +128,49 @@ export default function TrackerInputPage() {
 
             {/* SCANNED IMAGE PREVIEW */}
             {scannedImage && (
-              <div className="mb-5 text-center">
-                <div className="d-inline-block position-relative">
-                  <span className="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm">Scanned Receipt</span>
-                  <img src={scannedImage} alt="Scanned" className="rounded-3 shadow-sm border border-light" style={{ maxHeight: '200px', width: 'auto' }} />
-                  <button type="button" className="btn btn-icon btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle shadow" onClick={() => setScannedImage(null)}>
-                    <Icon icon="x" size="sm" />
-                  </button>
+              <>
+                <div className="mb-5 text-center px-3">
+                  <div
+                    className="d-inline-block position-relative border rounded-3 p-1 bg-white shadow-sm transition-all hover-shadow-md"
+                    style={{ cursor: 'zoom-in' }}
+                  >
+                    <Badge
+                      color="orange"
+                      pill
+                      icon="scan"
+                      className="position-absolute top-0 start-0 m-2 shadow-sm"
+                    >
+                      Scanned Receipt
+                    </Badge>
+                    <img
+                      src={scannedImage}
+                      alt="Scanned"
+                      className="rounded-2"
+                      style={{ maxHeight: '180px', width: 'auto', display: 'block' }}
+                      onClick={() => setShowPreview(true)}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-icon btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle shadow-sm"
+                      style={{ width: '22px', height: '22px', padding: 0, zIndex: 5, border: '2px solid white' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setScannedImage(null);
+                      }}
+                      title="Remove Image"
+                    >
+                      <Icon icon="x" size="xs" />
+                    </button>
+                  </div>
                 </div>
-              </div>
+
+                <Modal show={showPreview} size="lg" className="modal-blur">
+                  <ModalHeader title="Receipt Preview" onClose={() => setShowPreview(false)} />
+                  <div className="modal-body p-0 bg-dark-lt d-flex justify-content-center align-items-center" style={{ minHeight: '300px' }}>
+                    <img src={scannedImage} alt="Full Preview" className="img-fluid" style={{ maxHeight: '80vh' }} />
+                  </div>
+                </Modal>
+              </>
             )}
 
             <style>{amountInputStyle}</style>
@@ -136,16 +182,16 @@ export default function TrackerInputPage() {
                   <div className="d-flex align-items-end me-2">
                     <span className="fw-bold text-dark opacity-40" style={{ fontSize: '1.25rem', lineHeight: '2.5' }}>IDR</span>
                   </div>
-                  <input 
-                    type="number" 
-                    className="form-control form-control-flush fw-bold text-dark p-0 border-0 amount-input" 
-                    placeholder="000,000" 
+                  <input
+                    type="number"
+                    className="form-control form-control-flush fw-bold text-dark p-0 border-0 amount-input"
+                    placeholder="000,000"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    style={{ 
-                      fontSize: 'clamp(2.5rem, 8vw, 4rem)', 
-                      width: 'auto', 
-                      minWidth: '150px', 
+                    style={{
+                      fontSize: 'clamp(2.5rem, 8vw, 4rem)',
+                      width: 'auto',
+                      minWidth: '150px',
                       textAlign: 'left',
                       outline: 'none',
                       boxShadow: 'none',
@@ -164,7 +210,7 @@ export default function TrackerInputPage() {
                 </div>
                 <div className="col-md-6 mb-3">
                   <label className="form-label text-uppercase fw-bold text-dark opacity-75 mb-2 ls-1">Category</label>
-                  <Select 
+                  <Select
                     value={category}
                     onChange={(val) => setCategory(Array.isArray(val) ? val[0] : val)}
                     options={[
@@ -185,7 +231,7 @@ export default function TrackerInputPage() {
                   <>
                     <div className="col-md-6 mb-3">
                       <label className="form-label text-uppercase fw-bold text-danger opacity-75 mb-2 ls-1">From Account</label>
-                      <Select 
+                      <Select
                         options={[
                           { value: 'checking', label: 'Chase Checking' },
                           { value: 'savings', label: 'High Yield Savings' },
@@ -196,7 +242,7 @@ export default function TrackerInputPage() {
                     </div>
                     <div className="col-md-6 mb-3">
                       <label className="form-label text-uppercase fw-bold text-success opacity-75 mb-2 ls-1">To Account</label>
-                      <Select 
+                      <Select
                         options={[
                           { value: 'checking', label: 'Chase Checking' },
                           { value: 'savings', label: 'High Yield Savings' },
@@ -209,7 +255,7 @@ export default function TrackerInputPage() {
                 ) : (
                   <div className="col-12 mb-3">
                     <label className="form-label text-uppercase fw-bold text-dark opacity-75 mb-2 ls-1">Account / Wallet</label>
-                    <Select 
+                    <Select
                       options={[
                         { value: 'checking', label: 'Chase Checking' },
                         { value: 'savings', label: 'High Yield Savings' },
@@ -223,9 +269,9 @@ export default function TrackerInputPage() {
 
                 <div className="col-12 mb-3">
                   <label className="form-label text-uppercase fw-bold text-dark opacity-75 mb-2 ls-1">Note / Description</label>
-                  <textarea 
-                    className="form-control border-2-hover shadow-none" 
-                    rows={3} 
+                  <textarea
+                    className="form-control border-2-hover shadow-none"
+                    rows={3}
                     placeholder="What was this for?"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -235,8 +281,8 @@ export default function TrackerInputPage() {
 
               {/* OPTIONAL BANKING DETAILS */}
               <div className="mt-4 pt-3 border-top">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn btn-link text-decoration-none p-0 text-dark d-flex align-items-center w-100 justify-content-between mb-3"
                   onClick={() => setShowBankDetails(!showBankDetails)}
                 >
@@ -266,11 +312,11 @@ export default function TrackerInputPage() {
               <div className="mt-5 pt-4 border-top">
                 <div className="d-flex align-items-center justify-content-between mb-4">
                   <span className="fw-bold h5 mb-0 text-uppercase text-dark ls-1">Custom Fields</span>
-                  <Button 
+                  <Button
                     element="button"
-                    text="Add Field" 
-                    size="sm" 
-                    icon="plus" 
+                    text="Add Field"
+                    size="sm"
+                    icon="plus"
                     ghost
                     color="primary"
                     onClick={addCustomField}
@@ -283,26 +329,26 @@ export default function TrackerInputPage() {
                     {customFields.map((field) => (
                       <div key={field.id} className="row g-2 align-items-center mb-2 animate__animated animate__fadeIn">
                         <div className="col-5">
-                          <input 
-                            type="text" 
-                            className="form-control border-2-hover shadow-none" 
-                            placeholder="Label" 
+                          <input
+                            type="text"
+                            className="form-control border-2-hover shadow-none"
+                            placeholder="Label"
                             value={field.label}
                             onChange={(e) => updateCustomField(field.id, 'label', e.target.value)}
                           />
                         </div>
                         <div className="col-5">
-                          <input 
-                            type="text" 
-                            className="form-control border-2-hover shadow-none" 
-                            placeholder="Value" 
+                          <input
+                            type="text"
+                            className="form-control border-2-hover shadow-none"
+                            placeholder="Value"
                             value={field.value}
                             onChange={(e) => updateCustomField(field.id, 'value', e.target.value)}
                           />
                         </div>
                         <div className="col-2 text-end">
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="btn btn-icon text-danger border-0 p-0 shadow-none bg-transparent hover-opacity-75"
                             onClick={() => removeCustomField(field.id)}
                             title="Remove field"

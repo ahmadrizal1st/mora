@@ -129,7 +129,7 @@ export function Modal({
       aria-hidden={!isShown}
     >
       <div className={dialogClasses} role="document">
-        <div className="modal-content">
+        <div className="modal-content overflow-hidden">
           {children}
         </div>
       </div>

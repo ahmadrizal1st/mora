@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout';
 import { Icon } from '../components/ui/Icon';
 import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
+import { Badge } from '../components/ui/Badge';
 import { getPerspectiveTransform, applyHomography } from '../utils/perspectiveUtils';
 
 type Point = { x: number; y: number };
@@ -1095,7 +1096,9 @@ export default function TrackerPhotoPage() {
               <Icon icon="scan" className="text-primary" size="md" />
               <h3 className="card-title fw-bold m-0">Document Scanner</h3>
               {mode === 'live' && liveDetected && (
-                <span className="badge bg-success ms-auto">✓ Dokumen Terdeteksi</span>
+                <Badge color="success" pill className="ms-auto">
+                  ✓ Dokumen Terdeteksi
+                </Badge>
               )}
             </div>
           </div>
