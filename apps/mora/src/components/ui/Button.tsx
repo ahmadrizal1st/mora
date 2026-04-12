@@ -32,7 +32,8 @@ export interface ButtonProps {
   dismiss?: boolean
   className?: string
   onClick?: () => void
-  children?: React.ReactNode
+  roundedCircle?: boolean
+  white?: boolean
   [key: string]: any
 }
 
@@ -66,6 +67,8 @@ export function Button({
   dismiss,
   className,
   onClick,
+  roundedCircle,
+  white,
   children,
   ...props
 }: ButtonProps) {
@@ -101,6 +104,8 @@ export function Button({
     block && 'w-100',
     link && 'btn-link',
     iconOnly && 'btn-icon d-inline-flex align-items-center justify-content-center',
+    white && 'btn-white border shadow-sm',
+    roundedCircle && 'rounded-circle',
     className
   )
 

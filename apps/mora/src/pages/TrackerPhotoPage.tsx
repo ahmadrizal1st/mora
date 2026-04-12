@@ -1,22 +1,18 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import BaseLayout from '../layouts/BaseLayout';
-import { Icon } from '../components/ui/Icon';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { getPerspectiveTransform, applyHomography } from '../utils/perspectiveUtils';
 
-import { 
-  type Point, 
-  dist, 
-  clamp, 
-  sleep, 
-  autoDetectCorners, 
-  defaultCorners 
+import {
+  type Point,
+  dist,
+  clamp,
+  sleep,
+  autoDetectCorners,
+  defaultCorners
 } from './TrackerPhotoUtils';
-import { ScannerStepIndicator } from '../components/scanner/ScannerStepIndicator';
 import { ScannerStatusAlert } from '../components/scanner/ScannerStatusAlert';
-import { ScannerSettings } from '../components/scanner/ScannerSettings';
 
 export default function TrackerPhotoPage() {
   const navigate = useNavigate();
@@ -42,7 +38,10 @@ export default function TrackerPhotoPage() {
   const [autoCropTimeLeft, setAutoCropTimeLeft] = useState<number | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [liveDetected, setLiveDetected] = useState(false);
+  const [shutterActive, setShutterActive] = useState(false);
   const [videoAspect, setVideoAspect] = useState(4 / 3);
+
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const dragging = useRef<number | null>(null);
   const draggingEdge = useRef<number>(-1);
@@ -199,6 +198,26 @@ export default function TrackerPhotoPage() {
     }
   }, [cameraFacing, startLiveDetection]);
 
+  // Handle hardware torch (flash)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (mode !== 'live' || !video || !video.srcObject) return;
+    const stream = video.srcObject as MediaStream;
+    const track = stream.getVideoTracks()[0];
+    if (!track) return;
+
+    try {
+      const capabilities = track.getCapabilities() as any;
+      if (capabilities.torch) {
+        track.applyConstraints({
+          advanced: [{ torch: isFlash }]
+        } as any);
+      }
+    } catch (e) {
+      console.warn("Torch not supported", e);
+    }
+  }, [isFlash, mode]);
+
   // Handle incoming image from outside (e.g. from TrackerPage scanner)
   useEffect(() => {
     if (location.state?.image) {
@@ -213,18 +232,18 @@ export default function TrackerPhotoPage() {
         if (!ctx) return;
         ctx.drawImage(img, 0, 0);
         const imgData = ctx.getImageData(0, 0, w, h);
-        
+
         setCapturedData(imgData);
         setMode('captured');
         setStep(2);
         setStatusMsg('✓ Gambar diterima — silakan sesuaikan sudut');
         setStatusType('ok');
-        
+
         // Use incoming corners if provided (from live scanner), otherwise auto-detect
         const incomingCorners = location.state?.corners;
         const detected = incomingCorners || autoDetectCorners(imgData, w, h);
         const initCorners = detected || defaultCorners(w, h);
-        
+
         cornersRef.current = initCorners;
         setCorners(initCorners);
       };
@@ -232,7 +251,7 @@ export default function TrackerPhotoPage() {
     } else {
       startCamera();
     }
-    
+
     const video = videoRef.current;
     return () => {
       cancelAnimationFrame(rafId.current!);
@@ -354,23 +373,33 @@ export default function TrackerPhotoPage() {
     cancelAnimationFrame(rafId.current!);
     clearAutoCrop();
 
-    setIsFlash(true);
-    await sleep(120);
-    setIsFlash(false);
+    setShutterActive(true);
+    await sleep(100);
+    setShutterActive(false);
 
     const video = videoRef.current;
     if (!video) return;
-    const w = video.videoWidth || 640;
-    const h = video.videoHeight || 480;
+    const vw = video.videoWidth || 640;
+    const vh = video.videoHeight || 480;
+    const cw = video.clientWidth || window.innerWidth;
+    const ch = video.clientHeight || window.innerHeight;
+
+    // Hitung area cropping agar gambar hasil jepretan identik dengan rasio layar
+    const scale = Math.max(cw / vw, ch / vh);
+    const drawW = Math.round(cw / scale);
+    const drawH = Math.round(ch / scale);
+    const offsetX = (vw - drawW) / 2;
+    const offsetY = (vh - drawH) / 2;
 
     const tmp = document.createElement('canvas');
-    tmp.width = w; tmp.height = h;
-    tmp.getContext('2d')?.drawImage(video, 0, 0, w, h);
-    const imgData = tmp.getContext('2d')?.getImageData(0, 0, w, h);
+    tmp.width = drawW;
+    tmp.height = drawH;
+    tmp.getContext('2d')?.drawImage(video, offsetX, offsetY, drawW, drawH, 0, 0, drawW, drawH);
+    const imgData = tmp.getContext('2d')?.getImageData(0, 0, drawW, drawH);
     if (!imgData) return;
 
-    capturedWRef.current = w;
-    capturedHRef.current = h;
+    capturedWRef.current = drawW;
+    capturedHRef.current = drawH;
     setCapturedData(imgData);
     setMode('captured');
     setStep(2);
@@ -380,9 +409,9 @@ export default function TrackerPhotoPage() {
     setStatusType('warn');
     await sleep(60);
 
-    const detected = autoDetectCorners(imgData, w, h);
+    const detected = autoDetectCorners(imgData, drawW, drawH);
     setIsProcessing(false);
-    const initCorners = detected || defaultCorners(w, h);
+    const initCorners = detected || defaultCorners(drawW, drawH);
     cornersRef.current = initCorners;
     setCorners(initCorners);
 
@@ -402,20 +431,37 @@ export default function TrackerPhotoPage() {
 
     const toCanvas = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
+      const W = canvas.width;
+      const H = canvas.height;
+      // Use Math.min for 'contain' scaling logic
+      const scale = Math.min(r.width / W, r.height / H);
+      const offsetX = (r.width - W * scale) / 2;
+      const offsetY = (r.height - H * scale) / 2;
       return {
-        x: ((e.clientX - r.left) * canvas.width) / r.width,
-        y: ((e.clientY - r.top) * canvas.height) / r.height,
+        x: clamp((e.clientX - r.left - offsetX) / scale, 0, W),
+        y: clamp((e.clientY - r.top - offsetY) / scale, 0, H),
       };
     };
 
     const onPointerDown = (e: PointerEvent) => {
       if (!cornersRef.current) return;
-      const { x, y } = toCanvas(e);
       const pts = cornersRef.current;
-      const hitRadius = Math.min(capturedWRef.current, capturedHRef.current) * 0.07;
+      const r = canvas.getBoundingClientRect();
+      const W = canvas.width;
+      const H = canvas.height;
+      const scale = Math.min(r.width / W, r.height / H);
+      const offsetX = (r.width - W * scale) / 2;
+      const offsetY = (r.height - H * scale) / 2;
+
+      // Use a screen-space hit radius (44px) which is standard for touch targets
+      const hitRadiusScreen = 44;
 
       for (let i = 0; i < 4; i++) {
-        if (dist({ x, y }, pts[i]) < hitRadius) {
+        const screenX = r.left + offsetX + pts[i].x * scale;
+        const screenY = r.top + offsetY + pts[i].y * scale;
+        const distToScreen = Math.hypot(e.clientX - screenX, e.clientY - screenY);
+
+        if (distToScreen < hitRadiusScreen) {
           e.preventDefault();
           clearAutoCrop();
           dragging.current = i;
@@ -424,14 +470,19 @@ export default function TrackerPhotoPage() {
         }
       }
 
-      const edgeHit = Math.min(capturedWRef.current, capturedHRef.current) * 0.06;
+      // Edge hit detection in screen space
       for (let i = 0; i < 4; i++) {
         const a = pts[i], b = pts[(i + 1) % 4];
         const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-        if (dist({ x, y }, { x: mx, y: my }) < edgeHit * 2) {
+        const screenX = r.left + offsetX + mx * scale;
+        const screenY = r.top + offsetY + my * scale;
+        const distToScreen = Math.hypot(e.clientX - screenX, e.clientY - screenY);
+
+        if (distToScreen < hitRadiusScreen) {
           e.preventDefault();
           clearAutoCrop();
           draggingEdge.current = i;
+          const { x, y } = toCanvas(e);
           dragEdgeStart.current = { corners: pts.map((p) => ({ ...p })), pointerX: x, pointerY: y };
           canvas.setPointerCapture(e.pointerId);
           return;
@@ -497,6 +548,24 @@ export default function TrackerPhotoPage() {
     };
   }, [mode, drawCapturedOverlay, clearAutoCrop]);
 
+  const processAndNavigate = useCallback(async (dataUrl: string) => {
+    clearAutoCrop();
+    setIsProcessing(true);
+    setProcessingLabel('AI sedang membaca struk...');
+    await sleep(2000);
+
+    const mockAmount = Math.floor(Math.random() * 500000) + 15000;
+    const prefillData = {
+      amount: mockAmount,
+      date: new Date().toISOString().split('T')[0],
+      category: 'food',
+      description: 'Scan Struk Otomatis',
+      image: dataUrl,
+    };
+    setIsProcessing(false);
+    navigate('/tracker/input', { state: { prefill: prefillData } });
+  }, [navigate, clearAutoCrop]);
+
   const cropAndWarp = useCallback(async () => {
     clearAutoCrop();
     const pts = cornersRef.current;
@@ -545,21 +614,8 @@ export default function TrackerPhotoPage() {
     setStep(3);
     setStatusMsg('✓ Dokumen berhasil diproses');
     setStatusType('ok');
-    setProcessingLabel('AI sedang membaca struk...');
-    setIsProcessing(true);
-    await sleep(2000);
-
-    const mockAmount = Math.floor(Math.random() * 500000) + 15000;
-    const prefillData = {
-      amount: mockAmount,
-      date: new Date().toISOString().split('T')[0],
-      category: 'food',
-      description: 'Scan Struk Otomatis',
-      image: dataUrl,
-    };
     setIsProcessing(false);
-    navigate('/tracker/input', { state: { prefill: prefillData } });
-  }, [capturedData, outputFormat, clearAutoCrop, navigate]);
+  }, [capturedData, outputFormat, clearAutoCrop]);
 
   cropAndWarpRef.current = cropAndWarp;
 
@@ -609,280 +665,221 @@ export default function TrackerPhotoPage() {
   };
 
   return (
-    <BaseLayout pageTitle="Receipt Scanner">
-      <style dangerouslySetInnerHTML={{ __html: `
-        .btn-premium {
-          border: 1px solid #e0e0e0 !important;
-          background: #fff !important;
-          transition: all 0.2s ease !important;
-          color: #495057 !important;
-        }
-        .btn-premium:hover {
-          border-color: #9e9e9e !important;
-          background-color: #fbfbfb !important;
-          color: #212529 !important;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-        }
-        .btn-premium-primary {
-          border: 1px solid #e0e0e0 !important;
-          border-radius: 100px !important;
-          background: #fff !important;
-          transition: all 0.2s ease !important;
-          color: #0054a6 !important;
-        }
-        .btn-premium-primary:hover {
-          border-color: #0054a6 !important;
-          background-color: #f0f7ff !important;
-          box-shadow: 0 2px 4px rgba(0,84,166,0.1) !important;
+    <div className="page d-flex flex-column" style={{ position: 'fixed', inset: 0, width: '100vw', height: '100dvh', overflow: 'hidden', backgroundColor: '#fff' }}>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        .btn-circular {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0,0,0,0.05);
+          border: 1px solid rgba(0,0,0,0.1);
+          color: var(--tblr-body-color, #333);
+          padding: 0;
+          transition: all 0.2s ease;
         }
       `}} />
 
-      <div className="container-tight py-4">
+      {/* TOP HEADER BAR */}
+      <div style={{ flexShrink: 0, background: '#fff', zIndex: 110, padding: '1rem', paddingTop: 'calc(1rem + env(safe-area-inset-top))', borderBottom: '1px solid #eee' }}>
+        <div className="d-flex align-items-center w-100 gap-3">
+          <Button element="button" onClick={() => navigate('/tracker')} link className="p-0 text-dark border-0 shadow-none" icon="arrow-left" size="md" iconOnly />
 
-        {/* Custom Step Indicator - Fixed persistent framework borders/lines */}
-        <ScannerStepIndicator step={step} />
+          <h2 className="mb-0 fw-bold h3" style={{ color: '#2d333a' }}>
+            {mode === 'live' ? 'Scan' : mode === 'captured' ? 'Sesuaikan' : 'Hasil'}
+          </h2>
 
-        <ScannerStatusAlert 
-          statusType={statusType} 
-          statusMsg={statusMsg} 
-          autoCropTimeLeft={autoCropTimeLeft} 
-        />
-
-        <div className="card shadow-sm mb-3 overflow-hidden border-0">
-          <div className="card-header bg-transparent py-3">
-            <div className="d-flex align-items-center gap-2">
-              <Icon icon="scan" className="text-primary" size="md" />
-              <h3 className="card-title fw-bold m-0">Document Scanner</h3>
-              {mode === 'live' && liveDetected && (
-                <Badge color="success" pill className="ms-auto">
-                  ✓ Dokumen Terdeteksi
-                </Badge>
-              )}
-            </div>
-          </div>
-
-          <div
-            ref={wrapperRef}
-            className="position-relative bg-black"
-            style={{ width: '100%', overflow: 'hidden' }}
-          >
-            {isFlash && (
-              <div
-                className="position-absolute top-0 start-0 w-100 h-100"
-                style={{ background: '#fff', zIndex: 20, pointerEvents: 'none' }}
-              />
-            )}
-
-            {isProcessing && (
-              <div
-                className="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center gap-3"
-                style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', zIndex: 30 }}
-              >
-                <div className="spinner-border text-primary" role="status" />
-                <div className="text-white small fw-bold">{processingLabel}</div>
-              </div>
-            )}
-
+          <div className="ms-auto d-flex gap-2">
             {mode === 'live' && (
-              <div
-                className="position-relative w-100"
-                style={{ aspectRatio: `${videoAspect}` }}
-              >
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'fill',
-                    display: 'block',
-                  }}
+              <>
+                <div className="dropdown">
+                  <Button 
+                    element="button" 
+                    onClick={() => setIsSettingsOpen(!isSettingsOpen)} 
+                    white
+                    roundedCircle
+                    icon="settings" 
+                    size="md" 
+                    iconOnly 
+                  />
+                  <div className={`dropdown-menu dropdown-menu-end shadow-sm ${isSettingsOpen ? 'show' : ''}`} style={{ width: '240px', position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem' }} data-bs-theme="light">
+                    <div className="dropdown-header">PENGATURAN</div>
+                    <label className="dropdown-item d-flex align-items-center">
+                      <span className="me-2">Auto crop</span>
+                      <div className="form-check form-switch ms-auto m-0">
+                        <input className="form-check-input" type="checkbox" checked={isAutoCrop} onChange={(e) => { setIsAutoCrop(e.target.checked); setIsSettingsOpen(false); }} />
+                      </div>
+                    </label>
+                    <label className="dropdown-item d-flex align-items-center">
+                      <span className="me-2">Kamera</span>
+                      <div className="ms-auto" style={{ width: '110px' }}>
+                        <select className="form-select form-select-sm" value={cameraFacing} onChange={(e) => { setCameraFacing(e.target.value as any); setIsSettingsOpen(false); }}>
+                          <option value="environment">Belakang</option>
+                          <option value="user">Depan</option>
+                        </select>
+                      </div>
+                    </label>
+                    <label className="dropdown-item d-flex align-items-center">
+                      <span className="me-2">Format Output</span>
+                      <div className="ms-auto" style={{ width: '110px' }}>
+                        <select className="form-select form-select-sm" value={outputFormat} onChange={(e) => { setOutputFormat(e.target.value as any); setIsSettingsOpen(false); }}>
+                          <option value="jpeg">JPEG</option>
+                          <option value="png">PNG</option>
+                        </select>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                <Button 
+                  element="button" 
+                  onClick={handleUploadClick} 
+                  white
+                  roundedCircle
+                  icon="photo-plus" 
+                  size="md" 
+                  iconOnly 
                 />
-                <canvas
-                  ref={liveOverlayRef}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    pointerEvents: 'none',
-                    zIndex: 10,
-                  }}
+                <input type="file" ref={fileInputRef} accept="image/*" className="d-none" onChange={handleFileUpload} />
+                <Button 
+                  element="button" 
+                  onClick={() => setIsFlash(!isFlash)} 
+                  white
+                  roundedCircle
+                  icon={isFlash ? 'bolt' : 'bolt-off'} 
+                  size="md" 
+                  iconOnly 
                 />
-              </div>
+              </>
             )}
-
-            {mode === 'captured' && capturedData && (
-              <div
-                className="position-relative w-100"
-                style={{ aspectRatio: `${capturedWRef.current / capturedHRef.current}` }}
-              >
-                <canvas
-                  ref={capturedCanvasRef}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    touchAction: 'none',
-                    cursor: 'crosshair',
-                    zIndex: 10,
-                    display: 'block',
-                  }}
-                />
-              </div>
-            )}
-
-            {mode === 'result' && resultImage && (
-              <div className="w-100 p-2 bg-light">
-                <img
-                  src={resultImage}
-                  alt="Scanned Result"
-                  className="w-100 d-block shadow-sm rounded-2"
-                  style={{ maxHeight: '70vh', objectFit: 'contain' }}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="card-footer bg-transparent p-3">
-            <div className="row g-2">
-              {mode === 'live' && (
-                <>
-                  <div className="col">
-                    <Button
-                      element="button"
-                      onClick={captureAndDetect}
-                      color="primary"
-                      block
-                      className="py-2 fw-bold d-flex align-items-center justify-content-center"
-                      icon="camera"
-                      size="md"
-                    >
-                      Ambil Foto
-                    </Button>
-                  </div>
-                  <div className="col-auto">
-                    <Button
-                      element="button"
-                      onClick={handleUploadClick}
-                      color="secondary"
-                      outline
-                      iconOnly
-                      icon="upload"
-                      iconColor="secondary"
-                      size="md"
-                      className="py-2 btn-premium"
-                      title="Upload Image"
-                      style={{ width: '42px', height: '42.5px' }}
-                    />
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      accept="image/*"
-                      className="d-none"
-                      onChange={handleFileUpload}
-                    />
-                  </div>
-                </>
-              )}
-              {mode === 'captured' && (
-                <>
-                  <div className="col">
-                    <Button
-                      element="button"
-                      onClick={resetToCamera}
-                      color="secondary"
-                      outline
-                      block
-                      className="py-2 d-flex align-items-center justify-content-center btn-premium"
-                      icon="refresh"
-                      iconColor="secondary"
-                      size="md"
-                    >
-                      Ulangi
-                    </Button>
-                  </div>
-                  <div className="col">
-                    <Button
-                      element="button"
-                      onClick={cropAndWarp}
-                      color="primary"
-                      block
-                      className="py-2 fw-bold d-flex align-items-center justify-content-center"
-                      icon="focus-centered"
-                      size="md"
-                    >
-                      Luruskan
-                    </Button>
-                  </div>
-                </>
-              )}
-              {mode === 'result' && resultImage && (
-                <>
-                  <div className="col">
-                    <Button
-                      element="button"
-                      color="primary" // Reverted to primary solid
-                      block
-                      className="py-2 fw-bold d-flex align-items-center justify-content-center"
-                      icon="check"
-                      size="md"
-                    >
-                      Gunakan Transaksi
-                    </Button>
-                  </div>
-                  <div className="col-auto">
-                    <Button
-                      element="a"
-                      href={resultImage}
-                      download={`scan-${Date.now()}.${outputFormat === 'jpeg' ? 'jpg' : 'png'}`}
-                      color="secondary"
-                      outline
-                      iconOnly
-                      icon="download"
-                      iconColor="secondary"
-                      size="md"
-                      className="py-2 btn-premium"
-                      title="Download"
-                      style={{ width: '42px', height: '42.5px' }}
-                    />
-                  </div>
-                  <div className="col-auto">
-                    <Button
-                      element="button"
-                      onClick={resetToCamera}
-                      color="secondary"
-                      outline
-                      iconOnly
-                      icon="refresh"
-                      iconColor="danger"
-                      size="md"
-                      className="py-2 btn-premium"
-                      title="Reset"
-                      style={{ width: '42px', height: '42.5px' }}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
           </div>
         </div>
-
-        <ScannerSettings
-          isAutoCrop={isAutoCrop}
-          setIsAutoCrop={setIsAutoCrop}
-          cameraFacing={cameraFacing}
-          setCameraFacing={setCameraFacing}
-          outputFormat={outputFormat}
-          setOutputFormat={setOutputFormat}
-        />
-
       </div>
-    </BaseLayout>
+      
+      {/* TOP PROGRESS LOADER (Standalone below header) */}
+      {autoCropTimeLeft !== null && (
+        <div className="progress progress-xs" style={{ height: '4px', borderRadius: 0, background: 'rgba(0,0,0,0.05)', zIndex: 120, flexShrink: 0 }}>
+          <div
+            className="progress-bar"
+            style={{ 
+              width: `${(autoCropTimeLeft / 3) * 100}%`, 
+              transition: 'width 1s linear',
+              backgroundColor: '#f76707'
+            }}
+          />
+        </div>
+      )}
+
+      {/* CAMERA / IMAGE VIEWPORT (FILLS MIDDLE) */}
+      <div style={{ flex: 1, backgroundColor: '#000', position: 'relative', overflow: 'hidden' }}>
+        <div ref={wrapperRef} className="w-100 h-100 position-relative">
+
+          {/* LAYERS */}
+          {shutterActive && <div className="position-absolute top-0 start-0 w-100 h-100" style={{ background: '#fff', zIndex: 50, pointerEvents: 'none' }} />}
+
+          {isProcessing && (
+            <div className="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center gap-3" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', zIndex: 30 }}>
+              <div className="spinner-border text-primary" role="status" />
+              <div className="text-white small fw-bold">{processingLabel}</div>
+            </div>
+          )}
+
+          {mode === 'live' && (
+            <>
+              <video ref={videoRef} autoPlay playsInline muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
+              <canvas ref={liveOverlayRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none', zIndex: 10 }} />
+            </>
+          )}
+
+          {mode === 'captured' && capturedData && (
+            <canvas
+              ref={capturedCanvasRef}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                touchAction: 'none',
+                cursor: 'crosshair',
+                zIndex: 10,
+                display: 'block',
+                backgroundColor: '#000'
+              }}
+            />
+          )}
+
+          {mode === 'result' && resultImage && (
+            <div style={{ position: 'absolute', inset: 0, backgroundColor: '#000', zIndex: 10 }}>
+              <img src={resultImage} alt="Scanned Result" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* BOTTOM CONTROLS */}
+      <div className="w-100" style={{
+        flexShrink: 0,
+        background: '#fff',
+        borderTop: '1px solid #eee',
+        zIndex: 100,
+        padding: '1rem 1.25rem calc(1rem + env(safe-area-inset-bottom))',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.75rem'
+      }}>
+        <div className="mb-0">
+          {mode === 'live' && liveDetected && (
+            <div className="text-center mb-2">
+              <Badge color="success" pill>✓ Dokumen Terdeteksi</Badge>
+            </div>
+          )}
+          <ScannerStatusAlert statusType={statusType} statusMsg={statusMsg} autoCropTimeLeft={autoCropTimeLeft} />
+        </div>
+
+        <div className="row g-2">
+          {mode === 'live' && (
+            <div className="col-12">
+              <Button element="button" onClick={captureAndDetect} color="primary" block className="fw-bold d-flex align-items-center justify-content-center" icon="camera" size="lg">
+                Ambil Foto
+              </Button>
+            </div>
+          )}
+
+          {mode === 'captured' && (
+            <>
+              <div className="col-6">
+                <Button element="button" onClick={resetToCamera} white block className="fw-bold" size="lg">
+                  Ulangi
+                </Button>
+              </div>
+              <div className="col-6">
+                <Button element="button" onClick={cropAndWarp} color="primary" block className="fw-bold d-flex align-items-center justify-content-center" size="lg" icon="check">
+                  Lanjut
+                </Button>
+              </div>
+            </>
+          )}
+
+          {mode === 'result' && resultImage && (
+            <>
+              <div className="col-6">
+                <Button element="button" onClick={() => processAndNavigate(resultImage)} color="primary" block className="fw-bold d-flex align-items-center justify-content-center" icon="check" size="lg">
+                  Gunakan
+                </Button>
+              </div>
+              <div className="col-3">
+                <Button element="a" href={resultImage} download={`scan-${Date.now()}.${outputFormat === 'jpeg' ? 'jpg' : 'png'}`} white block className="fw-bold px-0" size="lg" icon="download" iconOnly />
+              </div>
+              <div className="col-3">
+                <Button element="button" onClick={resetToCamera} white block className="fw-bold px-0" size="lg" icon="refresh" iconOnly />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

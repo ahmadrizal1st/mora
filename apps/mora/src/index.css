@@ -614,3 +614,22 @@ body {
   pointer-events: none;
   z-index: 1;
 }
+
+/* --- Custom Button Enhancements --- */
+.btn-white {
+  background: #ffffff !important;
+  border: 1px solid #e1e4e8 !important;
+  color: var(--tblr-body-color, #2d333a) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.btn-white:hover {
+  background: #f6f8fa !important;
+  border-color: #d1d5da !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important;
+}
