@@ -331,9 +331,9 @@ export function cornersFromLines(lines: Line[], w: number, h: number): Point[] |
   if (pts.length < 4) return null;
   const pad = Math.min(w, h) * 0.12;
   if (!pts.every((p) => p.x > -pad && p.x < w + pad && p.y > -pad && p.y < h + pad)) return null;
-  pts.forEach((p) => { 
-    p.x = clamp(p.x, w * 0.05, w * 0.95); 
-    p.y = clamp(p.y, h * 0.05, h * 0.95); 
+  pts.forEach((p) => {
+    p.x = clamp(p.x, w * 0.05, w * 0.95);
+    p.y = clamp(p.y, h * 0.05, h * 0.95);
   });
   return pts;
 }

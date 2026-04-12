@@ -369,6 +369,7 @@ export default function TrackerPhotoPage() {
 
   const captureAndDetect = useCallback(async () => {
     if (mode === 'captured') { resetToCamera(); return; }
+    const lastLiveCorners = liveCornersRef.current;
     stopLiveDetection();
     cancelAnimationFrame(rafId.current!);
     clearAutoCrop();
@@ -409,13 +410,25 @@ export default function TrackerPhotoPage() {
     setStatusType('warn');
     await sleep(60);
 
-    const detected = autoDetectCorners(imgData, drawW, drawH);
+    // Prioritaskan kordinat dari Live Scan jika ada, agar tetap sinkron (tidak melompat)
+    let initCorners: Point[];
+
+    if (lastLiveCorners) {
+      // Translate kordinat dari Video Space ke Capture Space (dikurangi offsetX/offsetY)
+      initCorners = lastLiveCorners.map(p => ({
+        x: clamp(p.x - offsetX, 0, drawW),
+        y: clamp(p.y - offsetY, 0, drawH)
+      }));
+    } else {
+      const detected = autoDetectCorners(imgData, drawW, drawH);
+      initCorners = detected || defaultCorners(drawW, drawH);
+    }
+
     setIsProcessing(false);
-    const initCorners = detected || defaultCorners(drawW, drawH);
     cornersRef.current = initCorners;
     setCorners(initCorners);
 
-    if (detected) {
+    if (lastLiveCorners) {
       setStatusMsg('✓ Dokumen terdeteksi — siap di-crop');
       setStatusType('ok');
       if (isAutoCrop) startAutoCropCountdown();
@@ -433,8 +446,8 @@ export default function TrackerPhotoPage() {
       const r = canvas.getBoundingClientRect();
       const W = canvas.width;
       const H = canvas.height;
-      // Use Math.min for 'contain' scaling logic
-      const scale = Math.min(r.width / W, r.height / H);
+      // Use Math.max for 'cover' scaling logic (standardize with CSS object-fit: cover)
+      const scale = Math.max(r.width / W, r.height / H);
       const offsetX = (r.width - W * scale) / 2;
       const offsetY = (r.height - H * scale) / 2;
       return {
@@ -449,7 +462,7 @@ export default function TrackerPhotoPage() {
       const r = canvas.getBoundingClientRect();
       const W = canvas.width;
       const H = canvas.height;
-      const scale = Math.min(r.width / W, r.height / H);
+      const scale = Math.max(r.width / W, r.height / H);
       const offsetX = (r.width - W * scale) / 2;
       const offsetY = (r.height - H * scale) / 2;
 
@@ -696,14 +709,14 @@ export default function TrackerPhotoPage() {
             {mode === 'live' && (
               <>
                 <div className="dropdown">
-                  <Button 
-                    element="button" 
-                    onClick={() => setIsSettingsOpen(!isSettingsOpen)} 
+                  <Button
+                    element="button"
+                    onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                     white
                     roundedCircle
-                    icon="settings" 
-                    size="md" 
-                    iconOnly 
+                    icon="settings"
+                    size="md"
+                    iconOnly
                   />
                   <div className={`dropdown-menu dropdown-menu-end shadow-sm ${isSettingsOpen ? 'show' : ''}`} style={{ width: '240px', position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem' }} data-bs-theme="light">
                     <div className="dropdown-header">PENGATURAN</div>
@@ -733,38 +746,38 @@ export default function TrackerPhotoPage() {
                     </label>
                   </div>
                 </div>
-                <Button 
-                  element="button" 
-                  onClick={handleUploadClick} 
+                <Button
+                  element="button"
+                  onClick={handleUploadClick}
                   white
                   roundedCircle
-                  icon="photo-plus" 
-                  size="md" 
-                  iconOnly 
+                  icon="photo-plus"
+                  size="md"
+                  iconOnly
                 />
                 <input type="file" ref={fileInputRef} accept="image/*" className="d-none" onChange={handleFileUpload} />
-                <Button 
-                  element="button" 
-                  onClick={() => setIsFlash(!isFlash)} 
+                <Button
+                  element="button"
+                  onClick={() => setIsFlash(!isFlash)}
                   white
                   roundedCircle
-                  icon={isFlash ? 'bolt' : 'bolt-off'} 
-                  size="md" 
-                  iconOnly 
+                  icon={isFlash ? 'bolt' : 'bolt-off'}
+                  size="md"
+                  iconOnly
                 />
               </>
             )}
           </div>
         </div>
       </div>
-      
+
       {/* TOP PROGRESS LOADER (Standalone below header) */}
       {autoCropTimeLeft !== null && (
         <div className="progress progress-xs" style={{ height: '4px', borderRadius: 0, background: 'rgba(0,0,0,0.05)', zIndex: 120, flexShrink: 0 }}>
           <div
             className="progress-bar"
-            style={{ 
-              width: `${(autoCropTimeLeft / 3) * 100}%`, 
+            style={{
+              width: `${(autoCropTimeLeft / 3) * 100}%`,
               transition: 'width 1s linear',
               backgroundColor: '#f76707'
             }}
@@ -788,8 +801,8 @@ export default function TrackerPhotoPage() {
 
           {mode === 'live' && (
             <>
-              <video ref={videoRef} autoPlay playsInline muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
-              <canvas ref={liveOverlayRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none', zIndex: 10 }} />
+              <video ref={videoRef} autoPlay playsInline muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <canvas ref={liveOverlayRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none', zIndex: 10 }} />
             </>
           )}
 
@@ -801,7 +814,7 @@ export default function TrackerPhotoPage() {
                 inset: 0,
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain',
+                objectFit: 'cover',
                 touchAction: 'none',
                 cursor: 'crosshair',
                 zIndex: 10,
