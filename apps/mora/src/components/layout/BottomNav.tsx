@@ -8,7 +8,7 @@ export function BottomNav() {
   const currentPath = location.pathname
   const { isAuthenticated } = useAuth()
 
-  if (!isAuthenticated) return null
+  if (!isAuthenticated || currentPath.startsWith('/tracker')) return null
 
   const navItems = [
     { label: 'Home', icon: 'home', href: '/dashboard' },

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import BaseLayout from '../layouts/BaseLayout';
 import { Icon } from '../components/ui/Icon';
 import { Chart, type ChartData } from '../components/ui/Chart';
@@ -278,6 +279,54 @@ export default function TrackerPage() {
                   <a className="page-link" href="#">next</a>
                 </li>
               </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Spacer to prevent content hiding behind the fixed bottom shelf */}
+      <div style={{ height: '180px' }} className="d-block w-100" />
+
+      {/* METODE LAINNYA - FIXED BOTTOM SHELF */}
+      <div className="position-fixed bottom-0 start-0 w-100 bg-white" style={{ borderTopLeftRadius: '20px', borderTopRightRadius: '20px', zIndex: 1040, paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))', boxShadow: '0 -4px 20px rgba(0,0,0,0.04)' }}>
+        <div className="container-xl pt-3">
+          <h4 className="text-center fw-bold mb-3" style={{ fontSize: '0.9rem', color: '#f97316' }}>Track Your Finance</h4>
+          <div className="row g-2 px-3 pb-2">
+            <div className="col-4">
+              <Link 
+                to="/tracker/audio"
+                className="bg-white text-decoration-none w-100 d-flex flex-column align-items-center justify-content-center py-2 px-1 m-0"
+                style={{ borderRadius: '10px', border: '1px solid #d1d5db', cursor: 'pointer', outline: 'none' }}
+              >
+                <div className="mb-1 d-flex align-items-center justify-content-center" style={{ height: '24px', color: '#f97316' }}>
+                  <Icon icon="microphone" size={22} stroke={2.5} />
+                </div>
+                <span className="fw-medium m-0" style={{ fontSize: '0.75rem', color: '#475569', lineHeight: '1' }}>Audio</span>
+              </Link>
+            </div>
+            <div className="col-4">
+              <Link 
+                to="/tracker/photo"
+                className="bg-white text-decoration-none w-100 d-flex flex-column align-items-center justify-content-center py-2 px-1 m-0"
+                style={{ borderRadius: '10px', border: '1px solid #d1d5db', cursor: 'pointer', outline: 'none' }}
+              >
+                <div className="mb-1 d-flex align-items-center justify-content-center" style={{ height: '24px', color: '#f97316' }}>
+                  <Icon icon="scan" size={22} stroke={2.5} />
+                </div>
+                <span className="fw-medium m-0" style={{ fontSize: '0.75rem', color: '#475569', lineHeight: '1' }}>Scan</span>
+              </Link>
+            </div>
+            <div className="col-4">
+              <Link 
+                to="/tracker/input"
+                className="bg-white text-decoration-none w-100 d-flex flex-column align-items-center justify-content-center py-2 px-1 m-0"
+                style={{ borderRadius: '10px', border: '1px solid #d1d5db', cursor: 'pointer', outline: 'none' }}
+              >
+                <div className="mb-1 d-flex align-items-center justify-content-center" style={{ height: '24px', color: '#f97316' }}>
+                  <Icon icon="keyboard" size={22} stroke={2.5} />
+                </div>
+                <span className="fw-medium m-0" style={{ fontSize: '0.75rem', color: '#475569', lineHeight: '1' }}>Input</span>
+              </Link>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import BaseLayout from '../layouts/BaseLayout';
 import { Icon } from '../components/ui/Icon';
 import { Button } from '../components/ui/Button';
@@ -20,6 +20,7 @@ import { ScannerSettings } from '../components/scanner/ScannerSettings';
 
 export default function TrackerPhotoPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const capturedCanvasRef = useRef<HTMLCanvasElement>(null);
   const liveOverlayRef = useRef<HTMLCanvasElement>(null);
@@ -165,7 +166,8 @@ export default function TrackerPhotoPage() {
     }, 300);
   }, [stopLiveDetection, drawLiveOverlay]);
 
-  const startCamera = useCallback(async () => {
+  const startCamera = useCallback(async (skipIfImage = false) => {
+    if (skipIfImage && location.state?.image) return;
     setStatusMsg('Meminta akses kamera...');
     setStatusType('warn');
     try {
@@ -197,8 +199,40 @@ export default function TrackerPhotoPage() {
     }
   }, [cameraFacing, startLiveDetection]);
 
+  // Handle incoming image from outside (e.g. from TrackerPage scanner)
   useEffect(() => {
-    startCamera();
+    if (location.state?.image) {
+      const img = new Image();
+      img.onload = async () => {
+        const w = img.width, h = img.height;
+        capturedWRef.current = w;
+        capturedHRef.current = h;
+        const tmp = document.createElement('canvas');
+        tmp.width = w; tmp.height = h;
+        const ctx = tmp.getContext('2d');
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, w, h);
+        
+        setCapturedData(imgData);
+        setMode('captured');
+        setStep(2);
+        setStatusMsg('✓ Gambar diterima — silakan sesuaikan sudut');
+        setStatusType('ok');
+        
+        // Use incoming corners if provided (from live scanner), otherwise auto-detect
+        const incomingCorners = location.state?.corners;
+        const detected = incomingCorners || autoDetectCorners(imgData, w, h);
+        const initCorners = detected || defaultCorners(w, h);
+        
+        cornersRef.current = initCorners;
+        setCorners(initCorners);
+      };
+      img.src = location.state.image;
+    } else {
+      startCamera();
+    }
+    
     const video = videoRef.current;
     return () => {
       cancelAnimationFrame(rafId.current!);
@@ -206,7 +240,7 @@ export default function TrackerPhotoPage() {
       if (autoCropIntervalRef.current) clearInterval(autoCropIntervalRef.current);
       if (video?.srcObject) (video.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
     };
-  }, [startCamera, stopLiveDetection]);
+  }, [location.state?.image, startCamera, stopLiveDetection]);
 
   const drawCapturedOverlay = useCallback(
     (pts: Point[]) => {
