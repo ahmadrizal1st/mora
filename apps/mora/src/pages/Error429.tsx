@@ -1,5 +1,5 @@
 // src/pages/Error429.tsx
-import ErrorLayout from '../layouts/ErrorLayout'
+import ErrorLayout from '@/shared/layouts/ErrorLayout'
 
 const errors = {
   "429": {

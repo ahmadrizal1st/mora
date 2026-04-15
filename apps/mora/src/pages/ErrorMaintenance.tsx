@@ -1,5 +1,5 @@
 // src/pages/Errormaintenance.tsx
-import ErrorLayout from '../layouts/ErrorLayout'
+import ErrorLayout from '@/shared/layouts/ErrorLayout'
 
 const errors = {
   "maintenance": {

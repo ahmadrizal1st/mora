@@ -1,5 +1,5 @@
 // src/pages/Error500.tsx
-import ErrorLayout from '../layouts/ErrorLayout'
+import ErrorLayout from '@/shared/layouts/ErrorLayout'
 
 const errors = {
   "500": {
