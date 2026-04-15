@@ -1,20 +1,30 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Icon } from '@/shared/components/ui/Icon';
 
+export const signInSchema = z.object({
+  email: z.string().min(1, 'Email is required').email('Invalid email address'),
+  password: z.string().min(4, 'Password must be at least 4 characters'),
+  remember: z.boolean().default(false),
+});
+
+export type SignInFormData = z.infer<typeof signInSchema>;
+
 interface SignInFormProps {
-  onSubmit?: (e: React.FormEvent, data: any) => void;
+  onSubmit: (data: SignInFormData) => void;
   forgotPasswordHref?: string;
   isLoading?: boolean;
   fieldErrors?: Record<string, string[]>;
 }
 
-/** Inline field-level error message with icon */
 function FieldError({ messages }: { messages?: string[] }) {
   if (!messages?.length) return null;
   return (
-    <p className="field-error-msg">
+    <p className="field-error-msg mt-1 text-danger small">
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="me-1">
         <circle cx="12" cy="12" r="10" />
         <line x1="12" y1="8" x2="12" y2="12" />
         <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -28,35 +38,32 @@ export function SignInForm({
   onSubmit,
   forgotPasswordHref = '/forgot-password',
   isLoading = false,
-  fieldErrors
+  fieldErrors, // backend errors mapped from API
 }: SignInFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (onSubmit) {
-      onSubmit(e, { email, password });
-    }
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: { email: '', password: '', remember: false },
+  });
 
   return (
-    <form onSubmit={handleSubmit} autoComplete="off" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" noValidate>
       {/* Email */}
       <div className="mb-3">
         <label className="form-label">Email address</label>
         <input
           type="email"
-          className={`form-control ${fieldErrors?.email ? 'is-invalid' : ''}`}
+          className={`form-control ${errors.email || fieldErrors?.email ? 'is-invalid' : ''}`}
           placeholder="your@email.com"
-          autoComplete="off"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
           disabled={isLoading}
+          {...register('email')}
         />
-        <FieldError messages={fieldErrors?.email} />
+        <FieldError messages={errors.email ? [errors.email.message!] : fieldErrors?.email} />
       </div>
 
       {/* Password */}
@@ -67,16 +74,13 @@ export function SignInForm({
             <a href={forgotPasswordHref}>I forgot password</a>
           </span>
         </label>
-        <div className={`input-group input-group-flat ${fieldErrors?.password ? 'is-invalid' : ''}`}>
+        <div className={`input-group input-group-flat ${errors.password || fieldErrors?.password ? 'is-invalid' : ''}`}>
           <input
             type={showPassword ? 'text' : 'password'}
-            className={`form-control ${fieldErrors?.password ? 'is-invalid' : ''}`}
+            className={`form-control ${errors.password || fieldErrors?.password ? 'is-invalid' : ''}`}
             placeholder="Your password"
-            autoComplete="off"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
             disabled={isLoading}
+            {...register('password')}
           />
           <span className="input-group-text">
             <a
@@ -92,16 +96,14 @@ export function SignInForm({
             </a>
           </span>
         </div>
-        <FieldError messages={fieldErrors?.password} />
+        <FieldError messages={errors.password ? [errors.password.message!] : fieldErrors?.password} />
       </div>
 
       {/* Remember me */}
       <div className="mb-2">
         <label className="form-check">
-          <input type="checkbox" className="form-check-input" disabled={isLoading} />
-          <span className="form-check-label">
-            Remember me on this device
-          </span>
+          <input type="checkbox" className="form-check-input" disabled={isLoading} {...register('remember')} />
+          <span className="form-check-label">Remember me on this device</span>
         </label>
       </div>
 

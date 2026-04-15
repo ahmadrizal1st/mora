@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { clsx } from 'clsx'
 import { Icon } from '../ui/Icon'
 import { Avatar } from '../ui/Avatar'

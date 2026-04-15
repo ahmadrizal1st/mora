@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
 import { Icon } from '@/shared/components/ui/Icon';
 import { Button } from '@/shared/components/ui/Button';

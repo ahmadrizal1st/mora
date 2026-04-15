@@ -2,44 +2,46 @@
 import React, { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { SignInCard } from '@/shared/components/cards/SignInCard'
-import { useAuth } from '@/features/auth/hooks/useAuth'
-import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/features/auth/store/authStore'
+import { useSignInMutation } from '@/features/auth/hooks/useSignInMutation'
+import { useMutation } from '@tanstack/react-query'
+import type { SignInFormData } from '@/features/auth/components/SignInForm'
+import { useNavigate } from '@tanstack/react-router'
 
 export default function SignIn() {
-  const { login, loginWithGoogle } = useAuth()
+  const loginWithGoogle = useAuthStore(s => s.loginWithGoogle)
   const navigate = useNavigate()
+  const signInMutation = useSignInMutation()
+  
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>(undefined)
-  const [isLoading, setIsLoading] = useState(false)
- 
-  const handleLogin = async (_e: React.FormEvent, data: any) => {
-    setError(null)
-    setFieldErrors(undefined)
-    setIsLoading(true)
-    try {
-      await login(data)
-      navigate('/dashboard')
-    } catch (err: any) {
-      const responseData = err.response?.data
-      setError(responseData?.message || 'Login failed. Please check your credentials.')
-      setFieldErrors(responseData?.errors)
-    } finally {
-      setIsLoading(false)
-    }
-  }
- 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    setError(null)
-    setIsLoading(true)
-    try {
-      await loginWithGoogle(credentialResponse.credential)
-      navigate('/dashboard')
-    } catch (err: any) {
+
+  const googleSignInMutation = useMutation({
+    mutationFn: async (credential: string) => {
+      await loginWithGoogle(credential)
+    },
+    onSuccess: () => navigate({ to: '/dashboard' }),
+    onError: (err: any) => {
       const responseData = err.response?.data
       setError(responseData?.message || 'Google login failed.')
-    } finally {
-      setIsLoading(false)
     }
+  })
+
+  const handleLogin = (data: SignInFormData) => {
+    setError(null)
+    setFieldErrors(undefined)
+    signInMutation.mutate(data, {
+      onError: (err: any) => {
+        const responseData = err.response?.data
+        setError(responseData?.message || 'Login failed. Please check your credentials.')
+        setFieldErrors(responseData?.errors)
+      }
+    })
+  }
+
+  const handleGoogleSuccess = (credentialResponse: any) => {
+    setError(null)
+    googleSignInMutation.mutate(credentialResponse.credential)
   }
  
   const handleGoogleError = () => {
@@ -52,7 +54,7 @@ export default function SignIn() {
         onSubmit={handleLogin}
         onGoogleSuccess={handleGoogleSuccess}
         onGoogleError={handleGoogleError}
-        isLoading={isLoading}
+        isLoading={signInMutation.isPending || googleSignInMutation.isPending}
         error={error}
         fieldErrors={fieldErrors}
       />

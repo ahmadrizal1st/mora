@@ -1,9 +1,10 @@
 // src/main.tsx
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
 import { GoogleOAuthProvider } from '@react-oauth/google'
-import App from './App'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { routeTree } from './routeTree.gen'
+import { useAuthStore } from './features/auth/store/authStore'
 
 import '@tabler/core/dist/css/tabler.min.css'
 import '@tabler/core/dist/css/tabler-flags.min.css'
@@ -24,12 +25,27 @@ window.ApexCharts = ApexCharts as any
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
+const router = createRouter({
+  routeTree,
+  defaultPreload: 'intent',
+  context: {
+    auth: undefined!, // injected below
+  },
+})
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
+
+function InnerApp() {
+  const auth = useAuthStore()
+  return <RouterProvider router={router} context={{ auth }} />
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <GoogleOAuthProvider clientId={clientId}>
-    <React.StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </React.StrictMode>
+  <GoogleOAuthProvider clientId={clientId || ''}>
+    <InnerApp />
   </GoogleOAuthProvider>
 )

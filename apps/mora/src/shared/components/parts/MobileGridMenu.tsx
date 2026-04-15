@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 
 // High-fidelity Bold-Path Brand-First SVGs
 function FeatureIcon({ type }: { type: string }) {

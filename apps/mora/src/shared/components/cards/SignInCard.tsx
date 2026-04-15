@@ -1,12 +1,12 @@
 import { GoogleLogin } from '@react-oauth/google'
-import { SignInForm } from '@/features/auth/components/SignInForm'
+import { SignInForm, type SignInFormData } from '@/features/auth/components/SignInForm'
 import { ErrorAlert } from '../ui/ErrorAlert'
  
 interface SignInCardProps {
   title?: string
   subtitle?: string
   showHeader?: boolean
-  onSubmit?: (e: React.FormEvent, data: any) => void
+  onSubmit?: (data: SignInFormData) => void
   onGoogleSuccess?: (credentialResponse: any) => void
   onGoogleError?: () => void
   isLoading?: boolean

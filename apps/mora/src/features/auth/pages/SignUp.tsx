@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { SignUpCard } from '@/shared/components/cards/SignUpCard'
 import { useAuth } from '@/features/auth/hooks/useAuth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 
 export default function SignUp() {
   const { register } = useAuth()

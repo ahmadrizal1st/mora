@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
 import { Icon } from '@/shared/components/ui/Icon';
 import { Chart, type ChartData } from '@/shared/components/ui/Chart';

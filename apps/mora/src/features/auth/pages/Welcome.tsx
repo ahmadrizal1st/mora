@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { Button } from '@/shared/components/ui/Button'
 
 export default function Welcome() {

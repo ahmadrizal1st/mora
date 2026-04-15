@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from '@tanstack/react-router'
 import { clsx } from 'clsx'
 import { Navbar } from '../components/layout/Navbar'
 import { Sidebar } from '../components/layout/Sidebar'

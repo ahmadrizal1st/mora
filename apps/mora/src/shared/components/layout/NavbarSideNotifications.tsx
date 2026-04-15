@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { Icon } from '../ui/Icon'
 import { NavbarNotifications } from '../cards/NavbarNotifications'
 import notificationsData from '../../data/notifications.json'
