@@ -94,7 +94,7 @@ export function ChartHeatmap({
       chartInstance.current?.destroy()
       chartInstance.current = null
     }
-  }, [id, height, labels, legend, scale, noShades, color, colors, seriesString, themeKey])
+  }, [id, height, labels, legend, scale, noShades, color, colors, series, seriesString, themeKey])
 
   return <div ref={chartRef} id={`chart-${id}`} className={clsx(className)} />
 }

@@ -24,13 +24,13 @@ export function Icon({ icon, className, color, size, inline, filled, stroke, sty
   const fallbackName = toPascalCase(icon)
 
   let IconComponent =
-    (TablerIcons as any)[componentName] ||
-    (TablerIcons as any)[fallbackName] ||
-    (TablerIcons as any)[icon]
+    (TablerIcons as Record<string, any>)[componentName] ||
+    (TablerIcons as Record<string, any>)[fallbackName] ||
+    (TablerIcons as Record<string, any>)[icon]
 
   if (!IconComponent) {
     const alternateName = 'Icon' + icon.split('-').map(p => p.toLowerCase() === 'x' ? 'X' : p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('')
-    IconComponent = (TablerIcons as any)[alternateName]
+    IconComponent = (TablerIcons as Record<string, any>)[alternateName]
   }
 
   if (!IconComponent) {

@@ -1,4 +1,3 @@
-// src/components/cards/UsersList2.tsx
 import { Avatar } from '../ui/Avatar'
 
 import type { Person } from '@/shared/types/common.types'
@@ -20,7 +19,12 @@ export function UsersList2({
   title = 'Top users',
   className = '',
 }: UsersList2Props) {
-  const displayPeople = people.slice(offset, offset + limit)
+  const [displayPeople] = useState(() =>
+    people.slice(offset, offset + limit).map(person => ({
+      ...person,
+      daysAgo: Math.floor(Math.random() * 6) + 1
+    }))
+  );
 
   return (
     <div className={`card ${className}`}>
@@ -44,7 +48,7 @@ export function UsersList2({
                       {person.full_name}
                     </a>
                     <div className="text-secondary text-truncate mt-n1">
-                      {Math.floor(Math.random() * 6) + 1} days ago
+                      {person.daysAgo} days ago
                     </div>
                   </div>
                 </div>

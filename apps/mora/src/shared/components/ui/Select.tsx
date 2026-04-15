@@ -60,11 +60,11 @@ export function Select({
 
   const resolvedOptions = useMemo(() => {
     if (selectKey) {
-      const entry = (selectsData as any)[selectKey]
+      const entry = (selectsData as Record<string, any>)[selectKey]
       if (entry) {
         if (entry.data === 'people') {
-          return peopleData.map((p: any) => ({
-            value: p.id.toString(),
+          return (peopleData as Person[]).map((p) => ({
+            value: (p.id || '').toString(),
             label: p.full_name || '',
             avatar: p.photo
           }))
@@ -123,14 +123,13 @@ export function Select({
   const [search, setSearch] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    if (value !== undefined) {
-      const next = Array.isArray(value) ? value : [value]
-      if (JSON.stringify(next) !== JSON.stringify(selected)) {
-        setSelected(next)
-      }
-    }
-  }, [value, selected])
+  // Synchronize internal state with value prop if it changes
+  const [prevValue, setPrevValue] = useState(value)
+  if (value !== prevValue) {
+    const next = value !== undefined ? (Array.isArray(value) ? value : [value]) : []
+    setSelected(next)
+    setPrevValue(value)
+  }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -148,7 +147,7 @@ export function Select({
     return (allOptions as SelectOption[]).filter(o => o.label.toLowerCase().includes(search.toLowerCase()))
   }, [allOptions, search, resolvedOptions])
 
-  const toggleOption = (val: string) => {
+  const toggleOption = useCallback((val: string) => {
     let next: string[]
     if (multiple) {
       next = selected.includes(val) ? selected.filter(s => s !== val) : [...selected, val]
@@ -161,15 +160,15 @@ export function Select({
     }
     setSelected(next)
     if (onChange) onChange(multiple ? next : next[0])
-  }
+  }, [multiple, selected, onChange])
 
-  const removeValue = (val: string, e: React.MouseEvent) => {
+  const removeValue = useCallback((val: string, e: React.MouseEvent) => {
     e.stopPropagation()
     const next = selected.filter(s => s !== val)
     setSelected(next)
     if (onChange) onChange(multiple ? next : next[0])
     if (inputRef.current) inputRef.current.focus()
-  }
+  }, [selected, multiple, onChange])
 
   const highlightMatch = (text: string, query: string) => {
     if (!query) return text
@@ -255,7 +254,7 @@ export function Select({
         <span className="text-truncate">{opt?.label}</span>
       </div>
     )
-  }, [selected, multiple, allOptions, placeholder, indicator, search, isOpen, onChange])
+  }, [selected, multiple, allOptions, placeholder, indicator, search, isOpen, onChange, removeValue])
 
   const handleContainerClick = () => {
     setIsOpen(!isOpen)

@@ -92,7 +92,7 @@ export function ChartSparkline({
       chartInstance.current?.destroy()
       chartInstance.current = null
     }
-  }, [id, type, color, height, isSquare, percentage, dataString, themeKey])
+  }, [id, type, color, height, isSquare, percentage, data, dataString, themeKey])
 
   return <div ref={chartRef} id={`sparkline-${id}`} className={containerClasses} />
 }

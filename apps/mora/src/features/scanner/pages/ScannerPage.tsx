@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from '@tanstack/react-router';
 import { Button } from '@/shared/components/ui/Button';
 import { Badge } from '@/shared/components/ui/Badge';
@@ -24,7 +24,6 @@ export default function TrackerPhotoPage() {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const [mode, setMode] = useState<'live' | 'captured' | 'result'>('live');
-  const [_step, setStep] = useState<1 | 2 | 3>(1);
   const [corners, setCorners] = useState<Point[] | null>(null);
   const [capturedData, setCapturedData] = useState<ImageData | null>(null);
   const [statusMsg, setStatusMsg] = useState('Menginisialisasi kamera...');
@@ -39,7 +38,6 @@ export default function TrackerPhotoPage() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [liveDetected, setLiveDetected] = useState(false);
   const [shutterActive, setShutterActive] = useState(false);
-  const [_videoAspect, setVideoAspect] = useState(4 / 3);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -183,11 +181,7 @@ export default function TrackerPhotoPage() {
       video.srcObject = stream;
       video.onloadedmetadata = () => {
         video.play();
-        const vw = video.videoWidth || 640;
-        const vh = video.videoHeight || 480;
-        setVideoAspect(vw / vh);
         setMode('live');
-        setStep(1);
         setStatusMsg('Arahkan kamera ke dokumen');
         setStatusType('');
         startLiveDetection();
@@ -196,7 +190,7 @@ export default function TrackerPhotoPage() {
       setStatusMsg('Kamera tidak dapat diakses — gunakan tombol Upload');
       setStatusType('error');
     }
-  }, [cameraFacing, startLiveDetection]);
+  }, [cameraFacing, startLiveDetection, location.state?.image]);
 
   // Handle hardware torch (flash)
   useEffect(() => {
@@ -235,7 +229,6 @@ export default function TrackerPhotoPage() {
 
         setCapturedData(imgData);
         setMode('captured');
-        setStep(2);
         setStatusMsg('✓ Gambar diterima — silakan sesuaikan sudut');
         setStatusType('ok');
 
@@ -253,13 +246,16 @@ export default function TrackerPhotoPage() {
     }
 
     const video = videoRef.current;
+    const currentRafId = rafId.current;
+    const currentAutoCropInterval = autoCropIntervalRef.current;
+
     return () => {
-      cancelAnimationFrame(rafId.current!);
+      if (currentRafId) cancelAnimationFrame(currentRafId);
       stopLiveDetection();
-      if (autoCropIntervalRef.current) clearInterval(autoCropIntervalRef.current);
+      if (currentAutoCropInterval) clearInterval(currentAutoCropInterval);
       if (video?.srcObject) (video.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
     };
-  }, [location.state?.image, startCamera, stopLiveDetection]);
+  }, [location.state?.image, location.state?.corners, startCamera, stopLiveDetection]);
 
   const drawCapturedOverlay = useCallback(
     (pts: Point[]) => {
@@ -346,7 +342,6 @@ export default function TrackerPhotoPage() {
     cornersRef.current = null;
     setCapturedData(null);
     setResultImage(null);
-    setStep(1);
     setLiveDetected(false);
     setStatusMsg('Arahkan kamera ke dokumen');
     setStatusType('');
@@ -403,7 +398,6 @@ export default function TrackerPhotoPage() {
     capturedHRef.current = drawH;
     setCapturedData(imgData);
     setMode('captured');
-    setStep(2);
     setIsProcessing(true);
     setProcessingLabel('Mendeteksi sudut dokumen...');
     setStatusMsg('Menganalisis tepi dokumen...');
@@ -579,6 +573,9 @@ export default function TrackerPhotoPage() {
     navigate('/tracker/input', { state: { prefill: prefillData } });
   }, [navigate, clearAutoCrop]);
 
+  const [downloadTimestamp] = useState(() => Date.now());
+  const downloadFilename = `scan-${downloadTimestamp}.${outputFormat === 'jpeg' ? 'jpg' : 'png'}`;
+
   const cropAndWarp = useCallback(async () => {
     clearAutoCrop();
     const pts = cornersRef.current;
@@ -624,7 +621,6 @@ export default function TrackerPhotoPage() {
     const dataUrl = output.toDataURL(`image/${outputFormat}`, outputFormat === 'jpeg' ? 0.92 : undefined);
     setResultImage(dataUrl);
     setMode('result');
-    setStep(3);
     setStatusMsg('✓ Dokumen berhasil diproses');
     setStatusType('ok');
     setIsProcessing(false);
@@ -652,7 +648,6 @@ export default function TrackerPhotoPage() {
       if (!imgData) return;
       setCapturedData(imgData);
       setMode('captured');
-      setStep(2);
       setIsProcessing(true);
       setProcessingLabel('Mendeteksi sudut dokumen...');
       setStatusMsg('Menganalisis gambar...');
@@ -884,7 +879,7 @@ export default function TrackerPhotoPage() {
                 </Button>
               </div>
               <div className="col-3">
-                <Button element="a" href={resultImage} download={`scan-${Date.now()}.${outputFormat === 'jpeg' ? 'jpg' : 'png'}`} white block className="fw-bold px-0" size="lg" icon="download" iconOnly />
+                <Button element="a" href={resultImage} download={downloadFilename} white block className="fw-bold px-0" size="lg" icon="download" iconOnly />
               </div>
               <div className="col-3">
                 <Button element="button" onClick={resetToCamera} white block className="fw-bold px-0" size="lg" icon="refresh" iconOnly />

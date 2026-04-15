@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Icon } from '../ui/Icon';
 
 interface GalleryPhotoCardProps {
@@ -29,13 +29,15 @@ export function GalleryPhotoCard({
   onLike,
 }: GalleryPhotoCardProps) {
   const [isAnimate, setIsAnimate] = useState(false);
+  const prevLikedRef = useRef(liked);
 
   useEffect(() => {
-    if (liked) {
+    if (liked && !prevLikedRef.current) {
       setIsAnimate(true);
       const timer = setTimeout(() => setIsAnimate(false), 300);
       return () => clearTimeout(timer);
     }
+    prevLikedRef.current = liked;
   }, [liked]);
 
   return (

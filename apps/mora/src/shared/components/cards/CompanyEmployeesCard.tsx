@@ -1,4 +1,6 @@
 
+import { useMemo } from 'react';
+
 interface Employee {
   name: string; 
   department: string; 
@@ -21,6 +23,13 @@ export function CompanyEmployeesCard({
     { name: 'Eve Taylor', department: 'Finance', progress: 33 },
   ],
 }: CompanyEmployeesCardProps) {
+  const [processedEmployees] = useState(() => 
+    employees.map(emp => ({
+      ...emp,
+      pct: emp.progress ?? Math.floor(30 + Math.random() * 60)
+    }))
+  );
+
   return (
     <div className="card">
       <div className="card-header">
@@ -36,8 +45,8 @@ export function CompanyEmployeesCard({
           </tr>
         </thead>
         <tbody>
-          {employees.map((emp, i) => {
-            const pct = emp.progress ?? Math.floor(30 + Math.random() * 60);
+          {processedEmployees.map((emp, i) => {
+            const pct = emp.pct;
             return (
               <tr key={i}>
                 <td className="w-1">

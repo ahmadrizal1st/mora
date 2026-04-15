@@ -119,7 +119,7 @@ export function MapVector({
         delete (window as any).tabler_map_vector[mapId]
       }
     }
-  }, [mapId, mapType, backgroundColor, markers, lines, series, regionStyle, zoomOnScroll, zoomButtons])
+  }, [mapId, mapType, backgroundColor, markers, lines, series, regionStyle, zoomOnScroll, zoomButtons, labels, lineStyle, markerLabelStyle, markerStyle])
 
   return (
     <div className={clsx('ratio', `ratio-${ratio}`, className)}>

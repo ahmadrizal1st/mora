@@ -1,7 +1,7 @@
 import { useEffect, useRef, type TextareaHTMLAttributes } from 'react';
 import { clsx } from 'clsx'
 
-export interface AutosizeTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {}
+export type AutosizeTextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement>
 
 export function AutosizeTextarea({ className, ...props }: AutosizeTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);

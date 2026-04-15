@@ -25,8 +25,12 @@ export function Range({
 }: RangeProps) {
   const elementId = useRef(id || `range-${Math.random().toString(36).substring(2, 9)}`)
   const containerRef = useRef<HTMLDivElement>(null)
-  const isMulti = value.toString().includes(',')
-  const parsedValues = value.toString().split(',').map((v) => parseFloat(v.trim()))
+  const { isMulti, parsedValues } = useMemo(() => {
+    const s = value.toString()
+    const multi = s.includes(',')
+    const parsed = s.split(',').map((v) => parseFloat(v.trim()))
+    return { isMulti: multi, parsedValues: parsed }
+  }, [value])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -107,7 +111,7 @@ export function Range({
         (el as any).noUiSlider.destroy()
       }
     }
-  }, [min, max, step, value, connect, isMulti, color, className])
+  }, [min, max, step, connect, isMulti, parsedValues, color, className])
 
   return (
     <div

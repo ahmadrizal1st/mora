@@ -59,7 +59,7 @@ export function Datepicker({
         picker.destroy()
       }
     }
-  }, [inline])
+  }, [inline, onChange])
 
   const commonProps = {
     ref: inputRef,

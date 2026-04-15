@@ -14,7 +14,6 @@ interface VisualStatCardProps {
 export function VisualStatCard({
   title,
   value,
-  trendPercentage: _trendPercentage,
   trendAbsolute,
   icon,
   isPositive = true,

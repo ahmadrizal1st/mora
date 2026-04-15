@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react'
+import { useEffect, useRef, useMemo, useCallback } from 'react'
 import { clsx } from 'clsx'
 import ApexCharts from 'apexcharts'
 import type { ApexOptions } from 'apexcharts'
@@ -149,7 +149,7 @@ export function Chart({
     })
   }, [cssVariables])
 
-  const buildSeries = (type: string) => {
+  const buildSeries = useCallback((type: string) => {
     if (!chartData.series) return []
 
     if (['pie', 'donut', 'radialBar'].includes(type)) {
@@ -172,9 +172,9 @@ export function Chart({
       color: resolveCSSColor(s.color ?? chartData.color ?? 'primary'),
       ...(chartData.types && chartData.types[String(index)] ? { type: chartData.types[String(index)] } : {}),
     }))
-  }
+  }, [chartData.series, chartData.color, chartData.types])
 
-  const buildLabels = (type: string) => {
+  const buildLabels = useCallback((type: string) => {
     if (!chartData.series) return undefined
 
     if (['pie', 'donut', 'radialBar'].includes(type)) {
@@ -195,9 +195,9 @@ export function Chart({
     }
 
     return undefined
-  }
+  }, [chartData.series, chartData.datetime, chartData.startDate, chartData['start-date']])
 
-  const buildCategories = () => {
+  const buildCategories = useCallback(() => {
     if (!chartData.categories) return undefined
 
     const cats = chartData.categories.map(String)
@@ -218,7 +218,7 @@ export function Chart({
       return stretched
     }
     return cats
-  }
+  }, [chartData.categories, chartData.series])
 
   const chartDataString = JSON.stringify(chartData)
 
@@ -405,7 +405,7 @@ export function Chart({
               const fmt = (chartData.xFormatter || chartData['x-formatter'])!
               try {
                 return new Function('val', `return ${fmt}`)(val)
-              } catch (e) {
+              } catch {
                 return String(val)
               }
             },
@@ -455,7 +455,7 @@ export function Chart({
       instance.destroy()
       chartInstance.current = null
     }
-  }, [resolvedId, resolvedHeight, chartDataString, themeKey])
+  }, [resolvedId, resolvedHeight, chartData, chartDataString, themeKey, buildSeries, buildLabels, buildCategories])
 
   return (
     <div
