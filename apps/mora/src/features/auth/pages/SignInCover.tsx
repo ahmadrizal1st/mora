@@ -1,9 +1,29 @@
-// src/pages/SignInCover.tsx
-import { NavbarLogo } from '@/shared/components/layout/NavbarLogo';
-import { SignInForm } from '@/features/auth/components/SignInForm';
-import { Photo } from '@/shared/components/ui/Photo';
+// src/features/auth/pages/SignInCover.tsx
+import { useState } from 'react'
+import { NavbarLogo } from '@/shared/components/layout/NavbarLogo'
+import { SignInForm } from '@/features/auth/components/SignInForm'
+import { Photo } from '@/shared/components/ui/Photo'
+import { useSignInMutation } from '../hooks/useSignInMutation'
+import { AxiosError } from 'axios'
+import type { SignInFormData } from '@/features/auth/components/SignInForm'
 
 export default function SignInCover() {
+  const signInMutation = useSignInMutation()
+  const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>(undefined)
+
+  const handleLogin = (data: SignInFormData) => {
+    setError(null)
+    setFieldErrors(undefined)
+    signInMutation.mutate(data, {
+      onError: (err: AxiosError<{ message?: string, errors?: Record<string, string[]> }>) => {
+        const responseData = err.response?.data
+        setError(responseData?.message || 'Login failed. Please check your credentials.')
+        setFieldErrors(responseData?.errors)
+      }
+    })
+  }
+
   return (
     <div className="page page-center bg-white" style={{ minHeight: '100vh' }}>
       <div className="row g-0 flex-fill">
@@ -14,7 +34,17 @@ export default function SignInCover() {
             </div>
             <h2 className="h3 text-center mb-3">Login to your account</h2>
 
-            <SignInForm />
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
+
+            <SignInForm 
+              onSubmit={handleLogin} 
+              isLoading={signInMutation.isPending}
+              fieldErrors={fieldErrors}
+            />
 
             <div className="text-center text-secondary mt-3">
               Don't have account yet? <a href="/sign-up" tabIndex={-1}>Sign up</a>
@@ -30,5 +60,5 @@ export default function SignInCover() {
         </div>
       </div>
     </div>
-  );
+  )
 }

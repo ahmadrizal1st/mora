@@ -23,3 +23,27 @@ export interface RegisterCredentials {
   password: string
   password_confirmation: string
 }
+
+export interface ForgotPasswordCredentials {
+  email: string
+}
+
+export interface ResetPasswordCredentials {
+  token: string
+  password: string
+  password_confirmation: string
+}
+
+export interface Verify2FACredentials {
+  code: string
+  device_id?: string
+}
+
+export interface MagicLinkCredentials {
+  email: string
+}
+
+export interface PhoneCredentials {
+  phone: string
+  country_code: string
+}
