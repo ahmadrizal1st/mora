@@ -1,15 +1,18 @@
 import axios from 'axios'
 
-let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-// Ensure we have the /api prefix
-if (!API_URL.includes('/api')) {
-  API_URL = `${API_URL}/api`
-}
+// Ensure we have the /api prefix for the absolute URL
+const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`
 
 const api = axios.create({
-  // Use relative path for Vite proxy in development
-  baseURL: import.meta.env.DEV ? '/api' : API_URL,
+  // In development, use window.location.origin to ensure leading slashes in 
+  // service calls (e.g. '/transactions') are correctly relative to our proxy.
+  baseURL: import.meta.env.DEV
+    ? (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? `${window.location.origin}/api`
+        : API_URL)
+    : API_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -18,13 +21,18 @@ const api = axios.create({
   },
 })
 
-// Add a request interceptor to include the auth token
+// Add a request interceptor to include the auth token and log requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    
+    if (import.meta.env.DEV) {
+      console.log(`🚀 [API Request] ${config.method?.toUpperCase()} ${config.url}`, config.data || '')
+    }
+    
     return config
   },
   (error) => {
@@ -32,17 +40,26 @@ api.interceptors.request.use(
   }
 )
 
-// Add a response interceptor to handle 401 errors
+// Add a response interceptor to handle 401 errors and log responses
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (import.meta.env.DEV) {
+      console.log(`✅ [API Response] ${response.config.method?.toUpperCase()} ${response.config.url}`, response.data)
+    }
+    return response
+  },
   (error) => {
+    if (import.meta.env.DEV) {
+      console.error(`❌ [API Error] ${error.config?.method?.toUpperCase()} ${error.config?.url}`, error.response?.data || error.message)
+    }
+
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       localStorage.removeItem('auth-storage')
       
       // Redirect to login if not already there
-      if (!window.location.pathname.startsWith('/sign-in')) {
+      if (!window.location.pathname.startsWith('/sign-in') && !window.location.pathname.startsWith('/sign-up')) {
         window.location.href = '/sign-in'
       }
     }

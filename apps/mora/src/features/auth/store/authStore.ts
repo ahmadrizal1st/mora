@@ -15,6 +15,8 @@ export interface AuthState {
   register: (credentials: RegisterCredentials) => Promise<void>
   logout: () => Promise<void>
   refreshUser: () => Promise<void>
+  _hasHydrated: boolean
+  setHasHydrated: (state: boolean) => void
   setIsLoading: (loading: boolean) => void
 }
 
@@ -25,7 +27,9 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       isLoading: true, // Start true for initial check
+      _hasHydrated: false,
 
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
       setIsLoading: (loading) => set({ isLoading: loading }),
 
       login: async (credentials) => {
@@ -100,6 +104,9 @@ export const useAuthStore = create<AuthState>()(
       name: 'auth-storage', // unique name
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: !!state.token }), // Only persist these
+      onRehydrateStorage: (state) => {
+        return () => state.setHasHydrated(true)
+      },
     }
   )
 )

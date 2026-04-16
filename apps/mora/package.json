@@ -51,7 +51,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@tanstack/react-query-devtools": "^5.99.0",
-    "@tanstack/router-devtools": "^1.166.13",
+    "@tanstack/react-router-devtools": "^1.166.13",
     "@tanstack/router-plugin": "^1.167.22",
     "@types/bootstrap": "^5.2.10",
     "@types/dropzone": "^5.7.9",

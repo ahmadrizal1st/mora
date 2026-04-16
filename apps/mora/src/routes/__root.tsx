@@ -4,7 +4,7 @@ import {
   ScrollRestoration,
   redirect,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { QueryProvider } from '@/app/providers/QueryProvider'
 import { ThemeProvider } from '@/app/providers/ThemeProvider'
 import { ThemeSettings } from '@/shared/components/layout/ThemeSettings'
@@ -17,6 +17,11 @@ export interface MyRouterContext {
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: ({ context, location }) => {
+    // Wait for auth to initialize before making redirection decisions
+    if (!context.auth || context.auth.isLoading) {
+      return
+    }
+
     const publicPaths = [
       '/',
       '/sign-in',
@@ -49,6 +54,23 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootComponent() {
+  const { auth } = Route.useRouteContext()
+
+  if (auth.isLoading) {
+    return (
+      <div className="page page-center">
+        <div className="container container-tight py-4">
+          <div className="text-center">
+            <div className="mb-3">
+              <span className="spinner-border spinner-border-sm text-secondary" role="status"></span>
+            </div>
+            <div className="text-secondary">Loading your session...</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <QueryProvider>
       <ThemeProvider>
