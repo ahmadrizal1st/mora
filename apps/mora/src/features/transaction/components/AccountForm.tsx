@@ -2,18 +2,18 @@ import React from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Account } from '../types/transaction.types';
+import type { Account } from '../types/transaction.types';
 import { useCurrencies } from '../hooks/useLookups';
 import { Button, Select } from '@/shared/components/ui';
 
 const accountSchema = z.object({
   name: z.string().min(1, 'Nama akun wajib diisi'),
   type: z.enum(['cash', 'bank', 'e-wallet', 'investment']),
-  balance_raw: z.number().default(0),
-  currency_id: z.number({ required_error: 'Pilih mata uang' }),
-  is_credit: z.boolean().default(false),
-  credit_limit: z.number().default(0),
-  color: z.string().default('#206bc4'),
+  balance_raw: z.number(),
+  currency_id: z.number({ message: 'Pilih mata uang' }),
+  is_credit: z.boolean(),
+  credit_limit: z.number(),
+  color: z.string(),
 });
 
 export type AccountFormValues = z.infer<typeof accountSchema>;

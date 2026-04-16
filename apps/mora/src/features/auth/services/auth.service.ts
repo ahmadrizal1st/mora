@@ -13,18 +13,18 @@ import type {
 
 export const AuthService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('auth/login', credentials)
-    return response.data
+    const response = await api.post<{ data: AuthResponse }>('auth/login', credentials)
+    return response.data.data
   },
 
   async googleLogin(credential: string): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('auth/google', { credential })
-    return response.data
+    const response = await api.post<{ data: AuthResponse }>('auth/google', { credential })
+    return response.data.data
   },
 
   async register(credentials: RegisterCredentials): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('auth/register', credentials)
-    return response.data
+    const response = await api.post<{ data: AuthResponse }>('auth/register', credentials)
+    return response.data.data
   },
 
   async logout(): Promise<void> {

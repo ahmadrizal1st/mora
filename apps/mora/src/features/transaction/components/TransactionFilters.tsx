@@ -1,5 +1,5 @@
 import React from 'react';
-import { type TransactionFilters } from '../types/transaction.types';
+import type { TransactionFilters, TransactionType } from '../types/transaction.types';
 import { useCategories, useStatuses } from '../hooks/useLookups';
 import { useAccounts } from '../hooks/useAccounts';
 import { Icon, Button } from '@/shared/components/ui';
@@ -46,7 +46,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             <select
               className="form-select"
               value={filters.type || ''}
-              onChange={(e) => handleFilterChange('type', e.target.value || undefined)}
+              onChange={(e) => handleFilterChange('type', (e.target.value || undefined) as TransactionType | undefined)}
             >
               <option value="">Semua Tipe</option>
               <option value="income">Pemasukan</option>

@@ -39,6 +39,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
+      localStorage.removeItem('auth-storage')
+      
       // Redirect to login if not already there
       if (!window.location.pathname.startsWith('/sign-in')) {
         window.location.href = '/sign-in'

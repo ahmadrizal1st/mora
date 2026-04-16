@@ -20,14 +20,14 @@ import { TagInput } from './TagInput';
 const transactionSchema = z.object({
   type: z.enum(['income', 'expense', 'transfer']),
   amount_raw: z.number().min(1, 'Nominal harus lebih dari 0'),
-  account_id: z.number({ required_error: 'Pilih akun' }),
+  account_id: z.number({ message: 'Pilih akun' }),
   to_account_id: z.number().optional().nullable(),
   category_id: z.number().optional().nullable(),
   currency_id: z.number().optional(),
   tx_date: z.string().min(1, 'Tanggal wajib diisi'),
   merchant: z.string().optional(),
   notes: z.string().optional(),
-  tag_ids: z.array(z.number()).default([]),
+  tag_ids: z.array(z.number()),
 }).refine((data) => {
   if (data.type === 'transfer' && !data.to_account_id) return false;
   return true;

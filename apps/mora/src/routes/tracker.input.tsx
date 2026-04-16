@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import TrackerInputPage from '@/features/tracker/pages/TrackerInputPage'
 import { z } from 'zod'
 

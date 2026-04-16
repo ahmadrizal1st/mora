@@ -133,6 +133,7 @@ export type { TableProps, TablePerson } from './Table'
 export { Typed } from './Typed'
 export type { TypedProps } from './Typed'
 
+export { ErrorAlert } from './ErrorAlert'
 export { Sortable } from './Sortable'
 export { Calendar } from './Calendar'
 export { InlinePlayer } from './InlinePlayer'

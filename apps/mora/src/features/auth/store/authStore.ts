@@ -30,10 +30,14 @@ export const useAuthStore = create<AuthState>()(
 
       login: async (credentials) => {
         const response = await AuthService.login(credentials)
+        if (response.access_token) {
+          localStorage.setItem('token', response.access_token)
+          localStorage.setItem('user', JSON.stringify(response.user))
+        }
         set({ 
           user: response.user, 
           token: response.access_token, 
-          isAuthenticated: true 
+          isAuthenticated: !!response.access_token 
         })
       },
 
@@ -41,10 +45,14 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true })
         try {
           const response = await AuthService.googleLogin(credential)
+          if (response.access_token) {
+            localStorage.setItem('token', response.access_token)
+            localStorage.setItem('user', JSON.stringify(response.user))
+          }
           set({ 
             user: response.user, 
             token: response.access_token, 
-            isAuthenticated: true 
+            isAuthenticated: !!response.access_token 
           })
         } finally {
           set({ isLoading: false })
@@ -54,6 +62,8 @@ export const useAuthStore = create<AuthState>()(
       register: async (credentials) => {
         const response = await AuthService.register(credentials)
         if (response.access_token) {
+          localStorage.setItem('token', response.access_token)
+          localStorage.setItem('user', JSON.stringify(response.user))
           set({ 
             user: response.user, 
             token: response.access_token, 
@@ -78,6 +88,7 @@ export const useAuthStore = create<AuthState>()(
       refreshUser: async () => {
         try {
           const userData = await AuthService.getMe()
+          localStorage.setItem('user', JSON.stringify(userData))
           set({ user: userData })
         } catch (error) {
           console.error('Failed to refresh user:', error)

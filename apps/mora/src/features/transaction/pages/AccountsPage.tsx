@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Icon, Button, CardTitle, Modal, Spinner } from '@/shared/components/ui';
+import { Icon, Button, CardTitle, Modal, ModalHeader, Spinner } from '@/shared/components/ui';
 import { useAccounts, useCreateAccount, useUpdateAccount, useDeleteAccount } from '../hooks/useAccounts';
 import { AccountForm, type AccountFormValues } from '../components/AccountForm';
 import { type Account } from '../types/transaction.types';
@@ -130,16 +130,18 @@ export const AccountsPage: React.FC = () => {
           </div>
         )}
 
-        <Modal
-          show={isModalOpen}
-          onHide={() => { setIsModalOpen(false); setEditingAccount(undefined); }}
-          title={editingAccount ? 'Edit Akun' : 'Tambah Akun Baru'}
-        >
-          <AccountForm
-            initialData={editingAccount}
-            onSubmit={editingAccount ? handleUpdate : handleCreate}
-            isLoading={createMutation.isPending || updateMutation.isPending}
+        <Modal show={isModalOpen}>
+          <ModalHeader 
+            title={editingAccount ? 'Edit Akun' : 'Tambah Akun Baru'} 
+            onClose={() => { setIsModalOpen(false); setEditingAccount(undefined); }} 
           />
+          <div className="modal-body">
+            <AccountForm
+              initialData={editingAccount}
+              onSubmit={editingAccount ? handleUpdate : handleCreate}
+              isLoading={createMutation.isPending || updateMutation.isPending}
+            />
+          </div>
         </Modal>
       </div>
     </BaseLayout>

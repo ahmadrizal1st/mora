@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { TransactionListPage } from '@/features/transaction/pages/TransactionListPage'
 import { z } from 'zod'
 

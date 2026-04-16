@@ -7,12 +7,13 @@ import { Avatar } from './Avatar'
  import { type Person } from '@/shared/types/common.types'
 
 export interface SelectOption {
-  value: string
+  value: string | number
   label: string
   selected?: boolean
   avatar?: string
   flag?: string
   badge?: string
+  icon?: string
 }
 
 export interface SelectOptGroup {
@@ -30,11 +31,12 @@ export interface SelectProps {
   state?: 'valid' | 'invalid'
   showSearch?: boolean
   className?: string
-  defaultValue?: string | string[]
-  value?: string | string[]
-  onChange?: (value: string | string[]) => void
+  defaultValue?: string | number | (string | number)[]
+  value?: string | number | (string | number)[]
+  onChange?: (value: any) => void
   indicator?: 'avatar' | 'flag' | 'label'
   placement?: 'start' | 'end'
+  error?: string
 }
 
 function isOptGroup(item: SelectOption | SelectOptGroup): item is SelectOptGroup {
@@ -55,6 +57,7 @@ export function Select({
   onChange,
   indicator,
   placement = 'start',
+  error,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -107,18 +110,18 @@ export function Select({
       if (isOptGroup(opt)) {
         opt.options.forEach((o: string | SelectOption) => {
           if (typeof o === 'string') flat.push({ value: o, label: o })
-          else flat.push(o)
+          else flat.push(o as SelectOption)
         })
       } else {
-        flat.push(opt)
+        flat.push(opt as SelectOption)
       }
     })
     return flat
   }, [resolvedOptions])
 
-  const [selected, setSelected] = useState<string[]>(() => {
+  const [selected, setSelected] = useState<(string | number)[]>(() => {
     const init = value || defaultValue
-    if (init) return Array.isArray(init) ? init : [init]
+    if (init !== undefined && init !== null) return Array.isArray(init) ? init : [init]
     return []
   })
 
@@ -128,7 +131,7 @@ export function Select({
   // Synchronize internal state with value prop if it changes
   const [prevValue, setPrevValue] = useState(value)
   if (value !== prevValue) {
-    const next = value !== undefined ? (Array.isArray(value) ? value : [value]) : []
+    const next = (value !== undefined && value !== null) ? (Array.isArray(value) ? value : [value]) : []
     setSelected(next)
     setPrevValue(value)
   }
@@ -149,10 +152,12 @@ export function Select({
     return (allOptions as SelectOption[]).filter(o => o.label.toLowerCase().includes(search.toLowerCase()))
   }, [allOptions, search, resolvedOptions])
 
-  const toggleOption = useCallback((val: string) => {
-    let next: string[]
+  const toggleOption = useCallback((val: string | number) => {
+    let next: (string | number)[]
     if (multiple) {
-      next = selected.includes(val) ? selected.filter(s => s !== val) : [...selected, val]
+      next = selected.some(s => s.toString() === val.toString()) 
+        ? selected.filter(s => s.toString() !== val.toString()) 
+        : [...selected, val]
       setSearch('')
       if (inputRef.current) inputRef.current.focus()
     } else {
@@ -164,9 +169,9 @@ export function Select({
     if (onChange) onChange(multiple ? next : next[0])
   }, [multiple, selected, onChange])
 
-  const removeValue = useCallback((val: string, e: React.MouseEvent) => {
+  const removeValue = useCallback((val: string | number, e: React.MouseEvent) => {
     e.stopPropagation()
-    const next = selected.filter(s => s !== val)
+    const next = selected.filter(s => s.toString() !== val.toString())
     setSelected(next)
     if (onChange) onChange(multiple ? next : next[0])
     if (inputRef.current) inputRef.current.focus()
@@ -191,8 +196,9 @@ export function Select({
       {(indicator === 'avatar' || opt.avatar) && opt.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-2" />}
       {(indicator === 'flag' || opt.flag) && opt.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>}
       {(indicator === 'label' || opt.badge) && opt.badge && <span className="badge bg-blue-lt me-2">{opt.badge}</span>}
+      {opt.icon && <Icon icon={opt.icon} size={14} className="me-2 text-muted" />}
       <span className="text-truncate">{highlightMatch(opt.label, search)}</span>
-      {selected.includes(opt.value) && !multiple && <Icon icon="check" size={12} className="ms-auto text-primary" />}
+      {selected.some(s => s.toString() === opt.value.toString()) && !multiple && <Icon icon="check" size={12} className="ms-auto text-primary" />}
     </div>
   )
 
@@ -201,12 +207,13 @@ export function Select({
       return (
         <div className="d-flex flex-wrap gap-1 align-items-center">
           {selected.map(val => {
-            const opt = allOptions.find(o => o.value === val)
+            const opt = allOptions.find(o => o.value.toString() === val.toString())
             return (
               <span key={val} className={clsx("badge", "bg-white", "text-dark", "border", "p-1", "rounded-1", "fw-normal", "d-flex", "align-items-center")} style={{ fontSize: '0.75rem', lineHeight: '1' }}>
                 {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-1" />}
                 {(indicator === 'flag' || opt?.flag) && opt?.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-1')}></span>}
                 {(indicator === 'label' || opt?.badge) && opt?.badge && <span className="badge bg-blue-lt me-1">{opt.badge}</span>}
+                {opt?.icon && <Icon icon={opt.icon} size={12} className="me-1" />}
                 {opt?.label || val}
                 <span className={clsx("ms-1", "cursor-pointer", "d-flex", "align-items-center", "text-muted")} onClick={(e) => removeValue(val, e)}>
                   <Icon icon="x" size={10} />
@@ -245,7 +252,7 @@ export function Select({
         </div>
       )
     }
-    const opt = allOptions.find(o => o.value === selected[0])
+    const opt = allOptions.find(o => o.value.toString() === selected[0]?.toString())
     if (!opt && !search) return <span className="text-muted">{placeholder}</span>
     if (!opt && search) return null
     return (
@@ -253,6 +260,7 @@ export function Select({
         {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-2" />}
         {(indicator === 'flag' || opt?.flag) && opt?.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>}
         {(indicator === 'label' || opt?.badge) && opt?.badge && <span className="badge bg-blue-lt me-2">{opt.badge}</span>}
+        {opt?.icon && <Icon icon={opt.icon} size={14} className="me-2 text-muted" />}
         <span className="text-truncate">{opt?.label}</span>
       </div>
     )
@@ -279,7 +287,7 @@ export function Select({
           'cursor-pointer',
           'position-relative',
           isOpen && 'show focus',
-          state && `is-${state}`
+          (state || error) && `is-${state || (error ? 'invalid' : '')}`
         )}
         onClick={handleContainerClick}
         style={{ 
@@ -362,7 +370,7 @@ export function Select({
                     return (
                       <div 
                         key={oi}
-                        className={clsx('dropdown-item', 'cursor-pointer', selected.includes(opt.value) && 'active')}
+                        className={clsx('dropdown-item', 'cursor-pointer', selected.some(s => s.toString() === opt.value.toString()) && 'active')}
                         onClick={(e) => { e.stopPropagation(); toggleOption(opt.value) }}
                       >
                         {renderOptionContent(opt)}
@@ -386,6 +394,7 @@ export function Select({
           </div>
         </div>
       )}
+      {error && <div className="invalid-feedback d-block mt-1">{error}</div>}
     </div>
   )
 }

@@ -8,6 +8,7 @@ import { Payment } from './Payment'
 
 export interface TagProps {
   text?: ReactNode
+  children?: ReactNode
   flag?: string
   icon?: string
   person?: {
@@ -23,13 +24,19 @@ export interface TagProps {
   badge?: string | number
   badgeColor?: string
   closable?: boolean
+  active?: boolean
+  color?: string
+  rounded?: boolean
+  style?: React.CSSProperties
   onClose?: () => void
+  onClick?: () => void
   className?: string
   href?: string
 }
 
 export function Tag({
   text,
+  children,
   flag,
   icon,
   person,
@@ -41,8 +48,13 @@ export function Tag({
   checked,
   badge,
   badgeColor,
-  closable = true,
+  closable,
+  active,
+  color,
+  rounded,
+  style,
   onClose,
+  onClick,
   className,
   href,
 }: TagProps) {
@@ -63,16 +75,17 @@ export function Tag({
           defaultChecked={checked}
         />
       )}
-      {text}
+      {text || children}
       {badge !== undefined && (
         <Badge color={badgeColor} className="tag-badge" text={badge.toString()} scale="sm" />
       )}
-      {closable && (
+      {(closable || onClose) && (
         <a
           href="#"
           className="btn-close"
           onClick={(e) => {
             e.preventDefault()
+            e.stopPropagation()
             onClose?.()
           }}
           aria-label="Remove tag"
@@ -81,15 +94,32 @@ export function Tag({
     </>
   )
 
-  const classes = clsx('tag', className)
+  const classes = clsx(
+    'tag', 
+    active && 'tag-active',
+    rounded && 'tag-rounded',
+    color && !color.startsWith('#') && `bg-${color}-lt`,
+    className
+  )
 
+  const customStyle: React.CSSProperties = {
+    ...style,
+    backgroundColor: color && color.startsWith('#') ? (active ? color : `${color}22`) : undefined,
+    color: color && color.startsWith('#') ? (active ? '#fff' : color) : undefined,
+    borderColor: color && color.startsWith('#') ? color : undefined,
+    cursor: onClick ? 'pointer' : undefined
+  }
   if (href) {
     return (
-      <a href={href} className={classes}>
+      <a href={href} className={classes} style={customStyle} onClick={onClick}>
         {content}
       </a>
     )
   }
 
-  return <span className={classes}>{content}</span>
+  return (
+    <span className={classes} style={customStyle} onClick={onClick}>
+      {content}
+    </span>
+  )
 }

@@ -8,10 +8,15 @@ export const useAuth = () => {
   // Initialize block: to fetch fresh user data when token exists on mount
   useEffect(() => {
     const init = async () => {
-      if (token && !user) {
-        await refreshUser()
+      try {
+        if (token && !user) {
+          await refreshUser()
+        }
+      } catch (error) {
+        console.error('Auth initialization failed:', error)
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
     }
     
     // Only run if we are loading
