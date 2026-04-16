@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { QueryProvider } from '@/app/providers/QueryProvider'
-import { ThemeProvider } from '@/shared/context/ThemeContext'
+import { ThemeProvider } from '@/app/providers/ThemeProvider'
 import { ThemeSettings } from '@/shared/components/layout/ThemeSettings'
 import { BottomNav } from '@/shared/components/layout/BottomNav'
 import type { AuthState } from '@/features/auth/store/authStore'

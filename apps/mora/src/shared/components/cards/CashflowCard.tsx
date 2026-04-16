@@ -3,7 +3,7 @@ import chartsData from '../../data/charts.json';
 import { Icon } from '../ui/Icon';
 
 export function CashflowCard() {
-  const cashflowData = (chartsData as any)['visual-cashflow'];
+  const cashflowData = (chartsData as Record<string, unknown>)['visual-cashflow'] as Record<string, unknown>;
   
   // Create a sparkline-style active growth chart
   const customGrowthData = {

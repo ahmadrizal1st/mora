@@ -61,7 +61,7 @@ export default function DashboardCrypto() {
   const ethBtc = (ethPriceNum / btcPriceNum).toFixed(8)
   const xmrBtc = (xmrPriceNum / btcPriceNum).toFixed(8)
 
-  const candlestickData = (chartsData as any)['dashboard-crypto-candlestick']
+  const candlestickData = (chartsData as Record<string, unknown>)['dashboard-crypto-candlestick']
 
   return (
     <BaseLayout pageTitle="Crypto Dashboard" pagePretitle="Dashboards">

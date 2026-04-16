@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
+import { type Person } from '@/shared/types/common.types';
 
 interface AuthLockCardProps {
-  person?: any;
+  person?: Person;
   onUnlock?: (password: string) => void;
 }
 

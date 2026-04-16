@@ -33,12 +33,15 @@ export function GalleryPhotoCard({
 
   useEffect(() => {
     if (liked && !prevLikedRef.current) {
-      setIsAnimate(true);
-      const timer = setTimeout(() => setIsAnimate(false), 300);
-      return () => clearTimeout(timer);
+      const startTimer = setTimeout(() => setIsAnimate(true), 0);
+      const endTimer = setTimeout(() => setIsAnimate(false), 300);
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(endTimer);
+      };
     }
     prevLikedRef.current = liked;
-  }, [liked]);
+  }, [liked, setIsAnimate]);
 
   return (
     <div className="card card-sm">

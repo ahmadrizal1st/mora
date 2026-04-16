@@ -1,5 +1,4 @@
-// src/components/cards/charts/SocialReferralsCard.tsx
-import { Chart } from '../../ui/Chart'
+import { Chart, type ChartData } from '../../ui/Chart'
 import { DropdownDays } from '../../ui/DropdownDays'
 import chartsData from '../../../data/charts.json'
 
@@ -15,7 +14,7 @@ export function SocialReferralsCard() {
         </div>
         <Chart
           chartId="social-referrals"
-          chartData={(chartsData as any)['social-referrals']}
+          chartData={(chartsData as Record<string, unknown>)['social-referrals'] as ChartData}
           height={15}
         />
       </div>

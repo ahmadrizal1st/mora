@@ -34,7 +34,7 @@ export interface ButtonProps {
   onClick?: () => void
   roundedCircle?: boolean
   white?: boolean
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export function Button({

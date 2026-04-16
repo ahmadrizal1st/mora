@@ -1,11 +1,11 @@
-// src/components/cards/SignUpCard.tsx
 import React, { useState } from 'react'
 import { Icon } from '../ui/Icon'
 import { ErrorAlert } from '../ui/ErrorAlert'
+import { type RegisterCredentials } from '@/features/auth'
 
 interface SignUpCardProps {
   title?: string
-  onSubmit?: (e: React.FormEvent, data: any) => void
+  onSubmit?: (e: React.FormEvent, data: RegisterCredentials) => void
   isLoading?: boolean
   error?: string | null
   fieldErrors?: Record<string, string[]>

@@ -1,8 +1,8 @@
-// src/components/parts/Tasks.tsx
 import { AvatarList } from '../ui/AvatarList'
 import { Icon } from '../ui/Icon'
 import { SwitchIcon } from '../ui/SwitchIcon'
 import peopleData from '../../data/people.json'
+import { type Person } from '@/shared/types/common.types'
 
 interface Subtask {
   name: string
@@ -83,7 +83,7 @@ export function Tasks({ data }: TasksProps) {
                               <AvatarList
                                 size="xs"
                                 stacked
-                                people={(peopleData as any[]).slice(
+                                people={(peopleData as Person[]).slice(
                                   task['users-offset'] || 0,
                                   (task['users-offset'] || 0) + task.users
                                 )}

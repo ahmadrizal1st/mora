@@ -1,12 +1,12 @@
-// src/components/cards/TasksCard.tsx
-// Matches shared/includes/cards/tasks.html
-// table-selectable + form-check-input checkbox style matching Invoice card
 import { Icon } from '../ui/Icon'
 import { Avatar } from '../ui/Avatar'
+import { type Person } from '@/shared/types/common.types'
 
 // ── Static mock data (deterministic – no random) ────────────────────────────
-const DEFAULT_TASKS: any[] = []
-const DEFAULT_PEOPLE: any[] = []
+interface Task { name: string; checked?: boolean; assigned_to?: number; [key: string]: unknown }
+
+const DEFAULT_TASKS: Task[] = []
+const DEFAULT_PEOPLE: Person[] = []
 
 // Deterministic fake dates per index
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -19,10 +19,6 @@ function fakeDate(i: number) {
 function fakeCheckCount(i: number) { return (i * 3 + 1) % 7 }
 function fakeTotalCount(i: number) { return (i * 2 + 5) % 6 + 5 }
 function fakeMsgCount(i: number) { return (i * 5 + 2) % 13 }
-
-// ── Component ───────────────────────────────────────────────────────────────
-interface Task { name: string; checked?: boolean; [key: string]: any }
-interface Person { full_name?: string; photo?: string; [key: string]: any }
 
 export function TasksCard({
   title = 'Tasks',

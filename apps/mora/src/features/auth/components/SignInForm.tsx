@@ -1,16 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { signInSchema, type SignInFormData } from './SignInForm.schema';
 import { Icon } from '@/shared/components/ui/Icon';
-
-export const signInSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Invalid email address'),
-  password: z.string().min(4, 'Password must be at least 4 characters'),
-  remember: z.boolean().default(false),
-});
-
-export type SignInFormData = z.infer<typeof signInSchema>;
 
 interface SignInFormProps {
   onSubmit: (data: SignInFormData) => void;

@@ -8,8 +8,13 @@ interface NavbarSideNotificationsProps {
     className?: string
 }
 
+interface Notification {
+  status: string
+  [key: string]: unknown
+}
+
 export function NavbarSideNotifications({ className }: NavbarSideNotificationsProps) {
-    const unreadCount = (notificationsData as any[]).filter(n => n.status === 'unread').length
+    const unreadCount = (notificationsData as Notification[]).filter(n => n.status === 'unread').length
 
     return (
         <div className={clsx("nav-item dropdown", className)}>

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useNavigate, useLocation } from '@tanstack/react-router';
 import { Button } from '@/shared/components/ui/Button';
 import { Badge } from '@/shared/components/ui/Badge';
@@ -201,11 +201,11 @@ export default function TrackerPhotoPage() {
     if (!track) return;
 
     try {
-      const capabilities = track.getCapabilities() as any;
+      const capabilities = track.getCapabilities() as MediaTrackCapabilities & { torch?: boolean };
       if (capabilities.torch) {
         track.applyConstraints({
           advanced: [{ torch: isFlash }]
-        } as any);
+        } as MediaTrackConstraints);
       }
     } catch (e) {
       console.warn("Torch not supported", e);
@@ -242,7 +242,7 @@ export default function TrackerPhotoPage() {
       };
       img.src = location.state.image;
     } else {
-      startCamera();
+      setTimeout(() => startCamera(), 0);
     }
 
     const video = videoRef.current;
@@ -626,7 +626,9 @@ export default function TrackerPhotoPage() {
     setIsProcessing(false);
   }, [capturedData, outputFormat, clearAutoCrop]);
 
-  cropAndWarpRef.current = cropAndWarp;
+  useEffect(() => {
+    cropAndWarpRef.current = cropAndWarp;
+  }, [cropAndWarp]);
 
   const handleUploadClick = () => fileInputRef.current?.click();
 
@@ -724,7 +726,7 @@ export default function TrackerPhotoPage() {
                     <label className="dropdown-item d-flex align-items-center">
                       <span className="me-2">Kamera</span>
                       <div className="ms-auto" style={{ width: '110px' }}>
-                        <select className="form-select form-select-sm" value={cameraFacing} onChange={(e) => { setCameraFacing(e.target.value as any); setIsSettingsOpen(false); }}>
+                        <select className="form-select form-select-sm" value={cameraFacing} onChange={(e) => { setCameraFacing(e.target.value as 'environment' | 'user'); setIsSettingsOpen(false); }}>
                           <option value="environment">Belakang</option>
                           <option value="user">Depan</option>
                         </select>
@@ -733,7 +735,7 @@ export default function TrackerPhotoPage() {
                     <label className="dropdown-item d-flex align-items-center">
                       <span className="me-2">Format Output</span>
                       <div className="ms-auto" style={{ width: '110px' }}>
-                        <select className="form-select form-select-sm" value={outputFormat} onChange={(e) => { setOutputFormat(e.target.value as any); setIsSettingsOpen(false); }}>
+                        <select className="form-select form-select-sm" value={outputFormat} onChange={(e) => { setOutputFormat(e.target.value as 'png' | 'jpeg'); setIsSettingsOpen(false); }}>
                           <option value="jpeg">JPEG</option>
                           <option value="png">PNG</option>
                         </select>

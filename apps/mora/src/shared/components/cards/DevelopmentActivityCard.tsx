@@ -1,15 +1,20 @@
-// src/components/cards/DevelopmentActivityCard.tsx
 import { Icon } from '../ui/Icon'
 import { Avatar } from '../ui/Avatar'
 import { Chart } from '../ui/Chart'
 import { ChartSparkline } from '../ui/ChartSparkline'
+import { type Person } from '@/shared/types/common.types'
 
-const MOCK_COMMITS: any[] = []
-const MOCK_PEOPLE: any[] = []
+interface Commit {
+  description: string;
+  date: string;
+}
+
+const MOCK_COMMITS: Commit[] = []
+const MOCK_PEOPLE: Person[] = []
 
 interface DevelopmentActivityCardProps {
-  commits?: typeof MOCK_COMMITS
-  people?: typeof MOCK_PEOPLE
+  commits?: Commit[]
+  people?: Person[]
 }
 
 export function DevelopmentActivityCard({

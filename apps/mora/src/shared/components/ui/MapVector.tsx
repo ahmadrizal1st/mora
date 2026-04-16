@@ -19,14 +19,14 @@ export interface MapVectorProps {
   mapId: string
   mapType?: string
   backgroundColor?: string
-  regionStyle?: any
-  series?: any
+  regionStyle?: Record<string, unknown>
+  series?: Record<string, unknown>
   markers?: VectorMarker[]
   lines?: VectorLine[]
-  markerStyle?: any
-  markerLabelStyle?: any
-  lineStyle?: any
-  labels?: any
+  markerStyle?: Record<string, unknown>
+  markerLabelStyle?: Record<string, unknown>
+  lineStyle?: Record<string, unknown>
+  labels?: Record<string, unknown>
   zoomOnScroll?: boolean
   zoomButtons?: boolean
   className?: string
@@ -51,7 +51,7 @@ export function MapVector({
   ratio = '4x3',
 }: MapVectorProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const mapInstanceRef = useRef<any>(null)
+  const mapInstanceRef = useRef<{ updateSize: () => void; destroy: () => void } | null>(null)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -88,7 +88,7 @@ export function MapVector({
         mapInstanceRef.current = instance
 
         if (typeof window !== 'undefined') {
-          const win = window as any
+          const win = window as unknown as { tabler_map_vector: Record<string, unknown> }
           win.tabler_map_vector = win.tabler_map_vector || {}
           win.tabler_map_vector[mapId] = instance
         }
@@ -115,8 +115,11 @@ export function MapVector({
         mapInstanceRef.current = null
       }
       container.innerHTML = ''
-      if (typeof window !== 'undefined' && (window as any).tabler_map_vector) {
-        delete (window as any).tabler_map_vector[mapId]
+      if (typeof window !== 'undefined') {
+        const win = window as unknown as { tabler_map_vector: Record<string, unknown> }
+        if (win.tabler_map_vector) {
+          delete win.tabler_map_vector[mapId]
+        }
       }
     }
   }, [mapId, mapType, backgroundColor, markers, lines, series, regionStyle, zoomOnScroll, zoomButtons, labels, lineStyle, markerLabelStyle, markerStyle])

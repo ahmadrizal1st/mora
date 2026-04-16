@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import { clsx } from 'clsx'
 import 'nouislider/dist/nouislider.css'
 
@@ -37,16 +37,16 @@ export function Range({
 
     const el = containerRef.current
     let active = true
-    let picker: any = null
+    let picker: { destroy: () => void } | null = null
 
     import('nouislider').then(({ default: noUiSlider }) => {
       if (!active || !el) return
 
-      if ((el as any).noUiSlider) {
-        (el as any).noUiSlider.destroy()
+      if ('noUiSlider' in el) {
+        (el as unknown as { noUiSlider: { destroy: () => void } }).noUiSlider.destroy()
       }
 
-      let connectOption: any = connect
+      let connectOption: boolean | boolean[] | 'lower' | 'upper' = connect ?? false
       if (isMulti) {
         connectOption = []
         for (let i = 2; i <= parsedValues.length; i++) {
@@ -107,8 +107,8 @@ export function Range({
       active = false
       if (picker) {
         picker.destroy()
-      } else if ((el as any).noUiSlider) {
-        (el as any).noUiSlider.destroy()
+      } else if (el && 'noUiSlider' in el) {
+        (el as unknown as { noUiSlider: { destroy: () => void } }).noUiSlider.destroy()
       }
     }
   }, [min, max, step, connect, isMulti, parsedValues, color, className])

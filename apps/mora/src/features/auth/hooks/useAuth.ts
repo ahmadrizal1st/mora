@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { useAuthStore } from '../store/authStore'
 
 export const useAuth = () => {
-  const { token, user, isLoading, refreshUser, setIsLoading } = useAuthStore()
+  const store = useAuthStore()
+  const { token, user, isLoading, refreshUser, setIsLoading } = store
 
   // Initialize block: to fetch fresh user data when token exists on mount
   useEffect(() => {
@@ -20,9 +21,4 @@ export const useAuth = () => {
   }, [token, user, isLoading, refreshUser, setIsLoading])
 
   return store
-}
-
-// Keep this as a dummy export for components that previously imported AuthProvider
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <>{children}</>
 }

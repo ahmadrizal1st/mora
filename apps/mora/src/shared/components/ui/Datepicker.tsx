@@ -27,19 +27,19 @@ export function Datepicker({
   useEffect(() => {
     if (!inputRef.current) return
 
-    let picker: any = null
+    let picker: { destroy: () => void } | null = null
     let active = true
 
     import('litepicker').then(({ default: Litepicker }) => {
       if (!active) return
 
-      picker = new Litepicker({
+      const lp = new Litepicker({
         element: inputRef.current!,
         inlineMode: inline,
         parentEl: inline ? containerRef.current || undefined : undefined,
         format: 'YYYY-MM-DD',
-        setup: (picker) => {
-          picker.on('selected', (date: any) => {
+        setup: (picker: { on: (event: string, cb: (date: { format: (f: string) => string }) => void) => void }) => {
+          picker.on('selected', (date) => {
             const formatted = date.format('YYYY-MM-DD')
             if (inputRef.current) {
               inputRef.current.value = formatted
@@ -50,6 +50,7 @@ export function Datepicker({
           })
         },
       })
+      picker = lp
     }).catch(() => {
     })
 

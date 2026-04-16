@@ -1,9 +1,9 @@
-import { Chart } from '../ui/Chart';
+import { Chart, type ChartData } from '../ui/Chart';
 import { Icon } from '../ui/Icon';
 
 export function ExpenseRadialCard() {
-  const customRadialData = {
-    type: "radialBar" as const,
+  const customRadialData: ChartData = {
+    type: "radialBar",
     series: [
       {
         name: "Equities",
@@ -25,7 +25,7 @@ export function ExpenseRadialCard() {
     startAngle: -90,
     endAngle: 270,
     trackMargin: 5,
-    lineCap: "round" as const,
+    lineCap: "round",
     legend: false
   };
 
@@ -56,7 +56,7 @@ export function ExpenseRadialCard() {
         <div className="flex-grow-1 d-flex flex-column justify-content-center align-items-center mb-1">
           <Chart
             chartId="visual-asset-radial"
-            chartData={{...customRadialData, height: 18, valueFontSize: '1.5rem'} as any}
+            chartData={{...customRadialData, height: 18}}
           />
         </div>
 

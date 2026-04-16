@@ -19,7 +19,7 @@ function pascalToKebab(name: string): string {
 
 export function IconsCard({ title, type = 'outline' }: IconsCardProps) {
   const iconEntries = useMemo(() => {
-    const entries: { name: string; kebab: string; Component: any }[] = []
+    const entries: { name: string; kebab: string; Component: React.ElementType }[] = []
     const allKeys = Object.keys(TablerIcons)
 
     for (const key of allKeys) {
@@ -32,7 +32,7 @@ export function IconsCard({ title, type = 'outline' }: IconsCardProps) {
       // Skip "Off" variants for a cleaner display
       if (type === 'outline' && key.endsWith('Off')) continue
 
-      const Component = (TablerIcons as any)[key]
+      const Component = (TablerIcons as Record<string, React.ElementType>)[key]
       if (!Component) continue
 
       const kebab = pascalToKebab(key)

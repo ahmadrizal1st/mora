@@ -60,15 +60,19 @@ export interface ChartData {
   'y-title'?: string
   'y-tooltip'?: boolean
   'x-formatter'?: string
-  annotations?: any
+  trackMargin?: number
+  'track-margin'?: number
+  strokeColors?: string[]
+  'stroke-colors'?: string[]
+  annotations?: ApexAnnotations
   lineCap?: 'round' | 'butt' | 'square'
   startAngle?: number
   endAngle?: number
   // Bar chart specific modifications
-  yaxis?: any
-  grid?: any
-  legendOptions?: any
-  xaxis?: any
+  yaxis?: ApexYAxis | ApexYAxis[]
+  grid?: ApexGrid
+  legendOptions?: ApexLegend
+  xaxis?: ApexXAxis
   donutLabel?: string
   donutValue?: string
   hollowSize?: string
@@ -174,6 +178,7 @@ export function Chart({
     }))
   }, [chartData.series, chartData.color, chartData.types])
 
+  const startDate = chartData['start-date']
   const buildLabels = useCallback((type: string) => {
     if (!chartData.series) return undefined
 
@@ -182,7 +187,7 @@ export function Chart({
     }
 
     if (chartData.datetime) {
-      const startDateStr = chartData.startDate ?? chartData['start-date'] ?? new Date().toISOString().split('T')[0]
+      const startDateStr = chartData.startDate ?? startDate ?? new Date().toISOString().split('T')[0]
       const start = new Date(startDateStr).getTime()
       const firstSeries = chartData.series[0]
       const daysCount = firstSeries?.data?.length ?? (firstSeries?.candlestickData || firstSeries?.['candlestick-data'])?.length ?? 0
@@ -195,7 +200,7 @@ export function Chart({
     }
 
     return undefined
-  }, [chartData.series, chartData.datetime, chartData.startDate, chartData['start-date']])
+  }, [chartData.series, chartData.datetime, chartData.startDate, startDate])
 
   const buildCategories = useCallback(() => {
     if (!chartData.categories) return undefined
@@ -303,7 +308,7 @@ export function Chart({
             track: {
               background: 'var(--tblr-bg-surface-secondary, #f1f5f9)',
               strokeWidth: '100%',
-              margin: (chartData as any).trackMargin ?? (chartData as any)['track-margin'] ?? 5,
+              margin: chartData.trackMargin ?? chartData['track-margin'] ?? 5,
             },
             dataLabels: {
               name: {
@@ -356,15 +361,15 @@ export function Chart({
       stroke: {
         show: true,
         width: chartData.strokeWidth ?? chartData['stroke-width'] ?? (['pie', 'donut'].includes(chartType) ? 2 : (['area', 'line', 'scatter', 'candlestick'].includes(chartType) ? (chartType === 'candlestick' ? 1 : 2) : 0)),
-        colors: (chartData as any).strokeColors ?? (chartData as any)['stroke-colors'] ?? (['pie', 'donut'].includes(chartType) ? ['var(--tblr-bg-surface)'] : undefined),
+        colors: chartData.strokeColors ?? chartData['stroke-colors'] ?? (['pie', 'donut'].includes(chartType) ? ['var(--tblr-bg-surface)'] : undefined),
         dashArray: chartData.strokeDash ?? chartData['stroke-dash'] ?? 0,
         lineCap: chartData.lineCap ?? 'round',
-        curve: (chartData.strokeCurve ?? chartData['stroke-curve'] ?? 'smooth') as any,
+        curve: (chartData.strokeCurve ?? chartData['stroke-curve'] ?? 'smooth') as 'smooth' | 'straight' | 'stepline',
       },
       ...(chartData.annotations && {
-        annotations: chartData.annotations,
+        annotations: chartData.annotations as ApexAnnotations,
       }),
-      series: buildSeries(chartType) as any,
+      series: buildSeries(chartType) as ApexAxisChartSeries | ApexNonAxisChartSeries,
       ...( (chartData.datetime || ['pie', 'donut', 'radialBar'].includes(chartType)) && { labels: buildLabels(chartType) }),
       tooltip: {
         theme: 'dark',
@@ -420,7 +425,7 @@ export function Chart({
         ...(chartData.datetime && { type: 'datetime' }),
         // Modifikasi bar chart: Support custom xaxis extra
         ...(chartData.xaxis || {}),
-      } as any,
+      } as ApexXAxis,
       ...(!['pie', 'donut', 'radialBar'].includes(chartType) && {
         yaxis: {
           labels: { padding: 4 },
@@ -435,7 +440,7 @@ export function Chart({
         show: !!chartData.legend,
         position: 'bottom',
         offsetY: 12,
-        markers: { width: 10, height: 10, radius: 100 } as any,
+        markers: { width: 10, height: 10, radius: 100 } as ApexMarkers,
         itemMargin: { horizontal: 8, vertical: 8 },
         // Modifikasi bar chart: Support custom legend control
         ...chartData.legendOptions,

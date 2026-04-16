@@ -8,18 +8,37 @@ import { Icon } from '../ui/Icon'
 import { useTheme } from '@/shared/context/ThemeContext'
 import menuData from '../../data/menu.json'
 
-const navigationData: NavItem[] = Object.values(menuData).map((section: any) => ({
+interface MenuSub {
+  title: string
+  url?: string
+}
+
+interface MenuChild {
+  title: string
+  url?: string
+  badge?: string
+  children?: Record<string, MenuSub>
+}
+
+interface MenuSection {
+  title: string
+  icon?: string
+  columns?: number
+  children?: Record<string, MenuChild>
+}
+
+const navigationData: NavItem[] = Object.values(menuData as Record<string, MenuSection>).map((section) => ({
   label: section.title,
   icon: section.icon,
   dropdown: !!section.children,
   columns: section.columns,
   items: section.children
-    ? Object.values(section.children).map((child: any) => ({
+    ? Object.values(section.children).map((child) => ({
       label: child.title,
       href: child.url ? `/${child.url.replace('.html', '').replace(/^index$/, 'dashboard').replace(/\/index$/, '')}` : '#',
       badge: child.badge,
       items: child.children
-        ? Object.values(child.children).map((sub: any) => ({
+        ? Object.values(child.children).map((sub) => ({
           label: sub.title,
           href: sub.url ? `/${sub.url.replace('.html', '').replace(/\/index$/, '')}` : '#',
         }))

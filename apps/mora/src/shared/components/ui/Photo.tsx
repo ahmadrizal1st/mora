@@ -14,6 +14,12 @@ export interface PhotoProps {
   height?: number
 }
 
+interface PhotoData {
+  file: string
+  title: string
+  horizontal?: boolean
+}
+
 export function Photo({
   id,
   horizontal,
@@ -29,7 +35,7 @@ export function Photo({
   let finalAlt = altProp
 
   if (id !== undefined) {
-    let photos = photosData as any[]
+    const photos = photosData as PhotoData[]
     if (horizontal) {
       photos = photos.filter((p) => p.horizontal)
     }

@@ -2,8 +2,8 @@
 import React, { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { SignUpCard } from '@/shared/components/cards/SignUpCard'
-import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useNavigate } from '@tanstack/react-router'
+import { type RegisterCredentials, useAuth } from '@/features/auth'
 
 export default function SignUp() {
   const { register } = useAuth()
@@ -12,19 +12,20 @@ export default function SignUp() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleRegister = async (_e: React.FormEvent, data: any) => {
+  const handleRegister = async (_e: React.FormEvent, data: RegisterCredentials) => {
     setError(null)
     setFieldErrors(undefined)
     setIsLoading(true)
     try {
       await register(data)
       navigate('/dashboard')
-    } catch (err: any) {
-      console.error('[SignUp] Registration error:', err)
-      console.error('[SignUp] err.response:', err.response)
-      console.error('[SignUp] err.response?.data:', err.response?.data)
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string; error?: string; errors?: Record<string, string[]> } }; data?: { message?: string; errors?: Record<string, string[]> } | string }
+      console.error('[SignUp] Registration error:', error)
+      console.error('[SignUp] err.response:', error.response)
+      console.error('[SignUp] err.response?.data:', error.response?.data)
 
-      const responseData = err?.response?.data ?? err?.data ?? null
+      const responseData = error?.response?.data ?? error?.data ?? null
 
       const message =
         responseData?.message ||

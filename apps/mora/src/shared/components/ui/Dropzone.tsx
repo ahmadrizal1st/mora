@@ -27,7 +27,7 @@ export function Dropzone({
     if (!dropzoneRef.current) return
 
     let active = true
-    let dz: any = null
+    let dz: { destroy: () => void; emit: (event: string, ...args: unknown[]) => void } | null = null
 
     import('dropzone').then(({ default: DropzoneLib }) => {
       if (!active || !dropzoneRef.current) return
@@ -40,7 +40,7 @@ export function Dropzone({
         dictDefaultMessage: custom ? "" : text,
         autoProcessQueue: false,
         init: function() {
-          this.on("addedfile", (file: any) => {
+          this.on("addedfile", (file: { name: string }) => {
             setTimeout(() => {
               this.emit("uploadprogress", file, 100, 1024);
               this.emit("success", file, "Success", null);
@@ -48,7 +48,7 @@ export function Dropzone({
             }, 500);
           });
         }
-      })
+      }) as unknown as { destroy: () => void; emit: (event: string, ...args: unknown[]) => void }
     })
 
     return () => {

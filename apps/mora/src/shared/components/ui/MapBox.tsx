@@ -35,7 +35,7 @@ export function MapBox({
   const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
-    let map: any = null
+    let map: mapboxgl.Map | null = null
     let resizeObserver: ResizeObserver | null = null
     let timer: NodeJS.Timeout | null = null
 
@@ -56,7 +56,7 @@ export function MapBox({
       })
 
       if (typeof window !== 'undefined') {
-        const win = window as any
+        const win = window as unknown as { tabler_map: Record<string, mapboxgl.Map> }
         win.tabler_map = win.tabler_map || {}
         win.tabler_map[id] = map
       }
@@ -65,9 +65,10 @@ export function MapBox({
         map?.resize()
       })
 
-      map.on('error', (e: any) => {
+      map.on('error', (e: mapboxgl.ErrorEvent) => {
         console.warn('Mapbox error:', e.error)
-        if (e.error?.status === 401 || e.error?.status === 403) {
+        const error = e.error as unknown as { status?: number }
+        if (error?.status === 401 || error?.status === 403) {
           setLoadError('Invalid or restricted Access Token.')
         }
       })
@@ -94,8 +95,11 @@ export function MapBox({
       if (timer) clearTimeout(timer)
       if (resizeObserver) resizeObserver.disconnect()
       if (map) map.remove()
-      if (typeof window !== 'undefined' && (window as any).tabler_map) {
-        delete (window as any).tabler_map[id]
+      if (typeof window !== 'undefined') {
+        const win = window as unknown as { tabler_map: Record<string, mapboxgl.Map> }
+        if (win.tabler_map) {
+          delete win.tabler_map[id]
+        }
       }
     }
   }, [id, center, zoom, style, markers])

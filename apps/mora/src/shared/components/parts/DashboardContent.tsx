@@ -11,6 +11,7 @@ import { MobileGridMenu } from './MobileGridMenu'
 
 import moraData from '../../data/mora-dashboard.json'
 import peopleData from '../../data/people.json'
+import { type Person } from '@/shared/types/common.types'
 
 export function DashboardContent() {
   const { summary, limits, savingsPlans, cashflow, statistics, recentTransactions, activities } =
@@ -439,11 +440,8 @@ export function DashboardContent() {
                 <ActivityCard
                   activity={activities.map((a) => ({
                     text: a.text,
-                    time: a.time,
-                    type: a.type as any,
-                    user: a.user,
                   }))}
-                  people={peopleData}
+                  people={peopleData as Person[]}
                   hideHeader
                 />
               </div>

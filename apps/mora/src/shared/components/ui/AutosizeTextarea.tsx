@@ -25,7 +25,7 @@ export function AutosizeTextarea({ className, ...props }: AutosizeTextareaProps)
       className={clsx('form-control', className)}
       onInput={(e) => {
         adjustHeight();
-        if (props.onInput) props.onInput(e as any);
+        if (props.onInput) props.onInput(e);
       }}
     />
   );

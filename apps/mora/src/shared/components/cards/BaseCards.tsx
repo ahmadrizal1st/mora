@@ -7,7 +7,7 @@ interface BaseProps {
   style?: React.CSSProperties;
 }
 
-export const Card: React.FC<BaseProps & { as?: any; [key: string]: any }> = ({ children, className, as: Component = 'div', ...props }) => (
+export const Card: React.FC<BaseProps & { as?: React.ElementType; [key: string]: unknown }> = ({ children, className, as: Component = 'div', ...props }) => (
   <Component className={`card${className ? ` ${className}` : ''}`} {...props}>{children}</Component>
 );
 

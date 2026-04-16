@@ -55,7 +55,7 @@ export function ChartSparkline({
 
     const opts: ApexOptions = {
       chart: {
-        type: apexType as any,
+        type: apexType as ApexOptions['chart']['type'],
         fontFamily: 'inherit',
         height: Math.round(height * 16),
         ...(isSquare ? { width: Math.round(height * 16) } : {}),
@@ -81,7 +81,7 @@ export function ChartSparkline({
         ...((type === 'area' || type === 'line') && {
           stroke: { width: 2, lineCap: 'round' },
         }),
-        series: [{ color: resolvedColor, data: parsedData } as any],
+        series: [{ color: resolvedColor, data: parsedData }] as ApexAxisChartSeries,
       }),
     }
 

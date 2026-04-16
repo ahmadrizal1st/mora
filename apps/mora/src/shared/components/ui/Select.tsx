@@ -2,8 +2,9 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { clsx } from 'clsx'
 import { Icon } from './Icon'
 import { Avatar } from './Avatar'
-import selectsData from '../../data/selects.json'
-import peopleData from '../../data/people.json'
+ import selectData from '../../data/selects.json'
+ import peopleData from '../../data/people.json'
+ import { type Person } from '@/shared/types/common.types'
 
 export interface SelectOption {
   value: string
@@ -60,7 +61,7 @@ export function Select({
 
   const resolvedOptions = useMemo(() => {
     if (selectKey) {
-      const entry = (selectsData as Record<string, any>)[selectKey]
+      const entry = (selectData as Record<string, { data?: string; options?: unknown }>)[selectKey]
       if (entry) {
         if (entry.data === 'people') {
           return (peopleData as Person[]).map((p) => ({
@@ -71,17 +72,18 @@ export function Select({
         }
         if (entry.options) {
           if (Array.isArray(entry.options)) {
-            return entry.options.map((opt: any) => {
-              if (opt.title && opt.options) {
+            return (entry.options as unknown[]).map((opt) => {
+              const o = opt as { title?: string; options?: unknown[] }
+              if (o && typeof o === 'object' && o.title && o.options) {
                 return {
-                  title: opt.title,
-                  options: opt.options.map((o: any) => typeof o === 'string' ? { value: o, label: o } : o)
+                  title: o.title,
+                  options: (o.options as unknown[]).map((optChild) => typeof optChild === 'string' ? { value: optChild, label: optChild } : optChild as SelectOption)
                 }
               }
-              return typeof opt === 'string' ? { value: opt, label: opt } : opt
+              return typeof opt === 'string' ? { value: opt, label: opt } : opt as SelectOption
             })
           } else {
-            return Object.entries(entry.options).map(([val, data]: [string, any]) => ({
+            return Object.entries(entry.options as Record<string, { name?: string; flag?: string; label?: string }>).map(([val, data]) => ({
               value: val,
               label: data.name || val,
               flag: data.flag,
