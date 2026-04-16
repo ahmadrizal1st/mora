@@ -40,7 +40,11 @@ export function SignInCard({
             <ErrorAlert message={error} fieldErrors={fieldErrors} />
           )}
   
-          <SignInForm onSubmit={onSubmit} isLoading={isLoading} fieldErrors={fieldErrors} />
+          <SignInForm 
+            onSubmit={(data) => onSubmit?.(data)} 
+            isLoading={isLoading} 
+            fieldErrors={fieldErrors} 
+          />
         </div>
   
         <div className="hr-text">or</div>

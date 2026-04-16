@@ -15,16 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin HR (owner)
         User::factory()->owner()->create([
-            'name' => 'Admin HR',
+            'name' => 'Admin',
             'email' => 'admin@vistamora.com',
         ]);
 
-        // Karyawan (employee)
         User::factory()->employee()->create([
             'name' => 'Budi Karyawan',
             'email' => 'budi@vistamora.com',
         ]);
+
+        $this->call(TransactionSeeder::class);
     }
 }

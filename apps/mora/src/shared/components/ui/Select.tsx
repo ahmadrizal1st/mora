@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { clsx } from 'clsx'
 import { Icon } from './Icon'
 import { Avatar } from './Avatar'

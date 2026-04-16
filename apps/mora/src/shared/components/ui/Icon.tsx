@@ -13,6 +13,8 @@ interface IconProps {
 }
 
 function toPascalCase(name: string): string {
+  if (!name || typeof name !== 'string') return ''
+  
   return 'Icon' + name
     .split('-')
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
@@ -20,6 +22,8 @@ function toPascalCase(name: string): string {
 }
 
 export function Icon({ icon, className, color, size, inline, filled, stroke, style }: IconProps) {
+  if (!icon) return null
+
   const componentName = toPascalCase(filled ? `${icon}-filled` : icon)
   const fallbackName = toPascalCase(icon)
 

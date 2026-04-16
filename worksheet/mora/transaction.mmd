@@ -1,0 +1,86 @@
+erDiagram
+    currencies {
+        int id PK
+        string code
+        string symbol
+        string name
+        float rate_to_idr
+        bool is_default
+        bool is_active
+        timestamp updated_at
+    }
+    user_settings {
+        int id PK
+        int default_currency_id FK
+        string locale
+        string date_format
+        string number_format
+        timestamp updated_at
+    }
+    accounts {
+        int id PK
+        string name
+        bigint balance_raw
+        int currency_id FK
+        string color
+        enum type
+        bool is_credit
+        bigint credit_limit
+        timestamp created_at
+    }
+    categories {
+        int id PK
+        string name
+        enum tx_type
+        string icon
+        string color
+        bool is_default
+    }
+    tags {
+        int id PK
+        string name
+        string color
+    }
+    statuses {
+        int id PK
+        string name
+        string color
+    }
+    recurring_types {
+        int id PK
+        string name
+        int interval_days
+    }
+    transactions {
+        bigint id PK
+        enum type
+        bigint amount_raw
+        int currency_id FK
+        float rate_snapshot
+        float amount_in_default
+        int account_id FK
+        int to_account_id FK
+        int category_id FK
+        int status_id FK
+        int recurring_type_id FK
+        date tx_date
+        string merchant
+        text notes
+        json dynamic_fields
+        timestamp created_at
+    }
+    transaction_tags {
+        int transaction_id FK
+        int tag_id FK
+    }
+
+    currencies ||--o{ accounts : "digunakan di"
+    currencies ||--o{ transactions : "mata uang"
+    currencies ||--o{ user_settings : "default currency"
+    accounts ||--o{ transactions : "akun sumber"
+    accounts ||--o{ transactions : "akun tujuan"
+    categories ||--o{ transactions : "kategori"
+    statuses ||--o{ transactions : "status"
+    recurring_types ||--o{ transactions : "berulang"
+    transactions ||--o{ transaction_tags : "memiliki"
+    tags ||--o{ transaction_tags : "dipakai di"

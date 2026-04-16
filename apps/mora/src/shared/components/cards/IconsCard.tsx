@@ -32,7 +32,7 @@ export function IconsCard({ title, type = 'outline' }: IconsCardProps) {
       // Skip "Off" variants for a cleaner display
       if (type === 'outline' && key.endsWith('Off')) continue
 
-      const Component = (TablerIcons as Record<string, React.ElementType>)[key]
+      const Component = (TablerIcons as unknown as any)[key]
       if (!Component) continue
 
       const kebab = pascalToKebab(key)

@@ -35,7 +35,7 @@ export function Photo({
   let finalAlt = altProp
 
   if (id !== undefined) {
-    const photos = photosData as PhotoData[]
+    let photos = photosData as PhotoData[]
     if (horizontal) {
       photos = photos.filter((p) => p.horizontal)
     }

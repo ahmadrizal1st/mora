@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
-import mapboxgl from 'mapbox-gl'
+import * as mapboxgl from 'mapbox-gl'
+type Map = any
+type ErrorEvent = any
 import site from '../../data/site.json'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_KEY || site.mapboxKey
@@ -35,7 +37,7 @@ export function MapBox({
   const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
-    let map: mapboxgl.Map | null = null
+    let map: Map | null = null
     let resizeObserver: ResizeObserver | null = null
     let timer: NodeJS.Timeout | null = null
 
@@ -56,7 +58,7 @@ export function MapBox({
       })
 
       if (typeof window !== 'undefined') {
-        const win = window as unknown as { tabler_map: Record<string, mapboxgl.Map> }
+        const win = window as unknown as { tabler_map: Record<string, Map> }
         win.tabler_map = win.tabler_map || {}
         win.tabler_map[id] = map
       }
@@ -65,7 +67,7 @@ export function MapBox({
         map?.resize()
       })
 
-      map.on('error', (e: mapboxgl.ErrorEvent) => {
+      map.on('error', (e: ErrorEvent) => {
         console.warn('Mapbox error:', e.error)
         const error = e.error as unknown as { status?: number }
         if (error?.status === 401 || error?.status === 403) {
@@ -96,7 +98,7 @@ export function MapBox({
       if (resizeObserver) resizeObserver.disconnect()
       if (map) map.remove()
       if (typeof window !== 'undefined') {
-        const win = window as unknown as { tabler_map: Record<string, mapboxgl.Map> }
+        const win = window as unknown as { tabler_map: Record<string, Map> }
         if (win.tabler_map) {
           delete win.tabler_map[id]
         }

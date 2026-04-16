@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Avatar } from '../ui/Avatar'
 
 import type { Person } from '@/shared/types/common.types'

@@ -55,19 +55,19 @@ export function NavbarSideUser({
         className={clsx('dropdown-menu', 'dropdown-menu-end', 'dropdown-menu-arrow')}
         {...(dark ? { 'data-bs-theme': 'light' } : {})}
       >
-        <Link to="/profile" className="dropdown-item">
+        <a href="#" className="dropdown-item">
           <Icon icon="user" className="dropdown-item-icon" /> Profile
-        </Link>
-        <Link to="#" className="dropdown-item">
+        </a>
+        <a href="#" className="dropdown-item">
           <Icon icon="chart-pie" className="dropdown-item-icon" /> Analytics
-        </Link>
+        </a>
         <div className="dropdown-divider" />
-        <Link to="/settings" className="dropdown-item">
+        <a href="#" className="dropdown-item">
           Settings & Privacy
-        </Link>
-        <Link to="#" className="dropdown-item">
+        </a>
+        <a href="#" className="dropdown-item">
           Help
-        </Link>
+        </a>
         <a href="#" onClick={handleLogout} className="dropdown-item">
           Sign out
         </a>

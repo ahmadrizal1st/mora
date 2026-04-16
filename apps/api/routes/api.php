@@ -1,11 +1,16 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LookupController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,3 +55,31 @@ Route::prefix('auth')->group(function () {
         Route::patch('/me/password', [PasswordController::class, 'changePassword']);
     });
 });
+
+/*
+|--------------------------------------------------------------------------
+| Transaction Module Routes (Protected)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Transactions
+    Route::apiResource('transactions', TransactionController::class);
+    Route::get('transactions-summary', [TransactionController::class, 'summary']);
+
+    // Accounts
+    Route::apiResource('accounts', AccountController::class);
+
+    // Categories
+    Route::get('categories', [CategoryController::class, 'index']);
+
+    // Tags
+    Route::apiResource('tags', TagController::class)->except(['show']);
+
+    // Lookups
+    Route::get('currencies', [LookupController::class, 'currencies']);
+    Route::get('statuses', [LookupController::class, 'statuses']);
+    Route::get('recurring-types', [LookupController::class, 'recurringTypes']);
+});
+

@@ -75,7 +75,7 @@ export function CashflowCard() {
         <div className="mt-auto">
           <Chart
             chartId="visual-asset-growth"
-            chartData={customGrowthData}
+            chartData={customGrowthData as any}
           />
         </div>
         

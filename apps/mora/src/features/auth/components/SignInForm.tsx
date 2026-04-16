@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInSchema, type SignInFormData } from './SignInForm.schema';
+export type { SignInFormData };
 import { Icon } from '@/shared/components/ui/Icon';
 
 interface SignInFormProps {

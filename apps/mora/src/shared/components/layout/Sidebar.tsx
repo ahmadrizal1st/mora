@@ -20,7 +20,7 @@ interface MenuChild {
 interface MenuSection {
   title: string
   icon?: string
-  type?: string
+  type?: 'header'
   children?: Record<string, MenuChild>
 }
 
@@ -78,11 +78,25 @@ function SidebarMenuItem({ item, currentPath }: { item: NavItem; currentPath: st
             <div className="dropdown-menu-column">
               {item.items?.map((subItem, index) => {
                 const subActive = isNavItemActive(subItem, currentPath)
+                const isExternal = !subItem.href || subItem.href === '#' || !subItem.href.startsWith('/')
+                
+                if (isExternal) {
+                  return (
+                    <a
+                      key={index}
+                      className={clsx('dropdown-item', subActive && 'active')}
+                      href={subItem.href || '#'}
+                    >
+                      {subItem.label}
+                    </a>
+                  )
+                }
+
                 return (
                   <Link
                     key={index}
                     className={clsx('dropdown-item', subActive && 'active')}
-                    to={subItem.href || '#'}
+                    to={subItem.href as any}
                   >
                     {subItem.label}
                   </Link>
@@ -95,9 +109,24 @@ function SidebarMenuItem({ item, currentPath }: { item: NavItem; currentPath: st
     )
   }
 
+  const isExternal = !item.href || item.href === '#' || !item.href.startsWith('/')
+
+  if (isExternal) {
+    return (
+      <li className={clsx('nav-item', active && 'active')}>
+        <a className="nav-link" href={item.href || '#'}>
+          <span className="nav-link-icon d-md-none d-lg-inline-block">
+            {item.icon && <Icon icon={item.icon} />}
+          </span>
+          <span className="nav-link-title">{item.label}</span>
+        </a>
+      </li>
+    )
+  }
+
   return (
     <li className={clsx('nav-item', active && 'active')}>
-      <Link className="nav-link" to={item.href || '#'}>
+      <Link className="nav-link" to={item.href as any}>
         <span className="nav-link-icon d-md-none d-lg-inline-block">
           {item.icon && <Icon icon={item.icon} />}
         </span>

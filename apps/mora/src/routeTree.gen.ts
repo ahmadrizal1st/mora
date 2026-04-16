@@ -10,9 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignUpRouteImport } from './routes/sign-up'
+import { Route as SignInLinkRouteImport } from './routes/sign-in-link'
+import { Route as SignInIllustrationRouteImport } from './routes/sign-in-illustration'
+import { Route as SignInCoverRouteImport } from './routes/sign-in-cover'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AuthLockRouteImport } from './routes/auth-lock'
+import { Route as AccountsRouteImport } from './routes/accounts'
+import { Route as R2StepVerificationCodeRouteImport } from './routes/2-step-verification-code'
+import { Route as R2StepVerificationRouteImport } from './routes/2-step-verification'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TransactionsIndexRouteImport } from './routes/transactions.index'
 import { Route as TrackerIndexRouteImport } from './routes/tracker.index'
 import { Route as TrackerPhotoRouteImport } from './routes/tracker.photo'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
@@ -22,9 +32,34 @@ const SignUpRoute = SignUpRouteImport.update({
   path: '/sign-up',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignInLinkRoute = SignInLinkRouteImport.update({
+  id: '/sign-in-link',
+  path: '/sign-in-link',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignInIllustrationRoute = SignInIllustrationRouteImport.update({
+  id: '/sign-in-illustration',
+  path: '/sign-in-illustration',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignInCoverRoute = SignInCoverRouteImport.update({
+  id: '/sign-in-cover',
+  path: '/sign-in-cover',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -32,9 +67,34 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthLockRoute = AuthLockRouteImport.update({
+  id: '/auth-lock',
+  path: '/auth-lock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountsRoute = AccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R2StepVerificationCodeRoute = R2StepVerificationCodeRouteImport.update({
+  id: '/2-step-verification-code',
+  path: '/2-step-verification-code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R2StepVerificationRoute = R2StepVerificationRouteImport.update({
+  id: '/2-step-verification',
+  path: '/2-step-verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransactionsIndexRoute = TransactionsIndexRouteImport.update({
+  id: '/transactions/',
+  path: '/transactions/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackerIndexRoute = TrackerIndexRouteImport.update({
@@ -55,70 +115,140 @@ const TrackerInputRoute = TrackerInputRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/2-step-verification': typeof R2StepVerificationRoute
+  '/2-step-verification-code': typeof R2StepVerificationCodeRoute
+  '/accounts': typeof AccountsRoute
+  '/auth-lock': typeof AuthLockRoute
   '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
+  '/sign-in-cover': typeof SignInCoverRoute
+  '/sign-in-illustration': typeof SignInIllustrationRoute
+  '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/': typeof TrackerIndexRoute
+  '/transactions/': typeof TransactionsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/2-step-verification': typeof R2StepVerificationRoute
+  '/2-step-verification-code': typeof R2StepVerificationCodeRoute
+  '/accounts': typeof AccountsRoute
+  '/auth-lock': typeof AuthLockRoute
   '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
+  '/sign-in-cover': typeof SignInCoverRoute
+  '/sign-in-illustration': typeof SignInIllustrationRoute
+  '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker': typeof TrackerIndexRoute
+  '/transactions': typeof TransactionsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/2-step-verification': typeof R2StepVerificationRoute
+  '/2-step-verification-code': typeof R2StepVerificationCodeRoute
+  '/accounts': typeof AccountsRoute
+  '/auth-lock': typeof AuthLockRoute
   '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
+  '/sign-in-cover': typeof SignInCoverRoute
+  '/sign-in-illustration': typeof SignInIllustrationRoute
+  '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/': typeof TrackerIndexRoute
+  '/transactions/': typeof TransactionsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/2-step-verification'
+    | '/2-step-verification-code'
+    | '/accounts'
+    | '/auth-lock'
     | '/dashboard'
+    | '/forgot-password'
+    | '/reset-password'
     | '/sign-in'
+    | '/sign-in-cover'
+    | '/sign-in-illustration'
+    | '/sign-in-link'
     | '/sign-up'
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/'
+    | '/transactions/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/2-step-verification'
+    | '/2-step-verification-code'
+    | '/accounts'
+    | '/auth-lock'
     | '/dashboard'
+    | '/forgot-password'
+    | '/reset-password'
     | '/sign-in'
+    | '/sign-in-cover'
+    | '/sign-in-illustration'
+    | '/sign-in-link'
     | '/sign-up'
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker'
+    | '/transactions'
   id:
     | '__root__'
     | '/'
+    | '/2-step-verification'
+    | '/2-step-verification-code'
+    | '/accounts'
+    | '/auth-lock'
     | '/dashboard'
+    | '/forgot-password'
+    | '/reset-password'
     | '/sign-in'
+    | '/sign-in-cover'
+    | '/sign-in-illustration'
+    | '/sign-in-link'
     | '/sign-up'
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/'
+    | '/transactions/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R2StepVerificationRoute: typeof R2StepVerificationRoute
+  R2StepVerificationCodeRoute: typeof R2StepVerificationCodeRoute
+  AccountsRoute: typeof AccountsRoute
+  AuthLockRoute: typeof AuthLockRoute
   DashboardRoute: typeof DashboardRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignInRoute: typeof SignInRoute
+  SignInCoverRoute: typeof SignInCoverRoute
+  SignInIllustrationRoute: typeof SignInIllustrationRoute
+  SignInLinkRoute: typeof SignInLinkRoute
   SignUpRoute: typeof SignUpRoute
   TrackerInputRoute: typeof TrackerInputRoute
   TrackerPhotoRoute: typeof TrackerPhotoRoute
   TrackerIndexRoute: typeof TrackerIndexRoute
+  TransactionsIndexRoute: typeof TransactionsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -130,11 +260,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sign-in-link': {
+      id: '/sign-in-link'
+      path: '/sign-in-link'
+      fullPath: '/sign-in-link'
+      preLoaderRoute: typeof SignInLinkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in-illustration': {
+      id: '/sign-in-illustration'
+      path: '/sign-in-illustration'
+      fullPath: '/sign-in-illustration'
+      preLoaderRoute: typeof SignInIllustrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in-cover': {
+      id: '/sign-in-cover'
+      path: '/sign-in-cover'
+      fullPath: '/sign-in-cover'
+      preLoaderRoute: typeof SignInCoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -144,11 +309,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth-lock': {
+      id: '/auth-lock'
+      path: '/auth-lock'
+      fullPath: '/auth-lock'
+      preLoaderRoute: typeof AuthLockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accounts': {
+      id: '/accounts'
+      path: '/accounts'
+      fullPath: '/accounts'
+      preLoaderRoute: typeof AccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/2-step-verification-code': {
+      id: '/2-step-verification-code'
+      path: '/2-step-verification-code'
+      fullPath: '/2-step-verification-code'
+      preLoaderRoute: typeof R2StepVerificationCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/2-step-verification': {
+      id: '/2-step-verification'
+      path: '/2-step-verification'
+      fullPath: '/2-step-verification'
+      preLoaderRoute: typeof R2StepVerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transactions/': {
+      id: '/transactions/'
+      path: '/transactions'
+      fullPath: '/transactions/'
+      preLoaderRoute: typeof TransactionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tracker/': {
@@ -177,12 +377,22 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R2StepVerificationRoute: R2StepVerificationRoute,
+  R2StepVerificationCodeRoute: R2StepVerificationCodeRoute,
+  AccountsRoute: AccountsRoute,
+  AuthLockRoute: AuthLockRoute,
   DashboardRoute: DashboardRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignInRoute: SignInRoute,
+  SignInCoverRoute: SignInCoverRoute,
+  SignInIllustrationRoute: SignInIllustrationRoute,
+  SignInLinkRoute: SignInLinkRoute,
   SignUpRoute: SignUpRoute,
   TrackerInputRoute: TrackerInputRoute,
   TrackerPhotoRoute: TrackerPhotoRoute,
   TrackerIndexRoute: TrackerIndexRoute,
+  TransactionsIndexRoute: TransactionsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

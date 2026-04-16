@@ -34,8 +34,8 @@ export function NavbarSideNotifications({ className }: NavbarSideNotificationsPr
             </a>
 
             {/* Mobile: Link to Page */}
-            <Link
-                to="/notifications"
+            <a
+                href="#"
                 className="nav-link px-0 d-md-none"
                 aria-label="Show notifications"
             >
@@ -43,7 +43,7 @@ export function NavbarSideNotifications({ className }: NavbarSideNotificationsPr
                 {unreadCount > 0 && (
                     <span className="badge badge-dot bg-red" />
                 )}
-            </Link>
+            </a>
 
             <div className="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card">
                 <NavbarNotifications />

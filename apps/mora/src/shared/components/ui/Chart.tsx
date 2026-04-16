@@ -5,6 +5,16 @@ import type { ApexOptions } from 'apexcharts'
 import { useTheme } from '@/shared/context/ThemeContext'
 import { resolveCSSColor } from '../../utils/chartUtils'
 
+// Use any for complex ApexCharts types that are not exported top-level
+type ApexAnnotations = any
+type ApexYAxis = any
+type ApexGrid = any
+type ApexLegend = any
+type ApexXAxis = any
+type ApexAxisChartSeries = any
+type ApexNonAxisChartSeries = any
+type ApexMarkers = any
+
 export interface ChartSerie {
   name: string
   data: (number | null)[]
