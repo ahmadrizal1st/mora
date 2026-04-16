@@ -8,26 +8,37 @@ export const useAuth = () => {
   // Initialize block: to fetch fresh user data when token exists on mount
   useEffect(() => {
     // Wait until store is hydrated from localStorage before making any decisions
-    if (!_hasHydrated) return
+    if (!_hasHydrated) {
+      return
+    }
+
 
     const init = async () => {
       try {
-        // Only fetch user if we have a token but no user data yet
         if (token && !user) {
           await refreshUser()
         }
       } catch (error) {
-        console.error('Auth initialization failed:', error)
+        console.error('❌ [Auth] Initialization failed:', error)
       } finally {
-        // Always stop loading regardless of success/fail
         setIsLoading(false)
       }
     }
     
+    // Safety timeout: force close loading screen after 10s if stuck
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        console.warn('⚠️ [Auth] Initialization timed out. Forcing UI to load.')
+        setIsLoading(false)
+      }
+    }, 10000)
+
     // Only run if we are in the initial loading state
     if (isLoading) {
       init()
     }
+
+    return () => clearTimeout(timeout)
   }, [_hasHydrated, token, user, isLoading, refreshUser, setIsLoading])
 
   return store

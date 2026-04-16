@@ -20,9 +20,11 @@ class RegisterController extends Controller
         $user = AuthService::register($request->validated());
 
         return response()->json([
-            'user_id' => $user->id,
-            'email' => $user->email,
-            'message' => 'OTP dikirim ke email.',
+            'data' => [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'message' => 'OTP dikirim ke email.',
+            ]
         ], 201);
     }
 
@@ -39,8 +41,10 @@ class RegisterController extends Controller
         );
 
         return response()->json([
-            'access_token' => $result['access_token'],
-            'user' => $result['user'],
+            'data' => [
+                'access_token' => $result['access_token'],
+                'user' => $result['user'],
+            ]
         ]);
     }
 }

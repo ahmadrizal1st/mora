@@ -18,11 +18,13 @@ class DatabaseSeeder extends Seeder
         User::factory()->owner()->create([
             'name' => 'Admin',
             'email' => 'admin@vistamora.com',
+            'password'=> bcrypt('password'),
         ]);
 
         User::factory()->employee()->create([
             'name' => 'Budi Karyawan',
             'email' => 'budi@vistamora.com',
+            'password'=> bcrypt('password'),
         ]);
 
         $this->call(TransactionSeeder::class);

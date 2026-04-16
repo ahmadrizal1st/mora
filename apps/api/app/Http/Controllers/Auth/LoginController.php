@@ -21,8 +21,10 @@ class LoginController extends Controller
         $result = AuthService::login($request->validated());
 
         return response()->json([
-            'access_token' => $result['access_token'],
-            'user' => $result['user'],
+            'data' => [
+                'access_token' => $result['access_token'],
+                'user' => $result['user'],
+            ]
         ]);
     }
 

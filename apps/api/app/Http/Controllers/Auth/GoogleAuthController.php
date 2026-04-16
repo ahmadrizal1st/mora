@@ -23,8 +23,10 @@ class GoogleAuthController extends Controller
         $result = AuthService::loginWithGoogle($request->credential);
  
         return response()->json([
-            'access_token' => $result['access_token'],
-            'user' => $result['user'],
+            'data' => [
+                'access_token' => $result['access_token'],
+                'user' => $result['user'],
+            ]
         ]);
     }
 }

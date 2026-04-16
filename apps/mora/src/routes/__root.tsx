@@ -1,7 +1,6 @@
 import {
   createRootRouteWithContext,
   Outlet,
-  ScrollRestoration,
   redirect,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
@@ -56,26 +55,19 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootComponent() {
   const { auth } = Route.useRouteContext()
 
-  if (auth.isLoading) {
-    return (
-      <div className="page page-center">
-        <div className="container container-tight py-4">
-          <div className="text-center">
-            <div className="mb-3">
-              <span className="spinner-border spinner-border-sm text-secondary" role="status"></span>
-            </div>
-            <div className="text-secondary">Loading your session...</div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
+  // We no longer block the entire UI while loading. 
+  // Redirection logic in beforeLoad handles security.
+  // This helps unblock the UI if there's a hang in API calls.
+  
   return (
     <QueryProvider>
       <ThemeProvider>
+        {auth.isLoading && (
+          <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '3px', background: '#3b82f6', zIndex: 9999 }}>
+            <div className="progress-bar-indeterminate"></div>
+          </div>
+        )}
         <Outlet />
-        <ScrollRestoration />
         <BottomNav />
         <ThemeSettings />
         {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}

@@ -8,11 +8,7 @@ const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`
 const api = axios.create({
   // In development, use window.location.origin to ensure leading slashes in 
   // service calls (e.g. '/transactions') are correctly relative to our proxy.
-  baseURL: import.meta.env.DEV
-    ? (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-        ? `${window.location.origin}/api`
-        : API_URL)
-    : API_URL,
+  baseURL: import.meta.env.DEV ? '/api' : API_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -29,9 +25,6 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`
     }
     
-    if (import.meta.env.DEV) {
-      console.log(`🚀 [API Request] ${config.method?.toUpperCase()} ${config.url}`, config.data || '')
-    }
     
     return config
   },
@@ -43,9 +36,6 @@ api.interceptors.request.use(
 // Add a response interceptor to handle 401 errors and log responses
 api.interceptors.response.use(
   (response) => {
-    if (import.meta.env.DEV) {
-      console.log(`✅ [API Response] ${response.config.method?.toUpperCase()} ${response.config.url}`, response.data)
-    }
     return response
   },
   (error) => {
