@@ -696,7 +696,7 @@ export default function TrackerPhotoPage() {
       {/* TOP HEADER BAR */}
       <div style={{ flexShrink: 0, background: '#fff', zIndex: 110, padding: '1rem', paddingTop: 'calc(1rem + env(safe-area-inset-top))', borderBottom: '1px solid #eee' }}>
         <div className="d-flex align-items-center w-100 gap-3">
-          <Button element="button" onClick={() => navigate('/tracker')} link className="p-0 text-dark border-0 shadow-none" icon="arrow-left" size="md" iconOnly />
+          <Button to="/tracker" link className="p-0 text-dark border-0 shadow-none" icon="arrow-left" size="md" iconOnly />
 
           <h2 className="mb-0 fw-bold h3" style={{ color: '#2d333a' }}>
             {mode === 'live' ? 'Scan' : mode === 'captured' ? 'Sesuaikan' : 'Hasil'}

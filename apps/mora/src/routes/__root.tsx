@@ -2,13 +2,20 @@ import {
   createRootRouteWithContext,
   Outlet,
   redirect,
+  useRouteContext,
 } from '@tanstack/react-router'
+import type { ErrorComponentProps } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { QueryProvider } from '@/app/providers/QueryProvider'
 import { ThemeProvider } from '@/app/providers/ThemeProvider'
 import { ThemeSettings } from '@/shared/components/layout/ThemeSettings'
 import { BottomNav } from '@/shared/components/layout/BottomNav'
 import type { AuthState } from '@/features/auth/store/authStore'
+import Error404 from '@/pages/Error404'
+import Error500 from '@/pages/Error500'
+import Error403 from '@/pages/Error403'
+import Error429 from '@/pages/Error429'
+import { AxiosError } from 'axios'
 
 export interface MyRouterContext {
   auth: AuthState
@@ -35,7 +42,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       '/auth-lock'
     ]
     
-    const isPublicPath = publicPaths.includes(location.pathname)
+    const pathname = location.pathname
+    const isPublicPath = publicPaths.includes(pathname) ||
+      pathname.startsWith('/error-')
+
     const isAuthenticated = context.auth.isAuthenticated
 
     // Redirect unauthenticated users away from private content
@@ -43,17 +53,32 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       throw redirect({ to: '/sign-in' })
     }
 
-    // Redirect authenticated users away from guest content (like sign-in or welcome landing)
+    // Redirect authenticated users away from guest content
     const guestOnlyPaths = ['/', '/sign-in', '/sign-up', '/forgot-password', '/reset-password']
-    if (isAuthenticated && guestOnlyPaths.includes(location.pathname)) {
+    if (isAuthenticated && guestOnlyPaths.includes(pathname)) {
       throw redirect({ to: '/dashboard' })
     }
   },
   component: RootComponent,
+  notFoundComponent: Error404,
+  errorComponent: GlobalErrorComponent,
 })
 
+function GlobalErrorComponent({ error }: ErrorComponentProps) {
+  // Handle Axios errors with status codes
+  if (error instanceof AxiosError) {
+    const status = error.response?.status
+    if (status === 403) return <Error403 />
+    if (status === 429) return <Error429 />
+    if (status === 500) return <Error500 />
+  }
+
+  // Fallback to 500 for any other runtime rendering errors
+  return <Error500 />
+}
+
 function RootComponent() {
-  const { auth } = Route.useRouteContext()
+  const { auth } = useRouteContext({ from: Route.id })
 
   // We no longer block the entire UI while loading. 
   // Redirection logic in beforeLoad handles security.

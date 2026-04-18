@@ -16,6 +16,11 @@ import { Route as SignInCoverRouteImport } from './routes/sign-in-cover'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as ErrorMaintenanceRouteImport } from './routes/error-maintenance'
+import { Route as Error500RouteImport } from './routes/error-500'
+import { Route as Error429RouteImport } from './routes/error-429'
+import { Route as Error404RouteImport } from './routes/error-404'
+import { Route as Error403RouteImport } from './routes/error-403'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AuthLockRouteImport } from './routes/auth-lock'
 import { Route as AccountsRouteImport } from './routes/accounts'
@@ -60,6 +65,31 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ErrorMaintenanceRoute = ErrorMaintenanceRouteImport.update({
+  id: '/error-maintenance',
+  path: '/error-maintenance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Error500Route = Error500RouteImport.update({
+  id: '/error-500',
+  path: '/error-500',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Error429Route = Error429RouteImport.update({
+  id: '/error-429',
+  path: '/error-429',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Error404Route = Error404RouteImport.update({
+  id: '/error-404',
+  path: '/error-404',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Error403Route = Error403RouteImport.update({
+  id: '/error-403',
+  path: '/error-403',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -120,6 +150,11 @@ export interface FileRoutesByFullPath {
   '/accounts': typeof AccountsRoute
   '/auth-lock': typeof AuthLockRoute
   '/dashboard': typeof DashboardRoute
+  '/error-403': typeof Error403Route
+  '/error-404': typeof Error404Route
+  '/error-429': typeof Error429Route
+  '/error-500': typeof Error500Route
+  '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
@@ -139,6 +174,11 @@ export interface FileRoutesByTo {
   '/accounts': typeof AccountsRoute
   '/auth-lock': typeof AuthLockRoute
   '/dashboard': typeof DashboardRoute
+  '/error-403': typeof Error403Route
+  '/error-404': typeof Error404Route
+  '/error-429': typeof Error429Route
+  '/error-500': typeof Error500Route
+  '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
@@ -159,6 +199,11 @@ export interface FileRoutesById {
   '/accounts': typeof AccountsRoute
   '/auth-lock': typeof AuthLockRoute
   '/dashboard': typeof DashboardRoute
+  '/error-403': typeof Error403Route
+  '/error-404': typeof Error404Route
+  '/error-429': typeof Error429Route
+  '/error-500': typeof Error500Route
+  '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
@@ -180,6 +225,11 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/auth-lock'
     | '/dashboard'
+    | '/error-403'
+    | '/error-404'
+    | '/error-429'
+    | '/error-500'
+    | '/error-maintenance'
     | '/forgot-password'
     | '/reset-password'
     | '/sign-in'
@@ -199,6 +249,11 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/auth-lock'
     | '/dashboard'
+    | '/error-403'
+    | '/error-404'
+    | '/error-429'
+    | '/error-500'
+    | '/error-maintenance'
     | '/forgot-password'
     | '/reset-password'
     | '/sign-in'
@@ -218,6 +273,11 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/auth-lock'
     | '/dashboard'
+    | '/error-403'
+    | '/error-404'
+    | '/error-429'
+    | '/error-500'
+    | '/error-maintenance'
     | '/forgot-password'
     | '/reset-password'
     | '/sign-in'
@@ -238,6 +298,11 @@ export interface RootRouteChildren {
   AccountsRoute: typeof AccountsRoute
   AuthLockRoute: typeof AuthLockRoute
   DashboardRoute: typeof DashboardRoute
+  Error403Route: typeof Error403Route
+  Error404Route: typeof Error404Route
+  Error429Route: typeof Error429Route
+  Error500Route: typeof Error500Route
+  ErrorMaintenanceRoute: typeof ErrorMaintenanceRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignInRoute: typeof SignInRoute
@@ -300,6 +365,41 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/error-maintenance': {
+      id: '/error-maintenance'
+      path: '/error-maintenance'
+      fullPath: '/error-maintenance'
+      preLoaderRoute: typeof ErrorMaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/error-500': {
+      id: '/error-500'
+      path: '/error-500'
+      fullPath: '/error-500'
+      preLoaderRoute: typeof Error500RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/error-429': {
+      id: '/error-429'
+      path: '/error-429'
+      fullPath: '/error-429'
+      preLoaderRoute: typeof Error429RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/error-404': {
+      id: '/error-404'
+      path: '/error-404'
+      fullPath: '/error-404'
+      preLoaderRoute: typeof Error404RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/error-403': {
+      id: '/error-403'
+      path: '/error-403'
+      fullPath: '/error-403'
+      preLoaderRoute: typeof Error403RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -382,6 +482,11 @@ const rootRouteChildren: RootRouteChildren = {
   AccountsRoute: AccountsRoute,
   AuthLockRoute: AuthLockRoute,
   DashboardRoute: DashboardRoute,
+  Error403Route: Error403Route,
+  Error404Route: Error404Route,
+  Error429Route: Error429Route,
+  Error500Route: Error500Route,
+  ErrorMaintenanceRoute: ErrorMaintenanceRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignInRoute: SignInRoute,
