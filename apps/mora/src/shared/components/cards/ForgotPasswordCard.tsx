@@ -1,5 +1,6 @@
 // src/shared/components/cards/ForgotPasswordCard.tsx
 import React, { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 
 interface ForgotPasswordCardProps {
   title?: string
@@ -35,9 +36,9 @@ export function ForgotPasswordCard({
                 We've sent a password reset link to <strong>{email}</strong>. Please check your inbox.
               </p>
             </div>
-            <a href="/sign-in" className="btn btn-primary w-100">
+            <Link to="/sign-in" className="btn btn-primary w-100">
               Back to Sign In
-            </a>
+            </Link>
           </div>
         ) : (
           <>

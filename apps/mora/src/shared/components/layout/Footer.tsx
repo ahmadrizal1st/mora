@@ -1,4 +1,5 @@
 import { clsx } from 'clsx'
+import { Link } from '@tanstack/react-router'
 
 interface FooterProps {
   version?: string
@@ -19,14 +20,14 @@ export function Footer({
             <ul className="list-inline list-inline-dots mb-0">
               <li className="list-inline-item">
                 Copyright &copy; {new Date().getFullYear()}{' '}
-                <a href="/" className="link-secondary">{siteTitle}</a>.
+                <Link to="/" className="link-secondary">{siteTitle}</Link>.
                 All rights reserved.
               </li>
               {version && (
                 <li className="list-inline-item">
-                  <a href="/changelog" className="link-secondary" rel="noopener">
+                  <Link to="/changelog" className="link-secondary">
                     v{version}
-                  </a>
+                  </Link>
                 </li>
               )}
             </ul>

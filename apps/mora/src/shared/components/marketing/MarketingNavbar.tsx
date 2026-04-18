@@ -45,7 +45,7 @@ export function MarketingNavbar() {
                 </li>
               ))}
               <li className="nav-item ms-lg-4">
-                <a href="#" className="btn btn-primary">Buy now</a>
+                <Link to="/" className="btn btn-primary">Buy now</Link>
               </li>
             </ul>
           </nav>

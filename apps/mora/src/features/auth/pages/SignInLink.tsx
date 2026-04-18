@@ -1,5 +1,6 @@
 // src/features/auth/pages/SignInLink.tsx
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { useMagicLinkMutation } from '../hooks/useMagicLinkMutation'
 import { AxiosError } from 'axios'
@@ -84,10 +85,11 @@ export default function SignInLink() {
           </form>
 
           <div className="text-center text-secondary mt-4">
-            Forget it, <a href="/sign-in">send me back</a> to the sign in screen.
+            Forget it, <Link to="/sign-in">send me back</Link> to the sign in screen.
           </div>
         </div>
       </div>
     </SingleLayout>
   )
 }
+

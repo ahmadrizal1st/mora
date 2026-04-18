@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Icon } from '../ui/Icon'
 import { ErrorAlert } from '../ui/ErrorAlert'
 import { type RegisterCredentials } from '@/features/auth'
@@ -194,7 +195,7 @@ export function SignUpCard({
 
       <div className="text-center text-secondary mt-3">
         Already have an account?{' '}
-        <a href="/sign-in" className="fw-medium">Sign in</a>
+        <Link to="/sign-in" className="fw-medium">Sign in</Link>
       </div>
     </>
   )

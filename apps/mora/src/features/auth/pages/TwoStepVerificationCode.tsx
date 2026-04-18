@@ -1,8 +1,7 @@
-// src/features/auth/pages/TwoStepVerificationCode.tsx
 import { useRef, useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { useVerify2FAMutation } from '../hooks/useVerify2FAMutation'
-import { AxiosError } from 'axios'
 
 export default function TwoStepVerificationCode() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -26,7 +25,6 @@ export default function TwoStepVerificationCode() {
     e.preventDefault()
     setError(null)
 
-    // Collect code from all inputs
     const code = inputRefs.current.map(input => input?.value || '').join('')
 
     if (code.length < 6) {
@@ -35,7 +33,7 @@ export default function TwoStepVerificationCode() {
     }
 
     verifyMutation.mutate({ code }, {
-      onError: (err: AxiosError<{ message?: string }>) => {
+      onError: (err) => {
         setError(err.response?.data?.message || 'Verification failed. Please check the code.')
       }
     })
@@ -100,7 +98,7 @@ export default function TwoStepVerificationCode() {
 
           <div className="form-footer">
             <div className="btn-list flex-nowrap">
-              <a href="/2-step-verification" className="btn w-100">Cancel</a>
+              <Link to="/2-step-verification" className="btn w-100">Cancel</Link>
               <button 
                 type="submit" 
                 className="btn btn-primary w-100"

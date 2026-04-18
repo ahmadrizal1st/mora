@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { User, LoginCredentials, RegisterCredentials } from '../types/auth.types'
+import type { User, LoginCredentials, RegisterCredentials, AuthResponse } from '../types/auth.types'
 import { AuthService } from '../services/auth.service'
 
 export interface AuthState {
@@ -9,7 +9,7 @@ export interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
   
-  // Actions
+  
   login: (credentials: LoginCredentials) => Promise<void>
   loginWithGoogle: (credential: string) => Promise<void>
   register: (credentials: RegisterCredentials) => Promise<void>
@@ -18,6 +18,7 @@ export interface AuthState {
   _hasHydrated: boolean
   setHasHydrated: (state: boolean) => void
   setIsLoading: (loading: boolean) => void
+  setAuth: (response: AuthResponse) => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -26,11 +27,22 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
-      isLoading: true, // Start true for initial check
+      isLoading: true,
       _hasHydrated: false,
 
       setHasHydrated: (state) => set({ _hasHydrated: state }),
       setIsLoading: (loading) => set({ isLoading: loading }),
+      setAuth: (response) => {
+        if (response.access_token) {
+          localStorage.setItem('token', response.access_token)
+          localStorage.setItem('user', JSON.stringify(response.user))
+        }
+        set({ 
+          user: response.user, 
+          token: response.access_token, 
+          isAuthenticated: !!response.access_token 
+        })
+      },
 
       login: async (credentials) => {
         const response = await AuthService.login(credentials)
@@ -80,10 +92,9 @@ export const useAuthStore = create<AuthState>()(
         try {
           await AuthService.logout()
         } catch (error) {
-          console.error('Logout failed:', error)
+          // Silent catch
         } finally {
           set({ user: null, token: null, isAuthenticated: false })
-          // Optionally clear localStorage items if needed separately from Zustand
           localStorage.removeItem('token')
           localStorage.removeItem('user')
         }
@@ -95,15 +106,14 @@ export const useAuthStore = create<AuthState>()(
           localStorage.setItem('user', JSON.stringify(userData))
           set({ user: userData })
         } catch (error) {
-          console.error('Failed to refresh user:', error)
           get().logout()
         }
       },
     }),
     {
-      name: 'auth-storage', // unique name
+      name: 'auth-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: !!state.token }), // Only persist these
+      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: !!state.token }),
       onRehydrateStorage: (state) => {
         return () => state.setHasHydrated(true)
       },

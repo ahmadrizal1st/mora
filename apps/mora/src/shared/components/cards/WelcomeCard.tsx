@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import { Trending } from '../ui/Trending';
 
 interface WelcomeCardProps {
@@ -149,9 +150,9 @@ export function WelcomeCard({
             </div>
           </div>
           <div className="col-12 col-sm-auto d-flex justify-content-center">
-            <a href="/illustrations">
+            <Link to="/sign-in-illustration">
               <GoodInfoIllustration />
-            </a>
+            </Link>
           </div>
         </div>
       </div>

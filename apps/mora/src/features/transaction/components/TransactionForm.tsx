@@ -244,7 +244,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       </div>
 
       <div className="mt-4 d-flex justify-content-end gap-2">
-        <Button link href="/transactions" className="text-muted">
+        <Button link to="/transactions" className="text-muted">
           Batal
         </Button>
         <Button

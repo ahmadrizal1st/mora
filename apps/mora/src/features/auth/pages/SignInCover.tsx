@@ -1,5 +1,6 @@
 // src/features/auth/pages/SignInCover.tsx
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { NavbarLogo } from '@/shared/components/layout/NavbarLogo'
 import { SignInForm } from '@/features/auth/components/SignInForm'
 import { Photo } from '@/shared/components/ui/Photo'
@@ -47,7 +48,7 @@ export default function SignInCover() {
             />
 
             <div className="text-center text-secondary mt-3">
-              Don't have account yet? <a href="/sign-up" tabIndex={-1}>Sign up</a>
+              Don't have account yet? <Link to="/sign-up" tabIndex={-1}>Sign up</Link>
             </div>
           </div>
         </div>
@@ -62,3 +63,4 @@ export default function SignInCover() {
     </div>
   )
 }
+

@@ -1,4 +1,5 @@
 import { clsx } from 'clsx'
+import { useLinkProps } from '@tanstack/react-router'
 import { Icon } from './Icon'
 import { Spinner } from './Spinner'
 
@@ -23,6 +24,10 @@ export interface ButtonProps {
   spinner?: boolean
   dots?: boolean
   href?: string
+  to?: string
+  params?: any
+  search?: any
+  hash?: string
   external?: boolean
   element?: 'a' | 'button' | 'div'
   type?: 'button' | 'submit' | 'reset'
@@ -58,6 +63,10 @@ export function Button({
   spinner,
   dots,
   href = '#',
+  to,
+  params,
+  search,
+  hash,
   external,
   element,
   type,
@@ -125,16 +134,20 @@ export function Button({
   if (dismiss) extraProps['data-bs-dismiss'] = 'modal'
   if (iconOnly) extraProps['aria-label'] = typeof text === 'string' ? text : 'Button'
 
-  return (
-    <El
-      href={El === 'a' ? href : undefined}
-      type={El === 'button' ? type : undefined}
-      id={id}
-      className={classes}
-      onClick={onClick}
-      {...extraProps}
-      {...props}
-    >
+  // Generate TanStack Router link props if 'to' is provided
+  const linkProps = useLinkProps({
+    to: (to || '') as any,
+    params,
+    search,
+    hash,
+    disabled,
+  })
+
+  // Only apply routing props when 'to' is explicitly passed
+  const routingProps = to ? linkProps : {}
+
+  const content = (
+    <>
       {spinner && (
         <Spinner size="sm" className={spinnerClass} element="span" />
       )}
@@ -161,6 +174,21 @@ export function Button({
           className="ms-2 icon-end"
         />
       )}
+    </>
+  )
+
+  return (
+    <El
+      href={El === 'a' && !to ? href : undefined}
+      type={El === 'button' ? (type || 'button') as 'button' | 'submit' | 'reset' : undefined}
+      id={id}
+      className={classes}
+      onClick={onClick as any}
+      {...(routingProps as any)}
+      {...extraProps}
+      {...props}
+    >
+      {content}
     </El>
   )
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInSchema, type SignInFormData } from './SignInForm.schema';
@@ -64,7 +65,7 @@ export function SignInForm({
         <label className="form-label">
           Password
           <span className="form-label-description">
-            <a href={forgotPasswordHref}>I forgot password</a>
+            <Link to={forgotPasswordHref as any}>I forgot password</Link>
           </span>
         </label>
         <div className={`input-group input-group-flat ${errors.password || fieldErrors?.password ? 'is-invalid' : ''}`}>
@@ -115,3 +116,4 @@ export function SignInForm({
     </form>
   );
 }
+

@@ -1,7 +1,8 @@
+import { Link } from '@tanstack/react-router'
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
 import { SignInForm, type SignInFormData } from '@/features/auth/components/SignInForm'
 import { ErrorAlert } from '../ui/ErrorAlert'
- 
+
 interface SignInCardProps {
   title?: string
   subtitle?: string
@@ -13,7 +14,7 @@ interface SignInCardProps {
   error?: string | null
   fieldErrors?: Record<string, string[]>
 }
- 
+
 export function SignInCard({
   title = 'Login to your account',
   subtitle,
@@ -35,20 +36,20 @@ export function SignInCard({
         )}
         <div className="card-body">
           {!showHeader && <h2 className="h2 text-center mb-4">{title}</h2>}
-  
+
           {error && (
             <ErrorAlert message={error} fieldErrors={fieldErrors} />
           )}
-  
+
           <SignInForm 
             onSubmit={(data) => onSubmit?.(data)} 
             isLoading={isLoading} 
             fieldErrors={fieldErrors} 
           />
         </div>
-  
+
         <div className="hr-text">or</div>
-  
+
         <div className="card-body">
           <div className="d-flex justify-content-center">
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -69,7 +70,7 @@ export function SignInCard({
         ) : (
           <>
             Don't have an account?{' '}
-            <a href="/sign-up" className="fw-medium">Sign up</a>
+            <Link to="/sign-up" className="fw-medium">Sign up</Link>
           </>
         )}
       </div>

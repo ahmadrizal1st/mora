@@ -1,5 +1,5 @@
-// src/layouts/PayLayout.tsx
 import type { ReactNode } from 'react'
+import { Link } from '@tanstack/react-router'
 import { NavbarLogo } from '../components/layout/NavbarLogo'
 
 interface PayLayoutProps {
@@ -20,7 +20,7 @@ export default function PayLayout({ children, closeHref = '/' }: PayLayoutProps)
         <div className="container-fluid">
           <NavbarLogo smallLogo />
           <div>
-            <a href={closeHref} className="btn btn-close" aria-label="Close" />
+            <Link to={closeHref as any} className="btn btn-close" aria-label="Close" />
           </div>
         </div>
       </header>

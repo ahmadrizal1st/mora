@@ -5,6 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mora</title>
+    <script>
+      (function() {
+        const LS_PREFIX = 'tabler-';
+        const DEFAULTS = {
+          'theme-primary': 'orange',
+          'theme': 'light'
+        };
+        try {
+          const primary = localStorage.getItem(LS_PREFIX + 'theme-primary') || DEFAULTS['theme-primary'];
+          const theme = localStorage.getItem(LS_PREFIX + 'theme') || DEFAULTS['theme'];
+          if (primary) document.documentElement.setAttribute('data-bs-theme-primary', primary);
+          if (theme) document.documentElement.setAttribute('data-bs-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
