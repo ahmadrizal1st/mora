@@ -14,9 +14,15 @@ import {
 } from '../utils/cornerDetection';
 import { ScannerStatusAlert } from '../components/ScannerStatusAlert';
 
+interface LocationState {
+  image?: string;
+  corners?: Point[];
+}
+
 export default function TrackerPhotoPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const locationState = location.state as LocationState;
   const videoRef = useRef<HTMLVideoElement>(null);
   const capturedCanvasRef = useRef<HTMLCanvasElement>(null);
   const liveOverlayRef = useRef<HTMLCanvasElement>(null);
@@ -164,7 +170,7 @@ export default function TrackerPhotoPage() {
   }, [stopLiveDetection, drawLiveOverlay]);
 
   const startCamera = useCallback(async (skipIfImage = false) => {
-    if (skipIfImage && location.state?.image) return;
+    if (skipIfImage && locationState?.image) return;
     setStatusMsg('Meminta akses kamera...');
     setStatusType('warn');
     try {
@@ -190,7 +196,7 @@ export default function TrackerPhotoPage() {
       setStatusMsg('Kamera tidak dapat diakses — gunakan tombol Upload');
       setStatusType('error');
     }
-  }, [cameraFacing, startLiveDetection, location.state?.image]);
+  }, [cameraFacing, startLiveDetection, locationState?.image]);
 
   // Handle hardware torch (flash)
   useEffect(() => {
@@ -204,8 +210,9 @@ export default function TrackerPhotoPage() {
       const capabilities = track.getCapabilities() as MediaTrackCapabilities & { torch?: boolean };
       if (capabilities.torch) {
         track.applyConstraints({
+          // @ts-expect-error: torch is a valid constraint but missing from TS DOM types
           advanced: [{ torch: isFlash }]
-        } as MediaTrackConstraints);
+        });
       }
     } catch (e) {
       console.warn("Torch not supported", e);
@@ -214,7 +221,7 @@ export default function TrackerPhotoPage() {
 
   // Handle incoming image from outside (e.g. from TrackerPage scanner)
   useEffect(() => {
-    if (location.state?.image) {
+    if (locationState?.image) {
       const img = new Image();
       img.onload = async () => {
         const w = img.width, h = img.height;
@@ -233,14 +240,14 @@ export default function TrackerPhotoPage() {
         setStatusType('ok');
 
         // Use incoming corners if provided (from live scanner), otherwise auto-detect
-        const incomingCorners = location.state?.corners;
+        const incomingCorners = locationState?.corners;
         const detected = incomingCorners || autoDetectCorners(imgData, w, h);
         const initCorners = detected || defaultCorners(w, h);
 
         cornersRef.current = initCorners;
         setCorners(initCorners);
       };
-      img.src = location.state.image;
+      img.src = locationState.image!;
     } else {
       setTimeout(() => startCamera(), 0);
     }
@@ -255,7 +262,7 @@ export default function TrackerPhotoPage() {
       if (currentAutoCropInterval) clearInterval(currentAutoCropInterval);
       if (video?.srcObject) (video.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
     };
-  }, [location.state?.image, location.state?.corners, startCamera, stopLiveDetection]);
+  }, [locationState?.image, locationState?.corners, startCamera, stopLiveDetection]);
 
   const drawCapturedOverlay = useCallback(
     (pts: Point[]) => {
@@ -570,7 +577,8 @@ export default function TrackerPhotoPage() {
       image: dataUrl,
     };
     setIsProcessing(false);
-    navigate('/tracker/input', { state: { prefill: prefillData } });
+    // @ts-expect-error: Bypass strict state type matching for ad-hoc prefill object
+    navigate({ to: '/tracker/input', state: { prefill: prefillData } });
   }, [navigate, clearAutoCrop]);
 
   const [downloadTimestamp] = useState(() => Date.now());
