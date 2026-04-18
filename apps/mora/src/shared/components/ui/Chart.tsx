@@ -259,6 +259,7 @@ export function Chart({
         animations: { enabled: chartData.animations !== false },
         stacked: !!chartData.stacked,
         selection: { enabled: false },
+        accessibility: { enabled: false },
         events: {
           dataPointSelection: () => { },
           click: () => { },

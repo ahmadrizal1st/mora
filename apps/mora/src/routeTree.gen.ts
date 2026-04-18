@@ -15,6 +15,8 @@ import { Route as SignInIllustrationRouteImport } from './routes/sign-in-illustr
 import { Route as SignInCoverRouteImport } from './routes/sign-in-cover'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ErrorMaintenanceRouteImport } from './routes/error-maintenance'
 import { Route as Error500RouteImport } from './routes/error-500'
@@ -60,6 +62,16 @@ const SignInRoute = SignInRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -156,6 +168,8 @@ export interface FileRoutesByFullPath {
   '/error-500': typeof Error500Route
   '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/notifications': typeof NotificationsRoute
+  '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-in-cover': typeof SignInCoverRoute
@@ -180,6 +194,8 @@ export interface FileRoutesByTo {
   '/error-500': typeof Error500Route
   '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/notifications': typeof NotificationsRoute
+  '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-in-cover': typeof SignInCoverRoute
@@ -205,6 +221,8 @@ export interface FileRoutesById {
   '/error-500': typeof Error500Route
   '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/notifications': typeof NotificationsRoute
+  '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-in-cover': typeof SignInCoverRoute
@@ -231,6 +249,8 @@ export interface FileRouteTypes {
     | '/error-500'
     | '/error-maintenance'
     | '/forgot-password'
+    | '/notifications'
+    | '/profile'
     | '/reset-password'
     | '/sign-in'
     | '/sign-in-cover'
@@ -255,6 +275,8 @@ export interface FileRouteTypes {
     | '/error-500'
     | '/error-maintenance'
     | '/forgot-password'
+    | '/notifications'
+    | '/profile'
     | '/reset-password'
     | '/sign-in'
     | '/sign-in-cover'
@@ -279,6 +301,8 @@ export interface FileRouteTypes {
     | '/error-500'
     | '/error-maintenance'
     | '/forgot-password'
+    | '/notifications'
+    | '/profile'
     | '/reset-password'
     | '/sign-in'
     | '/sign-in-cover'
@@ -304,6 +328,8 @@ export interface RootRouteChildren {
   Error500Route: typeof Error500Route
   ErrorMaintenanceRoute: typeof ErrorMaintenanceRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  NotificationsRoute: typeof NotificationsRoute
+  ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignInRoute: typeof SignInRoute
   SignInCoverRoute: typeof SignInCoverRoute
@@ -358,6 +384,20 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -488,6 +528,8 @@ const rootRouteChildren: RootRouteChildren = {
   Error500Route: Error500Route,
   ErrorMaintenanceRoute: ErrorMaintenanceRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  NotificationsRoute: NotificationsRoute,
+  ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignInRoute: SignInRoute,
   SignInCoverRoute: SignInCoverRoute,

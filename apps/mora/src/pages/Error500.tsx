@@ -1,14 +1,5 @@
-// src/pages/Error500.tsx
-import ErrorLayout from '@/shared/layouts/ErrorLayout'
-
-const errors = {
-  "500": {
-    title: "500",
-    description: "We are sorry but the page you are looking for was not found",
-    illustration: "500"
-  }
-}
+import { ErrorLayout } from '@/shared/components/layout'
 
 export default function Error500() {
-  return <ErrorLayout errorCode="500" errors={errors} />
+  return <ErrorLayout type="500" />
 }

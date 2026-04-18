@@ -20,7 +20,8 @@ body {
 .apexcharts-canvas:focus,
 .apexcharts-canvas *:focus,
 .apexcharts-canvas:focus-visible,
-.apexcharts-canvas *:focus-visible {
+.apexcharts-canvas *:focus-visible,
+.apexcharts-canvas .apexcharts-keyboard-focused {
   outline: none !important;
   box-shadow: none !important;
 }

@@ -45,6 +45,7 @@ export { UserCard } from './UserCard';
 export { UserCardBig } from './UserCardBig';
 export { UserCardBg } from './UserCardBg';
 export { EmptyTeamCard } from './EmptyTeamCard';
+export { UserInfoCard } from './UserInfoCard';
 export { CompanyEmployeesCard } from './CompanyEmployeesCard';
 
 // Content Cards

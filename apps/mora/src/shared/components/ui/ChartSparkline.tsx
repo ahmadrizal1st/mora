@@ -63,6 +63,7 @@ export function ChartSparkline({
         ...(isSquare ? { width: Math.round(height * 16) } : {}),
         animations: { enabled: false },
         sparkline: { enabled: true },
+        accessibility: { enabled: false },
       },
       tooltip: { enabled: false },
       ...(type === 'donut' && {
