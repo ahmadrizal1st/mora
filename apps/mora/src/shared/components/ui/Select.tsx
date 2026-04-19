@@ -359,7 +359,7 @@ export function Select({
           )}
           
           <div className="list-group list-group-flush list-group-hoverable">
-            {isOptGroup(resolvedOptions[0]) ? (
+            {resolvedOptions.length > 0 && isOptGroup(resolvedOptions[0]) ? (
               (resolvedOptions as SelectOptGroup[]).map((group, gi) => (
                 <div key={gi}>
                   <div className="dropdown-header">{group.title}</div>

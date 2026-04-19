@@ -19,6 +19,7 @@ import {
   AutosizeTextarea,
   Datepicker,
 } from '@/shared/components/ui';
+import { ErrorAlert } from '@/shared/components/ui/ErrorAlert';
 
 const transactionSchema = z.object({
   type: z.enum(['income', 'expense', 'transfer']),
@@ -83,8 +84,27 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   const { data: currencies = [] } = useCurrencies();
   const { data: tags = [] } = useTags();
 
+  // Format React Hook Form errors for the ErrorAlert component
+  const getFieldErrors = () => {
+    if (Object.keys(errors).length === 0) return null;
+    const formatted: Record<string, string[]> = {};
+    Object.entries(errors).forEach(([key, err]) => {
+      if (err?.message) formatted[key] = [err.message as string];
+    });
+    return formatted;
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="transaction-form">
+      {Object.keys(errors).length > 0 && (
+        <div className="mb-4">
+          <ErrorAlert 
+            message="Validasi Gagal: Silakan lengkapi data yang diwajibkan." 
+            fieldErrors={getFieldErrors()} 
+          />
+        </div>
+      )}
+
       <div className="mb-3">
         <label className="form-label">Tipe Transaksi</label>
         <div className="form-selectgroup">
@@ -107,7 +127,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       <div className="row">
         <div className="col-md-6 mb-3">
           <label className="form-label">Nominal</label>
-          <div className="input-group">
+          <div className={`input-group ${errors.amount_raw ? 'has-validation' : ''}`}>
             <Controller
               name="currency_id"
               control={control}
@@ -270,6 +290,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           Batal
         </Button>
         <Button
+          element="button"
           type="submit"
           color="primary"
           loading={isLoading}

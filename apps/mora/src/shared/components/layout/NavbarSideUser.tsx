@@ -55,9 +55,9 @@ export function NavbarSideUser({
         className={clsx('dropdown-menu', 'dropdown-menu-end', 'dropdown-menu-arrow')}
         {...(dark ? { 'data-bs-theme': 'light' } : {})}
       >
-        <a href="#" className="dropdown-item">
+        <Link to="/profile" className="dropdown-item">
           <Icon icon="user" className="dropdown-item-icon" /> Profile
-        </a>
+        </Link>
         <a href="#" className="dropdown-item">
           <Icon icon="chart-pie" className="dropdown-item-icon" /> Analytics
         </a>

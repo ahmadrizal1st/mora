@@ -63,11 +63,11 @@ export interface Transaction {
   amount_in_default: number;
   account_id: number;
   account?: Account;
-  to_account_id?: number;
+  to_account_id?: number | null;
   to_account?: Account;
-  category_id?: number;
+  category_id?: number | null;
   category?: Category;
-  status_id?: number;
+  status_id?: number | null;
   status?: Status;
   recurring_type_id?: number;
   recurring_type?: RecurringType;
@@ -100,8 +100,9 @@ export interface TransactionFilters {
   per_page?: number;
 }
 
-export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'account' | 'to_account' | 'category' | 'status' | 'currency' | 'recurring_type' | 'tags'> & {
+export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'account' | 'to_account' | 'category' | 'status' | 'currency' | 'recurring_type' | 'tags' | 'rate_snapshot' | 'amount_in_default' | 'currency_id'> & {
   tag_ids?: number[];
+  currency_id?: number;
 };
 
 export type UpdateTransactionDTO = Partial<CreateTransactionDTO>;
