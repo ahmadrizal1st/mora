@@ -293,8 +293,6 @@ export function Select({
         style={{ 
           minHeight: '36px', 
           paddingRight: '2rem',
-          borderColor: isOpen ? '#90b1e1' : undefined,
-          boxShadow: isOpen ? '0 0 0 0.25rem rgba(32, 107, 196, .25)' : undefined
         }}
       >
         <div className="flex-fill d-flex align-items-center overflow-hidden">

@@ -5,7 +5,11 @@ import { type CreateAccountDTO, type UpdateAccountDTO } from '../types/transacti
 export const useAccounts = () => {
   return useQuery({
     queryKey: ['accounts'],
-    queryFn: () => accountService.getAccounts(),
+    queryFn: async () => [
+      { id: 1, name: 'Cash', type: 'cash', balance: 5000000, currency: { id: 1, code: 'IDR' } },
+      { id: 2, name: 'Bank BCA', type: 'bank', balance: 15000000, currency: { id: 1, code: 'IDR' } },
+      { id: 3, name: 'Credit Card', type: 'credit', balance: -2500000, currency: { id: 2, code: 'USD' } },
+    ] as any[],
   });
 };
 

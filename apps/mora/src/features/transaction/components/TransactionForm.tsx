@@ -9,13 +9,16 @@ import type {
 import {
   useCategories,
   useCurrencies,
+  useTags,
 } from '../hooks/useLookups';
 import { useAccounts } from '../hooks/useAccounts';
 import {
   Button,
   Select,
+  Icon,
+  AutosizeTextarea,
+  Datepicker,
 } from '@/shared/components/ui';
-import { TagInput } from './TagInput';
 
 const transactionSchema = z.object({
   type: z.enum(['income', 'expense', 'transfer']),
@@ -78,6 +81,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   const { data: categories = [] } = useCategories(type);
   const { data: accounts = [] } = useAccounts();
   const { data: currencies = [] } = useCurrencies();
+  const { data: tags = [] } = useTags();
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="transaction-form">
@@ -110,7 +114,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               render={({ field }) => (
                 <select
                   className="form-select"
-                  style={{ maxWidth: '90px' }}
+                  style={{ maxWidth: '100px' }}
                   value={field.value || ''}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 >
@@ -133,12 +137,20 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
         <div className="col-md-6 mb-3">
           <label className="form-label">Tanggal</label>
-          <input
-            type="date"
-            {...register('tx_date')}
-            className={`form-control ${errors.tx_date ? 'is-invalid' : ''}`}
+          <Controller
+            name="tx_date"
+            control={control}
+            render={({ field }) => (
+              <Datepicker
+                id="datepicker-tx"
+                layout="icon"
+                value={field.value}
+                onChange={field.onChange}
+                className={errors.tx_date ? 'is-invalid' : ''}
+              />
+            )}
           />
-          {errors.tx_date && <div className="invalid-feedback">{errors.tx_date.message}</div>}
+          {errors.tx_date && <div className="invalid-feedback d-block">{errors.tx_date.message}</div>}
         </div>
       </div>
 
@@ -210,12 +222,17 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       {type !== 'transfer' && (
         <div className="mb-3">
           <label className="form-label">Merchant / Penerima</label>
-          <input
-            type="text"
-            {...register('merchant')}
-            className="form-control"
-            placeholder="Misal: Starbucks, Tokopedia, dll"
-          />
+          <div className="input-icon">
+            <span className="input-icon-addon">
+              <Icon icon="building-store" size={18} />
+            </span>
+            <input
+              type="text"
+              {...register('merchant')}
+              className="form-control"
+              placeholder="Misal: Starbucks, Tokopedia, dll"
+            />
+          </div>
         </div>
       )}
 
@@ -225,9 +242,15 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           name="tag_ids"
           control={control}
           render={({ field }) => (
-            <TagInput
-              selectedTagIds={field.value}
+            <Select
+              multiple
+              value={field.value}
               onChange={field.onChange}
+              options={tags.map(t => ({
+                value: t.id,
+                label: t.name,
+              }))}
+              placeholder="Pilih tags..."
             />
           )}
         />
@@ -235,12 +258,11 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
       <div className="mb-3">
         <label className="form-label">Catatan</label>
-        <textarea
+        <AutosizeTextarea
           {...register('notes')}
-          className="form-control"
           rows={3}
           placeholder="Tambahkan catatan jika perlu..."
-        ></textarea>
+        />
       </div>
 
       <div className="mt-4 d-flex justify-content-end gap-2">

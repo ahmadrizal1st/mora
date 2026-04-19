@@ -59,18 +59,42 @@ body {
 /* --- Mobile Responsive Dashboard Optimization --- */
 @media (max-width: 767.98px) {
 
-  /* Scale down the base H1 and H2 used in cards */
-  .h1,
-  h1 {
-    font-size: 1.15rem !important;
-    /* Smaller h1 on mobile */
-    letter-spacing: -0.02em !important;
+  /* Scale down the base headings used in cards */
+  .h1, h1, .h2, h2, .h3, h3 {
+    font-size: 1rem !important;
+    letter-spacing: -0.01em !important;
   }
 
-  /* Title optimization for card headers - using Tabler standard weight/size proportions */
+  /* Card titles on mobile should be compact but clear */
   .card-title {
-    font-size: var(--tblr-font-size-h4) !important;
-    font-weight: var(--tblr-font-weight-bold) !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  /* Form labels and inputs optimization for small screens */
+  .form-label {
+    font-size: 0.7rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+    margin-bottom: 0.2rem !important;
+    color: var(--tblr-secondary);
+  }
+
+  .form-control, .form-select, .form-selectgroup-label {
+    font-size: 0.85rem !important;
+    min-height: 2.25rem !important;
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.4rem !important;
+  }
+
+  .input-icon .form-control {
+    padding-left: 2.5rem !important;
+  }
+
+  .form-selectgroup-label {
+    padding: 0.35rem 0.75rem !important;
   }
 
   /* Compact Card Headers */
@@ -633,4 +657,14 @@ body {
   background: #f6f8fa !important;
   border-color: #d1d5da !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important;
+}
+
+.form-control:focus,
+.form-control.focus,
+.form-select:focus,
+.form-select.focus,
+.form-check-input:focus,
+.form-selectgroup-input:focus + .form-selectgroup-label {
+  border-color: var(--tblr-primary) !important;
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--tblr-primary) 25%, transparent) !important;
 }
