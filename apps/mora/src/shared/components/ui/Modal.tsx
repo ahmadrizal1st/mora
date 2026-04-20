@@ -76,6 +76,7 @@ export function ModalFooter({
 export interface ModalProps {
   id?: string
   show?: boolean
+  onClose?: () => void
   size?: 'sm' | 'lg' | 'xl' | 'full-width' | 'fullscreen'
   top?: boolean
   scrollable?: boolean
@@ -88,6 +89,7 @@ export interface ModalProps {
 export function Modal({
   id,
   show,
+  onClose,
   size,
   top,
   scrollable,
@@ -119,6 +121,13 @@ export function Modal({
     ...style,
   }
 
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only close if the actual modal div (backdrop) was clicked, not the dialog
+    if (e.target === e.currentTarget && onClose) {
+      onClose()
+    }
+  }
+
   return (
     <div
       className={modalClasses}
@@ -126,7 +135,8 @@ export function Modal({
       style={combinedStyle}
       tabIndex={-1}
       role="dialog"
-      aria-hidden={!isShown}
+      aria-hidden={!getIsShown(isShown)}
+      onClick={handleBackdropClick}
     >
       <div className={dialogClasses} role="document">
         <div className="modal-content overflow-hidden">
@@ -135,4 +145,8 @@ export function Modal({
       </div>
     </div>
   )
+}
+
+function getIsShown(isShown: boolean | undefined): boolean {
+  return !!isShown
 }

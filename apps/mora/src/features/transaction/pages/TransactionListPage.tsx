@@ -116,6 +116,22 @@ export const TransactionListPage: React.FC = () => {
     setFilters({ page: 1, per_page: 15 });
   };
 
+  const handleSort = (column: string) => {
+    setFilters(prev => ({
+      ...prev,
+      sort_dir: prev.sort_by === column && prev.sort_dir === 'asc' ? 'desc' : 'asc',
+      sort_by: column,
+      page: 1
+    }));
+  };
+
+  const getSortIcon = (column: string) => {
+    if (filters.sort_by !== column) return <Icon icon="selector" size={12} className="ms-1 opacity-40" />;
+    return filters.sort_dir === 'asc' 
+      ? <Icon icon="chevron-up" size={12} className="ms-1 text-primary" />
+      : <Icon icon="chevron-down" size={12} className="ms-1 text-primary" />;
+  };
+
   const handleDelete = async (id: number) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
       await deleteMutation.mutateAsync(id);
@@ -237,17 +253,27 @@ export const TransactionListPage: React.FC = () => {
           </div>
 
           <div className="table-responsive">
-            <table className="table table-vcenter table-hover card-table">
+            <table className="table table-vcenter table-hover card-table" style={{ tableLayout: 'fixed', width: '100%', minWidth: '1100px' }}>
               <thead className="bg-light">
                 <tr>
-                  <th className="text-secondary opacity-7 fw-bold" style={{ width: '120px' }}>Tanggal</th>
-                  <th className="text-secondary opacity-7 fw-bold">Keterangan / Merchant</th>
-                  <th className="text-secondary opacity-7 fw-bold" style={{ width: '140px' }}>Tag</th>
-                  <th className="text-secondary opacity-7 fw-bold" style={{ width: '120px' }}>Kategori</th>
-                  <th className="text-secondary opacity-7 fw-bold" style={{ width: '120px' }}>Akun</th>
+                  <th className="text-secondary opacity-7 fw-bold cursor-pointer" style={{ width: '100px' }} onClick={() => handleSort('tx_date')}>
+                    <div className="d-flex align-items-center">Tanggal {getSortIcon('tx_date')}</div>
+                  </th>
+                  <th className="text-secondary opacity-7 fw-bold cursor-pointer" style={{ width: '150px' }} onClick={() => handleSort('merchant')}>
+                    <div className="d-flex align-items-center">Keterangan / Merchant {getSortIcon('merchant')}</div>
+                  </th>
+                  <th className="text-secondary opacity-7 fw-bold" style={{ width: '220px' }}>Tag</th>
+                  <th className="text-secondary opacity-7 fw-bold cursor-pointer" style={{ width: '160px' }} onClick={() => handleSort('category')}>
+                    <div className="d-flex align-items-center">Kategori {getSortIcon('category')}</div>
+                  </th>
+                  <th className="text-secondary opacity-7 fw-bold cursor-pointer" style={{ width: '140px' }} onClick={() => handleSort('account')}>
+                    <div className="d-flex align-items-center">Akun {getSortIcon('account')}</div>
+                  </th>
                   <th className="text-secondary opacity-7 fw-bold" style={{ width: '100px' }}>Status</th>
-                  <th className="text-secondary opacity-7 fw-bold text-end" style={{ width: '130px' }}>Nominal</th>
-                  <th className="text-secondary opacity-7 fw-bold text-center" style={{ width: '90px' }}>Aksi</th>
+                  <th className="text-secondary opacity-7 fw-bold text-end cursor-pointer" style={{ width: '110px' }} onClick={() => handleSort('nominal')}>
+                    <div className="d-flex align-items-center justify-content-end">Nominal {getSortIcon('nominal')}</div>
+                  </th>
+                  <th className="text-secondary opacity-7 fw-bold text-center" style={{ width: '80px' }}>Aksi</th>
                 </tr>
               </thead>
               <tbody className="table-tbody">
@@ -280,29 +306,31 @@ export const TransactionListPage: React.FC = () => {
                     </td>
                     <td className="td-truncate">
                       <div className="d-flex flex-column">
-                        <span className="fw-medium text-dark text-truncate" style={{ maxWidth: '200px' }}>{tx.merchant || (tx.type === 'transfer' ? 'Transfer Dana' : 'Umum')}</span>
-                        {tx.notes && <span className="text-secondary small text-truncate" style={{ maxWidth: '200px' }}>{tx.notes}</span>}
+                        <span className="fw-medium text-dark text-truncate" style={{ maxWidth: '120px' }}>{tx.merchant || (tx.type === 'transfer' ? 'Transfer Dana' : 'Umum')}</span>
+                        {tx.notes && <span className="text-secondary small text-truncate" style={{ maxWidth: '120px' }}>{tx.notes}</span>}
                       </div>
                     </td>
                     <td className="align-middle">
-                      <div className="d-flex flex-wrap gap-1">
+                      <div className="d-flex flex-wrap gap-1" style={{ maxWidth: '180px' }}>
                         {tx.tags?.map(tag => (
                           <span 
                             key={tag.id} 
                             className="badge badge-outline text-nowrap"
                             style={{ 
                               fontSize: '10px', 
-                              padding: '2px 6px',
+                              padding: '2px 8px',
                               borderColor: `${tag.color}40`,
                               color: tag.color,
-                              backgroundColor: `${tag.color}08`
+                              backgroundColor: `${tag.color}08`,
+                              textAlign: 'center',
+                              width: 'fit-content'
                             }}
                           >
                             {tag.name}
                           </span>
                         ))}
-                        {(!tx.tags || tx.tags.length === 0) && <span className="text-muted small">-</span>}
                       </div>
+                      {(!tx.tags || tx.tags.length === 0) && <span className="text-muted small">-</span>}
                     </td>
                     <td className="align-middle">
                       {tx.category ? (
@@ -405,7 +433,7 @@ export const TransactionListPage: React.FC = () => {
       {/* Responsive Transaction Modal */}
       <Modal
         show={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        scrollable
         size="lg"
       >
         <ModalHeader

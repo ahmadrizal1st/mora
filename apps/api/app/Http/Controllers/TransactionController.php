@@ -28,6 +28,7 @@ class TransactionController extends Controller
             'sort_by',
             'sort_dir',
             'per_page',
+            'tag_ids',
         ]);
 
         $transactions = TransactionService::list($request->user(), $filters);

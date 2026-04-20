@@ -262,7 +262,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                   options={categories.map(c => ({
                     value: c.id,
                     label: c.name,
-                    icon: c.icon
+                    icon: c.icon,
+                    color: c.color
                   }))}
                   placeholder="Pilih Kategori"
                   error={errors.category_id?.message}
@@ -303,6 +304,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               options={tags.map(t => ({
                 value: t.id,
                 label: t.name,
+                color: t.color
               }))}
               placeholder="Pilih tags..."
             />

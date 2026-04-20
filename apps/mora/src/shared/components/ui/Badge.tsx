@@ -13,6 +13,7 @@ interface BadgeProps {
   addon?: string
   addonColor?: string
   className?: string
+  style?: React.CSSProperties
 }
 
 export function Badge({
@@ -27,6 +28,7 @@ export function Badge({
   addon,
   addonColor,
   className,
+  style,
 }: BadgeProps) {
   const classes = clsx(
     'badge',
@@ -41,7 +43,7 @@ export function Badge({
   const content = children || text
 
   return (
-    <span className={classes}>
+    <span className={classes} style={style}>
       {icon && <Icon icon={icon} className={clsx(content && 'me-1')} />}
       {content}
       {addon && (

@@ -59,10 +59,36 @@ class TransactionService
             });
         }
 
+        // Filter by tags (AND matching: must have ALL selected tags)
+        if (!empty($filters['tag_ids'])) {
+            $tagIds = is_array($filters['tag_ids']) ? $filters['tag_ids'] : explode(',', $filters['tag_ids']);
+            foreach ($tagIds as $tagId) {
+                $query->whereHas('tags', function ($q) use ($tagId) {
+                    $q->where('tags.id', $tagId);
+                });
+            }
+        }
+
         // Sort
         $sortBy = $filters['sort_by'] ?? 'tx_date';
         $sortDir = $filters['sort_dir'] ?? 'desc';
-        $query->orderBy($sortBy, $sortDir);
+
+        if ($sortBy === 'nominal') {
+            $query->orderBy('amount_raw', $sortDir);
+        } elseif ($sortBy === 'category') {
+            $query->select('transactions.*')
+                ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
+                ->orderBy('categories.name', $sortDir);
+        } elseif ($sortBy === 'account') {
+            $query->select('transactions.*')
+                ->leftJoin('accounts', 'transactions.account_id', '=', 'accounts.id')
+                ->orderBy('accounts.name', $sortDir);
+        } else {
+            // Default sort (ensure column exists or fallback)
+            $allowedColumns = ['tx_date', 'merchant', 'created_at', 'type'];
+            $sortBy = in_array($sortBy, $allowedColumns) ? $sortBy : 'tx_date';
+            $query->orderBy($sortBy, $sortDir);
+        }
 
         $perPage = min($filters['per_page'] ?? 15, 100);
 

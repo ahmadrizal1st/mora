@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import type { TransactionFilters, TransactionType } from '../types/transaction.types';
-import { useCategories, useStatuses } from '../hooks/useLookups';
+import { useCategories, useStatuses, useTags } from '../hooks/useLookups';
 import { useAccounts } from '../hooks/useAccounts';
 import { Icon, Button, Select, Datepicker } from '@/shared/components/ui';
 
@@ -31,7 +31,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
 
   const categoryOptions = useMemo(() => [
     { value: '', label: 'Semua Kategori' },
-    ...categories.map(c => ({ value: c.id, label: c.name }))
+    ...categories.map(c => ({ value: c.id, label: c.name, color: c.color }))
   ], [categories]);
 
   const statusOptions = useMemo(() => [
@@ -39,10 +39,9 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
     ...statuses.map(s => ({ value: s.id, label: s.name }))
   ], [statuses]);
 
-  const tagOptions = useMemo(() => [
-    { value: '', label: 'Semua Tag' },
-    ...tags.map(t => ({ value: t.id, label: t.name }))
-  ], [tags]);
+  const tagOptions = useMemo(() => 
+    tags.map(t => ({ value: t.id, label: t.name, color: t.color }))
+  , [tags]);
 
   const typeOptions = [
     { value: '', label: 'Semua Tipe' },
@@ -67,7 +66,9 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             <label className="form-label">Cari Transaksi</label>
             <div className="input-icon">
               <span className="input-icon-addon">
-                <Icon icon="search" size={18} />
+                <span className="text-secondary">
+                  <Icon icon="search" size={18} />
+                </span>
               </span>
               <input
                 type="text"
@@ -110,12 +111,13 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
           </div>
 
           <div className="col-md-4 col-lg-3">
-            <label className="form-label">Tag</label>
+            <label className="form-label">Tags</label>
             <Select
+              multiple
               options={tagOptions}
-              value={filters.tag_id || ''}
-              onChange={(val) => handleFilterChange('tag_id', val ? Number(val) : undefined)}
-              placeholder="Semua Tag"
+              value={filters.tag_ids || []}
+              onChange={(vals) => handleFilterChange('tag_ids', Array.isArray(vals) ? vals.map(Number) : [])}
+              placeholder="Filter by tags..."
             />
           </div>
 

@@ -76,8 +76,8 @@ export const transactionService = {
   /**
    * Fetch historical aggregated data for charts.
    */
-  async getHistory(params?: { date_from?: string; date_to?: string; account_id?: number }): Promise<TransactionHistory[]> {
-    const response = await api.get<{ data: TransactionHistory[] }>('/transactions-history', { params });
+  async getHistory(params?: { date_from?: string; date_to?: string; account_id?: number }): Promise<TransactionHistory> {
+    const response = await api.get<{ data: TransactionHistory }>('/transactions-history', { params });
     return response.data.data;
   },
 };

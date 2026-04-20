@@ -14,6 +14,7 @@ export interface SelectOption {
   flag?: string
   badge?: string
   icon?: string
+  color?: string
 }
 
 export interface SelectOptGroup {
@@ -148,9 +149,17 @@ export function Select({
   }, [])
 
   const filteredOptions = useMemo(() => {
-    if (!search) return resolvedOptions
-    return (allOptions as SelectOption[]).filter(o => o.label.toLowerCase().includes(search.toLowerCase()))
-  }, [allOptions, search, resolvedOptions])
+    const query = search.toLowerCase()
+    let results = allOptions
+    
+    if (query) {
+      results = allOptions.filter(o => o.label.toLowerCase().includes(query))
+    }
+
+    // Limit to 10 for performance, but only if not grouped
+    // If query is empty, we still only show top 10 to keep dropdown light
+    return results.slice(0, 10)
+  }, [allOptions, search])
 
   const toggleOption = useCallback((val: string | number) => {
     let next: (string | number)[]
@@ -196,6 +205,7 @@ export function Select({
       {(indicator === 'avatar' || opt.avatar) && opt.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-2" />}
       {(indicator === 'flag' || opt.flag) && opt.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>}
       {(indicator === 'label' || opt.badge) && opt.badge && <span className="badge bg-blue-lt me-2">{opt.badge}</span>}
+      {opt.color && <span className="status-dot ms-1 me-2" style={{ backgroundColor: opt.color }}></span>}
       {opt.icon && <Icon icon={opt.icon} size={14} className="me-2 text-muted" />}
       <span className="text-truncate">{highlightMatch(opt.label, search)}</span>
       {selected.some(s => s.toString() === opt.value.toString()) && !multiple && <Icon icon="check" size={12} className="ms-auto text-primary" />}
@@ -205,7 +215,7 @@ export function Select({
   const selectedDisplay = useMemo(() => {
     if (multiple) {
       return (
-        <div className="d-flex flex-wrap gap-1 align-items-center">
+        <div className="d-flex flex-wrap gap-1 align-items-center w-100">
           {selected.map(val => {
             const opt = allOptions.find(o => o.value.toString() === val.toString())
             return (
@@ -213,6 +223,7 @@ export function Select({
                 {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-1" />}
                 {(indicator === 'flag' || opt?.flag) && opt?.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-1')}></span>}
                 {(indicator === 'label' || opt?.badge) && opt?.badge && <span className="badge bg-blue-lt me-1">{opt.badge}</span>}
+                {opt?.color && <span className="status-dot me-1" style={{ backgroundColor: opt.color, width: '8px', height: '8px' }}></span>}
                 {opt?.icon && <Icon icon={opt.icon} size={12} className="me-1" />}
                 {opt?.label || val}
                 <span className={clsx("ms-1", "cursor-pointer", "d-flex", "align-items-center", "text-muted")} onClick={(e) => removeValue(val, e)}>
@@ -260,6 +271,7 @@ export function Select({
         {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-2" />}
         {(indicator === 'flag' || opt?.flag) && opt?.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>}
         {(indicator === 'label' || opt?.badge) && opt?.badge && <span className="badge bg-blue-lt me-2">{opt.badge}</span>}
+        {opt?.color && <span className="status-dot ms-1 me-2" style={{ backgroundColor: opt.color }}></span>}
         {opt?.icon && <Icon icon={opt.icon} size={14} className="me-2 text-muted" />}
         <span className="text-truncate">{opt?.label}</span>
       </div>
@@ -336,15 +348,15 @@ export function Select({
             "overflow-auto"
           )} 
           style={{ 
-            maxHeight: '250px', 
+            maxHeight: multiple ? '185px' : '220px', 
             zIndex: 1050,
             left: placement === 'end' ? 'auto' : undefined,
             right: placement === 'end' ? 0 : undefined,
             minWidth: '100%'
           }}
         >
-          {!multiple && allOptions.length > 5 && (
-            <div className="p-2 border-bottom">
+          {!multiple && (
+            <div className="p-2 border-bottom sticky-top bg-white">
               <input 
                 ref={inputRef}
                 type="text" 
@@ -359,25 +371,7 @@ export function Select({
           )}
           
           <div className="list-group list-group-flush list-group-hoverable">
-            {resolvedOptions.length > 0 && isOptGroup(resolvedOptions[0]) ? (
-              (resolvedOptions as SelectOptGroup[]).map((group, gi) => (
-                <div key={gi}>
-                  <div className="dropdown-header">{group.title}</div>
-                  {group.options.map((o, oi) => {
-                    const opt: SelectOption = typeof o === 'string' ? { value: o, label: o } : o
-                    return (
-                      <div 
-                        key={oi}
-                        className={clsx('dropdown-item', 'cursor-pointer', selected.some(s => s.toString() === opt.value.toString()) && 'active')}
-                        onClick={(e) => { e.stopPropagation(); toggleOption(opt.value) }}
-                      >
-                        {renderOptionContent(opt)}
-                      </div>
-                    )
-                  })}
-                </div>
-              ))
-            ) : (
+            {filteredOptions.length > 0 ? (
               (filteredOptions as SelectOption[]).map((opt) => (
                 <div 
                   key={opt.value}
@@ -387,8 +381,14 @@ export function Select({
                   {renderOptionContent(opt)}
                 </div>
               ))
+            ) : (
+              <div className="dropdown-item text-muted">No results found</div>
             )}
-            {filteredOptions.length === 0 && <div className="dropdown-item text-muted">No results found</div>}
+            {allOptions.length > 10 && !search && (
+              <div className="dropdown-item text-muted border-top bg-light" style={{ fontSize: '0.75rem' }}>
+                Showing first 10 items. Use search to find more.
+              </div>
+            )}
           </div>
         </div>
       )}

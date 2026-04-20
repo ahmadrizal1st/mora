@@ -111,6 +111,7 @@ export interface TransactionFilters {
   sort_dir?: 'asc' | 'desc';
   page?: number;
   per_page?: number;
+  tag_ids?: number[];
 }
 
 export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'account' | 'to_account' | 'category' | 'status' | 'currency' | 'recurring_type' | 'tags' | 'rate_snapshot' | 'amount_in_default' | 'currency_id'> & {
