@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Transactions
     Route::apiResource('transactions', TransactionController::class);
     Route::get('transactions-summary', [TransactionController::class, 'summary']);
+    Route::get('transactions-history', [TransactionController::class, 'history']);
 
     // Accounts
     Route::apiResource('accounts', AccountController::class);

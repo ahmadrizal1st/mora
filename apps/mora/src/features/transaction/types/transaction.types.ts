@@ -84,6 +84,19 @@ export interface TransactionSummary {
   total_expense: number;
   net_balance: number;
   transaction_count: number;
+  income_trend: number;
+  expense_trend: number;
+  count_trend: number;
+  balance_trend: number;
+}
+
+export interface TransactionHistory {
+  income: number[];
+  income_labels: string[];
+  expense: number[];
+  expense_labels: string[];
+  count: number[];
+  count_labels: string[];
 }
 
 export interface TransactionFilters {

@@ -1,4 +1,5 @@
 // src/components/cards/charts/ActiveUsersCard.tsx
+import { clsx } from 'clsx'
 import { Trending } from '../../ui/Trending'
 import { Chart } from '../../ui/Chart'
 import type { ChartSerie, ChartData } from '../../ui/Chart'
@@ -10,8 +11,11 @@ interface ActiveUsersCardProps {
   trendValue?: number
   description?: string
   series?: ChartSerie[]
+  categories?: string[]
   type?: ChartData['type']
   chartId?: string
+  className?: string
+  style?: React.CSSProperties
 }
 
 const DEFAULT_SERIES = [{ name: 'Profits', data: [37, 35, 44, 28, 36, 24, 65, 31, 37, 39, 62, 51, 35, 41, 35, 27, 93, 53, 61, 27, 54, 43, 19, 46, 39, 62, 51, 35, 41, 67] }]
@@ -54,11 +58,14 @@ export function ActiveUsersCard({
   value = '2,986', 
   trendValue = 4,
   series = DEFAULT_SERIES,
+  categories,
   type = 'bar',
-  chartId = 'active-users'
+  chartId = 'active-users',
+  className,
+  style,
 }: ActiveUsersCardProps) {
   return (
-    <div className="card">
+    <div className={clsx('card', className)} style={style}>
       <div className="card-body">
         <div className="d-flex align-items-center">
           <div className="subheader">{title}</div>
@@ -77,8 +84,9 @@ export function ActiveUsersCard({
           chartData={{
             type: type,
             sparkline: true,
-            datetime: true,
+            datetime: !categories,
             series: series,
+            categories: categories,
             color: "primary"
           }}
           size="sm"

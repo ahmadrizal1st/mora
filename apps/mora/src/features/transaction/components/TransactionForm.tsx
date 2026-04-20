@@ -43,20 +43,23 @@ const transactionSchema = z.object({
 export type TransactionFormValues = z.infer<typeof transactionSchema>;
 
 interface TransactionFormProps {
-  initialData?: Partial<Transaction>;
+  initialData?: Transaction;
   onSubmit: (data: TransactionFormValues) => void;
   isLoading?: boolean;
+  onCancel?: () => void;
 }
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
   initialData,
   onSubmit,
-  isLoading
+  isLoading,
+  onCancel
 }) => {
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors }
   } = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionSchema),
@@ -73,6 +76,37 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       tag_ids: initialData?.tags?.map(t => t.id) || [],
     },
   });
+
+  // Sync form state when initialData changes
+  React.useEffect(() => {
+    if (initialData) {
+      reset({
+        type: (initialData.type as TransactionType) || 'expense',
+        amount_raw: initialData.amount_raw || 0,
+        account_id: initialData.account_id,
+        to_account_id: initialData.to_account_id,
+        category_id: initialData.category_id,
+        currency_id: initialData.currency_id,
+        tx_date: initialData.tx_date || new Date().toISOString().split('T')[0],
+        merchant: initialData.merchant || '',
+        notes: initialData.notes || '',
+        tag_ids: initialData.tags?.map(t => t.id) || [],
+      });
+    } else {
+      reset({
+        type: 'expense',
+        amount_raw: 0,
+        account_id: undefined,
+        to_account_id: undefined,
+        category_id: undefined,
+        currency_id: undefined,
+        tx_date: new Date().toISOString().split('T')[0],
+        merchant: '',
+        notes: '',
+        tag_ids: [],
+      });
+    }
+  }, [initialData, reset]);
 
   const type = useWatch({
     control,
@@ -286,9 +320,21 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       </div>
 
       <div className="mt-4 d-flex justify-content-end gap-2">
-        <Button link to="/transactions" className="text-muted">
-          Batal
-        </Button>
+        {onCancel ? (
+          <Button 
+            element="button" 
+            type="button" 
+            link 
+            className="text-muted" 
+            onClick={onCancel}
+          >
+            Batal
+          </Button>
+        ) : (
+          <Button link to="/transactions" className="text-muted">
+            Batal
+          </Button>
+        )}
         <Button
           element="button"
           type="submit"

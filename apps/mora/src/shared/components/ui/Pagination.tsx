@@ -24,19 +24,55 @@ export function Pagination({
   className,
   onPageChange,
 }: PaginationProps) {
-  const currentOffset = offset ?? count
-  const countOffset = count - currentOffset + 1
-  const pages = Array.from({ length: Math.min(count, currentOffset) }, (_, i) => i + 1)
+  const getRange = (start: number, end: number) => {
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
 
-  const handlePageClick = (e: React.MouseEvent, page: number) => {
+  const getPaginationItems = () => {
+    const siblings = 1;
+    const totalPageNumbers = siblings * 2 + 5; // first + last + current + 2*siblings + 2*dots
+
+    if (count <= totalPageNumbers) {
+      return getRange(1, count);
+    }
+
+    const leftSiblingIndex = Math.max(activeItem - siblings, 1);
+    const rightSiblingIndex = Math.min(activeItem + siblings, count);
+
+    const shouldShowLeftDots = leftSiblingIndex > 2;
+    const shouldShowRightDots = rightSiblingIndex < count - 2;
+
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      const leftItemCount = 3 + 2 * siblings;
+      const leftRange = getRange(1, leftItemCount);
+      return [...leftRange, 'DOTS', count];
+    }
+
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      const rightItemCount = 3 + 2 * siblings;
+      const rightRange = getRange(count - rightItemCount + 1, count);
+      return [1, 'DOTS', ...rightRange];
+    }
+
+    if (shouldShowLeftDots && shouldShowRightDots) {
+      const middleRange = getRange(leftSiblingIndex, rightSiblingIndex);
+      return [1, 'DOTS', ...middleRange, 'DOTS', count];
+    }
+
+    return getRange(1, count);
+  };
+
+  const paginationItems = getPaginationItems();
+
+  const handlePageClick = (e: React.MouseEvent, page: number | string) => {
     e.preventDefault()
-    if (page < 1 || page > count || page === activeItem) return
+    if (typeof page === 'string' || page < 1 || page > count || page === activeItem) return
     onPageChange?.(page)
   }
 
   const renderItem = (
     content: React.ReactNode,
-    page: number,
+    page: number | string,
     isDisabled: boolean,
     extraClass?: string
   ) => (
@@ -73,28 +109,23 @@ export function Pagination({
         prevDescription ? 'page-prev' : undefined
       )}
 
-      {pages.map((i) => (
-        <li key={i} className={clsx('page-item', i === activeItem && 'active')}>
-          <a className="page-link" href="#" onClick={(e) => handlePageClick(e, i)}>
-            {i}
-          </a>
-        </li>
-      ))}
-
-      {currentOffset < count && (
-        <>
-          <li className="page-item">
-            <span className="page-link disabled">&hellip;</span>
-          </li>
-          {Array.from({ length: count - countOffset + 1 }, (_, i) => countOffset + i).map((i) => (
-            <li key={i} className={clsx('page-item', i === activeItem && 'active')}>
-              <a className="page-link" href="#" onClick={(e) => handlePageClick(e, i)}>
-                {i}
-              </a>
+      {paginationItems.map((item, idx) => {
+        if (item === 'DOTS') {
+          return (
+            <li key={`dots-${idx}`} className="page-item disabled">
+              <span className="page-link border-0 bg-transparent opacity-50">&hellip;</span>
             </li>
-          ))}
-        </>
-      )}
+          );
+        }
+
+        return (
+          <li key={item} className={clsx('page-item', item === activeItem && 'active')}>
+            <a className="page-link" href="#" onClick={(e) => handlePageClick(e, item)}>
+              {item}
+            </a>
+          </li>
+        );
+      })}
 
       {renderItem(
         nextDescription ? (

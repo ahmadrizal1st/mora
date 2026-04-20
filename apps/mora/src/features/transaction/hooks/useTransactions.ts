@@ -9,6 +9,20 @@ export const useTransactions = (filters?: TransactionFilters) => {
   });
 };
 
+export const useTransactionChartData = (filters?: TransactionFilters) => {
+  return useQuery({
+    queryKey: ['transactions-chart', filters],
+    queryFn: () => transactionService.getChartData(filters),
+  });
+};
+
+export const useTransactionHistory = (params?: { date_from?: string; date_to?: string; account_id?: number }) => {
+  return useQuery({
+    queryKey: ['transaction-history', params],
+    queryFn: () => transactionService.getHistory(params),
+  });
+};
+
 export const useTransaction = (id: number) => {
   return useQuery({
     queryKey: ['transaction', id],

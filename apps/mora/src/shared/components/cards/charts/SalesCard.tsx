@@ -1,3 +1,4 @@
+import { clsx } from 'clsx'
 import { Trending, Progress, DropdownDays } from '../../ui'
 
 interface SalesCardProps {
@@ -8,6 +9,8 @@ interface SalesCardProps {
   progressValue?: number
   progressColor?: string
   dropdownId?: string
+  className?: string
+  style?: React.CSSProperties
 }
 
 export function SalesCard({
@@ -18,9 +21,11 @@ export function SalesCard({
   progressValue = 75,
   progressColor = 'primary',
   dropdownId = 'sales',
+  className,
+  style,
 }: SalesCardProps) {
   return (
-    <div className="card">
+    <div className={clsx('card', className)} style={style}>
       <div className="card-body">
         <div className="d-flex align-items-center">
           <div className="subheader">{title}</div>

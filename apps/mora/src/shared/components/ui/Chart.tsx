@@ -17,7 +17,7 @@ type ApexMarkers = any
 
 export interface ChartSerie {
   name: string
-  data: (number | null)[]
+  data: (number | null | { x: any, y: any } | [any, any])[]
   color?: string
   colorOpacity?: string
   candlestickData?: { x: number; y: number[] }[]

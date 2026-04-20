@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { TransactionFilters, TransactionType } from '../types/transaction.types';
 import { useCategories, useStatuses } from '../hooks/useLookups';
 import { useAccounts } from '../hooks/useAccounts';
-import { Icon, Button } from '@/shared/components/ui';
+import { Icon, Button, Select, Datepicker } from '@/shared/components/ui';
 
 interface TransactionFiltersProps {
   filters: TransactionFilters;
@@ -17,17 +17,54 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
 }) => {
   const { data: accounts = [] } = useAccounts();
   const { data: categories = [] } = useCategories();
-  useStatuses(); // Still calling the hook but not storing the unused 'statuses' variable
+  const { data: statuses = [] } = useStatuses();
+  const { data: tags = [] } = useTags();
 
   const handleFilterChange = <K extends keyof TransactionFilters>(key: K, value: TransactionFilters[K]) => {
     onChange({ ...filters, [key]: value, page: 1 });
   };
 
+  const accountOptions = useMemo(() => [
+    { value: '', label: 'Semua Akun' },
+    ...accounts.map(a => ({ value: a.id, label: a.name }))
+  ], [accounts]);
+
+  const categoryOptions = useMemo(() => [
+    { value: '', label: 'Semua Kategori' },
+    ...categories.map(c => ({ value: c.id, label: c.name }))
+  ], [categories]);
+
+  const statusOptions = useMemo(() => [
+    { value: '', label: 'Semua Status' },
+    ...statuses.map(s => ({ value: s.id, label: s.name }))
+  ], [statuses]);
+
+  const tagOptions = useMemo(() => [
+    { value: '', label: 'Semua Tag' },
+    ...tags.map(t => ({ value: t.id, label: t.name }))
+  ], [tags]);
+
+  const typeOptions = [
+    { value: '', label: 'Semua Tipe' },
+    { value: 'income', label: 'Pemasukan' },
+    { value: 'expense', label: 'Pengeluaran' },
+    { value: 'transfer', label: 'Transfer' },
+  ];
+
+  const perPageOptions = [
+    { value: 10, label: '10 Baris' },
+    { value: 15, label: '15 Baris' },
+    { value: 25, label: '25 Baris' },
+    { value: 50, label: '50 Baris' },
+    { value: 100, label: '100 Baris' },
+  ];
+
   return (
-    <div className="card mb-3">
+    <div className="card mb-3 border-0 shadow-sm">
       <div className="card-body">
-        <div className="row g-2">
-          <div className="col-md-3">
+        <div className="row g-3">
+          <div className="col-md-12 col-lg-3">
+            <label className="form-label">Cari Transaksi</label>
             <div className="input-icon">
               <span className="input-icon-addon">
                 <Icon icon="search" size={18} />
@@ -35,74 +72,102 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
               <input
                 type="text"
                 className="form-control"
-                placeholder="Cari transaksi..."
+                placeholder="Ketik kata kunci..."
                 value={filters.search || ''}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
               />
             </div>
           </div>
 
-          <div className="col-md-2">
-            <select
-              className="form-select"
+          <div className="col-md-4 col-lg-2">
+            <label className="form-label">Tipe</label>
+            <Select
+              options={typeOptions}
               value={filters.type || ''}
-              onChange={(e) => handleFilterChange('type', (e.target.value || undefined) as TransactionType | undefined)}
-            >
-              <option value="">Semua Tipe</option>
-              <option value="income">Pemasukan</option>
-              <option value="expense">Pengeluaran</option>
-              <option value="transfer">Transfer</option>
-            </select>
+              onChange={(val) => handleFilterChange('type', (val || undefined) as TransactionType | undefined)}
+              placeholder="Semua Tipe"
+            />
           </div>
 
-          <div className="col-md-2">
-            <select
-              className="form-select"
+          <div className="col-md-4 col-lg-2">
+            <label className="form-label">Akun</label>
+            <Select
+              options={accountOptions}
               value={filters.account_id || ''}
-              onChange={(e) => handleFilterChange('account_id', e.target.value ? Number(e.target.value) : undefined)}
-            >
-              <option value="">Semua Akun</option>
-              {accounts.map(a => (
-                <option key={a.id} value={a.id}>{a.name}</option>
-              ))}
-            </select>
+              onChange={(val) => handleFilterChange('account_id', val ? Number(val) : undefined)}
+              placeholder="Semua Akun"
+            />
           </div>
 
-          <div className="col-md-2">
-            <select
-              className="form-select"
+          <div className="col-md-4 col-lg-2">
+            <label className="form-label">Kat.</label>
+            <Select
+              options={categoryOptions}
               value={filters.category_id || ''}
-              onChange={(e) => handleFilterChange('category_id', e.target.value ? Number(e.target.value) : undefined)}
-            >
-              <option value="">Semua Kategori</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+              onChange={(val) => handleFilterChange('category_id', val ? Number(val) : undefined)}
+              placeholder="Semua"
+            />
           </div>
 
-          <div className="col-md-3 d-flex gap-2">
-            <input
-              type="date"
-              className="form-control"
-              value={filters.date_from || ''}
-              onChange={(e) => handleFilterChange('date_from', e.target.value)}
-              title="Dari Tanggal"
+          <div className="col-md-4 col-lg-3">
+            <label className="form-label">Tag</label>
+            <Select
+              options={tagOptions}
+              value={filters.tag_id || ''}
+              onChange={(val) => handleFilterChange('tag_id', val ? Number(val) : undefined)}
+              placeholder="Semua Tag"
             />
-            <input
-              type="date"
-              className="form-control"
-              value={filters.date_to || ''}
-              onChange={(e) => handleFilterChange('date_to', e.target.value)}
-              title="Ke Tanggal"
+          </div>
+
+          <div className="col-md-8 col-lg-5">
+            <label className="form-label">Rentang Tanggal</label>
+            <div className="row g-2">
+              <div className="col">
+                <Datepicker
+                  value={filters.date_from || ''}
+                  onChange={(val) => handleFilterChange('date_from', val)}
+                  placeholder="Mulai"
+                />
+              </div>
+              <div className="col-auto align-self-center text-muted">-</div>
+              <div className="col">
+                <Datepicker
+                  value={filters.date_to || ''}
+                  onChange={(val) => handleFilterChange('date_to', val)}
+                  placeholder="Sampai"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-4 col-lg-2">
+            <label className="form-label">Status</label>
+            <Select
+              options={statusOptions}
+              value={filters.status_id || ''}
+              onChange={(val) => handleFilterChange('status_id', val ? Number(val) : undefined)}
+              placeholder="Semua Status"
             />
+          </div>
+          
+          <div className="col-md-4 col-lg-2">
+            <label className="form-label">Baris</label>
+            <Select
+              options={perPageOptions}
+              value={filters.per_page || 15}
+              onChange={(val) => handleFilterChange('per_page', Number(val))}
+            />
+          </div>
+
+          <div className="col-md-4 col-lg-3 d-flex align-items-end">
             <Button
-              variant="outline-secondary"
-              className="btn-icon"
-              title="Reset Filter"
+              element="button"
               onClick={onClear}
+              white
+              block
+              icon="rotate-clockwise"
             >
-              <Icon icon="x" size={18} />
+              Reset
             </Button>
           </div>
         </div>

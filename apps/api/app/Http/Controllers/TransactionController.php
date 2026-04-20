@@ -18,9 +18,16 @@ class TransactionController extends Controller
     public function index(Request $request): JsonResponse
     {
         $filters = $request->only([
-            'type', 'account_id', 'category_id', 'status_id',
-            'date_from', 'date_to', 'search',
-            'sort_by', 'sort_dir', 'per_page',
+            'type',
+            'account_id',
+            'category_id',
+            'status_id',
+            'date_from',
+            'date_to',
+            'search',
+            'sort_by',
+            'sort_dir',
+            'per_page',
         ]);
 
         $transactions = TransactionService::list($request->user(), $filters);
@@ -106,6 +113,22 @@ class TransactionController extends Controller
 
         return response()->json([
             'data' => $summary,
+        ]);
+    }
+
+    /**
+     * Get historical aggregated data for charts.
+     *
+     * GET /api/transactions-history
+     */
+    public function history(Request $request): JsonResponse
+    {
+        $filters = $request->only(['date_from', 'date_to', 'account_id']);
+
+        $history = TransactionService::history($request->user(), $filters);
+
+        return response()->json([
+            'data' => $history,
         ]);
     }
 }
