@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { accountService } from '../services/account.service';
-import { type CreateAccountDTO, type UpdateAccountDTO, type AccountFilters, type AccountResponse } from '../types/transaction.types';
+import { type CreateAccountDTO, type UpdateAccountDTO, type AccountFilters} from '../types/transaction.types';
 
 export const useAccounts = (filters?: AccountFilters) => {
   return useQuery({

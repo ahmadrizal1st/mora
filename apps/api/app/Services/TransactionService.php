@@ -345,23 +345,24 @@ class TransactionService
             if (!empty($filters['account_id'])) {
                 $rangeQuery->where('account_id', $filters['account_id']);
             }
-            
+
             $range = $rangeQuery->selectRaw('MIN(tx_date) as start_date, MAX(tx_date) as end_date')->first();
-            
-            $currentFrom = $range && $range->start_date 
-                ? \Carbon\Carbon::parse($range->start_date)->startOfDay() 
+
+            $currentFrom = $range && $range->start_date
+                ? \Carbon\Carbon::parse($range->start_date)->startOfDay()
                 : \Carbon\Carbon::now()->subDays(29)->startOfDay();
-                
-            $currentTo = $range && $range->end_date 
-                ? \Carbon\Carbon::parse($range->end_date)->endOfDay() 
+
+            $currentTo = $range && $range->end_date
+                ? \Carbon\Carbon::parse($range->end_date)->endOfDay()
                 : \Carbon\Carbon::now()->endOfDay();
         } else {
             $currentFrom = \Carbon\Carbon::parse($filters['date_from'])->startOfDay();
             $currentTo = \Carbon\Carbon::parse($filters['date_to'])->endOfDay();
         }
-        
+
         // Calculate Previous Period range accurately
-        $prevFrom = null; $prevTo = null;
+        $prevFrom = null;
+        $prevTo = null;
         if ($groupBy === 'month') {
             $monthsCount = $currentFrom->diffInMonths($currentTo) + 1;
             $prevTo = $currentFrom->copy()->subDay()->endOfMonth();
@@ -381,7 +382,7 @@ class TransactionService
         }
 
         $results = $query->get()->keyBy('label');
-        
+
         // Previous Period Query
         $prevQuery = $user->transactions()
             ->selectRaw("to_char(tx_date, ?) as label", [$format])
@@ -399,8 +400,13 @@ class TransactionService
         $prevResults = $prevQuery->get()->keyBy('label');
 
         // Build continuous synchronized data sets
-        $income = []; $expense = []; $count = []; $labels = [];
-        $p_income = []; $p_expense = []; $p_count = [];
+        $income = [];
+        $expense = [];
+        $count = [];
+        $labels = [];
+        $p_income = [];
+        $p_expense = [];
+        $p_count = [];
 
         $curr = $currentFrom->copy();
         $prev = $prevFrom->copy();
@@ -408,16 +414,16 @@ class TransactionService
         $safety = 0;
         while ($curr->lte($currentTo) && $safety < 1000) {
             $safety++;
-            
+
             // Generate DB label hooks to match SQL to_char(tx_date, 'IYYY-"W"IW') -> e.g. 2024-W01
-            $dbLabel = match($groupBy) {
-                'week' => $curr->format('o-\WW'), 
+            $dbLabel = match ($groupBy) {
+                'week' => $curr->format('o-\WW'),
                 'month' => $curr->format('Y-m'),
                 'year' => $curr->format('Y'),
                 default => $curr->format('Y-m-d')
             };
 
-            $pDbLabel = match($groupBy) {
+            $pDbLabel = match ($groupBy) {
                 'week' => $prev->format('o-\WW'),
                 'month' => $prev->format('Y-m'),
                 'year' => $prev->format('Y'),
@@ -438,10 +444,19 @@ class TransactionService
             $p_count[] = (int) ($pItem->count ?? 0);
 
             // Increment
-            if ($groupBy === 'month') { $curr->addMonth(); $prev->addMonth(); }
-            else if ($groupBy === 'week') { $curr->addWeek(); $prev->addWeek(); }
-            else if ($groupBy === 'year') { $curr->addYear(); $prev->addYear(); }
-            else { $curr->addDay(); $prev->addDay(); }
+            if ($groupBy === 'month') {
+                $curr->addMonth();
+                $prev->addMonth();
+            } else if ($groupBy === 'week') {
+                $curr->addWeek();
+                $prev->addWeek();
+            } else if ($groupBy === 'year') {
+                $curr->addYear();
+                $prev->addYear();
+            } else {
+                $curr->addDay();
+                $prev->addDay();
+            }
         }
 
         return [
@@ -458,124 +473,130 @@ class TransactionService
     }
 
     /**
-     * Get historical daily/weekly/monthly/yearly balance trend for an account.
+     * Get balance history for all accounts of a user with a single optimized query.
+     *
+     * Returns net changes per account per period using UNION ALL to handle
+     * both source (account_id) and destination (to_account_id) in transfers.
+     *
+     * @return array{labels: string[], net_changes: array<int, array<string, int>>}
      */
-    public static function getBalanceHistory(Account $account, string $groupBy = 'day'): array
+    public static function getAccountsHistory(User $user, string $groupBy = 'day'): array
     {
-        $res = self::calculateHistory(
-            $account->balance_raw,
-            Transaction::where(function($q) use ($account) {
-                $q->where('account_id', $account->id)
-                  ->orWhere('to_account_id', $account->id);
-            }),
-            $groupBy,
-            $account->id
-        );
-
-        return $res['history'];
-    }
-
-    /**
-     * Get total historical balance trend for all user accounts.
-     */
-    public static function getTotalBalanceHistory(User $user, string $groupBy = 'day'): array
-    {
-        $totalCurrent = $user->accounts()->sum('balance_raw');
-        
-        return self::calculateHistory(
-            $totalCurrent,
-            Transaction::whereIn('account_id', $user->accounts()->pluck('id'))
-                ->orWhereIn('to_account_id', $user->accounts()->pluck('id')),
-            $groupBy
-        );
-    }
-
-    /**
-     * Internal helper to calculate history based on current total and transaction query.
-     */
-    private static function calculateHistory(int $currentTotal, $txQuery, string $groupBy, ?int $singleAccountId = null): array
-    {
-        $points = match($groupBy) {
+        $points = match ($groupBy) {
             'week' => 12,
             'month' => 12,
-            'year' => 5,
             default => 30,
         };
 
         $endDate = \Carbon\Carbon::now()->endOfDay();
-        $startDate = match($groupBy) {
+        $startDate = match ($groupBy) {
             'week' => \Carbon\Carbon::now()->subWeeks($points - 1)->startOfWeek(),
             'month' => \Carbon\Carbon::now()->subMonths($points - 1)->startOfMonth(),
-            'year' => \Carbon\Carbon::now()->subYears($points - 1)->startOfYear(),
             default => \Carbon\Carbon::now()->subDays($points - 1)->startOfDay(),
         };
 
-        $format = match ($groupBy) {
-            'week' => 'o-\WW', 
+        $pgFormat = match ($groupBy) {
+            'week' => 'IYYY-"W"IW',
+            'month' => 'YYYY-MM',
+            default => 'YYYY-MM-DD',
+        };
+
+        $startStr = $startDate->toDateString();
+        $endStr = $endDate->toDateString();
+
+        // Single optimized query: net changes per account per period
+        // Part 1: income/expense/transfer-out (via account_id)
+        // Part 2: transfer-in (via to_account_id)
+        $results = DB::select("
+            SELECT account_id, label, SUM(net_change) as net_change
+            FROM (
+                SELECT
+                    account_id,
+                    to_char(tx_date, ?) as label,
+                    SUM(CASE
+                        WHEN type = 'income' THEN amount_raw
+                        WHEN type = 'expense' THEN -amount_raw
+                        WHEN type = 'transfer' THEN -amount_raw
+                        ELSE 0
+                    END) as net_change
+                FROM transactions
+                WHERE user_id = ? AND tx_date >= ? AND tx_date <= ?
+                GROUP BY account_id, label
+
+                UNION ALL
+
+                SELECT
+                    to_account_id as account_id,
+                    to_char(tx_date, ?) as label,
+                    SUM(amount_raw) as net_change
+                FROM transactions
+                WHERE user_id = ? AND type = 'transfer'
+                    AND to_account_id IS NOT NULL
+                    AND tx_date >= ? AND tx_date <= ?
+                GROUP BY to_account_id, label
+            ) combined
+            GROUP BY account_id, label
+            ORDER BY account_id, label
+        ", [$pgFormat, $user->id, $startStr, $endStr, $pgFormat, $user->id, $startStr, $endStr]);
+
+        // Generate ordered labels (oldest → newest)
+        $phpFormat = match ($groupBy) {
+            'week' => 'o-\WW',
             'month' => 'Y-m',
-            'year' => 'Y',
             default => 'Y-m-d',
         };
 
-        $transactions = $txQuery
-            ->where('tx_date', '>=', $startDate->toDateString())
-            ->where('tx_date', '<=', $endDate->toDateString())
-            ->orderBy('tx_date', 'desc')
-            ->get()
-            ->groupBy(function($tx) use ($format) {
-                return \Carbon\Carbon::parse($tx->tx_date)->format($format);
-            });
-
-        $history = [];
         $labels = [];
-        $currentBalance = $currentTotal;
-
-        for ($i = 0; $i < $points; $i++) {
-            $curr = match($groupBy) {
-                'week' => \Carbon\Carbon::now()->subWeeks($i),
-                'month' => \Carbon\Carbon::now()->subMonths($i),
-                'year' => \Carbon\Carbon::now()->subYears($i),
-                default => \Carbon\Carbon::now()->subDays($i),
+        for ($i = $points - 1; $i >= 0; $i--) {
+            $date = match ($groupBy) {
+                'week' => \Carbon\Carbon::now()->subWeeks($i)->startOfDay(),
+                'month' => \Carbon\Carbon::now()->subMonths($i)->startOfMonth(),
+                default => \Carbon\Carbon::now()->subDays($i)->startOfDay(),
             };
-            
-            $key = $curr->format($format);
-            $history[] = $currentBalance;
-            $labels[] = $key;
+            $labels[] = $date->format($phpFormat);
+        }
 
-            $periodTxs = $transactions->get($key, collect());
-            $netChange = 0;
-
-            foreach ($periodTxs as $tx) {
-                // If we are looking at a single account, we must handle transfers in/out
-                // If we are looking at total, transfers between user accounts net to 0
-                if ($singleAccountId) {
-                    if ($tx->type === Transaction::TYPE_INCOME && $tx->account_id === $singleAccountId) {
-                        $netChange += $tx->amount_raw;
-                    } elseif ($tx->type === Transaction::TYPE_EXPENSE && $tx->account_id === $singleAccountId) {
-                        $netChange -= $tx->amount_raw;
-                    } elseif ($tx->type === Transaction::TYPE_TRANSFER) {
-                        if ($tx->account_id === $singleAccountId) $netChange -= $tx->amount_raw;
-                        if ($tx->to_account_id === $singleAccountId) $netChange += $tx->amount_raw;
-                    }
-                } else {
-                    // Total assets logic: Transfers between own accounts result in 0 net change
-                    // Income increases total, Expense decreases total
-                    if ($tx->type === Transaction::TYPE_INCOME) {
-                        $netChange += $tx->amount_raw;
-                    } elseif ($tx->type === Transaction::TYPE_EXPENSE) {
-                        $netChange -= $tx->amount_raw;
-                    }
-                    // For transfers, they only change total assets if source or destination is NOT a user account
-                    // But in this system, transactions always have a user_id and usually within user accounts.
-                }
-            }
-
-            $currentBalance -= $netChange;
+        // Index results by account_id → label → net_change
+        $indexed = [];
+        foreach ($results as $row) {
+            $indexed[(int) $row->account_id][$row->label] = (int) $row->net_change;
         }
 
         return [
-            'history' => array_reverse($history),
-            'labels' => array_reverse($labels)
+            'labels' => $labels,
+            'net_changes' => $indexed,
+        ];
+    }
+
+    /**
+     * Build cumulative balance array for a single account from pre-computed net changes.
+     *
+     * @param int   $currentBalance  The account's current balance_raw
+     * @param array $netChanges      Map of label → net_change for this account
+     * @param array $labels          Ordered period labels (oldest → newest)
+     * @return array{balance: int[]}
+     */
+    public static function buildAccountHistory(int $currentBalance, array $netChanges, array $labels): array
+    {
+        // Total net change in the visible range
+        $totalNetChange = 0;
+        foreach ($labels as $label) {
+            $totalNetChange += $netChanges[$label] ?? 0;
+        }
+
+        // Balance just before the first visible period
+        $balanceBefore = $currentBalance - $totalNetChange;
+
+        // Build cumulative running balance (oldest → newest)
+        $balance = [];
+        $running = $balanceBefore;
+        foreach ($labels as $label) {
+            $running += $netChanges[$label] ?? 0;
+            $balance[] = (int) $running;
+        }
+
+        return [
+            'balance' => $balance,
         ];
     }
 

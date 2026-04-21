@@ -8,7 +8,11 @@ export function resolveCSSColor(colorName: string): string {
 
   const style = getComputedStyle(document.documentElement)
 
-  // 1. If it's a full CSS string like 'var(...)' or 'color-mix(...)', we resolve it directly
+  // 1. If it's already a valid CSS color string (hex, rgb, hsl), return it directly
+  if (colorName.startsWith('#') || colorName.startsWith('rgb(') || colorName.startsWith('hsl(')) {
+    return colorName
+  }
+
   const isComplex = colorName.includes('var(') || colorName.includes('color-mix(')
 
   if (!isComplex) {

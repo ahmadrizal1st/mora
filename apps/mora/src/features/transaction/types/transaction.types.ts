@@ -23,18 +23,21 @@ export interface Account {
   credit_limit: number;
   transactions_count?: number;
   incoming_transfers_count?: number;
-  balance_history?: number[];
+  history?: {
+    balance: number[];
+    labels: string[];
+  };
   created_at: string;
 }
 
 export interface AccountFilters {
-  group_by?: 'day' | 'week' | 'month' | 'year';
+  group_by?: 'day' | 'week' | 'month';
 }
+
+import type { ChartSerie } from '../../../shared/components/ui/Chart';
 
 export interface AccountResponse {
   data: Account[];
-  summary_history?: number[];
-  labels?: string[];
   status?: string;
 }
 
@@ -129,7 +132,7 @@ export interface TransactionFilters {
   page?: number;
   per_page?: number;
   tag_ids?: number[];
-  group_by?: 'day' | 'week' | 'month' | 'year';
+  group_by?: 'day' | 'week' | 'month';
 }
 
 export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'account' | 'to_account' | 'category' | 'status' | 'currency' | 'recurring_type' | 'tags' | 'rate_snapshot' | 'amount_in_default' | 'currency_id'> & {

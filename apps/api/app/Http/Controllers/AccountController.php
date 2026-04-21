@@ -19,6 +19,11 @@ class AccountController extends Controller
     {
         $groupBy = $request->query('group_by', 'day');
 
+        // Validate group_by (no 'year' support)
+        if (!in_array($groupBy, ['day', 'week', 'month'])) {
+            $groupBy = 'day';
+        }
+
         $accounts = $request->user()
             ->accounts()
             ->with(['currency'])
@@ -26,17 +31,26 @@ class AccountController extends Controller
             ->orderBy('name')
             ->get();
 
-        $accounts->each(function ($account) use ($groupBy) {
-            $account->balance_history = TransactionService::getBalanceHistory($account, $groupBy);
-        });
+        // Single optimized query for ALL accounts' history
+        $historyData = TransactionService::getAccountsHistory($request->user(), $groupBy);
+        $labels = $historyData['labels'];
+        $netChanges = $historyData['net_changes'];
 
-        $totalHistory = TransactionService::getTotalBalanceHistory($request->user(), $groupBy);
+        // Embed history into each account
+        $accounts->each(function ($account) use ($netChanges, $labels) {
+            $accountChanges = $netChanges[$account->id] ?? [];
+            $history = TransactionService::buildAccountHistory(
+                $account->balance_raw,
+                $accountChanges,
+                $labels
+            );
+            $history['labels'] = $labels;
+            $account->history = $history;
+        });
 
         return response()->json([
             'data' => $accounts,
-            'summary_history' => $totalHistory['history'],
             'status' => 'success',
-            'labels' => $totalHistory['labels']
         ]);
     }
 
@@ -64,13 +78,28 @@ class AccountController extends Controller
     {
         $groupBy = $request->query('group_by', 'day');
 
+        if (!in_array($groupBy, ['day', 'week', 'month'])) {
+            $groupBy = 'day';
+        }
+
         $account = $request->user()
             ->accounts()
             ->with('currency')
             ->withCount(['transactions', 'incomingTransfers'])
             ->findOrFail($id);
 
-        $account->balance_history = TransactionService::getBalanceHistory($account, $groupBy);
+        // Reuse the single-query approach for consistency
+        $historyData = TransactionService::getAccountsHistory($request->user(), $groupBy);
+        $labels = $historyData['labels'];
+        $accountChanges = $historyData['net_changes'][$account->id] ?? [];
+
+        $history = TransactionService::buildAccountHistory(
+            $account->balance_raw,
+            $accountChanges,
+            $labels
+        );
+        $history['labels'] = $labels;
+        $account->history = $history;
 
         return response()->json([
             'data' => $account,

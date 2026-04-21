@@ -5,7 +5,6 @@ const OPTIONS = [
   { label: 'Harian', value: 'day' },
   { label: 'Mingguan', value: 'week' },
   { label: 'Bulanan', value: 'month' },
-  { label: 'Tahunan', value: 'year' },
 ] as const
 
 type GroupOption = typeof OPTIONS[number]['value']

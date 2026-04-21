@@ -86,6 +86,7 @@ export interface ChartData {
   donutLabel?: string
   donutValue?: string
   hollowSize?: string
+  fill?: any
 }
 
 export interface ChartProps {
@@ -252,8 +253,8 @@ export function Chart({
         fontFamily: 'inherit',
         height: resolvedHeight * 16,
         sparkline: { enabled: !!chartData.sparkline },
+        parentHeightOffset: 0,
         ...(!chartData.sparkline && {
-          parentHeightOffset: 0,
           toolbar: { show: !!chartData.toolbar },
         }),
         animations: { enabled: chartData.animations !== false },
@@ -353,13 +354,14 @@ export function Chart({
           },
         },
       }),
-      ...(chartType === 'area' && {
-        fill: {
+      fill: {
+        ...(chartType === 'area' ? {
           type: 'solid',
           opacity: 0.16,
           colors: chartColors,
-        },
-      }),
+        } : {}),
+        ...chartData.fill
+      },
       ...(chartData.title && {
         title: {
           text: chartData.title,
@@ -464,7 +466,28 @@ export function Chart({
       },
     }
 
-    const instance = new ApexCharts(container, options)
+    // Apply extend options if provided (parsed from JSON string)
+    let finalOptions = options;
+    if (chartData.extend) {
+      try {
+        const extendOptions = JSON.parse(chartData.extend);
+        finalOptions = {
+          ...options,
+          ...extendOptions,
+          // Deep merge critical objects that are frequently extended
+          tooltip: { ...options.tooltip, ...(extendOptions.tooltip || {}) },
+          grid: { ...options.grid, ...(extendOptions.grid || {}) },
+          xaxis: { ...options.xaxis, ...(extendOptions.xaxis || {}) },
+          yaxis: { ...options.yaxis, ...(extendOptions.yaxis || {}) },
+          markers: { ...options.markers, ...(extendOptions.markers || {}) },
+          plotOptions: { ...options.plotOptions, ...(extendOptions.plotOptions || {}) },
+        };
+      } catch (e) {
+        console.error('Failed to parse chartData.extend:', e);
+      }
+    }
+
+    const instance = new ApexCharts(container, finalOptions)
     chartInstance.current = instance
     instance.render()
 

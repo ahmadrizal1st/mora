@@ -4,13 +4,23 @@ import { Icon, Button, CardTitle, Modal, ModalHeader, Spinner, Chart, DropdownGr
 import { useAccounts, useCreateAccount, useUpdateAccount, useDeleteAccount } from '../hooks/useAccounts';
 import { AccountForm, type AccountFormValues } from '../components/AccountForm';
 import { type Account } from '../types/transaction.types';
+import { AccountCard } from '../components/AccountCard';
+import { formatCurrency } from '@/shared/utils/currencyUtils';
 
 export const AccountsPage: React.FC = () => {
-  const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day');
+  const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month'>('day');
   const { data: response, isLoading } = useAccounts({ group_by: groupBy });
   const accounts = response?.data || [];
-  const summaryHistory = response?.summary_history || [];
-  const labels = response?.labels || [];
+
+  // Build chart series from each account's embedded history
+  const chartSeries = accounts
+    .filter((acc) => acc.history?.balance?.length)
+    .map((acc) => ({
+      name: acc.name,
+      color: acc.color,
+      data: acc.history!.balance,
+    }));
+  const chartLabels = accounts[0]?.history?.labels || [];
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalView, setModalView] = useState<'form' | 'delete-confirm'>('form');
@@ -65,21 +75,12 @@ export const AccountsPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const formatCurrency = (amount: number, currencyCode = 'IDR') => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: currencyCode,
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-
   return (
     <BaseLayout pageTitle="Kelola Akun & Saldo">
       <div className="container-xl">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <CardTitle>Daftar Akun Keuangan</CardTitle>
           <div className="d-flex gap-2">
-            <DropdownGrouping value={groupBy} onChange={setGroupBy} />
             <Button color="primary" onClick={() => { setEditingAccount(undefined); setIsModalOpen(true); }}>
               <Icon icon="plus" size={18} className="me-1" />
               Tambah Akun
@@ -92,86 +93,23 @@ export const AccountsPage: React.FC = () => {
             <Spinner /> Memuat daftar akun...
           </div>
         ) : (
-          <div className="row row-cards">
+          <div className="row g-4 mb-4">
             {accounts.length === 0 ? (
               <div className="col-12 text-center py-5 text-muted">
                 Belum ada akun. Klik "Tambah Akun" untuk memulai.
               </div>
             ) : accounts.map((account) => (
-              <div key={account.id} className="col-md-4">
-                <div 
-                  className="card shadow-sm border-0 h-100 cursor-pointer" 
-                  style={{ borderTop: `4px solid ${account.color}` }}
-                  onClick={() => openEdit(account)}
-                >
-                  <div className="card-body d-flex flex-column">
-                    <div className="d-flex justify-content-between align-items-start mb-3">
-                      <div>
-                        <span 
-                          className="badge mb-1 fw-bold" 
-                          style={{ backgroundColor: `${account.color}15`, color: account.color, fontSize: '10px' }}
-                        >
-                          {account.type.replace('-', ' ').toUpperCase()}
-                        </span>
-                        <h3 className="card-title h3 mb-0 fw-bold">{account.name}</h3>
-                      </div>
-                      <div 
-                        className="avatar avatar-md rounded-3 border-0 bg-transparent"
-                        style={{ color: account.color, backgroundColor: `${account.color}10` }}
-                      >
-                        <Icon icon={account.type === 'bank' ? 'building-bank' : account.type === 'cash' ? 'wallet' : account.type === 'e-wallet' ? 'device-mobile' : 'credit-card'} size={20} />
-                      </div>
-                    </div>
-
-                    <div className="mt-2 mb-2">
-                      <div className="text-secondary small fw-medium">Saldo Saat Ini</div>
-                      <div className="h1 fw-bold mb-0" style={{ fontSize: '1.5rem', color: '#1d273b' }}>
-                        {formatCurrency(account.balance_raw, account.currency?.code)}
-                      </div>
-                    </div>
-
-                    {account.is_credit && (
-                      <div className="mt-3">
-                        <div className="d-flex justify-content-between small mb-1">
-                          <span className="text-secondary">Limit: {formatCurrency(account.credit_limit, account.currency?.code)}</span>
-                          <span className="text-muted fw-bold">{(account.balance_raw / account.credit_limit * 100).toFixed(0)}%</span>
-                        </div>
-                        <div className="progress progress-xs">
-                          <div 
-                            className="progress-bar" 
-                            style={{ 
-                              width: `${Math.min(100, (account.balance_raw / account.credit_limit * 100))}%`,
-                              backgroundColor: account.color 
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-
-                    <div style={{ height: '40px', margin: '0 -1.25rem -1.25rem -1.25rem' }} className="mt-auto overflow-hidden rounded-bottom">
-                      <Chart
-                        chartId={`account-sparkline-${account.id}`}
-                        chartData={{
-                          type: 'area',
-                          sparkline: true,
-                          series: [{
-                            name: 'Saldo',
-                            data: account.balance_history || [0, 0, 0],
-                            color: account.color
-                          }],
-                          strokeWidth: [1.5],
-                        }}
-                        height={2.5}
-                      />
-                    </div>
-                  </div>
-                </div>
+              <div key={account.id} className="col-sm-6 col-lg-4">
+                <AccountCard 
+                  account={account} 
+                  onEdit={(acc) => openEdit(acc)} 
+                />
               </div>
             ))}
           </div>
         )}
 
-        {summaryHistory.length > 0 && (
+        {chartSeries.length > 0 && (
           <div className="row mt-4">
             <div className="col-12">
               <div className="card shadow-sm border-0">
@@ -179,39 +117,86 @@ export const AccountsPage: React.FC = () => {
                   <div className="d-flex justify-content-between align-items-center mb-4">
                     <div>
                       <h3 className="card-title h2 mb-1 fw-bold">Tren Kekayaan Bersih</h3>
-                      <div className="text-secondary small">Total saldo seluruh akun Anda dari waktu ke waktu</div>
+                      <div className="text-secondary small">Perbandingan saldo antar akun Anda</div>
                     </div>
-                    <div className="text-end">
-                      <div className="text-secondary small fw-medium">Total Saat Ini</div>
-                      <div className="h2 fw-bold mb-0 text-primary">
-                        {formatCurrency(accounts.reduce((sum, acc) => sum + acc.balance_raw, 0))}
+                    <div className="d-flex align-items-center gap-3">
+                      <DropdownGrouping value={groupBy} onChange={setGroupBy} />
+                      <div className="text-end d-none d-sm-block">
+                        <div className="text-secondary small fw-medium">Total Kekayaan</div>
+                        <div className="h2 fw-bold mb-0 text-primary">
+                          {formatCurrency(accounts.reduce((sum, acc) => sum + acc.balance_raw, 0))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div style={{ minHeight: '240px' }}>
+                  <div style={{ minHeight: '300px' }}>
                     <Chart
                       chartId="total-wealth-trend"
                       chartData={{
-                        type: 'area',
-                        series: [{
-                          name: 'Total Kekayaan',
-                          data: summaryHistory,
-                          color: '#206bc4'
-                        }],
-                        categories: labels,
-                        strokeWidth: [2.5],
+                        type: 'line',
+                        stacked: false,
+                        series: chartSeries,
+                        categories: chartLabels,
+                        strokeWidth: Array(chartSeries.length).fill(3.5),
+                        strokeCurve: 'smooth',
                         animations: true,
                         datalabels: false,
+                        legend: true,
+                        legendOptions: {
+                          position: 'bottom',
+                          markers: {
+                            radius: 12,
+                          }
+                        },
                         grid: {
                           strokeDashArray: 4,
-                          padding: { top: 0, right: 0, bottom: 0, left: 10 }
+                          padding: { top: 20, right: 20, bottom: 0, left: 10 }
                         },
                         xaxis: {
                           tooltip: { enabled: false },
                           axisBorder: { show: false },
-                        }
+                          tickAmount: 8,
+                          labels: {
+                            formatter: (val: string) => {
+                                if (!val) return '';
+                                // Week format: "2026-W17"
+                                if (val.includes('-W')) return val.split('-')[1];
+                                // Month format: "2026-04"
+                                if (/^\d{4}-\d{2}$/.test(val)) {
+                                  const [y, m] = val.split('-');
+                                  const date = new Date(Number(y), Number(m) - 1, 1);
+                                  return date.toLocaleDateString('id-ID', { month: 'short' });
+                                }
+                                // Day format: "2026-04-22"
+                                const date = new Date(val);
+                                if (isNaN(date.getTime())) return val;
+                                return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+                            }
+                          }
+                        },
+                        yaxis: {
+                          labels: {
+                            formatter: (val: number) => {
+                              const absVal = Math.abs(val);
+                              const sign = val < 0 ? '-' : '';
+                              if (absVal >= 1000000) return sign + (absVal / 1000000).toFixed(1) + 'jt';
+                              if (absVal >= 1000) return sign + (absVal / 1000).toFixed(0) + 'rb';
+                              return val.toString();
+                            }
+                          }
+                        },
+                        extend: JSON.stringify({
+                          tooltip: {
+                            container: 'body',
+                            shared: true,
+                            intersect: false,
+                            y: {
+                                formatter: (val: number) => formatCurrency(val)
+                            }
+                          }
+                        })
                       }}
-                      height={15}
+                      height={24}
                     />
                   </div>
                 </div>
