@@ -15,7 +15,8 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   onChange,
   onClear
 }) => {
-  const { data: accounts = [] } = useAccounts();
+  const { data: response } = useAccounts();
+  const accounts = response?.data || [];
   const { data: categories = [] } = useCategories();
   const { data: statuses = [] } = useStatuses();
   const { data: tags = [] } = useTags();

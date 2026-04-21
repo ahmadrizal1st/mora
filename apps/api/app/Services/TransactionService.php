@@ -458,6 +458,128 @@ class TransactionService
     }
 
     /**
+     * Get historical daily/weekly/monthly/yearly balance trend for an account.
+     */
+    public static function getBalanceHistory(Account $account, string $groupBy = 'day'): array
+    {
+        $res = self::calculateHistory(
+            $account->balance_raw,
+            Transaction::where(function($q) use ($account) {
+                $q->where('account_id', $account->id)
+                  ->orWhere('to_account_id', $account->id);
+            }),
+            $groupBy,
+            $account->id
+        );
+
+        return $res['history'];
+    }
+
+    /**
+     * Get total historical balance trend for all user accounts.
+     */
+    public static function getTotalBalanceHistory(User $user, string $groupBy = 'day'): array
+    {
+        $totalCurrent = $user->accounts()->sum('balance_raw');
+        
+        return self::calculateHistory(
+            $totalCurrent,
+            Transaction::whereIn('account_id', $user->accounts()->pluck('id'))
+                ->orWhereIn('to_account_id', $user->accounts()->pluck('id')),
+            $groupBy
+        );
+    }
+
+    /**
+     * Internal helper to calculate history based on current total and transaction query.
+     */
+    private static function calculateHistory(int $currentTotal, $txQuery, string $groupBy, ?int $singleAccountId = null): array
+    {
+        $points = match($groupBy) {
+            'week' => 12,
+            'month' => 12,
+            'year' => 5,
+            default => 30,
+        };
+
+        $endDate = \Carbon\Carbon::now()->endOfDay();
+        $startDate = match($groupBy) {
+            'week' => \Carbon\Carbon::now()->subWeeks($points - 1)->startOfWeek(),
+            'month' => \Carbon\Carbon::now()->subMonths($points - 1)->startOfMonth(),
+            'year' => \Carbon\Carbon::now()->subYears($points - 1)->startOfYear(),
+            default => \Carbon\Carbon::now()->subDays($points - 1)->startOfDay(),
+        };
+
+        $format = match ($groupBy) {
+            'week' => 'o-\WW', 
+            'month' => 'Y-m',
+            'year' => 'Y',
+            default => 'Y-m-d',
+        };
+
+        $transactions = $txQuery
+            ->where('tx_date', '>=', $startDate->toDateString())
+            ->where('tx_date', '<=', $endDate->toDateString())
+            ->orderBy('tx_date', 'desc')
+            ->get()
+            ->groupBy(function($tx) use ($format) {
+                return \Carbon\Carbon::parse($tx->tx_date)->format($format);
+            });
+
+        $history = [];
+        $labels = [];
+        $currentBalance = $currentTotal;
+
+        for ($i = 0; $i < $points; $i++) {
+            $curr = match($groupBy) {
+                'week' => \Carbon\Carbon::now()->subWeeks($i),
+                'month' => \Carbon\Carbon::now()->subMonths($i),
+                'year' => \Carbon\Carbon::now()->subYears($i),
+                default => \Carbon\Carbon::now()->subDays($i),
+            };
+            
+            $key = $curr->format($format);
+            $history[] = $currentBalance;
+            $labels[] = $key;
+
+            $periodTxs = $transactions->get($key, collect());
+            $netChange = 0;
+
+            foreach ($periodTxs as $tx) {
+                // If we are looking at a single account, we must handle transfers in/out
+                // If we are looking at total, transfers between user accounts net to 0
+                if ($singleAccountId) {
+                    if ($tx->type === Transaction::TYPE_INCOME && $tx->account_id === $singleAccountId) {
+                        $netChange += $tx->amount_raw;
+                    } elseif ($tx->type === Transaction::TYPE_EXPENSE && $tx->account_id === $singleAccountId) {
+                        $netChange -= $tx->amount_raw;
+                    } elseif ($tx->type === Transaction::TYPE_TRANSFER) {
+                        if ($tx->account_id === $singleAccountId) $netChange -= $tx->amount_raw;
+                        if ($tx->to_account_id === $singleAccountId) $netChange += $tx->amount_raw;
+                    }
+                } else {
+                    // Total assets logic: Transfers between own accounts result in 0 net change
+                    // Income increases total, Expense decreases total
+                    if ($tx->type === Transaction::TYPE_INCOME) {
+                        $netChange += $tx->amount_raw;
+                    } elseif ($tx->type === Transaction::TYPE_EXPENSE) {
+                        $netChange -= $tx->amount_raw;
+                    }
+                    // For transfers, they only change total assets if source or destination is NOT a user account
+                    // But in this system, transactions always have a user_id and usually within user accounts.
+                }
+            }
+
+            $currentBalance -= $netChange;
+        }
+
+        return [
+            'history' => array_reverse($history),
+            'labels' => array_reverse($labels)
+        ];
+    }
+
+    /**
      * Apply balance change to accounts based on transaction type.
      */
     private static function applyBalance(Transaction $transaction): void

@@ -1,13 +1,13 @@
 import api from '@/shared/api/client';
-import { type Account, type CreateAccountDTO, type UpdateAccountDTO } from '../types/transaction.types';
+import { type Account, type AccountFilters, type AccountResponse, type CreateAccountDTO, type UpdateAccountDTO } from '../types/transaction.types';
 
 export const accountService = {
   /**
    * Fetch all accounts for the user.
    */
-  async getAccounts(): Promise<Account[]> {
-    const response = await api.get<{ data: Account[] }>('/accounts');
-    return response.data.data;
+  async getAccounts(filters?: AccountFilters): Promise<AccountResponse> {
+    const response = await api.get<AccountResponse>('/accounts', { params: filters });
+    return response.data;
   },
 
   /**

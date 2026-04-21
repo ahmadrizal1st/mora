@@ -13,6 +13,7 @@ type GroupOption = typeof OPTIONS[number]['value']
 interface DropdownGroupingProps {
   id?: string
   label?: string
+  value?: GroupOption
   defaultValue?: GroupOption
   onChange?: (value: GroupOption) => void
   className?: string
@@ -21,18 +22,21 @@ interface DropdownGroupingProps {
 export function DropdownGrouping({
   id,
   label = 'Pilih pengelompokan',
+  value,
   defaultValue = 'day',
   onChange,
   className,
 }: DropdownGroupingProps) {
-  const [selected, setSelected] = useState<GroupOption>(defaultValue)
+  const [internalSelected, setInternalSelected] = useState<GroupOption>(defaultValue)
+  const selected = value !== undefined ? value : internalSelected
 
-  const handleSelect = (value: GroupOption) => {
-    setSelected(value)
-    onChange?.(value)
+  const handleSelect = (val: GroupOption) => {
+    setInternalSelected(val)
+    onChange?.(val)
   }
 
-  const selectedLabel = OPTIONS.find(opt => opt.value === selected)?.label
+  const selectedOption = OPTIONS.find(opt => opt.value === selected)
+  const selectedLabel = selectedOption?.label || OPTIONS[0].label
 
   return (
     <div className={clsx('dropdown', className)}>

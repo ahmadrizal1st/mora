@@ -114,9 +114,25 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     defaultValue: (initialData?.type as TransactionType) || 'expense',
   });
   const { data: categories = [] } = useCategories(type);
-  const { data: accounts = [] } = useAccounts();
+  const { data: response } = useAccounts();
+  const accounts = response?.data || [];
   const { data: currencies = [] } = useCurrencies();
   const { data: tags = [] } = useTags();
+
+  const currencyOptions = React.useMemo(() => {
+    // Current data might not have the default IDR in the currencies list if it's handled separately
+    const options = currencies.map(c => ({
+      value: c.id,
+      label: c.code
+    }));
+    
+    // Ensure IDR is always an option if not present
+    if (!options.find(o => o.label === 'IDR')) {
+      options.unshift({ value: 0, label: 'IDR' });
+    }
+    
+    return options;
+  }, [currencies]);
 
   // Format React Hook Form errors for the ErrorAlert component
   const getFieldErrors = () => {
@@ -162,27 +178,26 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         <div className="col-md-6 mb-3">
           <label className="form-label">Nominal</label>
           <div className={`input-group ${errors.amount_raw ? 'has-validation' : ''}`}>
-            <Controller
-              name="currency_id"
-              control={control}
-              render={({ field }) => (
-                <select
-                  className="form-select"
-                  style={{ maxWidth: '100px' }}
-                  value={field.value || ''}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                >
-                  <option value="">IDR</option>
-                  {currencies.filter(c => !c.is_default).map(c => (
-                    <option key={c.id} value={c.id}>{c.code}</option>
-                  ))}
-                </select>
-              )}
-            />
+            <div style={{ width: '100px' }} className="flex-shrink-0">
+              <Controller
+                name="currency_id"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    className="h-100"
+                    triggerClassName="rounded-end-0 border-end-0"
+                    options={currencyOptions}
+                    value={field.value || 0}
+                    onChange={(val) => field.onChange(val === 0 ? undefined : val)}
+                    placeholder="IDR"
+                  />
+                )}
+              />
+            </div>
             <input
               type="number"
               {...register('amount_raw', { valueAsNumber: true })}
-              className={`form-control ${errors.amount_raw ? 'is-invalid' : ''}`}
+              className={`form-control rounded-start-0 ${errors.amount_raw ? 'is-invalid' : ''}`}
               placeholder="0"
             />
             {errors.amount_raw && <div className="invalid-feedback">{errors.amount_raw.message}</div>}

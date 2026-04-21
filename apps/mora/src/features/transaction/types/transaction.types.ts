@@ -21,7 +21,21 @@ export interface Account {
   type: 'cash' | 'bank' | 'e-wallet' | 'investment';
   is_credit: boolean;
   credit_limit: number;
+  transactions_count?: number;
+  incoming_transfers_count?: number;
+  balance_history?: number[];
   created_at: string;
+}
+
+export interface AccountFilters {
+  group_by?: 'day' | 'week' | 'month' | 'year';
+}
+
+export interface AccountResponse {
+  data: Account[];
+  summary_history?: number[];
+  labels?: string[];
+  status?: string;
 }
 
 export interface Category {

@@ -38,6 +38,7 @@ export interface SelectProps {
   indicator?: 'avatar' | 'flag' | 'label'
   placement?: 'start' | 'end'
   error?: string
+  triggerClassName?: string
 }
 
 function isOptGroup(item: SelectOption | SelectOptGroup): item is SelectOptGroup {
@@ -59,6 +60,7 @@ export function Select({
   indicator,
   placement = 'start',
   error,
+  triggerClassName,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -204,7 +206,7 @@ export function Select({
     <div className="d-flex align-items-center w-100">
       {(indicator === 'avatar' || opt.avatar) && opt.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-2" />}
       {(indicator === 'flag' || opt.flag) && opt.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>}
-      {(indicator === 'label' || opt.badge) && opt.badge && <span className="badge bg-blue-lt me-2">{opt.badge}</span>}
+      {(indicator === 'label' || opt.badge) && opt.badge && <span className="badge bg-blue-lt me-1">{opt.badge}</span>}
       {opt.color && <span className="status-dot ms-1 me-2" style={{ backgroundColor: opt.color }}></span>}
       {opt.icon && <Icon icon={opt.icon} size={14} className="me-2 text-muted" />}
       <span className="text-truncate">{highlightMatch(opt.label, search)}</span>
@@ -299,7 +301,8 @@ export function Select({
           'cursor-pointer',
           'position-relative',
           isOpen && 'show focus',
-          (state || error) && `is-${state || (error ? 'invalid' : '')}`
+          (state || error) && `is-${state || (error ? 'invalid' : '')}`,
+          triggerClassName
         )}
         onClick={handleContainerClick}
         style={{ 

@@ -21,31 +21,58 @@ export type AccountFormValues = z.infer<typeof accountSchema>;
 interface AccountFormProps {
   initialData?: Partial<Account>;
   onSubmit: (data: AccountFormValues) => void;
+  onDelete?: () => void;
   isLoading?: boolean;
 }
 
 export const AccountForm: React.FC<AccountFormProps> = ({
   initialData,
   onSubmit,
+  onDelete,
   isLoading
 }) => {
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors }
   } = useForm<AccountFormValues>({
     resolver: zodResolver(accountSchema),
-    defaultValues: {
+    defaultValues: React.useMemo(() => ({
       name: initialData?.name || '',
       type: initialData?.type || 'bank',
       balance_raw: initialData?.balance_raw || 0,
-      currency_id: initialData?.currency_id,
+      currency_id: initialData?.currency_id as number,
       is_credit: initialData?.is_credit || false,
       credit_limit: initialData?.credit_limit || 0,
       color: initialData?.color || '#206bc4',
-    },
+    }), [initialData]),
   });
+
+  React.useEffect(() => {
+    if (initialData) {
+      reset({
+        name: initialData.name || '',
+        type: initialData.type || 'bank',
+        balance_raw: initialData.balance_raw || 0,
+        currency_id: initialData.currency_id,
+        is_credit: initialData.is_credit || false,
+        credit_limit: initialData.credit_limit || 0,
+        color: initialData.color || '#206bc4',
+      });
+    } else {
+      reset({
+        name: '',
+        type: 'bank',
+        balance_raw: 0,
+        currency_id: undefined as any,
+        is_credit: false,
+        credit_limit: 0,
+        color: '#206bc4',
+      });
+    }
+  }, [initialData, reset]);
 
   const { data: currencies = [] } = useCurrencies();
   const isCredit = useWatch({
@@ -116,9 +143,10 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         <input
           type="number"
           {...register('balance_raw', { valueAsNumber: true })}
-          className="form-control"
+          className={`form-control ${errors.balance_raw ? 'is-invalid' : ''}`}
           placeholder="0"
         />
+        {errors.balance_raw && <div className="invalid-feedback">{errors.balance_raw.message}</div>}
       </div>
 
       <div className="mb-3">
@@ -138,9 +166,10 @@ export const AccountForm: React.FC<AccountFormProps> = ({
           <input
             type="number"
             {...register('credit_limit', { valueAsNumber: true })}
-            className="form-control"
+            className={`form-control ${errors.credit_limit ? 'is-invalid' : ''}`}
             placeholder="0"
           />
+          {errors.credit_limit && <div className="invalid-feedback">{errors.credit_limit.message}</div>}
         </div>
       )}
 
@@ -154,15 +183,35 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         />
       </div>
 
-      <div className="mt-4 d-flex justify-content-end gap-2">
-        <Button
-          type="submit"
-          color="primary"
-          loading={isLoading}
-          icon="check"
-        >
-          {initialData?.id ? 'Simpan Perubahan' : 'Buat Akun'}
-        </Button>
+      <div className="mt-5 d-flex justify-content-between align-items-center pt-3 border-top">
+        <div>
+          {initialData?.id && onDelete && (
+            <Button
+              element="button"
+              type="button"
+              color="danger"
+              outline
+              className="border-0 bg-danger-lt fw-bold"
+              onClick={onDelete}
+              icon="trash"
+            >
+              Hapus Akun
+            </Button>
+          )}
+        </div>
+        <div className="d-flex gap-2">
+            <Button
+              element="button"
+              type="submit"
+              color="primary"
+              loading={isLoading}
+              spinner={isLoading}
+              icon={!isLoading ? "check" : undefined}
+              className="px-4 fw-bold"
+            >
+            {initialData?.id ? 'Simpan Perubahan' : 'Buat Akun'}
+          </Button>
+        </div>
       </div>
     </form>
   );

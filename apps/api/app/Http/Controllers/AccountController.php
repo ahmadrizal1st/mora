@@ -6,6 +6,7 @@ use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Services\TransactionService;
 
 class AccountController extends Controller
 {
@@ -16,14 +17,26 @@ class AccountController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $groupBy = $request->query('group_by', 'day');
+
         $accounts = $request->user()
             ->accounts()
-            ->with('currency')
+            ->with(['currency'])
+            ->withCount(['transactions', 'incomingTransfers'])
             ->orderBy('name')
             ->get();
 
+        $accounts->each(function ($account) use ($groupBy) {
+            $account->balance_history = TransactionService::getBalanceHistory($account, $groupBy);
+        });
+
+        $totalHistory = TransactionService::getTotalBalanceHistory($request->user(), $groupBy);
+
         return response()->json([
             'data' => $accounts,
+            'summary_history' => $totalHistory['history'],
+            'status' => 'success',
+            'labels' => $totalHistory['labels']
         ]);
     }
 
@@ -49,10 +62,15 @@ class AccountController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
+        $groupBy = $request->query('group_by', 'day');
+
         $account = $request->user()
             ->accounts()
             ->with('currency')
+            ->withCount(['transactions', 'incomingTransfers'])
             ->findOrFail($id);
+
+        $account->balance_history = TransactionService::getBalanceHistory($account, $groupBy);
 
         return response()->json([
             'data' => $account,
