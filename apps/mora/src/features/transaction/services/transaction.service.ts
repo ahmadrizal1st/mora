@@ -52,7 +52,7 @@ export const transactionService = {
   /**
    * Fetch transaction summary (income, expense, net) for a period.
    */
-  async getSummary(params?: { date_from?: string; date_to?: string; account_id?: number }): Promise<TransactionSummary> {
+  async getSummary(params?: { date_from?: string; date_to?: string; account_id?: number; group_by?: string }): Promise<TransactionSummary> {
     const response = await api.get<{ data: TransactionSummary }>('/transactions-summary', { params });
     return response.data.data;
   },
@@ -76,7 +76,7 @@ export const transactionService = {
   /**
    * Fetch historical aggregated data for charts.
    */
-  async getHistory(params?: { date_from?: string; date_to?: string; account_id?: number }): Promise<TransactionHistory> {
+  async getHistory(params?: { date_from?: string; date_to?: string; account_id?: number; group_by?: string }): Promise<TransactionHistory> {
     const response = await api.get<{ data: TransactionHistory }>('/transactions-history', { params });
     return response.data.data;
   },

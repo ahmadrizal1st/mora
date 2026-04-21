@@ -113,6 +113,7 @@ export { Dropdown } from './Dropdown'
 export type { DropdownProps } from './Dropdown'
 
 export { DropdownDays } from './DropdownDays'
+export { DropdownGrouping } from './DropdownGrouping'
 export { DaysDropdown } from './DaysDropdown'
 
 export { DropdownMenuAll } from './DropdownMenuAll'

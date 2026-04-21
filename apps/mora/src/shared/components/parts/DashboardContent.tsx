@@ -255,6 +255,9 @@ export function DashboardContent() {
                   },
                   axisBorder: { show: false },
                   axisTicks: { show: false },
+                  crosshairs: {
+                    show: false,
+                  },
                 },
                 yaxis: {
                   min: -8000,

@@ -1,11 +1,10 @@
-// src/components/cards/charts/RevenueCard.tsx
+// src/shared/components/cards/charts/MetricAreaChartCard.tsx
 import { clsx } from 'clsx'
 import { Trending } from '../../ui/Trending'
 import { Chart } from '../../ui/Chart'
 import type { ChartSerie } from '../../ui/Chart'
-import { DropdownDays } from '../../ui/DropdownDays'
 
-interface RevenueCardProps {
+interface MetricAreaChartCardProps {
   title?: string
   value?: string
   trendValue?: number
@@ -15,28 +14,30 @@ interface RevenueCardProps {
   chartId?: string
   className?: string
   style?: React.CSSProperties
+  actions?: React.ReactNode
 }
 
-const DEFAULT_SERIES = [{ name: 'Profits', data: [37, 35, 44, 28, 36, 24, 65, 31, 37, 39, 62, 51, 35, 41, 35, 27, 93, 53, 61, 27, 54, 43, 19, 46, 39, 62, 51, 35, 41, 67] }]
+const DEFAULT_SERIES = [{ name: 'Data', data: [37, 35, 44, 28, 36, 24, 65, 31, 37, 39, 62, 51, 35, 41, 35, 27, 93, 53, 61, 27, 54, 43, 19, 46, 39, 62, 51, 35, 41, 67] }]
 
-export function RevenueCard({ 
-  title = 'Revenue',
-  value = '$4,300', 
-  trendValue = 8,
+export function MetricAreaChartCard({
+  title = 'Metric',
+  value = '0',
+  trendValue = 0,
   series = DEFAULT_SERIES,
   categories,
   color = 'primary',
-  chartId = 'revenue-bg',
+  chartId = 'metric-area-bg',
   className,
   style,
-}: RevenueCardProps) {
+  actions,
+}: MetricAreaChartCardProps) {
   return (
-    <div className={clsx('card', className)} style={style}>
-      <div className="card-body">
+    <div className={clsx('card', className)} style={{ ...style, overflow: 'visible' }}>
+      <div className="card-body" style={{ overflow: 'visible' }}>
         <div className="d-flex align-items-center">
           <div className="subheader">{title}</div>
           <div className="ms-auto lh-1">
-            <DropdownDays />
+            {actions}
           </div>
         </div>
         <div className="d-flex align-items-baseline">

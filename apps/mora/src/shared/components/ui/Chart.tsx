@@ -428,6 +428,7 @@ export function Chart({
           }),
         },
         tooltip: { enabled: false },
+        crosshairs: { show: false },
         ...(['area', 'bar'].includes(chartType) && { axisBorder: { show: false } }),
         ...(chartData.categories && {
           categories: buildCategories(),

@@ -16,7 +16,7 @@ export const useTransactionChartData = (filters?: TransactionFilters) => {
   });
 };
 
-export const useTransactionHistory = (params?: { date_from?: string; date_to?: string; account_id?: number }) => {
+export const useTransactionHistory = (params?: { date_from?: string; date_to?: string; account_id?: number; group_by?: string }) => {
   return useQuery({
     queryKey: ['transaction-history', params],
     queryFn: () => transactionService.getHistory(params),
@@ -31,7 +31,7 @@ export const useTransaction = (id: number) => {
   });
 };
 
-export const useTransactionSummary = (params?: { date_from?: string; date_to?: string; account_id?: number }) => {
+export const useTransactionSummary = (params?: { date_from?: string; date_to?: string; account_id?: number; group_by?: string }) => {
   return useQuery({
     queryKey: ['transaction-summary', params],
     queryFn: () => transactionService.getSummary(params),

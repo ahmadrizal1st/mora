@@ -108,7 +108,7 @@ class TransactionController extends Controller
      */
     public function summary(Request $request): JsonResponse
     {
-        $filters = $request->only(['date_from', 'date_to', 'account_id']);
+        $filters = $request->only(['date_from', 'date_to', 'account_id', 'group_by']);
 
         $summary = TransactionService::summary($request->user(), $filters);
 
@@ -124,7 +124,7 @@ class TransactionController extends Controller
      */
     public function history(Request $request): JsonResponse
     {
-        $filters = $request->only(['date_from', 'date_to', 'account_id']);
+        $filters = $request->only(['date_from', 'date_to', 'account_id', 'group_by']);
 
         $history = TransactionService::history($request->user(), $filters);
 

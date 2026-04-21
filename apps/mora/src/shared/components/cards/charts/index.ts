@@ -1,8 +1,9 @@
-// src/components/cards/charts/index.ts
-export { ActiveUsersCard, ActiveUsersCard2 } from './ActiveUsersCard'
+// src/shared/components/cards/charts/index.ts
+export { SummaryChartCard } from './SummaryChartCard'
+export { MetricAreaChartCard } from './MetricAreaChartCard'
+export { ComparisonChartCard } from './ComparisonChartCard'
 export { NewClientsCard } from './NewClientsCard'
-export { RevenueCard } from './RevenueCard'
-export { SalesCard } from './SalesCard'
 export { SocialReferralsCard } from './SocialReferralsCard'
 export { TotalSalesCard } from './TotalSalesCard'
 export { TotalUsersCard } from './TotalUsersCard'
+export { ActivityChartCard } from './ActivityChartCard'

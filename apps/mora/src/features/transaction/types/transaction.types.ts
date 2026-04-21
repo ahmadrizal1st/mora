@@ -97,6 +97,9 @@ export interface TransactionHistory {
   expense_labels: string[];
   count: number[];
   count_labels: string[];
+  prev_income?: number[];
+  prev_expense?: number[];
+  prev_count?: number[];
 }
 
 export interface TransactionFilters {
@@ -112,6 +115,7 @@ export interface TransactionFilters {
   page?: number;
   per_page?: number;
   tag_ids?: number[];
+  group_by?: 'day' | 'week' | 'month' | 'year';
 }
 
 export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'account' | 'to_account' | 'category' | 'status' | 'currency' | 'recurring_type' | 'tags' | 'rate_snapshot' | 'amount_in_default' | 'currency_id'> & {

@@ -306,7 +306,23 @@ class TransactionService
      */
     public static function history(User $user, array $filters = []): array
     {
-        $query = $user->transactions()->orderBy('tx_date', 'asc');
+        $groupBy = $filters['group_by'] ?? 'day';
+
+        // PostgreSQL date format mappings
+        $format = match ($groupBy) {
+            'week' => 'IYYY-"W"IW',
+            'month' => 'YYYY-MM',
+            'year' => 'YYYY',
+            default => 'YYYY-MM-DD',
+        };
+
+        $query = $user->transactions()
+            ->selectRaw("to_char(tx_date, ?) as label", [$format])
+            ->selectRaw("SUM(CASE WHEN type = ? THEN amount_raw ELSE 0 END) as income", [Transaction::TYPE_INCOME])
+            ->selectRaw("SUM(CASE WHEN type = ? THEN amount_raw ELSE 0 END) as expense", [Transaction::TYPE_EXPENSE])
+            ->selectRaw("COUNT(*) as count")
+            ->groupBy('label')
+            ->orderBy('label', 'asc');
 
         if (!empty($filters['date_from'])) {
             $query->where('tx_date', '>=', $filters['date_from']);
@@ -318,30 +334,126 @@ class TransactionService
             $query->where('account_id', $filters['account_id']);
         }
 
+        // Current Period Data
         $results = $query->get();
 
-        // Individual Income Data
-        $incomeTxs = $results->where('type', Transaction::TYPE_INCOME);
-        $income = $incomeTxs->pluck('amount_raw')->map(fn($v) => (int) $v)->values()->toArray();
-        $incomeLabels = $incomeTxs->map(fn($row) => $row->tx_date->format('Y-m-d'))->values()->toArray();
+        // Previous Period Data Calculation
+        // Determine the reporting range
+        if (empty($filters['date_from']) || empty($filters['date_to'])) {
+            // Find the range from all transactions
+            $rangeQuery = $user->transactions();
+            if (!empty($filters['account_id'])) {
+                $rangeQuery->where('account_id', $filters['account_id']);
+            }
+            
+            $range = $rangeQuery->selectRaw('MIN(tx_date) as start_date, MAX(tx_date) as end_date')->first();
+            
+            $currentFrom = $range && $range->start_date 
+                ? \Carbon\Carbon::parse($range->start_date)->startOfDay() 
+                : \Carbon\Carbon::now()->subDays(29)->startOfDay();
+                
+            $currentTo = $range && $range->end_date 
+                ? \Carbon\Carbon::parse($range->end_date)->endOfDay() 
+                : \Carbon\Carbon::now()->endOfDay();
+        } else {
+            $currentFrom = \Carbon\Carbon::parse($filters['date_from'])->startOfDay();
+            $currentTo = \Carbon\Carbon::parse($filters['date_to'])->endOfDay();
+        }
+        
+        // Calculate Previous Period range accurately
+        $prevFrom = null; $prevTo = null;
+        if ($groupBy === 'month') {
+            $monthsCount = $currentFrom->diffInMonths($currentTo) + 1;
+            $prevTo = $currentFrom->copy()->subDay()->endOfMonth();
+            $prevFrom = $prevTo->copy()->subMonths($monthsCount - 1)->startOfMonth();
+        } else if ($groupBy === 'week') {
+            $weeksCount = $currentFrom->diffInWeeks($currentTo) + 1;
+            $prevTo = $currentFrom->copy()->subDay()->endOfWeek();
+            $prevFrom = $prevTo->copy()->subWeeks($weeksCount - 1)->startOfWeek();
+        } else if ($groupBy === 'year') {
+            $yearsCount = $currentFrom->diffInYears($currentTo) + 1;
+            $prevTo = $currentFrom->copy()->subDay()->endOfYear();
+            $prevFrom = $prevTo->copy()->subYears($yearsCount - 1)->startOfYear();
+        } else {
+            $diffInDays = $currentFrom->diffInDays($currentTo) + 1;
+            $prevTo = $currentFrom->copy()->subDay();
+            $prevFrom = $prevTo->copy()->subDays($diffInDays - 1);
+        }
 
-        // Individual Expense Data
-        $expenseTxs = $results->where('type', Transaction::TYPE_EXPENSE);
-        $expense = $expenseTxs->pluck('amount_raw')->map(fn($v) => (int) $v)->values()->toArray();
-        $expenseLabels = $expenseTxs->map(fn($row) => $row->tx_date->format('Y-m-d'))->values()->toArray();
+        $results = $query->get()->keyBy('label');
+        
+        // Previous Period Query
+        $prevQuery = $user->transactions()
+            ->selectRaw("to_char(tx_date, ?) as label", [$format])
+            ->selectRaw("SUM(CASE WHEN type = ? THEN amount_raw ELSE 0 END) as income", [Transaction::TYPE_INCOME])
+            ->selectRaw("SUM(CASE WHEN type = ? THEN amount_raw ELSE 0 END) as expense", [Transaction::TYPE_EXPENSE])
+            ->selectRaw("COUNT(*) as count")
+            ->where('tx_date', '>=', $prevFrom->toDateString())
+            ->where('tx_date', '<=', $prevTo->toDateString())
+            ->groupBy('label')
+            ->orderBy('label', 'asc');
 
-        // Daily Aggregated Count
-        $dailyGroups = $results->groupBy(fn($row) => $row->tx_date->format('Y-m-d'));
-        $count = $dailyGroups->map(fn($group) => $group->count())->values()->toArray();
-        $countLabels = $dailyGroups->keys()->toArray();
+        if (!empty($filters['account_id'])) {
+            $prevQuery->where('account_id', $filters['account_id']);
+        }
+        $prevResults = $prevQuery->get()->keyBy('label');
+
+        // Build continuous synchronized data sets
+        $income = []; $expense = []; $count = []; $labels = [];
+        $p_income = []; $p_expense = []; $p_count = [];
+
+        $curr = $currentFrom->copy();
+        $prev = $prevFrom->copy();
+
+        $safety = 0;
+        while ($curr->lte($currentTo) && $safety < 1000) {
+            $safety++;
+            
+            // Generate DB label hooks to match SQL to_char(tx_date, 'IYYY-"W"IW') -> e.g. 2024-W01
+            $dbLabel = match($groupBy) {
+                'week' => $curr->format('o-\WW'), 
+                'month' => $curr->format('Y-m'),
+                'year' => $curr->format('Y'),
+                default => $curr->format('Y-m-d')
+            };
+
+            $pDbLabel = match($groupBy) {
+                'week' => $prev->format('o-\WW'),
+                'month' => $prev->format('Y-m'),
+                'year' => $prev->format('Y'),
+                default => $prev->format('Y-m-d')
+            };
+
+            // Mapping Current
+            $item = $results->get($dbLabel);
+            $income[] = (int) ($item->income ?? 0);
+            $expense[] = (int) ($item->expense ?? 0);
+            $count[] = (int) ($item->count ?? 0);
+            $labels[] = $dbLabel;
+
+            // Mapping Previous
+            $pItem = $prevResults->get($pDbLabel);
+            $p_income[] = (int) ($pItem->income ?? 0);
+            $p_expense[] = (int) ($pItem->expense ?? 0);
+            $p_count[] = (int) ($pItem->count ?? 0);
+
+            // Increment
+            if ($groupBy === 'month') { $curr->addMonth(); $prev->addMonth(); }
+            else if ($groupBy === 'week') { $curr->addWeek(); $prev->addWeek(); }
+            else if ($groupBy === 'year') { $curr->addYear(); $prev->addYear(); }
+            else { $curr->addDay(); $prev->addDay(); }
+        }
 
         return [
             'income' => $income,
-            'income_labels' => $incomeLabels,
+            'income_labels' => $labels,
             'expense' => $expense,
-            'expense_labels' => $expenseLabels,
+            'expense_labels' => $labels,
             'count' => $count,
-            'count_labels' => $countLabels,
+            'count_labels' => $labels,
+            'prev_income' => $p_income,
+            'prev_expense' => $p_expense,
+            'prev_count' => $p_count,
         ];
     }
 

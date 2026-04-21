@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Icon, Button, CardTitle, Badge, Pagination, Spinner } from '@/shared/components/ui';
-import { RevenueCard, SalesCard, ActiveUsersCard } from '@/shared/components/cards/charts';
+import { Icon, Badge, Pagination, Spinner, DropdownGrouping } from '@/shared/components/ui';
+import { MetricAreaChartCard, ComparisonChartCard, SummaryChartCard } from '@/shared/components/cards/charts';
 
 import {
   useTransactions,
@@ -34,17 +34,21 @@ export const TransactionListPage: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day');
+
   const { data: response, isLoading: isLoadingTx } = useTransactions(filters);
   const { data: summary, isLoading: isLoadingSummary } = useTransactionSummary({
     date_from: filters.date_from,
     date_to: filters.date_to,
     account_id: filters.account_id,
+    group_by: groupBy,
   });
 
   const { data: historyData } = useTransactionHistory({
     date_from: filters.date_from,
     date_to: filters.date_to,
     account_id: filters.account_id,
+    group_by: groupBy,
   });
 
   const createMutation = useCreateTransaction();
@@ -106,7 +110,20 @@ export const TransactionListPage: React.FC = () => {
         name: 'Transaksi',
         data: historyData.count
       }],
-      countLabels: historyData.count_labels
+      countLabels: historyData.count_labels,
+      comparisonSeries: [
+        {
+          name: 'Pemasukan',
+          data: historyData.income,
+          color: 'primary'
+        },
+        {
+          name: 'Pengeluaran',
+          data: historyData.expense,
+          color: 'secondary'
+        }
+      ],
+      comparisonLabels: historyData.income_labels
     };
   }, [historyData]);
 
@@ -127,7 +144,7 @@ export const TransactionListPage: React.FC = () => {
 
   const getSortIcon = (column: string) => {
     if (filters.sort_by !== column) return <Icon icon="selector" size={12} className="ms-1 opacity-40" />;
-    return filters.sort_dir === 'asc' 
+    return filters.sort_dir === 'asc'
       ? <Icon icon="chevron-up" size={12} className="ms-1 text-primary" />
       : <Icon icon="chevron-down" size={12} className="ms-1 text-primary" />;
   };
@@ -171,12 +188,18 @@ export const TransactionListPage: React.FC = () => {
   };
 
   return (
-    <BaseLayout pageTitle="Daftar Transaksi">
+    <BaseLayout
+      pageTitle="Daftar Transaksi"
+      pageActions={<DropdownGrouping defaultValue={groupBy} onChange={setGroupBy} />}
+    >
       <div className="container-xl">
-        <div className="row row-cards mb-3">
+        <div
+          className="row row-cards g-2 g-lg-3 mb-2 flex-nowrap overflow-x-auto d-md-flex flex-md-wrap overflow-md-visible hide-scrollbar pb-1"
+          style={{ scrollSnapType: 'x mandatory' }}
+        >
           {/* Summary Cards */}
-          <div className="col-sm-6 col-lg-3">
-            <RevenueCard
+          <div className="col-auto col-md-6 col-lg-3 mobile-slider-item">
+            <MetricAreaChartCard
               title="Total Pemasukan"
               value={isLoadingSummary ? '...' : formatCurrency(summary?.total_income || 0)}
               trendValue={summary?.income_trend || 0}
@@ -187,8 +210,8 @@ export const TransactionListPage: React.FC = () => {
               style={{ height: '152px' }}
             />
           </div>
-          <div className="col-sm-6 col-lg-3">
-            <RevenueCard
+          <div className="col-auto col-md-6 col-lg-3 mobile-slider-item">
+            <MetricAreaChartCard
               title="Total Pengeluaran"
               value={isLoadingSummary ? '...' : formatCurrency(summary?.total_expense || 0)}
               trendValue={summary?.expense_trend || 0}
@@ -199,20 +222,18 @@ export const TransactionListPage: React.FC = () => {
               style={{ height: '152px' }}
             />
           </div>
-          <div className="col-sm-6 col-lg-3">
-            <SalesCard
+          <div className="col-auto col-md-6 col-lg-3 mobile-slider-item">
+            <ComparisonChartCard
               title="Saldo Bersih"
               value={isLoadingSummary ? '...' : formatCurrency(summary?.net_balance || 0)}
-              progressColor="primary"
-              progressValue={summary?.total_income ? Math.max(0, Math.min(100, (summary.net_balance / summary.total_income) * 100)) : 0}
-              conversionRateLabel="Rasio Saldo/Pemasukan"
               trendValue={summary?.balance_trend || 0}
-              dropdownId="balance-dropdown"
+              series={chartData.comparisonSeries}
+              categories={chartData.comparisonLabels}
               style={{ height: '152px' }}
             />
           </div>
-          <div className="col-sm-6 col-lg-3">
-            <ActiveUsersCard
+          <div className="col-auto col-md-6 col-lg-3 mobile-slider-item">
+            <SummaryChartCard
               title="Jumlah Transaksi"
               value={isLoadingSummary ? '...' : (summary?.transaction_count || 0).toString()}
               trendValue={summary?.count_trend || 0}
@@ -313,11 +334,11 @@ export const TransactionListPage: React.FC = () => {
                     <td className="align-middle">
                       <div className="d-flex flex-wrap gap-1" style={{ maxWidth: '180px' }}>
                         {tx.tags?.map(tag => (
-                          <span 
-                            key={tag.id} 
+                          <span
+                            key={tag.id}
                             className="badge badge-outline text-nowrap"
-                            style={{ 
-                              fontSize: '10px', 
+                            style={{
+                              fontSize: '10px',
                               padding: '2px 8px',
                               borderColor: `${tag.color}40`,
                               color: tag.color,
@@ -339,8 +360,8 @@ export const TransactionListPage: React.FC = () => {
                             outline
                             pill
                             className="px-2 py-1 fw-medium"
-                            style={{ 
-                              borderColor: tx.category.color, 
+                            style={{
+                              borderColor: tx.category.color,
                               color: tx.category.color,
                               backgroundColor: `${tx.category.color}10`,
                               fontSize: '11px'
@@ -362,9 +383,9 @@ export const TransactionListPage: React.FC = () => {
                     </td>
                     <td className="align-middle">
                       {tx.status ? (
-                        <span 
+                        <span
                           className="badge fw-medium"
-                          style={{ 
+                          style={{
                             backgroundColor: `${tx.status.color}15`,
                             color: tx.status.color,
                             fontSize: '11px'
