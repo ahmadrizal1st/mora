@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTagRequest;
+use App\Services\TagService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,10 +16,7 @@ class TagController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $tags = $request->user()
-            ->tags()
-            ->orderBy('name')
-            ->get();
+        $tags = TagService::list($request->user());
 
         return response()->json([
             'data' => $tags,
@@ -32,7 +30,7 @@ class TagController extends Controller
      */
     public function store(StoreTagRequest $request): JsonResponse
     {
-        $tag = $request->user()->tags()->create($request->validated());
+        $tag = TagService::store($request->user(), $request->validated());
 
         return response()->json([
             'message' => 'Tag berhasil dibuat.',
@@ -47,12 +45,11 @@ class TagController extends Controller
      */
     public function update(StoreTagRequest $request, int $id): JsonResponse
     {
-        $tag = $request->user()->tags()->findOrFail($id);
-        $tag->update($request->validated());
+        $tag = TagService::update($request->user(), $id, $request->validated());
 
         return response()->json([
             'message' => 'Tag berhasil diperbarui.',
-            'data' => $tag->fresh(),
+            'data' => $tag,
         ]);
     }
 
@@ -63,9 +60,7 @@ class TagController extends Controller
      */
     public function destroy(Request $request, int $id): JsonResponse
     {
-        $tag = $request->user()->tags()->findOrFail($id);
-        $tag->transactions()->detach();
-        $tag->delete();
+        TagService::destroy($request->user(), $id);
 
         return response()->json([
             'message' => 'Tag berhasil dihapus.',

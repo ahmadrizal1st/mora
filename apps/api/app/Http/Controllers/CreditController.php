@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Credit;
+use App\Http\Requests\StoreCreditRequest;
+use App\Services\CreditService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,11 +15,7 @@ class CreditController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = $request->input('per_page', 15);
-        
-        $credits = $request->user()->accounts()
-            ->has('credit')
-            ->with(['credit', 'currency'])
-            ->paginate($perPage);
+        $credits = CreditService::list($request->user(), $perPage);
 
         return response()->json($credits);
     }
@@ -26,22 +23,12 @@ class CreditController extends Controller
     /**
      * Upsert credit info for a specific account.
      */
-    public function store(Request $request, int $accountId): JsonResponse
+    public function store(StoreCreditRequest $request, int $accountId): JsonResponse
     {
-        $account = $request->user()->accounts()->findOrFail($accountId);
-
-        $validated = $request->validate([
-            'limit' => 'required|integer|min:0',
-            'total_amount' => 'nullable|integer|min:0',
-            'installment_amount' => 'nullable|integer|min:0',
-            'installment_type' => 'nullable|in:monthly,yearly',
-            'due_date' => 'nullable|date',
-            'notes' => 'nullable|string',
-        ]);
-
-        $credit = $account->credit()->updateOrCreate(
-            ['account_id' => $account->id],
-            $validated
+        $credit = CreditService::upsert(
+            $request->user(),
+            $accountId,
+            $request->validated()
         );
 
         return response()->json([
@@ -55,8 +42,7 @@ class CreditController extends Controller
      */
     public function destroy(Request $request, int $accountId): JsonResponse
     {
-        $account = $request->user()->accounts()->findOrFail($accountId);
-        $account->credit()->delete();
+        CreditService::destroy($request->user(), $accountId);
 
         return response()->json([
             'message' => 'Profil kredit berhasil dihapus.',

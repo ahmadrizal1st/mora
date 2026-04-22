@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Currency;
-use App\Models\RecurringType;
-use App\Models\Status;
+use App\Services\LookupService;
 use Illuminate\Http\JsonResponse;
 
 class LookupController extends Controller
@@ -16,13 +14,8 @@ class LookupController extends Controller
      */
     public function currencies(): JsonResponse
     {
-        $currencies = Currency::where('is_active', true)
-            ->orderByDesc('is_default')
-            ->orderBy('code')
-            ->get();
-
         return response()->json([
-            'data' => $currencies,
+            'data' => LookupService::currencies(),
         ]);
     }
 
@@ -34,7 +27,7 @@ class LookupController extends Controller
     public function statuses(): JsonResponse
     {
         return response()->json([
-            'data' => Status::all(),
+            'data' => LookupService::statuses(),
         ]);
     }
 
@@ -46,7 +39,7 @@ class LookupController extends Controller
     public function recurringTypes(): JsonResponse
     {
         return response()->json([
-            'data' => RecurringType::all(),
+            'data' => LookupService::recurringTypes(),
         ]);
     }
 }

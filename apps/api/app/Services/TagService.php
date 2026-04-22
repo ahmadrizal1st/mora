@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Tag;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+
+class TagService
+{
+    /**
+     * List all tags for the user.
+     */
+    public static function list(User $user): Collection
+    {
+        return $user->tags()
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * Create a new tag.
+     */
+    public static function store(User $user, array $data): Tag
+    {
+        return $user->tags()->create($data);
+    }
+
+    /**
+     * Update a tag.
+     */
+    public static function update(User $user, int $id, array $data): Tag
+    {
+        $tag = $user->tags()->findOrFail($id);
+        $tag->update($data);
+        return $tag->fresh();
+    }
+
+    /**
+     * Delete a tag.
+     */
+    public static function destroy(User $user, int $id): void
+    {
+        $tag = $user->tags()->findOrFail($id);
+        $tag->transactions()->detach();
+        $tag->delete();
+    }
+}

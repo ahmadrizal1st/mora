@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,14 +15,10 @@ class CategoryController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Category::query()->orderBy('name');
-
-        if ($request->has('tx_type')) {
-            $query->byType($request->get('tx_type'));
-        }
+        $categories = CategoryService::list($request->query('tx_type'));
 
         return response()->json([
-            'data' => $query->get(),
+            'data' => $categories,
         ]);
     }
 }
