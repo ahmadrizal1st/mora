@@ -4,19 +4,35 @@ namespace App\Repositories;
 
 use App\Models\Account;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class AccountRepository
 {
     /**
+     * Get a base query builder for accounts for a specific user.
+     */
+    public static function queryForUser(User $user): QueryBuilder
+    {
+        return QueryBuilder::for(Account::class)
+            ->where('user_id', $user->id)
+            ->allowedFilters(
+                AllowedFilter::partial('name'),
+                'type',
+                'currency_id'
+            )
+            ->allowedSorts('name', 'type', 'created_at')
+            ->with(['currency'])
+            ->withCount(['transactions', 'incomingTransfers']);
+    }
+
+    /**
      * Get all accounts for a user with basic relationships.
      */
-    public static function getAllForUser(User $user): Collection
+    public static function getAllForUser(User $user)
     {
-        return $user->accounts()
-            ->with(['currency'])
-            ->withCount(['transactions', 'incomingTransfers'])
-            ->orderBy('name')
+        return self::queryForUser($user)
+            ->defaultSort('name')
             ->get();
     }
 
@@ -25,9 +41,7 @@ class AccountRepository
      */
     public static function findForUser(User $user, int $id): Account
     {
-        return $user->accounts()
-            ->with(['currency'])
-            ->withCount(['transactions', 'incomingTransfers'])
+        return self::queryForUser($user)
             ->findOrFail($id);
     }
 

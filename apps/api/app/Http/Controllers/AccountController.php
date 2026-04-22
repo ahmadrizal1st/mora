@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\AccountData;
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
 use App\Services\AccountService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\LaravelData\DataCollection;
 
 class AccountController extends Controller
 {
@@ -30,8 +32,7 @@ class AccountController extends Controller
         $accounts = AccountService::listWithHistory($request->user(), $groupBy, $filters);
 
         return response()->json([
-            'status' => 'success',
-            'data' => $accounts,
+            'data' => AccountData::collect($accounts, DataCollection::class)
         ]);
     }
 
@@ -46,7 +47,7 @@ class AccountController extends Controller
 
         return response()->json([
             'message' => 'Akun berhasil dibuat.',
-            'data' => $account,
+            'data' => AccountData::from($account),
         ], 201);
     }
 
@@ -70,7 +71,7 @@ class AccountController extends Controller
         $account = AccountService::showWithHistory($request->user(), $id, $groupBy, $filters);
 
         return response()->json([
-            'data' => $account,
+            'data' => AccountData::from($account)
         ]);
     }
 
@@ -85,7 +86,7 @@ class AccountController extends Controller
 
         return response()->json([
             'message' => 'Akun berhasil diperbarui.',
-            'data' => $account,
+            'data' => AccountData::from($account),
         ]);
     }
 

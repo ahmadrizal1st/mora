@@ -1,6 +1,5 @@
 import React from 'react';
 import { Icon } from '@/shared/components/ui/Icon';
-import { Chart } from '@/shared/components/ui/Chart';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
 
 interface CreditCardProps {

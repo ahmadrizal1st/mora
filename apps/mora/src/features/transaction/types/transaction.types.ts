@@ -32,6 +32,12 @@ export interface Account {
 
 export interface AccountFilters {
   group_by?: 'day' | 'week' | 'month' | 'year';
+  filter?: {
+    name?: string;
+    type?: string;
+    currency_id?: number;
+  };
+  sort?: string;
 }
 
 export interface AccountResponse {
