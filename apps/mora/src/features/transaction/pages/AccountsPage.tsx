@@ -123,7 +123,7 @@ export const AccountsPage: React.FC = () => {
   };
 
   return (
-    <BaseLayout 
+    <BaseLayout
       pageTitle="Kelola Akun & Saldo"
       pageActions={
         <Button
@@ -165,19 +165,19 @@ export const AccountsPage: React.FC = () => {
         {accountsWithHistory.length > 0 && (
           <div className="row mt-4">
             <div className="col-12">
-              <div className="card shadow-sm border-0">
-                <div className="card-body">
+              <div className="card shadow-sm border-0 overflow-hidden" style={{ borderRadius: '1.25rem' }}>
+                <div className="card-body p-4">
                   {/* Header */}
-                  <div className="d-flex justify-content-between align-items-start mb-3">
+                  <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                     <div>
-                      <h3 className="card-title h2 mb-1 fw-bold">Tren Kekayaan Bersih</h3>
-                      <div className="text-secondary small">Perbandingan saldo antar akun Anda</div>
+                      <h3 className="h2 mb-1 fw-bold text-dark">Tren Kekayaan Bersih</h3>
+                      <div className="text-secondary small fw-medium">Perbandingan saldo antar akun Anda secara historis</div>
                     </div>
                     <div className="d-flex align-items-center gap-3">
                       <DropdownGrouping value={groupBy} onChange={setGroupBy} />
-                      <div className="text-end d-none d-sm-block">
-                        <div className="text-secondary small fw-medium">Total Kekayaan</div>
-                        <div className="h2 fw-bold mb-0 text-primary">
+                      <div className="text-end border-start ps-3 d-none d-sm-block">
+                        <div className="text-secondary small fw-bold text-uppercase" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>Total Kekayaan</div>
+                        <div className="h2 fw-bold mb-0 text-primary" style={{ letterSpacing: '-0.5px' }}>
                           {formatCurrency(totalWealth)}
                         </div>
                       </div>
@@ -185,7 +185,7 @@ export const AccountsPage: React.FC = () => {
                   </div>
 
                   {/* Account filter toggles */}
-                  <div className="d-flex flex-wrap gap-2 mb-3">
+                  <div className="d-flex flex-wrap gap-2 mb-4 p-2 bg-light rounded-3" style={{ width: 'fit-content' }}>
                     {accountsWithHistory.map((acc) => {
                       const isActive = effectiveSelected.has(acc.id);
                       return (
@@ -193,31 +193,32 @@ export const AccountsPage: React.FC = () => {
                           key={acc.id}
                           type="button"
                           onClick={() => toggleAccount(acc.id)}
+                          className="btn btn-sm border-0 transition-all"
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '6px',
-                            padding: '4px 12px',
-                            borderRadius: '999px',
-                            border: `1.5px solid ${acc.color}`,
-                            backgroundColor: isActive ? `${acc.color}18` : 'transparent',
-                            color: isActive ? acc.color : '#aaa',
+                            gap: '8px',
+                            padding: '6px 16px',
+                            borderRadius: '2rem',
+                            backgroundColor: isActive ? acc.color : 'transparent',
+                            color: isActive ? (parseInt(acc.color.slice(1), 16) > 0xbbbbbb ? '#1d273b' : 'white') : '#6e7687',
                             fontSize: '12px',
                             fontWeight: 600,
                             cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                            opacity: isActive ? 1 : 0.5,
+                            boxShadow: isActive ? `0 4px 12px ${acc.color}40` : 'none',
                           }}
                         >
-                          <span
-                            style={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
-                              backgroundColor: isActive ? acc.color : '#aaa',
-                              flexShrink: 0,
-                            }}
-                          />
+                          {!isActive && (
+                            <span
+                              style={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                backgroundColor: acc.color,
+                                flexShrink: 0,
+                              }}
+                            />
+                          )}
                           {acc.name}
                         </button>
                       );
@@ -225,7 +226,7 @@ export const AccountsPage: React.FC = () => {
                   </div>
 
                   {/* Chart */}
-                  <div style={{ minHeight: '300px' }}>
+                  <div style={{ minHeight: '350px', margin: '0 -10px' }}>
                     {chartSeries.length === 0 ? (
                       <div className="text-center text-muted py-5">
                         Pilih minimal satu akun untuk ditampilkan.
@@ -234,24 +235,34 @@ export const AccountsPage: React.FC = () => {
                       <Chart
                         chartId="total-wealth-trend"
                         chartData={{
-                          type: 'line',
+                          type: 'area',
                           stacked: false,
                           series: chartSeries,
                           categories: chartLabels,
-                          strokeWidth: Array(chartSeries.length).fill(3.5),
+                          strokeWidth: Array(chartSeries.length).fill(3),
                           strokeCurve: 'smooth',
                           animations: true,
                           datalabels: false,
                           legend: false,
                           grid: {
                             strokeDashArray: 4,
-                            padding: { top: 20, right: 20, bottom: 0, left: 10 },
+                            padding: { top: 20, right: 20, bottom: 0, left: 20 },
+                          },
+                          fill: {
+                            type: 'gradient',
+                            gradient: {
+                              shadeIntensity: 1,
+                              opacityFrom: 0.25,
+                              opacityTo: 0.05,
+                              stops: [0, 90, 100]
+                            }
                           },
                           xaxis: {
                             tooltip: { enabled: false },
                             axisBorder: { show: false },
-                            tickAmount: 8,
+                            tickAmount: 10,
                             labels: {
+                              style: { colors: '#9199a0', fontWeight: 500 },
                               formatter: (val: string) => {
                                 if (!val) return '';
                                 if (val.includes('-W')) return val.split('-')[1];
@@ -272,6 +283,7 @@ export const AccountsPage: React.FC = () => {
                           },
                           yaxis: {
                             labels: {
+                              style: { colors: '#9199a0', fontWeight: 500 },
                               formatter: (val: number) => {
                                 const absVal = Math.abs(val);
                                 const sign = val < 0 ? '-' : '';
@@ -282,6 +294,11 @@ export const AccountsPage: React.FC = () => {
                             },
                           },
                           extend: {
+                            markers: {
+                              size: 4,
+                              strokeWidth: 2,
+                              hover: { size: 6 }
+                            },
                             tooltip: {
                               container: 'body',
                               shared: true,
@@ -293,8 +310,7 @@ export const AccountsPage: React.FC = () => {
                                   const label = chartLabels[dataPointIndex];
                                   if (!label) return _val;
                                   if (/^\d{4}$/.test(String(label))) return label;
-                                  // Handle week format o-WW
-                                  if (String(label).includes('-W')) return label; 
+                                  if (String(label).includes('-W')) return label;
                                   const date = new Date(label);
                                   if (isNaN(date.getTime())) return label;
                                   return date.toLocaleDateString('id-ID', {
@@ -310,7 +326,7 @@ export const AccountsPage: React.FC = () => {
                             },
                           },
                         }}
-                        height={24}
+                        height={25}
                       />
                     )}
                   </div>
@@ -326,8 +342,8 @@ export const AccountsPage: React.FC = () => {
               modalView === 'delete-confirm'
                 ? 'Konfirmasi Penghapusan'
                 : editingAccount
-                ? 'Edit Akun'
-                : 'Tambah Akun Baru'
+                  ? 'Edit Akun'
+                  : 'Tambah Akun Baru'
             }
             onClose={() => {
               setIsModalOpen(false);
@@ -359,14 +375,14 @@ export const AccountsPage: React.FC = () => {
                 {(editingAccount?.transactions_count || 0) +
                   (editingAccount?.incoming_transfers_count || 0) >
                   0 && (
-                  <div className="bg-danger-lt p-3 rounded text-start border border-danger-subtle mb-3">
-                    <div className="small text-danger fw-bold mb-1">SISTEM MEMBLOKIR PENGHAPUSAN:</div>
-                    <div className="small">
-                      Anda tidak dapat menghapus akun yang masih memiliki data transaksi. Silakan
-                      hapus atau pindahkan transaksi terkait terlebih dahulu.
+                    <div className="bg-danger-lt p-3 rounded text-start border border-danger-subtle mb-3">
+                      <div className="small text-danger fw-bold mb-1">SISTEM MEMBLOKIR PENGHAPUSAN:</div>
+                      <div className="small">
+                        Anda tidak dapat menghapus akun yang masih memiliki data transaksi. Silakan
+                        hapus atau pindahkan transaksi terkait terlebih dahulu.
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 <div className="d-flex gap-2">
                   <Button className="flex-fill" onClick={() => setModalView('form')}>
@@ -378,7 +394,7 @@ export const AccountsPage: React.FC = () => {
                     onClick={() => editingAccount && handleDelete(editingAccount.id)}
                     disabled={
                       (editingAccount?.transactions_count || 0) +
-                        (editingAccount?.incoming_transfers_count || 0) >
+                      (editingAccount?.incoming_transfers_count || 0) >
                       0
                     }
                     loading={deleteMutation.isPending}

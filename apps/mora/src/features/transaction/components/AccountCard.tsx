@@ -10,65 +10,107 @@ interface AccountCardProps {
 }
 
 export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => {
+  // Determine if background is light or dark to set text color
+  const getContrastColor = (hexColor: string) => {
+    if (!hexColor) return '#ffffff';
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 180 ? '#1d273b' : '#ffffff';
+  };
+
+  const textColor = getContrastColor(account.color);
+  const isDarkText = textColor === '#1d273b';
+  const secondaryTextColor = isDarkText ? 'rgba(29, 39, 59, 0.6)' : 'rgba(255, 255, 255, 0.7)';
+  const iconBgColor = isDarkText ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.15)';
+  const chartColor = isDarkText ? 'rgba(29, 39, 59, 0.5)' : 'rgba(255, 255, 255, 0.6)';
+
+  const accountIcon = account.type === 'bank' ? 'building-bank' : account.type === 'cash' ? 'wallet' : account.type === 'e-wallet' ? 'device-mobile' : 'credit-card';
+
   return (
     <div 
-      className="card h-100 shadow-sm border-0 position-relative group cursor-pointer"
+      className="card h-100 shadow-sm border-0 position-relative group cursor-pointer overflow-hidden transition-all hover-shadow-lg"
       onClick={() => onEdit(account)}
+      style={{ 
+        backgroundColor: account.color,
+        color: textColor,
+        borderRadius: '1.25rem',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+      }}
     >
-      <div className="card-body p-4 d-flex flex-column" style={{ minHeight: '220px' }}>
+      {/* Background Decoration - Circular shape and Large Icon */}
+      <div 
+        className="position-absolute" 
+        style={{ 
+          top: '-20px', 
+          right: '-20px', 
+          width: '140px', 
+          height: '140px', 
+          backgroundColor: iconBgColor, 
+          borderRadius: '50%',
+          zIndex: 0
+        }} 
+      />
+      <div 
+        className="position-absolute" 
+        style={{ 
+          top: '10px', 
+          right: '10px', 
+          zIndex: 1,
+          opacity: isDarkText ? 0.08 : 0.15,
+          transform: 'rotate(-10deg)'
+        }}
+      >
+        <Icon icon={accountIcon} size={90} stroke={1.5} />
+      </div>
+
+      <div className="card-body p-4 d-flex flex-column position-relative" style={{ minHeight: '220px', zIndex: 2 }}>
         <div className="d-flex justify-content-between align-items-start mb-3">
           <div>
-            <span 
-              className="badge mb-1 fw-bold" 
-              style={{ backgroundColor: `${account.color}15`, color: account.color, fontSize: '10px' }}
+            <div 
+              className="fw-bold text-uppercase mb-1" 
+              style={{ color: secondaryTextColor, fontSize: '10px', letterSpacing: '1px' }}
             >
-              {account.type.replace('-', ' ').toUpperCase()}
-            </span>
-            <h3 className="card-title h3 mb-0 fw-bold">{account.name}</h3>
+              {account.type.replace('-', ' ')}
+            </div>
+            <h3 className="card-title h3 mb-0 fw-bold" style={{ color: textColor }}>{account.name}</h3>
           </div>
           <div className="d-flex gap-2">
             <button 
-              onClick={() => onEdit(account)}
-              className="btn btn-icon btn-ghost-secondary btn-sm rounded-circle opacity-0 group-hover-opacity-100 transition-opacity"
+              onClick={(e) => { e.stopPropagation(); onEdit(account); }}
+              className="btn btn-icon btn-sm rounded-circle opacity-0 group-hover-opacity-100 transition-opacity"
+              style={{ backgroundColor: iconBgColor, color: textColor, border: 'none' }}
               title="Edit Akun"
             >
               <Icon icon="pencil" size={14} />
             </button>
-            <div 
-              className="avatar avatar-md rounded-3 border-0 bg-transparent"
-              style={{ color: account.color, backgroundColor: `${account.color}10` }}
-            >
-              <Icon icon={account.type === 'bank' ? 'building-bank' : account.type === 'cash' ? 'wallet' : account.type === 'e-wallet' ? 'device-mobile' : 'credit-card'} size={20} />
-            </div>
           </div>
         </div>
 
         <div className="mt-2 mb-2">
-          <div className="text-secondary small fw-medium">Saldo Saat Ini</div>
-          <div className="h1 fw-bold mb-0" style={{ fontSize: '1.5rem', color: '#1d273b' }}>
+          <div style={{ color: secondaryTextColor, fontSize: '12px', fontWeight: 500 }}>Saldo Saat Ini</div>
+          <div className="h1 fw-bold mb-0 mt-1" style={{ fontSize: '1.85rem', letterSpacing: '-0.5px', color: textColor }}>
             {formatCurrency(account.balance_raw ?? 0, account.currency?.code)}
           </div>
         </div>
 
-
-
-        <div style={{ height: '60px', margin: '0 -1.25rem -1.25rem -1.25rem' }} className="mt-auto rounded-bottom">
+        <div style={{ height: '70px', margin: '0 -1.5rem -1.5rem -1.5rem' }} className="mt-auto rounded-bottom overflow-hidden">
           <Chart
             chartId={`account-sparkline-${account.id}`}
             chartData={{
-              type: 'area',
+              type: 'bar',
               sparkline: true,
               series: [{
                 name: 'Saldo',
                 data: account.history?.balance || [0, 0, 0],
-                color: account.color
+                color: chartColor
               }],
-              strokeWidth: [2],
               fill: {
-                opacity: 0,
+                opacity: 0.8,
               },
               categories: account.history?.labels || [],
-              hideTooltip: false,
+              hideTooltip: true,
               hidePoints: false,
               showMarkers: false,
               xaxis: {
@@ -84,16 +126,22 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
               legend: false,
               grid: { 
                 show: false,
-                padding: { top: 0, right: 0, bottom: -10, left: 0 } 
+                padding: { top: 15, right: 0, bottom: 0, left: 0 } 
               },
               extend: {
+                plotOptions: {
+                  bar: {
+                    columnWidth: '60%',
+                    borderRadius: 2
+                  }
+                },
                 markers: {
-                  size: 4,
+                  size: 0,
                   strokeWidth: 2,
-                  hover: { size: 6 }
+                  hover: { size: 4 }
                 },
                 tooltip: {
-                  theme: 'dark',
+                  theme: isDarkText ? 'light' : 'dark',
                   fixed: {
                     enabled: false
                   },
@@ -120,7 +168,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
                 }
               }
             }}
-            height={3.75}
+            height={4.375}
           />
         </div>
       </div>

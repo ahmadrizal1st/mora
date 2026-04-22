@@ -1,16 +1,19 @@
 <?php
 
-use App\Http\Controllers\AccountController;
-use App\Http\Controllers\Auth\GoogleAuthController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\OtpController;
-use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\Auth\ProfileController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\LookupController;
-use App\Http\Controllers\TagController;
-use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\{
+    Auth\GoogleAuthController,
+    Auth\LoginController,
+    Auth\OtpController,
+    Auth\PasswordController,
+    Auth\ProfileController,
+    Auth\RegisterController,
+    AccountController,
+    CategoryController,
+    CreditController,
+    LookupController,
+    TagController,
+    TransactionController,
+};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,9 +76,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('accounts', AccountController::class);
 
     // Credits
-    Route::get('credits', [\App\Http\Controllers\CreditController::class, 'index']);
-    Route::post('accounts/{account}/credit', [\App\Http\Controllers\CreditController::class, 'store']);
-    Route::delete('accounts/{account}/credit', [\App\Http\Controllers\CreditController::class, 'destroy']);
+    Route::get('credits', [CreditController::class, 'index']);
+    Route::post('accounts/{account}/credit', [CreditController::class, 'store']);
+    Route::delete('accounts/{account}/credit', [CreditController::class, 'destroy']);
 
     // Categories
     Route::get('categories', [CategoryController::class, 'index']);

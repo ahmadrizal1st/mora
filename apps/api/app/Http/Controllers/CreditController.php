@@ -13,15 +13,14 @@ class CreditController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $perPage = $request->input('per_page', 15);
+        
         $credits = $request->user()->accounts()
             ->has('credit')
             ->with(['credit', 'currency'])
-            ->get();
+            ->paginate($perPage);
 
-        return response()->json([
-            'data' => $credits,
-            'status' => 'success',
-        ]);
+        return response()->json($credits);
     }
 
     /**

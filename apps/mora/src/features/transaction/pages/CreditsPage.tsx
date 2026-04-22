@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Button, CardTitle, Icon, Spinner, Modal } from '@/shared/components/ui';
-import { formatCurrency } from '@/shared/utils/currencyUtils';
+import { Button, Icon, Spinner, Modal, Select, Datepicker, AutosizeTextarea, Pagination } from '@/shared/components/ui';
 import { useAccounts } from '../hooks/useAccounts';
 import axios from '@/shared/api/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { CreditCard } from '../components/CreditCard';
 
 export default function CreditsPage() {
   const queryClient = useQueryClient();
@@ -12,10 +12,11 @@ export default function CreditsPage() {
   const accounts = accountsResponse?.data || [];
 
   // Fetch only accounts that already have credits
+  const [page, setPage] = useState(1);
   const { data: creditsResponse, isLoading: creditsLoading } = useQuery({
-    queryKey: ['credits'],
+    queryKey: ['credits', page],
     queryFn: async () => {
-      const res = await axios.get('/credits');
+      const res = await axios.get('/credits', { params: { page } });
       return res.data;
     }
   });
@@ -34,7 +35,12 @@ export default function CreditsPage() {
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await axios.post(`/accounts/${selectedAccount.id}/credit`, data);
+      const payload = {
+        ...data,
+        due_date: data.due_date || null,
+        notes: data.notes || null,
+      };
+      const res = await axios.post(`/accounts/${selectedAccount.id}/credit`, payload);
       return res.data;
     },
     onSuccess: () => {
@@ -77,94 +83,96 @@ export default function CreditsPage() {
     setIsModalOpen(true);
   };
 
+  const accountOptions = accounts.map((acc: any) => ({
+    value: acc.id,
+    label: acc.name,
+    color: acc.color
+  }));
+
   const isLoading = accountsLoading || creditsLoading;
 
   return (
-    <BaseLayout pageTitle="Manajemen Kredit & Pinjaman">
-      <div className="container-xl">
-        <div className="row g-4">
-          <div className="col-12">
-            <div className="card shadow-sm border-0">
-              <div className="card-header bg-white py-4 d-flex justify-content-between align-items-center">
-                <CardTitle>Daftar Kredit Aktif</CardTitle>
-                <div className="btn-group">
-                  <button className="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-                    Tambah Profil Kredit
-                  </button>
-                  <div className="dropdown-menu dropdown-menu-end">
-                    {accounts.map((acc: any) => (
-                      <button 
-                        key={acc.id} 
-                        className="dropdown-item" 
-                        onClick={() => openForm(acc)}
-                      >
-                        {acc.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="card-body p-0">
-                <div className="table-responsive">
-                  <table className="table table-vcenter card-table">
-                    <thead>
-                      <tr>
-                        <th>Akun</th>
-                        <th>Limit / Plafon</th>
-                        <th>Total Pinjaman</th>
-                        <th>Cicilan</th>
-                        <th>Tenggat</th>
-                        <th className="w-1"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {isLoading ? (
-                        <tr><td colSpan={6} className="text-center py-5"><Spinner /></td></tr>
-                      ) : creditAccounts.length === 0 ? (
-                        <tr><td colSpan={6} className="text-center py-5 text-muted">Belum ada profil kredit yang ditambahkan.</td></tr>
-                      ) : creditAccounts.map((acc: any) => (
-                        <tr key={acc.id}>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <span className="avatar avatar-xs me-2 rounded" style={{ backgroundColor: acc.color }}></span>
-                              <span className="fw-bold">{acc.name}</span>
-                            </div>
-                          </td>
-                          <td className="text-secondary">{formatCurrency(acc.credit?.limit)}</td>
-                          <td className="fw-bold">{formatCurrency(acc.credit?.total_amount)}</td>
-                          <td>
-                             <div>{formatCurrency(acc.credit?.installment_amount)}</div>
-                             <div className="small text-muted text-capitalize">{acc.credit?.installment_type === 'monthly' ? 'Bulanan' : 'Tahunan'}</div>
-                          </td>
-                          <td>
-                            {acc.credit?.due_date ? (
-                              <span className="badge bg-yellow-lt">
-                                {new Date(acc.credit.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                              </span>
-                            ) : '-'}
-                          </td>
-                          <td>
-                            <div className="d-flex gap-2">
-                              <button className="btn btn-icon btn-sm btn-ghost-primary" onClick={() => openForm(acc)}>
-                                <Icon icon="pencil" size={14} />
-                              </button>
-                              <button className="btn btn-icon btn-sm btn-ghost-danger" onClick={() => { if(window.confirm('Hapus profil kredit ini?')) deleteMutation.mutate(acc.id) }}>
-                                <Icon icon="trash" size={14} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
+    <BaseLayout 
+      pageTitle="Manajemen Kredit & Pinjaman"
+      pageActions={
+        <div style={{ width: '220px' }}>
+          <Select
+            options={accountOptions}
+            placeholder={
+              <>
+                <Icon icon="plus" size={18} className="me-1" />
+                Tambah Profil Kredit
+              </>
+            }
+            showSearch={true}
+            triggerClassName="btn btn-primary w-100 fw-bold border-0 shadow-sm text-white"
+            onChange={(val) => {
+              const acc = accounts.find(a => a.id === Number(val));
+              if (acc) openForm(acc);
+            }}
+          />
         </div>
+      }
+    >
+      <div className="container-xl pt-3">
+        {/* Cards Grid */}
+        <div className="row g-4">
+                {isLoading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="col-sm-6 col-lg-4">
+                      <div className="card shadow-sm border-0" style={{ height: '220px' }}>
+                        <div className="card-body p-4 d-flex align-items-center justify-content-center">
+                          <Spinner />
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : creditAccounts.length === 0 ? (
+                  <div className="col-12 text-center py-5">
+                    <div className="card border-0 shadow-sm py-5">
+                      <div className="card-body">
+                        <Icon icon="credit-card" size={48} className="mb-3 opacity-20" />
+                        <div className="text-muted">Belum ada profil kredit yang ditambahkan.</div>
+                        <div className="mt-3 text-secondary small">Klik tombol "Tambah Profil Kredit" di pojok kanan atas untuk memulai.</div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  creditAccounts.map((acc: any) => (
+                    <div key={acc.id} className="col-sm-6 col-lg-4">
+                      <CreditCard 
+                        account={acc} 
+                        onEdit={(acc) => openForm(acc)} 
+                        onDelete={(id) => {
+                          if (window.confirm('Apakah Anda yakin ingin menghapus profil kredit ini?')) {
+                            deleteMutation.mutate(id);
+                          }
+                        }}
+                      />
+                    </div>
+                  ))
+        )}
+                </div>
+
+                {/* Pagination footer */}
+                {creditsResponse && creditsResponse.last_page > 1 && (
+                  <div className="mt-5 d-flex flex-column flex-md-row align-items-center justify-content-between py-3 gap-3">
+                    <div className="text-secondary small d-flex align-items-center">
+                      Menampilkan&nbsp;<strong>{creditsResponse.from}</strong>&nbsp;–&nbsp;<strong>{creditsResponse.to}</strong>&nbsp;dari&nbsp;<strong>{creditsResponse.total}</strong>&nbsp;data
+                    </div>
+                    <div className="pagination-wrapper">
+                      <Pagination
+                        activeItem={page}
+                        count={creditsResponse.last_page}
+                        className="m-0"
+                        onPageChange={(p) => setPage(p)}
+                      />
+                    </div>
+                  </div>
+                )}
       </div>
 
-      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} size="lg">
         <div className="modal-header border-0 pb-0">
           <h5 className="modal-title h2 fw-bold">Profil Kredit: {selectedAccount?.name}</h5>
           <button type="button" className="btn-close" onClick={() => setIsModalOpen(false)}></button>
@@ -213,41 +221,40 @@ export default function CreditsPage() {
               </div>
               <div className="col-md-6 mb-3">
                 <label className="form-label">Periode Cicilan</label>
-                <select 
-                  className="form-select" 
+                <Select
                   value={formData.installment_type}
-                  onChange={e => setFormData({...formData, installment_type: e.target.value})}
-                >
-                  <option value="monthly">Bulanan</option>
-                  <option value="yearly">Tahunan</option>
-                </select>
+                  onChange={val => setFormData({...formData, installment_type: val})}
+                  showSearch={false}
+                  options={[
+                    { value: 'monthly', label: 'Bulanan' }
+                  ]}
+                />
               </div>
             </div>
 
             <div className="mb-3">
-              <label className="form-label">Tenggat Waktu (Jatuh Tempo)</label>
-              <input 
-                type="date" 
-                className="form-control" 
-                value={formData.due_date}
-                onChange={e => setFormData({...formData, due_date: e.target.value})}
-              />
+                <label className="form-label">Tenggat Waktu (Jatuh Tempo)</label>
+                <Datepicker
+                  value={formData.due_date}
+                  onChange={(val) => setFormData({...formData, due_date: val})}
+                  layout="icon"
+                />
             </div>
 
             <div className="mb-3">
               <label className="form-label">Catatan Tambahan</label>
-              <textarea 
+              <AutosizeTextarea 
                 className="form-control" 
                 rows={3} 
                 value={formData.notes}
-                onChange={e => setFormData({...formData, notes: e.target.value})}
+                onChange={(e: any) => setFormData({...formData, notes: e.target.value})}
                 placeholder="Misal: Cicilan rumah ke-12"
-              ></textarea>
+              />
             </div>
 
             <div className="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
-              <Button color="ghost-secondary" onClick={() => setIsModalOpen(false)}>Batal</Button>
-              <Button type="submit" color="primary" loading={mutation.isPending}>Simpan Profil</Button>
+              <Button element="button" type="button" color="ghost-secondary" onClick={() => setIsModalOpen(false)}>Batal</Button>
+              <Button element="button" type="submit" color="primary" loading={mutation.isPending}>Simpan Profil</Button>
             </div>
           </form>
         </div>

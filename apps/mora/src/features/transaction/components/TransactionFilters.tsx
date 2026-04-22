@@ -88,6 +88,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
               value={filters.type || ''}
               onChange={(val) => handleFilterChange('type', (val || undefined) as TransactionType | undefined)}
               placeholder="Semua Tipe"
+              showSearch={false}
             />
           </div>
 
@@ -150,6 +151,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
               value={filters.status_id || ''}
               onChange={(val) => handleFilterChange('status_id', val ? Number(val) : undefined)}
               placeholder="Semua Status"
+              showSearch={false}
             />
           </div>
           
@@ -159,6 +161,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
               options={perPageOptions}
               value={filters.per_page || 15}
               onChange={(val) => handleFilterChange('per_page', Number(val))}
+              showSearch={false}
             />
           </div>
 

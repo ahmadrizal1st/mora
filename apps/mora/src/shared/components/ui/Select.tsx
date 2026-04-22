@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 import { Icon } from './Icon'
 import { Avatar } from './Avatar'
@@ -28,7 +28,7 @@ export interface SelectProps {
   values?: string[]
   selectKey?: string
   multiple?: boolean
-  placeholder?: string
+  placeholder?: ReactNode
   state?: 'valid' | 'invalid'
   showSearch?: boolean
   className?: string
@@ -53,6 +53,7 @@ export function Select({
   multiple,
   placeholder = 'Select...',
   state,
+  showSearch = true,
   className,
   defaultValue,
   value,
@@ -260,13 +261,13 @@ export function Select({
                 if (onChange) onChange(next)
               }
             }}
-            placeholder={selected.length === 0 ? placeholder : ''}
+            placeholder={selected.length === 0 && typeof placeholder === 'string' ? placeholder : undefined}
           />
         </div>
       )
     }
     const opt = allOptions.find(o => o.value.toString() === selected[0]?.toString())
-    if (!opt && !search) return <span className="text-muted">{placeholder}</span>
+    if (!opt && !search) return <span className={clsx(!triggerClassName?.includes('btn') && "text-muted")}>{placeholder}</span>
     if (!opt && search) return null
     return (
       <div className="d-flex align-items-center overflow-hidden">
@@ -335,7 +336,7 @@ export function Select({
           className="position-absolute" 
           style={{ right: '0.5rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
         >
-          <Icon icon="chevron-down" size={16} className={clsx('text-muted', 'transition-transform', isOpen && 'rotate-180')} />
+          <Icon icon="chevron-down" size={16} className={clsx(triggerClassName?.includes('btn') ? 'text-inherit' : 'text-muted', 'transition-transform', isOpen && 'rotate-180')} />
         </div>
       </div>
 
@@ -358,7 +359,7 @@ export function Select({
             minWidth: '100%'
           }}
         >
-          {!multiple && (
+          {!multiple && showSearch && (
             <div className="p-2 border-bottom sticky-top bg-white">
               <input 
                 ref={inputRef}
