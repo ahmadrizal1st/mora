@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Credit;
 use App\Models\User;
+use App\Repositories\CreditRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CreditService
@@ -13,10 +14,7 @@ class CreditService
      */
     public static function list(User $user, int $perPage = 15): LengthAwarePaginator
     {
-        return $user->accounts()
-            ->has('credit')
-            ->with(['credit', 'currency'])
-            ->paginate($perPage);
+        return CreditRepository::list($user, $perPage);
     }
 
     /**

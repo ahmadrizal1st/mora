@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTransactionRequest extends FormRequest
@@ -16,8 +17,14 @@ class StoreTransactionRequest extends FormRequest
      */
     public function rules(): array
     {
+        $types = implode(',', [
+            Transaction::TYPE_INCOME,
+            Transaction::TYPE_EXPENSE,
+            Transaction::TYPE_TRANSFER,
+        ]);
+
         return [
-            'type' => ['required', 'in:income,expense,transfer'],
+            'type' => ['required', "in:{$types}"],
             'amount_raw' => ['required', 'integer', 'min:1'],
             'currency_id' => ['nullable', 'integer', 'exists:currencies,id'],
             'rate_snapshot' => ['nullable', 'numeric', 'min:0'],

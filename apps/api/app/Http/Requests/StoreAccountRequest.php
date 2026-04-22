@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Account;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAccountRequest extends FormRequest
@@ -16,11 +17,18 @@ class StoreAccountRequest extends FormRequest
      */
     public function rules(): array
     {
+        $types = implode(',', [
+            Account::TYPE_CASH,
+            Account::TYPE_BANK,
+            Account::TYPE_EWALLET,
+            Account::TYPE_INVESTMENT,
+        ]);
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'currency_id' => ['required', 'integer', 'exists:currencies,id'],
             'color' => ['nullable', 'string', 'max:20'],
-            'type' => ['required', 'in:cash,bank,e-wallet,investment'],
+            'type' => ['required', "in:{$types}"],
         ];
     }
 

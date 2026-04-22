@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTransactionRequest extends FormRequest
@@ -16,8 +17,14 @@ class UpdateTransactionRequest extends FormRequest
      */
     public function rules(): array
     {
+        $types = implode(',', [
+            Transaction::TYPE_INCOME,
+            Transaction::TYPE_EXPENSE,
+            Transaction::TYPE_TRANSFER,
+        ]);
+
         return [
-            'type' => ['sometimes', 'in:income,expense,transfer'],
+            'type' => ['sometimes', "in:{$types}"],
             'amount_raw' => ['sometimes', 'integer', 'min:1'],
             'currency_id' => ['nullable', 'integer', 'exists:currencies,id'],
             'rate_snapshot' => ['nullable', 'numeric', 'min:0'],

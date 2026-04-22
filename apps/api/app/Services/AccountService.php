@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\Account;
 use App\Models\User;
+use App\Repositories\AccountRepository;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class AccountService
@@ -15,11 +15,7 @@ class AccountService
      */
     public static function listWithHistory(User $user, string $groupBy = 'day', array $filters = []): Collection
     {
-        $accounts = $user->accounts()
-            ->with(['currency'])
-            ->withCount(['transactions', 'incomingTransfers'])
-            ->orderBy('name')
-            ->get();
+        $accounts = AccountRepository::getAllForUser($user);
 
         $historyData = TransactionService::getAccountsHistory($user, $groupBy, $filters);
         $labels = $historyData['labels'];
@@ -52,10 +48,7 @@ class AccountService
      */
     public static function showWithHistory(User $user, int $id, string $groupBy = 'day', array $filters = []): Account
     {
-        $account = $user->accounts()
-            ->with('currency')
-            ->withCount(['transactions', 'incomingTransfers'])
-            ->findOrFail($id);
+        $account = AccountRepository::findForUser($user, $id);
 
         $historyData = TransactionService::getAccountsHistory($user, $groupBy, $filters);
         $labels = $historyData['labels'];
@@ -106,7 +99,7 @@ class AccountService
         $account = $user->accounts()->findOrFail($id);
 
         // Check if account has transactions
-        if ($account->transactions()->exists() || $account->incomingTransfers()->exists()) {
+        if (AccountRepository::hasTransactions($account)) {
             throw ValidationException::withMessages([
                 'account' => ['Akun tidak bisa dihapus karena masih memiliki transaksi.'],
             ]);

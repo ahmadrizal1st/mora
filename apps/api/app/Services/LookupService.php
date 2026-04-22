@@ -2,9 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Currency;
-use App\Models\RecurringType;
-use App\Models\Status;
+use App\Repositories\LookupRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 class LookupService
@@ -14,10 +12,7 @@ class LookupService
      */
     public static function currencies(): Collection
     {
-        return Currency::where('is_active', true)
-            ->orderByDesc('is_default')
-            ->orderBy('code')
-            ->get();
+        return LookupRepository::activeCurrencies();
     }
 
     /**
@@ -25,7 +20,7 @@ class LookupService
      */
     public static function statuses(): Collection
     {
-        return Status::all();
+        return LookupRepository::allStatuses();
     }
 
     /**
@@ -33,6 +28,6 @@ class LookupService
      */
     public static function recurringTypes(): Collection
     {
-        return RecurringType::all();
+        return LookupRepository::allRecurringTypes();
     }
 }

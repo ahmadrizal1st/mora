@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Category;
+use App\Repositories\CategoryRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 class CategoryService
@@ -12,12 +12,6 @@ class CategoryService
      */
     public static function list(?string $type = null): Collection
     {
-        $query = Category::query()->orderBy('name');
-
-        if ($type) {
-            $query->byType($type);
-        }
-
-        return $query->get();
+        return CategoryRepository::list($type);
     }
 }

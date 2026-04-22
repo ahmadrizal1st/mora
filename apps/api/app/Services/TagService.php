@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Tag;
 use App\Models\User;
+use App\Repositories\TagRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 class TagService
@@ -13,9 +14,7 @@ class TagService
      */
     public static function list(User $user): Collection
     {
-        return $user->tags()
-            ->orderBy('name')
-            ->get();
+        return TagRepository::getAllForUser($user);
     }
 
     /**

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Repositories\TransactionRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -16,74 +16,7 @@ class TransactionService
      */
     public static function list(User $user, array $filters = []): LengthAwarePaginator
     {
-        $query = $user->transactions()
-            ->with(['account', 'toAccount', 'category', 'status', 'currency', 'recurringType', 'tags']);
-
-        if (!empty($filters['type'])) {
-            $query->where('type', $filters['type']);
-        }
-
-        if (!empty($filters['account_id'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->where('account_id', $filters['account_id'])
-                    ->orWhere('to_account_id', $filters['account_id']);
-            });
-        }
-
-        if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
-        }
-
-        if (!empty($filters['status_id'])) {
-            $query->where('status_id', $filters['status_id']);
-        }
-
-        if (!empty($filters['date_from'])) {
-            $query->where('tx_date', '>=', $filters['date_from']);
-        }
-        if (!empty($filters['date_to'])) {
-            $query->where('tx_date', '<=', $filters['date_to']);
-        }
-
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where(function ($q) use ($search) {
-                $q->where('merchant', 'like', "%{$search}%")
-                    ->orWhere('notes', 'like', "%{$search}%");
-            });
-        }
-
-        if (!empty($filters['tag_ids'])) {
-            $tagIds = is_array($filters['tag_ids']) ? $filters['tag_ids'] : explode(',', $filters['tag_ids']);
-            foreach ($tagIds as $tagId) {
-                $query->whereHas('tags', function ($q) use ($tagId) {
-                    $q->where('tags.id', $tagId);
-                });
-            }
-        }
-
-        $sortBy = $filters['sort_by'] ?? 'tx_date';
-        $sortDir = $filters['sort_dir'] ?? 'desc';
-
-        if ($sortBy === 'nominal') {
-            $query->orderBy('amount_raw', $sortDir);
-        } elseif ($sortBy === 'category') {
-            $query->select('transactions.*')
-                ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
-                ->orderBy('categories.name', $sortDir);
-        } elseif ($sortBy === 'account') {
-            $query->select('transactions.*')
-                ->leftJoin('accounts', 'transactions.account_id', '=', 'accounts.id')
-                ->orderBy('accounts.name', $sortDir);
-        } else {
-            $allowedColumns = ['tx_date', 'merchant', 'created_at', 'type'];
-            $sortBy = in_array($sortBy, $allowedColumns) ? $sortBy : 'tx_date';
-            $query->orderBy($sortBy, $sortDir);
-        }
-
-        $perPage = min($filters['per_page'] ?? 15, 100);
-
-        return $query->paginate($perPage);
+        return TransactionRepository::list($user, $filters);
     }
 
     /**
@@ -218,7 +151,7 @@ class TransactionService
             'date_to'   => $dateTo   ? $dateTo->toDateTimeString()   : null,
         ]);
 
-        [$income, $expense, $count] = self::calcSummaryTotals($user, $currentFilters);
+        [$income, $expense, $count] = TransactionRepository::getSummaryTotals($user, $currentFilters);
 
         $prevIncome  = 0;
         $prevExpense = 0;
@@ -235,7 +168,7 @@ class TransactionService
                 'date_to'   => $prevTo->toDateTimeString(),
             ]);
 
-            [$prevIncome, $prevExpense, $prevCount] = self::calcSummaryTotals($user, $prevFilters);
+            [$prevIncome, $prevExpense, $prevCount] = TransactionRepository::getSummaryTotals($user, $prevFilters);
         }
 
         $calcTrend = function ($current, $previous) {
@@ -257,44 +190,9 @@ class TransactionService
         ];
     }
 
-    private static function calcSummaryTotals(User $user, array $filters): array
-    {
-        $accountId = $filters['account_id'] ?? null;
-        $dateFrom  = $filters['date_from']  ?? null;
-        $dateTo    = $filters['date_to']    ?? null;
-
-        $base = $user->transactions()
-            ->whereIn('type', [Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE]);
-
-        if ($accountId) $base->where('account_id', $accountId);
-        if ($dateFrom)  $base->where('tx_date', '>=', $dateFrom);
-        if ($dateTo)    $base->where('tx_date', '<=', $dateTo);
-
-        $income  = (int) (clone $base)->where('type', Transaction::TYPE_INCOME)->sum('amount_raw');
-        $expense = (int) (clone $base)->where('type', Transaction::TYPE_EXPENSE)->sum('amount_raw');
-        $count   = (clone $base)->count();
-
-        if ($accountId) {
-            $transferOutQ = $user->transactions()
-                ->where('type', Transaction::TYPE_TRANSFER)
-                ->where('account_id', $accountId);
-            if ($dateFrom) $transferOutQ->where('tx_date', '>=', $dateFrom);
-            if ($dateTo)   $transferOutQ->where('tx_date', '<=', $dateTo);
-            $expense += (int) $transferOutQ->sum('amount_raw');
-            $count   += $transferOutQ->count();
-
-            $transferInQ = $user->transactions()
-                ->where('type', Transaction::TYPE_TRANSFER)
-                ->where('to_account_id', $accountId);
-            if ($dateFrom) $transferInQ->where('tx_date', '>=', $dateFrom);
-            if ($dateTo)   $transferInQ->where('tx_date', '<=', $dateTo);
-            $income += (int) $transferInQ->sum('amount_raw');
-            $count  += $transferInQ->count();
-        }
-
-        return [$income, $expense, $count];
-    }
-
+    /**
+     * Get historical aggregated data for charts.
+     */
     public static function history(User $user, array $filters = []): array
     {
         $groupBy = $filters['group_by'] ?? 'day';
@@ -313,17 +211,10 @@ class TransactionService
         ];
 
         if (empty($baseFilters['date_from']) || empty($baseFilters['date_to'])) {
-            $rangeQuery = $user->transactions();
-            if (!empty($baseFilters['account_id'])) {
-                $rangeQuery->where(function ($q) use ($baseFilters) {
-                    $q->where('account_id', $baseFilters['account_id'])
-                        ->orWhere('to_account_id', $baseFilters['account_id']);
-                });
-            }
-            $range = $rangeQuery->selectRaw('MIN(tx_date) as start_date')->first();
-
-            $currentFrom = $range && $range->start_date
-                ? \Carbon\Carbon::parse($range->start_date)
+            $earliest = TransactionRepository::getEarliestTransactionDate($user, $baseFilters['account_id']);
+            
+            $currentFrom = $earliest
+                ? \Carbon\Carbon::parse($earliest)
                 : \Carbon\Carbon::now()->subDays(29);
             $currentTo = \Carbon\Carbon::now();
         } else {
@@ -361,13 +252,13 @@ class TransactionService
             'date_from' => $currentFrom->toDateTimeString(),
             'date_to'   => $currentTo->toDateTimeString(),
         ]);
-        $rawResults = self::fetchHistoryRows($user, $pgFormat, $currentFilters)->keyBy('label');
+        $rawResults = TransactionRepository::fetchHistoryRows($user, $pgFormat, $currentFilters)->keyBy('label');
 
         $prevFilters = array_merge($baseFilters, [
             'date_from' => $prevFrom->toDateTimeString(),
             'date_to'   => $prevTo->toDateTimeString(),
         ]);
-        $prevResults = self::fetchHistoryRows($user, $pgFormat, $prevFilters)->keyBy('label');
+        $prevResults = TransactionRepository::fetchHistoryRows($user, $pgFormat, $prevFilters)->keyBy('label');
 
         $income = $expense = $count = $labels = $p_income = $p_expense = $p_count = [];
         $curr = $currentFrom->copy();
@@ -412,33 +303,9 @@ class TransactionService
         ];
     }
 
-    private static function fetchHistoryRows(User $user, string $pgFormat, array $filters): \Illuminate\Support\Collection
-    {
-        $accountId = $filters['account_id'] ?? null;
-        $dateFrom  = $filters['date_from']  ?? null;
-        $dateTo    = $filters['date_to']    ?? null;
-
-        $dateWhere = '';
-        if ($dateFrom) $dateWhere .= ' AND tx_date >= ' . DB::getPdo()->quote($dateFrom);
-        if ($dateTo)   $dateWhere .= ' AND tx_date <= ' . DB::getPdo()->quote($dateTo);
-
-        if ($accountId) {
-            $pgFormat_q = DB::getPdo()->quote($pgFormat);
-            $uid = (int) $user->id;
-            $aid = (int) $accountId;
-
-            $outSql = "SELECT to_char(tx_date, {$pgFormat_q}) AS label, SUM(CASE WHEN type='income' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type IN ('expense','transfer') THEN amount_raw ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id={$uid} AND account_id={$aid} AND type IN ('income','expense','transfer') {$dateWhere} GROUP BY label";
-            $inSql  = "SELECT to_char(tx_date, {$pgFormat_q}) AS label, SUM(amount_raw) AS income, 0 AS expense, COUNT(*) AS count FROM transactions WHERE user_id={$uid} AND to_account_id={$aid} AND type='transfer' {$dateWhere} GROUP BY label";
-            $sql = "SELECT label, SUM(income) AS income, SUM(expense) AS expense, SUM(count) AS count FROM (({$outSql}) UNION ALL ({$inSql})) AS combined GROUP BY label ORDER BY label ASC";
-            return collect(DB::select($sql));
-        }
-
-        $pgFormat_q = DB::getPdo()->quote($pgFormat);
-        $uid = (int) $user->id;
-        $sql = "SELECT to_char(tx_date, {$pgFormat_q}) AS label, SUM(CASE WHEN type='income' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type='expense' THEN amount_raw ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id={$uid} AND type IN ('income','expense') {$dateWhere} GROUP BY label ORDER BY label ASC";
-        return collect(DB::select($sql));
-    }
-
+    /**
+     * Get aggregated account history data for multiple accounts.
+     */
     public static function getAccountsHistory(User $user, string $groupBy = 'day', array $filters = []): array
     {
         $pgFormat = match ($groupBy) {
@@ -449,9 +316,9 @@ class TransactionService
         };
 
         if (empty($filters['date_from']) || empty($filters['date_to'])) {
-            $range = $user->transactions()->selectRaw('MIN(tx_date) as start_date')->first();
-            $startDate = $range?->start_date 
-                ? \Carbon\Carbon::parse($range->start_date) 
+            $earliest = TransactionRepository::getEarliestTransactionDate($user);
+            $startDate = $earliest 
+                ? \Carbon\Carbon::parse($earliest) 
                 : \Carbon\Carbon::now()->subDays(29);
             $endDate = \Carbon\Carbon::now();
         } else {
@@ -469,14 +336,8 @@ class TransactionService
         $startStr = $startDate->toDateTimeString();
         $endStr = $endDate->toDateTimeString();
 
-        $txOut = DB::select("SELECT account_id, to_char(tx_date, ?) AS label, SUM(CASE WHEN type='income' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type IN ('expense','transfer') THEN amount_raw ELSE 0 END) AS expense FROM transactions WHERE user_id=? AND tx_date>=? AND tx_date<=? AND type IN ('income','expense','transfer') GROUP BY account_id, label ORDER BY account_id, label", [$pgFormat, $user->id, $startStr, $endStr]);
-        $txIn = DB::select("SELECT to_account_id AS account_id, to_char(tx_date, ?) AS label, SUM(amount_raw) AS income, 0 AS expense FROM transactions WHERE user_id=? AND tx_date>=? AND tx_date<=? AND type='transfer' AND to_account_id IS NOT NULL GROUP BY to_account_id, label ORDER BY to_account_id, label", [$pgFormat, $user->id, $startStr, $endStr]);
-
-        $initialBalances = [];
-        $balanceOut = DB::select("SELECT account_id, SUM(CASE WHEN type='income' THEN amount_raw ELSE 0 END) AS inc, SUM(CASE WHEN type IN ('expense','transfer') THEN amount_raw ELSE 0 END) AS exp FROM transactions WHERE user_id=? AND tx_date<? AND type IN ('income','expense','transfer') GROUP BY account_id", [$user->id, $startStr]);
-        foreach ($balanceOut as $row) $initialBalances[$row->account_id] = (int)$row->inc - (int)$row->exp;
-        $balanceIn = DB::select("SELECT to_account_id AS account_id, SUM(amount_raw) AS inc FROM transactions WHERE user_id=? AND tx_date<? AND type='transfer' AND to_account_id IS NOT NULL GROUP BY to_account_id", [$user->id, $startStr]);
-        foreach ($balanceIn as $row) $initialBalances[$row->account_id] = ($initialBalances[$row->account_id] ?? 0) + (int)$row->inc;
+        [$txOut, $txIn] = TransactionRepository::getAccountsHistoryData($user, $pgFormat, $startStr, $endStr);
+        $initialBalances = TransactionRepository::getInitialBalances($user, $startStr);
 
         $labels = []; $curr = $startDate->copy();
         while ($curr->lte($endDate)) {
@@ -498,6 +359,9 @@ class TransactionService
         return ['labels' => $labels, 'income' => $income, 'expense' => $expense, 'initial_balances' => $initialBalances];
     }
 
+    /**
+     * Build running balance history from net changes and initial balance.
+     */
     public static function buildAccountHistory(int $initialBalance, array $netChanges, array $labels): array
     {
         $incomeByLabel = $netChanges['income'] ?? []; $expenseByLabel = $netChanges['expense'] ?? [];
