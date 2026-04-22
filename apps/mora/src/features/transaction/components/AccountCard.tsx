@@ -83,21 +83,26 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
               fill: {
                 opacity: 0,
               },
+              categories: account.history?.labels || [],
               hideTooltip: false,
               hidePoints: false,
               showMarkers: false,
               xaxis: {
-                tooltip: { enabled: false }
+                tooltip: { enabled: false },
+                labels: { show: false },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
               },
               yaxis: {
-                tooltip: { enabled: false }
+                tooltip: { enabled: false },
+                labels: { show: false }
               },
               legend: false,
               grid: { 
                 show: false,
                 padding: { top: 0, right: 0, bottom: -10, left: 0 } 
               },
-              extend: JSON.stringify({
+              extend: {
                 markers: {
                   size: 4,
                   strokeWidth: 2,
@@ -109,16 +114,27 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
                     enabled: false
                   },
                   container: 'body',
-                  x: { show: true, format: 'dd MMM yyyy' },
+                  x: { 
+                    show: true,
+                    formatter: (_val: any, { dataPointIndex }: any) => {
+                      const label = account.history?.labels?.[dataPointIndex];
+                      if (!label) return _val;
+                      const date = new Date(label);
+                      if (isNaN(date.getTime())) return label;
+                      return date.toLocaleDateString('id-ID', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric',
+                      });
+                    }
+                  },
                   y: {
                     title: { formatter: () => 'Saldo: ' },
-                    formatter: (val: number) => {
-                      return new Intl.NumberFormat('id-ID').format(val);
-                    }
+                    formatter: (val: number) => formatCurrency(val)
                   },
                   marker: { show: true }
                 }
-              })
+              }
             }}
             height={3.75}
           />

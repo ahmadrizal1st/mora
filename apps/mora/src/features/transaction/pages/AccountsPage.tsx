@@ -279,16 +279,33 @@ export const AccountsPage: React.FC = () => {
                               },
                             },
                           },
-                          extend: JSON.stringify({
+                          extend: {
                             tooltip: {
                               container: 'body',
                               shared: true,
                               intersect: false,
+                              theme: 'dark',
+                              x: {
+                                show: true,
+                                formatter: (_val: any, { dataPointIndex }: any) => {
+                                  const label = chartLabels[dataPointIndex];
+                                  if (!label) return _val;
+                                  // Handle week format o-WW
+                                  if (String(label).includes('-W')) return label; 
+                                  const date = new Date(label);
+                                  if (isNaN(date.getTime())) return label;
+                                  return date.toLocaleDateString('id-ID', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric',
+                                  });
+                                }
+                              },
                               y: {
                                 formatter: (val: number) => formatCurrency(val),
                               },
                             },
-                          }),
+                          },
                         }}
                         height={24}
                       />

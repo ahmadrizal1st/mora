@@ -4,7 +4,7 @@ import { Avatar } from '@/shared/components/ui/Avatar'
 import { Trending } from '@/shared/components/ui/Trending'
 import { SwitchIcon } from '@/shared/components/ui/SwitchIcon'
 import { NavSegmented } from '@/shared/components/ui/NavSegmented'
-import { Chart } from '@/shared/components/ui/Chart'
+import { Chart, type ChartData } from '@/shared/components/ui/Chart'
 import { CardDropdown } from '@/shared/components/ui/CardDropdown'
 
 // Data
@@ -61,7 +61,7 @@ export default function DashboardCrypto() {
   const ethBtc = (ethPriceNum / btcPriceNum).toFixed(8)
   const xmrBtc = (xmrPriceNum / btcPriceNum).toFixed(8)
 
-  const candlestickData = (chartsData as Record<string, unknown>)['dashboard-crypto-candlestick']
+  const candlestickData = (chartsData as Record<string, any>)['dashboard-crypto-candlestick'] as ChartData
 
   return (
     <BaseLayout pageTitle="Crypto Dashboard" pagePretitle="Dashboards">

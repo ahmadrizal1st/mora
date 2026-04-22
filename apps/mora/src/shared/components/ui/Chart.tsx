@@ -28,7 +28,7 @@ export interface ChartSerie {
 export interface ChartData {
   type?: 'bar' | 'area' | 'line' | 'pie' | 'donut' | 'radialBar' | 'candlestick' | 'scatter'
   height?: number
-  extend?: string
+  extend?: any
   sparkline?: boolean
   toolbar?: boolean
   animations?: boolean
@@ -466,11 +466,14 @@ export function Chart({
       },
     }
 
-    // Apply extend options if provided (parsed from JSON string)
+    // Apply extend options if provided (can be object or JSON string)
     let finalOptions = options;
     if (chartData.extend) {
       try {
-        const extendOptions = JSON.parse(chartData.extend);
+        const extendOptions = typeof chartData.extend === 'string' 
+          ? JSON.parse(chartData.extend)
+          : chartData.extend;
+          
         finalOptions = {
           ...options,
           ...extendOptions,
