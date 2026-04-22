@@ -46,27 +46,11 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
         <div className="mt-2 mb-2">
           <div className="text-secondary small fw-medium">Saldo Saat Ini</div>
           <div className="h1 fw-bold mb-0" style={{ fontSize: '1.5rem', color: '#1d273b' }}>
-            {formatCurrency(account.balance_raw, account.currency?.code)}
+            {formatCurrency(account.balance_raw ?? 0, account.currency?.code)}
           </div>
         </div>
 
-        {account.is_credit && (
-          <div className="mt-3">
-            <div className="d-flex justify-content-between small mb-1">
-              <span className="text-secondary">Limit: {formatCurrency(account.credit_limit, account.currency?.code)}</span>
-              <span className="text-muted fw-bold">{(account.balance_raw / account.credit_limit * 100).toFixed(0)}%</span>
-            </div>
-            <div className="progress progress-xs">
-              <div 
-                className="progress-bar" 
-                style={{ 
-                  width: `${Math.min(100, (account.balance_raw / account.credit_limit * 100))}%`,
-                  backgroundColor: account.color 
-                }}
-              ></div>
-            </div>
-          </div>
-        )}
+
 
         <div style={{ height: '60px', margin: '0 -1.25rem -1.25rem -1.25rem' }} className="mt-auto rounded-bottom">
           <Chart

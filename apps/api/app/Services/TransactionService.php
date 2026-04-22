@@ -133,8 +133,6 @@ class TransactionService
                 $transaction->tags()->sync($validTagIds);
             }
 
-            self::applyBalance($transaction);
-
             return $transaction->load([
                 'account',
                 'toAccount',
@@ -165,8 +163,6 @@ class TransactionService
         return DB::transaction(function () use ($user, $id, $data) {
             $transaction = $user->transactions()->findOrFail($id);
 
-            self::revertBalance($transaction);
-
             if (!empty($data['account_id'])) {
                 $user->accounts()->findOrFail($data['account_id']);
             }
@@ -180,8 +176,6 @@ class TransactionService
                 $validTagIds = $user->tags()->whereIn('id', $data['tag_ids'] ?? [])->pluck('id');
                 $transaction->tags()->sync($validTagIds);
             }
-
-            self::applyBalance($transaction->fresh());
 
             return $transaction->fresh()->load([
                 'account',
@@ -202,8 +196,6 @@ class TransactionService
     {
         DB::transaction(function () use ($user, $id) {
             $transaction = $user->transactions()->findOrFail($id);
-
-            self::revertBalance($transaction);
 
             $transaction->tags()->detach();
             $transaction->delete();
@@ -516,31 +508,5 @@ class TransactionService
             $currentRunningTarget += ($inc - $exp); $balance[] = $currentRunningTarget;
         }
         return ['balance' => $balance, 'income' => $income, 'expense' => $expense];
-    }
-
-    private static function applyBalance(Transaction $transaction): void
-    {
-        $amount = $transaction->amount_raw;
-        match ($transaction->type) {
-            Transaction::TYPE_INCOME => Account::where('id', $transaction->account_id)->increment('balance_raw', $amount),
-            Transaction::TYPE_EXPENSE => Account::where('id', $transaction->account_id)->decrement('balance_raw', $amount),
-            Transaction::TYPE_TRANSFER => (function () use ($transaction, $amount) {
-                Account::where('id', $transaction->account_id)->decrement('balance_raw', $amount);
-                if ($transaction->to_account_id) Account::where('id', $transaction->to_account_id)->increment('balance_raw', $amount);
-            })(),
-        };
-    }
-
-    private static function revertBalance(Transaction $transaction): void
-    {
-        $amount = $transaction->amount_raw;
-        match ($transaction->type) {
-            Transaction::TYPE_INCOME => Account::where('id', $transaction->account_id)->decrement('balance_raw', $amount),
-            Transaction::TYPE_EXPENSE => Account::where('id', $transaction->account_id)->increment('balance_raw', $amount),
-            Transaction::TYPE_TRANSFER => (function () use ($transaction, $amount) {
-                Account::where('id', $transaction->account_id)->increment('balance_raw', $amount);
-                if ($transaction->to_account_id) Account::where('id', $transaction->to_account_id)->decrement('balance_raw', $amount);
-            })(),
-        };
     }
 }

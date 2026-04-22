@@ -72,6 +72,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Accounts
     Route::apiResource('accounts', AccountController::class);
 
+    // Credits
+    Route::get('credits', [\App\Http\Controllers\CreditController::class, 'index']);
+    Route::post('accounts/{account}/credit', [\App\Http\Controllers\CreditController::class, 'store']);
+    Route::delete('accounts/{account}/credit', [\App\Http\Controllers\CreditController::class, 'destroy']);
+
     // Categories
     Route::get('categories', [CategoryController::class, 'index']);
 

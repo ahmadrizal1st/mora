@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['user_id', 'name', 'balance_raw', 'currency_id', 'color', 'type', 'is_credit', 'credit_limit'])]
+#[Fillable(['user_id', 'name', 'currency_id', 'color', 'type'])]
 class Account extends Model
 {
     public $timestamps = false;
@@ -23,9 +23,6 @@ class Account extends Model
     protected function casts(): array
     {
         return [
-            'balance_raw' => 'integer',
-            'is_credit' => 'boolean',
-            'credit_limit' => 'integer',
             'created_at' => 'datetime',
         ];
     }
@@ -48,5 +45,10 @@ class Account extends Model
     public function incomingTransfers(): HasMany
     {
         return $this->hasMany(Transaction::class, 'to_account_id');
+    }
+
+    public function credit(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Credit::class);
     }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Icon, Button, CardTitle, Modal, ModalHeader, Spinner, Chart, DropdownGrouping } from '@/shared/components/ui';
+import { Icon, Button, Modal, ModalHeader, Spinner, Chart, DropdownGrouping } from '@/shared/components/ui';
 import { useAccounts, useCreateAccount, useUpdateAccount, useDeleteAccount } from '../hooks/useAccounts';
 import { AccountForm, type AccountFormValues } from '../components/AccountForm';
 import { type Account } from '../types/transaction.types';
@@ -8,7 +8,7 @@ import { AccountCard } from '../components/AccountCard';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
 
 export const AccountsPage: React.FC = () => {
-  const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month'>('day');
+  const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day');
   const { data: response, isLoading } = useAccounts({ group_by: groupBy });
   const accounts = response?.data || [];
 
@@ -62,7 +62,7 @@ export const AccountsPage: React.FC = () => {
     () =>
       accounts
         .filter((acc) => effectiveSelected.has(acc.id))
-        .reduce((sum, acc) => sum + acc.balance_raw, 0),
+        .reduce((sum, acc) => sum + (acc.balance_raw ?? 0), 0),
     [accounts, effectiveSelected]
   );
 
@@ -123,23 +123,24 @@ export const AccountsPage: React.FC = () => {
   };
 
   return (
-    <BaseLayout pageTitle="Kelola Akun & Saldo">
+    <BaseLayout 
+      pageTitle="Kelola Akun & Saldo"
+      pageActions={
+        <Button
+          color="primary"
+          onClick={() => {
+            setEditingAccount(undefined);
+            setIsModalOpen(true);
+          }}
+          className="px-4 fw-bold"
+        >
+          <Icon icon="plus" size={18} className="me-1" />
+          Tambah Akun
+        </Button>
+      }
+    >
       <div className="container-xl">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <CardTitle>Daftar Akun Keuangan</CardTitle>
-          <div className="d-flex gap-2">
-            <Button
-              color="primary"
-              onClick={() => {
-                setEditingAccount(undefined);
-                setIsModalOpen(true);
-              }}
-            >
-              <Icon icon="plus" size={18} className="me-1" />
-              Tambah Akun
-            </Button>
-          </div>
-        </div>
+
 
         {isLoading ? (
           <div className="text-center py-5">
@@ -254,6 +255,7 @@ export const AccountsPage: React.FC = () => {
                               formatter: (val: string) => {
                                 if (!val) return '';
                                 if (val.includes('-W')) return val.split('-')[1];
+                                if (/^\d{4}$/.test(val)) return val;
                                 if (/^\d{4}-\d{2}$/.test(val)) {
                                   const [y, m] = val.split('-');
                                   const date = new Date(Number(y), Number(m) - 1, 1);
@@ -290,6 +292,7 @@ export const AccountsPage: React.FC = () => {
                                 formatter: (_val: any, { dataPointIndex }: any) => {
                                   const label = chartLabels[dataPointIndex];
                                   if (!label) return _val;
+                                  if (/^\d{4}$/.test(String(label))) return label;
                                   // Handle week format o-WW
                                   if (String(label).includes('-W')) return label; 
                                   const date = new Date(label);

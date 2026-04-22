@@ -13,9 +13,7 @@
     "columns": 2,
     "children": {
       "transactions": { "url": "transactions", "title": "Riwayat Transaksi" },
-      "input": { "url": "tracker/input", "title": "Input Manual" },
       "accounts": { "url": "accounts", "title": "Kelola Akun" },
-      "receipts": { "url": "tracker/photo", "title": "AI Scan Receipt" },
       "budget": { "url": "budget", "title": "Budgeting Control" },
       "subscriptions": { "url": "subscription", "title": "Subscription Hub" },
       "split": { "url": "split", "title": "Split Bill" }
@@ -40,7 +38,7 @@
     "icon": "credit-card",
     "columns": 2,
     "children": {
-      "summary": { "url": "credit", "title": "Credit Overview" },
+      "summary": { "url": "credits", "title": "Credit Overview" },
       "personal_loan": { "url": "credit/personal-loan", "title": "Personal Loans" },
       "mortgage": { "url": "credit/mortgage", "title": "Home Mortgage" },
       "cards": { "url": "credit/cards", "title": "Credit Cards" },

@@ -39,19 +39,23 @@ class AccountController extends Controller
         $labels = $historyData['labels'];
         $income = $historyData['income'];
         $expense = $historyData['expense'];
+        $initialBalances = $historyData['initial_balances'];
 
-        $accounts->each(function ($account) use ($income, $expense, $labels) {
+        $accounts->each(function ($account) use ($income, $expense, $labels, $initialBalances) {
             $accountData = [
                 'income' => $income[$account->id] ?? [],
                 'expense' => $expense[$account->id] ?? [],
             ];
             $history = TransactionService::buildAccountHistory(
-                $account->balance_raw,
+                $initialBalances[$account->id] ?? 0,
                 $accountData,
                 $labels
             );
             $history['labels'] = $labels;
             $account->history = $history;
+            
+            // Current balance is the last point in history if we go up to now()
+            $account->balance_raw = !empty($history['balance']) ? end($history['balance']) : 0;
         });
 
         return response()->json([
@@ -104,6 +108,7 @@ class AccountController extends Controller
         $labels = $historyData['labels'];
         $income = $historyData['income'];
         $expense = $historyData['expense'];
+        $initialBalances = $historyData['initial_balances'];
 
         $accountData = [
             'income' => $income[$account->id] ?? [],
@@ -111,12 +116,13 @@ class AccountController extends Controller
         ];
 
         $history = TransactionService::buildAccountHistory(
-            $account->balance_raw,
+            $initialBalances[$account->id] ?? 0,
             $accountData,
             $labels
         );
         $history['labels'] = $labels;
         $account->history = $history;
+        $account->balance_raw = !empty($history['balance']) ? end($history['balance']) : 0;
 
         return response()->json([
             'data' => $account,

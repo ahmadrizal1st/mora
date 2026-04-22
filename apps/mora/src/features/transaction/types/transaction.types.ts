@@ -14,13 +14,13 @@ export interface Account {
   id: number;
   user_id: number;
   name: string;
-  balance_raw: number;
+  balance_raw?: number;
   currency_id: number;
   currency?: Currency;
   color: string;
   type: 'cash' | 'bank' | 'e-wallet' | 'investment';
-  is_credit: boolean;
-  credit_limit: number;
+  is_credit?: boolean;
+  credit_limit?: number;
   transactions_count?: number;
   incoming_transfers_count?: number;
   history?: {
@@ -31,10 +31,8 @@ export interface Account {
 }
 
 export interface AccountFilters {
-  group_by?: 'day' | 'week' | 'month';
+  group_by?: 'day' | 'week' | 'month' | 'year';
 }
-
-import type { ChartSerie } from '../../../shared/components/ui/Chart';
 
 export interface AccountResponse {
   data: Account[];
@@ -132,7 +130,7 @@ export interface TransactionFilters {
   page?: number;
   per_page?: number;
   tag_ids?: number[];
-  group_by?: 'day' | 'week' | 'month';
+  group_by?: 'day' | 'week' | 'month' | 'year';
 }
 
 export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'account' | 'to_account' | 'category' | 'status' | 'currency' | 'recurring_type' | 'tags' | 'rate_snapshot' | 'amount_in_default' | 'currency_id'> & {
@@ -142,7 +140,7 @@ export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created
 
 export type UpdateTransactionDTO = Partial<CreateTransactionDTO>;
 
-export type CreateAccountDTO = Omit<Account, 'id' | 'user_id' | 'created_at' | 'currency'>;
+export type CreateAccountDTO = Omit<Account, 'id' | 'user_id' | 'created_at' | 'currency' | 'balance_raw' | 'is_credit' | 'credit_limit' | 'transactions_count' | 'incoming_transfers_count' | 'history'>;
 export type UpdateAccountDTO = Partial<CreateAccountDTO>;
 
 export type CreateTagDTO = Omit<Tag, 'id' | 'user_id'>;

@@ -9,10 +9,7 @@ import { Button, Select } from '@/shared/components/ui';
 const accountSchema = z.object({
   name: z.string().min(1, 'Nama akun wajib diisi'),
   type: z.enum(['cash', 'bank', 'e-wallet', 'investment']),
-  balance_raw: z.number(),
   currency_id: z.number({ message: 'Pilih mata uang' }),
-  is_credit: z.boolean(),
-  credit_limit: z.number(),
   color: z.string(),
 });
 
@@ -42,10 +39,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     defaultValues: React.useMemo(() => ({
       name: initialData?.name || '',
       type: initialData?.type || 'bank',
-      balance_raw: initialData?.balance_raw || 0,
       currency_id: initialData?.currency_id as number,
-      is_credit: initialData?.is_credit || false,
-      credit_limit: initialData?.credit_limit || 0,
       color: initialData?.color || '#206bc4',
     }), [initialData]),
   });
@@ -55,31 +49,20 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       reset({
         name: initialData.name || '',
         type: initialData.type || 'bank',
-        balance_raw: initialData.balance_raw || 0,
         currency_id: initialData.currency_id,
-        is_credit: initialData.is_credit || false,
-        credit_limit: initialData.credit_limit || 0,
         color: initialData.color || '#206bc4',
       });
     } else {
       reset({
         name: '',
         type: 'bank',
-        balance_raw: 0,
         currency_id: undefined as any,
-        is_credit: false,
-        credit_limit: 0,
         color: '#206bc4',
       });
     }
   }, [initialData, reset]);
 
   const { data: currencies = [] } = useCurrencies();
-  const isCredit = useWatch({
-    control,
-    name: 'is_credit',
-    defaultValue: initialData?.is_credit || false,
-  });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="account-form">
@@ -137,41 +120,6 @@ export const AccountForm: React.FC<AccountFormProps> = ({
           />
         </div>
       </div>
-
-      <div className="mb-3">
-        <label className="form-label">Saldo Saat Ini / Awal</label>
-        <input
-          type="number"
-          {...register('balance_raw', { valueAsNumber: true })}
-          className={`form-control ${errors.balance_raw ? 'is-invalid' : ''}`}
-          placeholder="0"
-        />
-        {errors.balance_raw && <div className="invalid-feedback">{errors.balance_raw.message}</div>}
-      </div>
-
-      <div className="mb-3">
-        <label className="form-check form-switch">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            {...register('is_credit')}
-          />
-          <span className="form-check-label">Ini adalah Kartu Kredit / Pinjaman</span>
-        </label>
-      </div>
-
-      {isCredit && (
-        <div className="mb-3">
-          <label className="form-label">Limit Kredit</label>
-          <input
-            type="number"
-            {...register('credit_limit', { valueAsNumber: true })}
-            className={`form-control ${errors.credit_limit ? 'is-invalid' : ''}`}
-            placeholder="0"
-          />
-          {errors.credit_limit && <div className="invalid-feedback">{errors.credit_limit.message}</div>}
-        </div>
-      )}
 
       <div className="mb-3">
         <label className="form-label">Warna Label</label>

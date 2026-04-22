@@ -24,6 +24,7 @@ import { Route as Error429RouteImport } from './routes/error-429'
 import { Route as Error404RouteImport } from './routes/error-404'
 import { Route as Error403RouteImport } from './routes/error-403'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CreditsRouteImport } from './routes/credits'
 import { Route as AuthLockRouteImport } from './routes/auth-lock'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as R2StepVerificationCodeRouteImport } from './routes/2-step-verification-code'
@@ -109,6 +110,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreditsRoute = CreditsRouteImport.update({
+  id: '/credits',
+  path: '/credits',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLockRoute = AuthLockRouteImport.update({
   id: '/auth-lock',
   path: '/auth-lock',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRoute
   '/auth-lock': typeof AuthLockRoute
+  '/credits': typeof CreditsRoute
   '/dashboard': typeof DashboardRoute
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRoute
   '/auth-lock': typeof AuthLockRoute
+  '/credits': typeof CreditsRoute
   '/dashboard': typeof DashboardRoute
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRoute
   '/auth-lock': typeof AuthLockRoute
+  '/credits': typeof CreditsRoute
   '/dashboard': typeof DashboardRoute
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/2-step-verification-code'
     | '/accounts'
     | '/auth-lock'
+    | '/credits'
     | '/dashboard'
     | '/error-403'
     | '/error-404'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/2-step-verification-code'
     | '/accounts'
     | '/auth-lock'
+    | '/credits'
     | '/dashboard'
     | '/error-403'
     | '/error-404'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/2-step-verification-code'
     | '/accounts'
     | '/auth-lock'
+    | '/credits'
     | '/dashboard'
     | '/error-403'
     | '/error-404'
@@ -321,6 +333,7 @@ export interface RootRouteChildren {
   R2StepVerificationCodeRoute: typeof R2StepVerificationCodeRoute
   AccountsRoute: typeof AccountsRoute
   AuthLockRoute: typeof AuthLockRoute
+  CreditsRoute: typeof CreditsRoute
   DashboardRoute: typeof DashboardRoute
   Error403Route: typeof Error403Route
   Error404Route: typeof Error404Route
@@ -449,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/credits': {
+      id: '/credits'
+      path: '/credits'
+      fullPath: '/credits'
+      preLoaderRoute: typeof CreditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth-lock': {
       id: '/auth-lock'
       path: '/auth-lock'
@@ -521,6 +541,7 @@ const rootRouteChildren: RootRouteChildren = {
   R2StepVerificationCodeRoute: R2StepVerificationCodeRoute,
   AccountsRoute: AccountsRoute,
   AuthLockRoute: AuthLockRoute,
+  CreditsRoute: CreditsRoute,
   DashboardRoute: DashboardRoute,
   Error403Route: Error403Route,
   Error404Route: Error404Route,
