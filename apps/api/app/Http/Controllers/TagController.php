@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\TagData;
 use App\Http\Requests\StoreTagRequest;
 use App\Services\TagService;
+use Spatie\LaravelData\DataCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,7 +21,7 @@ class TagController extends Controller
         $tags = TagService::list($request->user());
 
         return response()->json([
-            'data' => $tags,
+            'data' => TagData::collect($tags, DataCollection::class),
         ]);
     }
 
@@ -34,7 +36,7 @@ class TagController extends Controller
 
         return response()->json([
             'message' => 'Tag berhasil dibuat.',
-            'data' => $tag,
+            'data' => TagData::from($tag),
         ], 201);
     }
 
@@ -49,7 +51,7 @@ class TagController extends Controller
 
         return response()->json([
             'message' => 'Tag berhasil diperbarui.',
-            'data' => $tag,
+            'data' => TagData::from($tag),
         ]);
     }
 

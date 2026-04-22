@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\CurrencyData;
+use App\Data\StatusData;
+use App\Data\RecurringTypeData;
 use App\Services\LookupService;
+use Spatie\LaravelData\DataCollection;
 use Illuminate\Http\JsonResponse;
 
 class LookupController extends Controller
@@ -15,7 +19,7 @@ class LookupController extends Controller
     public function currencies(): JsonResponse
     {
         return response()->json([
-            'data' => LookupService::currencies(),
+            'data' => CurrencyData::collect(LookupService::currencies(), DataCollection::class),
         ]);
     }
 
@@ -27,7 +31,7 @@ class LookupController extends Controller
     public function statuses(): JsonResponse
     {
         return response()->json([
-            'data' => LookupService::statuses(),
+            'data' => StatusData::collect(LookupService::statuses(), DataCollection::class),
         ]);
     }
 
@@ -39,7 +43,7 @@ class LookupController extends Controller
     public function recurringTypes(): JsonResponse
     {
         return response()->json([
-            'data' => LookupService::recurringTypes(),
+            'data' => RecurringTypeData::collect(LookupService::recurringTypes(), DataCollection::class),
         ]);
     }
 }

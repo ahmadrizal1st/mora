@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\CategoryData;
 use App\Services\CategoryService;
+use Spatie\LaravelData\DataCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,7 +20,7 @@ class CategoryController extends Controller
         $categories = CategoryService::list($request->query('tx_type'));
 
         return response()->json([
-            'data' => $categories,
+            'data' => CategoryData::collect($categories, DataCollection::class),
         ]);
     }
 }

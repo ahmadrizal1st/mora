@@ -11,78 +11,48 @@ use Illuminate\Support\Facades\DB;
 class TransactionRepository
 {
     /**
+     * Get a base query builder for transactions for a specific user.
+     */
+    public static function queryForUser(User $user): \Spatie\QueryBuilder\QueryBuilder
+    {
+        return \Spatie\QueryBuilder\QueryBuilder::for(Transaction::class)
+            ->where('transactions.user_id', $user->id)
+            ->allowedFilters(
+                \Spatie\QueryBuilder\AllowedFilter::exact('type'),
+                \Spatie\QueryBuilder\AllowedFilter::exact('account_id'),
+                \Spatie\QueryBuilder\AllowedFilter::exact('category_id'),
+                \Spatie\QueryBuilder\AllowedFilter::exact('status_id'),
+                \Spatie\QueryBuilder\AllowedFilter::callback('date_from', function ($query, $value) {
+                    $query->where('tx_date', '>=', $value);
+                }),
+                \Spatie\QueryBuilder\AllowedFilter::callback('date_to', function ($query, $value) {
+                    $query->where('tx_date', '<=', $value);
+                }),
+                \Spatie\QueryBuilder\AllowedFilter::callback('search', function ($query, $value) {
+                    $query->where(function ($q) use ($value) {
+                        $q->where('merchant', 'like', "%{$value}%")
+                            ->orWhere('notes', 'like', "%{$value}%");
+                    });
+                }),
+                \Spatie\QueryBuilder\AllowedFilter::callback('tag_ids', function ($query, $value) {
+                    $tagIds = is_array($value) ? $value : explode(',', $value);
+                    $query->whereHas('tags', function ($q) use ($tagIds) {
+                        $q->whereIn('tags.id', $tagIds);
+                    });
+                })
+            )
+            ->allowedSorts('tx_date', 'amount_raw', 'merchant', 'created_at', 'type')
+            ->defaultSort('-tx_date')
+            ->with(['account', 'toAccount', 'category', 'status', 'currency', 'recurringType', 'tags']);
+    }
+
+    /**
      * List transactions for a user with filters and pagination.
      */
     public static function list(User $user, array $filters = []): LengthAwarePaginator
     {
-        $query = $user->transactions()
-            ->with(['account', 'toAccount', 'category', 'status', 'currency', 'recurringType', 'tags']);
-
-        if (!empty($filters['type'])) {
-            $query->where('type', $filters['type']);
-        }
-
-        if (!empty($filters['account_id'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->where('account_id', $filters['account_id'])
-                    ->orWhere('to_account_id', $filters['account_id']);
-            });
-        }
-
-        if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
-        }
-
-        if (!empty($filters['status_id'])) {
-            $query->where('status_id', $filters['status_id']);
-        }
-
-        if (!empty($filters['date_from'])) {
-            $query->where('tx_date', '>=', $filters['date_from']);
-        }
-        if (!empty($filters['date_to'])) {
-            $query->where('tx_date', '<=', $filters['date_to']);
-        }
-
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where(function ($q) use ($search) {
-                $q->where('merchant', 'like', "%{$search}%")
-                    ->orWhere('notes', 'like', "%{$search}%");
-            });
-        }
-
-        if (!empty($filters['tag_ids'])) {
-            $tagIds = is_array($filters['tag_ids']) ? $filters['tag_ids'] : explode(',', $filters['tag_ids']);
-            foreach ($tagIds as $tagId) {
-                $query->whereHas('tags', function ($q) use ($tagId) {
-                    $q->where('tags.id', $tagId);
-                });
-            }
-        }
-
-        $sortBy = $filters['sort_by'] ?? 'tx_date';
-        $sortDir = $filters['sort_dir'] ?? 'desc';
-
-        if ($sortBy === 'nominal') {
-            $query->orderBy('amount_raw', $sortDir);
-        } elseif ($sortBy === 'category') {
-            $query->select('transactions.*')
-                ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
-                ->orderBy('categories.name', $sortDir);
-        } elseif ($sortBy === 'account') {
-            $query->select('transactions.*')
-                ->leftJoin('accounts', 'transactions.account_id', '=', 'accounts.id')
-                ->orderBy('accounts.name', $sortDir);
-        } else {
-            $allowedColumns = ['tx_date', 'merchant', 'created_at', 'type'];
-            $sortBy = in_array($sortBy, $allowedColumns) ? $sortBy : 'tx_date';
-            $query->orderBy($sortBy, $sortDir);
-        }
-
         $perPage = min($filters['per_page'] ?? 15, 100);
-
-        return $query->paginate($perPage);
+        return self::queryForUser($user)->paginate($perPage);
     }
 
     /**

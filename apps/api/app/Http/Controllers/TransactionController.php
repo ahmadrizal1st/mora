@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\TransactionData;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
 use App\Services\TransactionService;
+use Spatie\LaravelData\DataCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -33,7 +35,15 @@ class TransactionController extends Controller
 
         $transactions = TransactionService::list($request->user(), $filters);
 
-        return response()->json($transactions);
+        return response()->json([
+            'data' => TransactionData::collect($transactions, DataCollection::class),
+            'meta' => [
+                'current_page' => $transactions->currentPage(),
+                'last_page' => $transactions->lastPage(),
+                'per_page' => $transactions->perPage(),
+                'total' => $transactions->total(),
+            ]
+        ]);
     }
 
     /**
@@ -50,7 +60,7 @@ class TransactionController extends Controller
 
         return response()->json([
             'message' => 'Transaksi berhasil dibuat.',
-            'data' => $transaction,
+            'data' => TransactionData::from($transaction),
         ], 201);
     }
 
@@ -64,7 +74,7 @@ class TransactionController extends Controller
         $transaction = TransactionService::show($request->user(), $id);
 
         return response()->json([
-            'data' => $transaction,
+            'data' => TransactionData::from($transaction),
         ]);
     }
 
@@ -83,7 +93,7 @@ class TransactionController extends Controller
 
         return response()->json([
             'message' => 'Transaksi berhasil diperbarui.',
-            'data' => $transaction,
+            'data' => TransactionData::from($transaction),
         ]);
     }
 
