@@ -19,12 +19,10 @@ class TransactionService
         $query = $user->transactions()
             ->with(['account', 'toAccount', 'category', 'status', 'currency', 'recurringType', 'tags']);
 
-        // Filter by type
         if (!empty($filters['type'])) {
             $query->where('type', $filters['type']);
         }
 
-        // Filter by account
         if (!empty($filters['account_id'])) {
             $query->where(function ($q) use ($filters) {
                 $q->where('account_id', $filters['account_id'])
@@ -32,17 +30,14 @@ class TransactionService
             });
         }
 
-        // Filter by category
         if (!empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }
 
-        // Filter by status
         if (!empty($filters['status_id'])) {
             $query->where('status_id', $filters['status_id']);
         }
 
-        // Filter by date range
         if (!empty($filters['date_from'])) {
             $query->where('tx_date', '>=', $filters['date_from']);
         }
@@ -50,7 +45,6 @@ class TransactionService
             $query->where('tx_date', '<=', $filters['date_to']);
         }
 
-        // Search by merchant or notes
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
@@ -59,7 +53,6 @@ class TransactionService
             });
         }
 
-        // Filter by tags (AND matching: must have ALL selected tags)
         if (!empty($filters['tag_ids'])) {
             $tagIds = is_array($filters['tag_ids']) ? $filters['tag_ids'] : explode(',', $filters['tag_ids']);
             foreach ($tagIds as $tagId) {
@@ -69,7 +62,6 @@ class TransactionService
             }
         }
 
-        // Sort
         $sortBy = $filters['sort_by'] ?? 'tx_date';
         $sortDir = $filters['sort_dir'] ?? 'desc';
 
@@ -84,7 +76,6 @@ class TransactionService
                 ->leftJoin('accounts', 'transactions.account_id', '=', 'accounts.id')
                 ->orderBy('accounts.name', $sortDir);
         } else {
-            // Default sort (ensure column exists or fallback)
             $allowedColumns = ['tx_date', 'merchant', 'created_at', 'type'];
             $sortBy = in_array($sortBy, $allowedColumns) ? $sortBy : 'tx_date';
             $query->orderBy($sortBy, $sortDir);
@@ -97,16 +88,12 @@ class TransactionService
 
     /**
      * Create a new transaction and update account balances.
-     *
-     * @return Transaction
      */
     public static function store(User $user, array $data): Transaction
     {
         return DB::transaction(function () use ($user, $data) {
-            // Verify account belongs to user
             $account = $user->accounts()->findOrFail($data['account_id']);
 
-            // Build transaction data
             $txData = [
                 'user_id' => $user->id,
                 'type' => $data['type'],
@@ -125,7 +112,6 @@ class TransactionService
                 'dynamic_fields' => $data['dynamic_fields'] ?? null,
             ];
 
-            // For transfers, verify target account belongs to user
             if ($data['type'] === Transaction::TYPE_TRANSFER) {
                 if (empty($data['to_account_id'])) {
                     throw ValidationException::withMessages([
@@ -142,14 +128,11 @@ class TransactionService
 
             $transaction = Transaction::create($txData);
 
-            // Sync tags if provided
             if (!empty($data['tag_ids'])) {
-                // Verify tags belong to user
                 $validTagIds = $user->tags()->whereIn('id', $data['tag_ids'])->pluck('id');
                 $transaction->tags()->sync($validTagIds);
             }
 
-            // Update account balances
             self::applyBalance($transaction);
 
             return $transaction->load([
@@ -182,10 +165,8 @@ class TransactionService
         return DB::transaction(function () use ($user, $id, $data) {
             $transaction = $user->transactions()->findOrFail($id);
 
-            // Revert old balance
             self::revertBalance($transaction);
 
-            // Verify new account if changed
             if (!empty($data['account_id'])) {
                 $user->accounts()->findOrFail($data['account_id']);
             }
@@ -193,16 +174,13 @@ class TransactionService
                 $user->accounts()->findOrFail($data['to_account_id']);
             }
 
-            // Update the transaction
             $transaction->update($data);
 
-            // Re-sync tags
             if (array_key_exists('tag_ids', $data)) {
                 $validTagIds = $user->tags()->whereIn('id', $data['tag_ids'] ?? [])->pluck('id');
                 $transaction->tags()->sync($validTagIds);
             }
 
-            // Apply new balance
             self::applyBalance($transaction->fresh());
 
             return $transaction->fresh()->load([
@@ -225,7 +203,6 @@ class TransactionService
         DB::transaction(function () use ($user, $id) {
             $transaction = $user->transactions()->findOrFail($id);
 
-            // Revert balance before deleting
             self::revertBalance($transaction);
 
             $transaction->tags()->detach();
@@ -236,227 +213,231 @@ class TransactionService
     /**
      * Get summary statistics for a period.
      *
-     * @return array{total_income: int, total_expense: int, net_balance: int, transaction_count: int, income_trend: float, expense_trend: float, count_trend: float, balance_trend: float}
+     * Aturan transfer agar konsisten dengan endpoint account:
+     *   - Dengan account_id  → transfer keluar = expense, transfer masuk = income
+     *   - Tanpa account_id   → transfer diabaikan (hindari double-count antar akun)
+     *
+     * @return array{total_income: int, total_expense: int, net_balance: int, transaction_count: int,
+     *               income_trend: float, expense_trend: float, count_trend: float, balance_trend: float}
      */
     public static function summary(User $user, array $filters = []): array
     {
-        $query = $user->transactions();
+        $dateFromRaw = $filters['date_from'] ?? null;
+        $dateToRaw   = $filters['date_to']   ?? null;
 
-        if (!empty($filters['date_from'])) {
-            $query->where('tx_date', '>=', $filters['date_from']);
-        }
-        if (!empty($filters['date_to'])) {
-            $query->where('tx_date', '<=', $filters['date_to']);
-        }
-        if (!empty($filters['account_id'])) {
-            $query->where('account_id', $filters['account_id']);
-        }
+        $dateFrom = $dateFromRaw ? \Carbon\Carbon::parse($dateFromRaw)->startOfDay() : null;
+        $dateTo   = $dateToRaw   ? \Carbon\Carbon::parse($dateToRaw)->endOfDay()     : null;
 
-        $income = (clone $query)->where('type', Transaction::TYPE_INCOME)->sum('amount_raw');
-        $expense = (clone $query)->where('type', Transaction::TYPE_EXPENSE)->sum('amount_raw');
-        $count = (clone $query)->count();
+        $currentFilters = array_merge($filters, [
+            'date_from' => $dateFrom ? $dateFrom->toDateTimeString() : null,
+            'date_to'   => $dateTo   ? $dateTo->toDateTimeString()   : null,
+        ]);
 
-        // Calculate Previous Period for Trends
-        $prevIncome = 0;
+        [$income, $expense, $count] = self::calcSummaryTotals($user, $currentFilters);
+
+        $prevIncome  = 0;
         $prevExpense = 0;
-        $prevCount = 0;
+        $prevCount   = 0;
 
-        if (!empty($filters['date_from']) && !empty($filters['date_to'])) {
-            $currentFrom = \Carbon\Carbon::parse($filters['date_from']);
-            $currentTo = \Carbon\Carbon::parse($filters['date_to']);
-            $diffInDays = $currentFrom->diffInDays($currentTo) + 1;
+        if ($dateFrom && $dateTo) {
+            $diffInDays  = $dateFrom->diffInDays($dateTo) + 1;
 
-            $prevTo = $currentFrom->copy()->subDay();
-            $prevFrom = $prevTo->copy()->subDays($diffInDays - 1);
+            $prevTo      = $dateFrom->copy()->subDay()->endOfDay();
+            $prevFrom    = $prevTo->copy()->subDays($diffInDays - 1)->startOfDay();
 
-            $prevQuery = $user->transactions()
-                ->where('tx_date', '>=', $prevFrom->toDateString())
-                ->where('tx_date', '<=', $prevTo->toDateString());
+            $prevFilters = array_merge($filters, [
+                'date_from' => $prevFrom->toDateTimeString(),
+                'date_to'   => $prevTo->toDateTimeString(),
+            ]);
 
-            if (!empty($filters['account_id'])) {
-                $prevQuery->where('account_id', $filters['account_id']);
-            }
-
-            $prevIncome = (clone $prevQuery)->where('type', Transaction::TYPE_INCOME)->sum('amount_raw');
-            $prevExpense = (clone $prevQuery)->where('type', Transaction::TYPE_EXPENSE)->sum('amount_raw');
-            $prevCount = (clone $prevQuery)->count();
+            [$prevIncome, $prevExpense, $prevCount] = self::calcSummaryTotals($user, $prevFilters);
         }
 
         $calcTrend = function ($current, $previous) {
             if ($previous == 0) {
-                return $current > 0 ? 100 : 0;
+                return $current > 0 ? 100.0 : 0.0;
             }
             return round((($current - $previous) / $previous) * 100, 1);
         };
 
         return [
-            'total_income' => (int) $income,
-            'total_expense' => (int) $expense,
-            'net_balance' => (int) ($income - $expense),
+            'total_income'      => (int) $income,
+            'total_expense'     => (int) $expense,
+            'net_balance'       => (int) ($income - $expense),
             'transaction_count' => $count,
-            'income_trend' => (float) $calcTrend($income, $prevIncome),
-            'expense_trend' => (float) $calcTrend($expense, $prevExpense),
-            'count_trend' => (float) $calcTrend($count, $prevCount),
-            'balance_trend' => (float) $calcTrend($income - $expense, $prevIncome - $prevExpense),
+            'income_trend'      => (float) $calcTrend($income, $prevIncome),
+            'expense_trend'     => (float) $calcTrend($expense, $prevExpense),
+            'count_trend'       => (float) $calcTrend($count, $prevCount),
+            'balance_trend'     => (float) $calcTrend($income - $expense, $prevIncome - $prevExpense),
         ];
     }
 
     /**
+     * Helper: hitung income, expense, dan count untuk satu periode.
+     *
+     * Dengan account_id  → transfer keluar = expense, transfer masuk = income.
+     * Tanpa account_id   → transfer diabaikan agar tidak double-count.
+     *
+     * @return array{0: int, 1: int, 2: int}  [income, expense, count]
+     */
+    private static function calcSummaryTotals(User $user, array $filters): array
+    {
+        $accountId = $filters['account_id'] ?? null;
+        $dateFrom  = $filters['date_from']  ?? null;
+        $dateTo    = $filters['date_to']    ?? null;
+
+        // ── Income & expense (berlaku untuk semua skenario) ───────────────────
+        $base = $user->transactions()
+            ->whereIn('type', [Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE]);
+
+        if ($accountId) $base->where('account_id', $accountId);
+        if ($dateFrom)  $base->where('tx_date', '>=', $dateFrom);
+        if ($dateTo)    $base->where('tx_date', '<=', $dateTo);
+
+        $income  = (int) (clone $base)->where('type', Transaction::TYPE_INCOME)->sum('amount_raw');
+        $expense = (int) (clone $base)->where('type', Transaction::TYPE_EXPENSE)->sum('amount_raw');
+        $count   = (clone $base)->count();
+
+        // ── Transfer: hanya jika ada filter account_id ────────────────────────
+        if ($accountId) {
+            // Transfer keluar → tambah ke expense
+            $transferOutQ = $user->transactions()
+                ->where('type', Transaction::TYPE_TRANSFER)
+                ->where('account_id', $accountId);
+            if ($dateFrom) $transferOutQ->where('tx_date', '>=', $dateFrom);
+            if ($dateTo)   $transferOutQ->where('tx_date', '<=', $dateTo);
+
+            $expense += (int) $transferOutQ->sum('amount_raw');
+            $count   += $transferOutQ->count();
+
+            // Transfer masuk → tambah ke income
+            $transferInQ = $user->transactions()
+                ->where('type', Transaction::TYPE_TRANSFER)
+                ->where('to_account_id', $accountId);
+            if ($dateFrom) $transferInQ->where('tx_date', '>=', $dateFrom);
+            if ($dateTo)   $transferInQ->where('tx_date', '<=', $dateTo);
+
+            $income += (int) $transferInQ->sum('amount_raw');
+            $count  += $transferInQ->count();
+        }
+
+        return [$income, $expense, $count];
+    }
+
+    /**
      * Get historical aggregated data for charts.
+     *
+     * Transfer dihitung jika ada filter account_id (konsisten dengan summary()).
+     * Tanpa account_id, transfer diabaikan agar tidak double-count.
      */
     public static function history(User $user, array $filters = []): array
     {
         $groupBy = $filters['group_by'] ?? 'day';
 
-        // PostgreSQL date format mappings
-        $format = match ($groupBy) {
+        $pgFormat = match ($groupBy) {
             'week' => 'IYYY-"W"IW',
             'month' => 'YYYY-MM',
             'year' => 'YYYY',
             default => 'YYYY-MM-DD',
         };
 
-        $query = $user->transactions()
-            ->selectRaw("to_char(tx_date, ?) as label", [$format])
-            ->selectRaw("SUM(CASE WHEN type = ? THEN amount_raw ELSE 0 END) as income", [Transaction::TYPE_INCOME])
-            ->selectRaw("SUM(CASE WHEN type = ? THEN amount_raw ELSE 0 END) as expense", [Transaction::TYPE_EXPENSE])
-            ->selectRaw("COUNT(*) as count")
-            ->groupBy('label')
-            ->orderBy('label', 'asc');
+        $baseFilters = [
+            'date_from' => $filters['date_from'] ?? null,
+            'date_to' => $filters['date_to'] ?? null,
+            'account_id' => $filters['account_id'] ?? null,
+        ];
 
-        if (!empty($filters['date_from'])) {
-            $query->where('tx_date', '>=', $filters['date_from']);
-        }
-        if (!empty($filters['date_to'])) {
-            $query->where('tx_date', '<=', $filters['date_to']);
-        }
-        if (!empty($filters['account_id'])) {
-            $query->where('account_id', $filters['account_id']);
-        }
+        // ── Current period (satu eksekusi independen) ─────────────────────────
+        $rawResults = self::fetchHistoryRows($user, $pgFormat, $baseFilters)->keyBy('label');
 
-        // Current Period Data
-        $results = $query->get();
-
-        // Previous Period Data Calculation
-        // Determine the reporting range
-        if (empty($filters['date_from']) || empty($filters['date_to'])) {
-            // Find the range from all transactions
+        // ── Tentukan rentang current period ───────────────────────────────────
+        if (empty($baseFilters['date_from']) || empty($baseFilters['date_to'])) {
             $rangeQuery = $user->transactions();
-            if (!empty($filters['account_id'])) {
-                $rangeQuery->where('account_id', $filters['account_id']);
+            if (!empty($baseFilters['account_id'])) {
+                $rangeQuery->where(function ($q) use ($baseFilters) {
+                    $q->where('account_id', $baseFilters['account_id'])
+                        ->orWhere('to_account_id', $baseFilters['account_id']);
+                });
             }
-
             $range = $rangeQuery->selectRaw('MIN(tx_date) as start_date, MAX(tx_date) as end_date')->first();
 
             $currentFrom = $range && $range->start_date
                 ? \Carbon\Carbon::parse($range->start_date)->startOfDay()
                 : \Carbon\Carbon::now()->subDays(29)->startOfDay();
-
             $currentTo = $range && $range->end_date
                 ? \Carbon\Carbon::parse($range->end_date)->endOfDay()
                 : \Carbon\Carbon::now()->endOfDay();
         } else {
-            $currentFrom = \Carbon\Carbon::parse($filters['date_from'])->startOfDay();
-            $currentTo = \Carbon\Carbon::parse($filters['date_to'])->endOfDay();
+            $currentFrom = \Carbon\Carbon::parse($baseFilters['date_from'])->startOfDay();
+            $currentTo = \Carbon\Carbon::parse($baseFilters['date_to'])->endOfDay();
         }
 
-        // Calculate Previous Period range accurately
-        $prevFrom = null;
-        $prevTo = null;
+        // ── Hitung rentang previous period ────────────────────────────────────
         if ($groupBy === 'month') {
-            $monthsCount = $currentFrom->diffInMonths($currentTo) + 1;
+            $n = $currentFrom->diffInMonths($currentTo) + 1;
             $prevTo = $currentFrom->copy()->subDay()->endOfMonth();
-            $prevFrom = $prevTo->copy()->subMonths($monthsCount - 1)->startOfMonth();
-        } else if ($groupBy === 'week') {
-            $weeksCount = $currentFrom->diffInWeeks($currentTo) + 1;
+            $prevFrom = $prevTo->copy()->subMonths($n - 1)->startOfMonth();
+        } elseif ($groupBy === 'week') {
+            $n = $currentFrom->diffInWeeks($currentTo) + 1;
             $prevTo = $currentFrom->copy()->subDay()->endOfWeek();
-            $prevFrom = $prevTo->copy()->subWeeks($weeksCount - 1)->startOfWeek();
-        } else if ($groupBy === 'year') {
-            $yearsCount = $currentFrom->diffInYears($currentTo) + 1;
+            $prevFrom = $prevTo->copy()->subWeeks($n - 1)->startOfWeek();
+        } elseif ($groupBy === 'year') {
+            $n = $currentFrom->diffInYears($currentTo) + 1;
             $prevTo = $currentFrom->copy()->subDay()->endOfYear();
-            $prevFrom = $prevTo->copy()->subYears($yearsCount - 1)->startOfYear();
+            $prevFrom = $prevTo->copy()->subYears($n - 1)->startOfYear();
         } else {
-            $diffInDays = $currentFrom->diffInDays($currentTo) + 1;
+            $n = $currentFrom->diffInDays($currentTo) + 1;
             $prevTo = $currentFrom->copy()->subDay();
-            $prevFrom = $prevTo->copy()->subDays($diffInDays - 1);
+            $prevFrom = $prevTo->copy()->subDays($n - 1);
         }
 
-        $results = $query->get()->keyBy('label');
+        // ── Previous period (independen) ──────────────────────────────────────
+        $prevFilters = array_merge($baseFilters, [
+            'date_from' => $prevFrom->toDateString(),
+            'date_to' => $prevTo->toDateString(),
+        ]);
+        $prevResults = self::fetchHistoryRows($user, $pgFormat, $prevFilters)->keyBy('label');
 
-        // Previous Period Query
-        $prevQuery = $user->transactions()
-            ->selectRaw("to_char(tx_date, ?) as label", [$format])
-            ->selectRaw("SUM(CASE WHEN type = ? THEN amount_raw ELSE 0 END) as income", [Transaction::TYPE_INCOME])
-            ->selectRaw("SUM(CASE WHEN type = ? THEN amount_raw ELSE 0 END) as expense", [Transaction::TYPE_EXPENSE])
-            ->selectRaw("COUNT(*) as count")
-            ->where('tx_date', '>=', $prevFrom->toDateString())
-            ->where('tx_date', '<=', $prevTo->toDateString())
-            ->groupBy('label')
-            ->orderBy('label', 'asc');
-
-        if (!empty($filters['account_id'])) {
-            $prevQuery->where('account_id', $filters['account_id']);
-        }
-        $prevResults = $prevQuery->get()->keyBy('label');
-
-        // Build continuous synchronized data sets
-        $income = [];
-        $expense = [];
-        $count = [];
-        $labels = [];
-        $p_income = [];
-        $p_expense = [];
-        $p_count = [];
+        // ── Build array kontinu ───────────────────────────────────────────────
+        $income = $expense = $count = $labels = $p_income = $p_expense = $p_count = [];
 
         $curr = $currentFrom->copy();
         $prev = $prevFrom->copy();
-
         $safety = 0;
+
         while ($curr->lte($currentTo) && $safety < 1000) {
             $safety++;
 
-            // Generate DB label hooks to match SQL to_char(tx_date, 'IYYY-"W"IW') -> e.g. 2024-W01
             $dbLabel = match ($groupBy) {
                 'week' => $curr->format('o-\WW'),
                 'month' => $curr->format('Y-m'),
                 'year' => $curr->format('Y'),
-                default => $curr->format('Y-m-d')
+                default => $curr->format('Y-m-d'),
             };
-
             $pDbLabel = match ($groupBy) {
                 'week' => $prev->format('o-\WW'),
                 'month' => $prev->format('Y-m'),
                 'year' => $prev->format('Y'),
-                default => $prev->format('Y-m-d')
+                default => $prev->format('Y-m-d'),
             };
 
-            // Mapping Current
-            $item = $results->get($dbLabel);
+            $item = $rawResults->get($dbLabel);
             $income[] = (int) ($item->income ?? 0);
             $expense[] = (int) ($item->expense ?? 0);
             $count[] = (int) ($item->count ?? 0);
             $labels[] = $dbLabel;
 
-            // Mapping Previous
             $pItem = $prevResults->get($pDbLabel);
             $p_income[] = (int) ($pItem->income ?? 0);
             $p_expense[] = (int) ($pItem->expense ?? 0);
             $p_count[] = (int) ($pItem->count ?? 0);
 
-            // Increment
-            if ($groupBy === 'month') {
-                $curr->addMonth();
-                $prev->addMonth();
-            } else if ($groupBy === 'week') {
-                $curr->addWeek();
-                $prev->addWeek();
-            } else if ($groupBy === 'year') {
-                $curr->addYear();
-                $prev->addYear();
-            } else {
-                $curr->addDay();
-                $prev->addDay();
-            }
+            match ($groupBy) {
+                'month' => [$curr->addMonth(), $prev->addMonth()],
+                'week' => [$curr->addWeek(), $prev->addWeek()],
+                'year' => [$curr->addYear(), $prev->addYear()],
+                default => [$curr->addDay(), $prev->addDay()],
+            };
         }
 
         return [
@@ -473,130 +454,236 @@ class TransactionService
     }
 
     /**
-     * Get balance history for all accounts of a user with a single optimized query.
+     * Helper: eksekusi query history untuk satu periode dan kembalikan Collection.
      *
-     * Returns net changes per account per period using UNION ALL to handle
-     * both source (account_id) and destination (to_account_id) in transfers.
-     *
-     * @return array{labels: string[], net_changes: array<int, array<string, int>>}
+     * Dengan account_id  → UNION: (income+expense+transfer keluar) + (transfer masuk)
+     * Tanpa account_id   → hanya income & expense, transfer diabaikan.
      */
-    public static function getAccountsHistory(User $user, string $groupBy = 'day'): array
+    private static function fetchHistoryRows(User $user, string $pgFormat, array $filters): \Illuminate\Support\Collection
     {
-        $points = match ($groupBy) {
-            'week' => 12,
-            'month' => 12,
-            default => 30,
-        };
+        $accountId = $filters['account_id'] ?? null;
+        $dateFrom = $filters['date_from'] ?? null;
+        $dateTo = $filters['date_to'] ?? null;
 
-        $endDate = \Carbon\Carbon::now()->endOfDay();
-        $startDate = match ($groupBy) {
-            'week' => \Carbon\Carbon::now()->subWeeks($points - 1)->startOfWeek(),
-            'month' => \Carbon\Carbon::now()->subMonths($points - 1)->startOfMonth(),
-            default => \Carbon\Carbon::now()->subDays($points - 1)->startOfDay(),
-        };
+        $dateWhere = '';
+        if ($dateFrom)
+            $dateWhere .= ' AND tx_date >= ' . DB::getPdo()->quote($dateFrom);
+        if ($dateTo)
+            $dateWhere .= ' AND tx_date <= ' . DB::getPdo()->quote($dateTo);
 
+        if ($accountId) {
+            $pgFormat_q = DB::getPdo()->quote($pgFormat);
+            $uid = (int) $user->id;
+            $aid = (int) $accountId;
+
+            // Sisi pengirim: income, expense, transfer keluar
+            $outSql = "
+                SELECT
+                    to_char(tx_date, {$pgFormat_q}) AS label,
+                    SUM(CASE WHEN type = 'income'                 THEN amount_raw ELSE 0 END) AS income,
+                    SUM(CASE WHEN type IN ('expense','transfer')  THEN amount_raw ELSE 0 END) AS expense,
+                    COUNT(*) AS count
+                FROM transactions
+                WHERE user_id = {$uid}
+                  AND account_id = {$aid}
+                  AND type IN ('income','expense','transfer')
+                  {$dateWhere}
+                GROUP BY label
+            ";
+
+            // Sisi penerima: transfer masuk → income
+            $inSql = "
+                SELECT
+                    to_char(tx_date, {$pgFormat_q}) AS label,
+                    SUM(amount_raw) AS income,
+                    0               AS expense,
+                    COUNT(*)        AS count
+                FROM transactions
+                WHERE user_id = {$uid}
+                  AND to_account_id = {$aid}
+                  AND type = 'transfer'
+                  {$dateWhere}
+                GROUP BY label
+            ";
+
+            $sql = "
+                SELECT label,
+                       SUM(income)  AS income,
+                       SUM(expense) AS expense,
+                       SUM(count)   AS count
+                FROM (({$outSql}) UNION ALL ({$inSql})) AS combined
+                GROUP BY label
+                ORDER BY label ASC
+            ";
+
+            return collect(DB::select($sql));
+        }
+
+        // ── Tanpa filter account ───────────────────────────────────────────────
+        $pgFormat_q = DB::getPdo()->quote($pgFormat);
+        $uid = (int) $user->id;
+
+        $sql = "
+            SELECT
+                to_char(tx_date, {$pgFormat_q}) AS label,
+                SUM(CASE WHEN type = 'income'  THEN amount_raw ELSE 0 END) AS income,
+                SUM(CASE WHEN type = 'expense' THEN amount_raw ELSE 0 END) AS expense,
+                COUNT(*) AS count
+            FROM transactions
+            WHERE user_id = {$uid}
+              AND type IN ('income','expense')
+              {$dateWhere}
+            GROUP BY label
+            ORDER BY label ASC
+        ";
+
+        return collect(DB::select($sql));
+    }
+
+    /**
+     * Get income & expense history for all accounts of a user.
+     *
+     * Transfer keluar dari account_id → expense.
+     * Transfer masuk ke to_account_id → income.
+     *
+     * @return array{labels: string[], income: array<int, array<string, int>>, expense: array<int, array<string, int>>}
+     */
+    public static function getAccountsHistory(User $user, string $groupBy = 'day', array $filters = []): array
+    {
         $pgFormat = match ($groupBy) {
             'week' => 'IYYY-"W"IW',
             'month' => 'YYYY-MM',
+            'year' => 'YYYY',
             default => 'YYYY-MM-DD',
         };
+        $phpFormat = match ($groupBy) {
+            'week' => 'o-\WW',
+            'month' => 'Y-m',
+            'year' => 'Y',
+            default => 'Y-m-d',
+        };
+
+        // ── Tentukan rentang (auto atau eksplisit) ────────────────────────────
+        if (empty($filters['date_from']) || empty($filters['date_to'])) {
+            $range = $user->transactions()
+                ->selectRaw('MIN(tx_date) AS start_date, MAX(tx_date) AS end_date')
+                ->first();
+
+            $startDate = $range?->start_date
+                ? \Carbon\Carbon::parse($range->start_date)->startOfDay()
+                : \Carbon\Carbon::now()->subDays(29)->startOfDay();
+
+            $endDate = $range?->end_date
+                ? \Carbon\Carbon::parse($range->end_date)->endOfDay()
+                : \Carbon\Carbon::now()->endOfDay();
+        } else {
+            $startDate = \Carbon\Carbon::parse($filters['date_from'])->startOfDay();
+            $endDate = \Carbon\Carbon::parse($filters['date_to'])->endOfDay();
+        }
 
         $startStr = $startDate->toDateString();
         $endStr = $endDate->toDateString();
 
-        // Single optimized query: net changes per account per period
-        // Part 1: income/expense/transfer-out (via account_id)
-        // Part 2: transfer-in (via to_account_id)
-        $results = DB::select("
-            SELECT account_id, label, SUM(net_change) as net_change
-            FROM (
-                SELECT
-                    account_id,
-                    to_char(tx_date, ?) as label,
-                    SUM(CASE
-                        WHEN type = 'income' THEN amount_raw
-                        WHEN type = 'expense' THEN -amount_raw
-                        WHEN type = 'transfer' THEN -amount_raw
-                        ELSE 0
-                    END) as net_change
-                FROM transactions
-                WHERE user_id = ? AND tx_date >= ? AND tx_date <= ?
-                GROUP BY account_id, label
-
-                UNION ALL
-
-                SELECT
-                    to_account_id as account_id,
-                    to_char(tx_date, ?) as label,
-                    SUM(amount_raw) as net_change
-                FROM transactions
-                WHERE user_id = ? AND type = 'transfer'
-                    AND to_account_id IS NOT NULL
-                    AND tx_date >= ? AND tx_date <= ?
-                GROUP BY to_account_id, label
-            ) combined
+        // ── Query transaksi ───────────────────────────────────────────────────
+        // Sisi pengirim: income, expense, dan transfer keluar
+        $txOut = DB::select("
+            SELECT
+                account_id,
+                to_char(tx_date, ?) AS label,
+                SUM(CASE WHEN type = 'income'                THEN amount_raw ELSE 0 END) AS income,
+                SUM(CASE WHEN type IN ('expense','transfer') THEN amount_raw ELSE 0 END) AS expense
+            FROM transactions
+            WHERE user_id = ?
+            AND tx_date >= ?
+            AND tx_date <= ?
+            AND type IN ('income','expense','transfer')
             GROUP BY account_id, label
             ORDER BY account_id, label
-        ", [$pgFormat, $user->id, $startStr, $endStr, $pgFormat, $user->id, $startStr, $endStr]);
+        ", [$pgFormat, $user->id, $startStr, $endStr]);
 
-        // Generate ordered labels (oldest → newest)
-        $phpFormat = match ($groupBy) {
-            'week' => 'o-\WW',
-            'month' => 'Y-m',
-            default => 'Y-m-d',
-        };
+        // Sisi penerima: transfer masuk → income
+        $txIn = DB::select("
+            SELECT
+                to_account_id AS account_id,
+                to_char(tx_date, ?) AS label,
+                SUM(amount_raw) AS income,
+                0               AS expense
+            FROM transactions
+            WHERE user_id = ?
+            AND tx_date >= ?
+            AND tx_date <= ?
+            AND type = 'transfer'
+            AND to_account_id IS NOT NULL
+            GROUP BY to_account_id, label
+            ORDER BY to_account_id, label
+        ", [$pgFormat, $user->id, $startStr, $endStr]);
 
+        // ── Generate label kontinu (terlama → terbaru) ────────────────────────
         $labels = [];
-        for ($i = $points - 1; $i >= 0; $i--) {
-            $date = match ($groupBy) {
-                'week' => \Carbon\Carbon::now()->subWeeks($i)->startOfDay(),
-                'month' => \Carbon\Carbon::now()->subMonths($i)->startOfMonth(),
-                default => \Carbon\Carbon::now()->subDays($i)->startOfDay(),
+        $curr = $startDate->copy();
+
+        while ($curr->lte($endDate)) {
+            $labels[] = $curr->format($phpFormat);
+
+            match ($groupBy) {
+                'week' => $curr->addWeek(),
+                'month' => $curr->addMonth(),
+                'year' => $curr->addYear(),
+                default => $curr->addDay(),
             };
-            $labels[] = $date->format($phpFormat);
         }
 
-        // Index results by account_id → label → net_change
-        $indexed = [];
-        foreach ($results as $row) {
-            $indexed[(int) $row->account_id][$row->label] = (int) $row->net_change;
+        // ── Gabungkan ke indeks account_id → label ────────────────────────────
+        $income = [];
+        $expense = [];
+
+        foreach ($txOut as $row) {
+            $aid = (int) $row->account_id;
+            $income[$aid][$row->label] = ($income[$aid][$row->label] ?? 0) + (int) $row->income;
+            $expense[$aid][$row->label] = ($expense[$aid][$row->label] ?? 0) + (int) $row->expense;
+        }
+        foreach ($txIn as $row) {
+            $aid = (int) $row->account_id;
+            $income[$aid][$row->label] = ($income[$aid][$row->label] ?? 0) + (int) $row->income;
         }
 
         return [
             'labels' => $labels,
-            'net_changes' => $indexed,
+            'income' => $income,
+            'expense' => $expense,
         ];
     }
 
     /**
-     * Build cumulative balance array for a single account from pre-computed net changes.
+     * Build balance array for a single account.
+     * balance per period = income - expense (pengurangan).
      *
-     * @param int   $currentBalance  The account's current balance_raw
-     * @param array $netChanges      Map of label → net_change for this account
-     * @param array $labels          Ordered period labels (oldest → newest)
-     * @return array{balance: int[]}
+     * @param array $netChanges  ['income' => [...], 'expense' => [...]] per label
+     * @param array $labels      Ordered period labels (oldest → newest)
+     * @return array{balance: int[], income: int[], expense: int[]}
      */
     public static function buildAccountHistory(int $currentBalance, array $netChanges, array $labels): array
     {
-        // Total net change in the visible range
-        $totalNetChange = 0;
-        foreach ($labels as $label) {
-            $totalNetChange += $netChanges[$label] ?? 0;
-        }
+        $incomeByLabel = $netChanges['income'] ?? [];
+        $expenseByLabel = $netChanges['expense'] ?? [];
 
-        // Balance just before the first visible period
-        $balanceBefore = $currentBalance - $totalNetChange;
-
-        // Build cumulative running balance (oldest → newest)
         $balance = [];
-        $running = $balanceBefore;
+        $income = [];
+        $expense = [];
+
         foreach ($labels as $label) {
-            $running += $netChanges[$label] ?? 0;
-            $balance[] = (int) $running;
+            $inc = (int) ($incomeByLabel[$label] ?? 0);
+            $exp = (int) ($expenseByLabel[$label] ?? 0);
+
+            $income[] = $inc;
+            $expense[] = $exp;
+            $balance[] = $inc - $exp;
         }
 
         return [
             'balance' => $balance,
+            'income' => $income,
+            'expense' => $expense,
         ];
     }
 

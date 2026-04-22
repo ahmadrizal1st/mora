@@ -26,5 +26,36 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 401);
             }
         });
+
+        $exceptions->render(function (\Illuminate\Database\QueryException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $message = $e->getMessage();
+                
+                // Check if it's a connection error (SQLSTATE 08006, Connection refused, or similar)
+                if (str_contains($message, '08006') || 
+                    str_contains($message, 'Connection refused') || 
+                    str_contains($message, 'SQLSTATE[08006]') ||
+                    str_contains($message, 'Is the server running')) {
+                    return response()->json([
+                        'error_code' => 'DATABASE_CONNECTION_ERROR',
+                        'message' => 'Cannot connect to database. Please try again later.',
+                    ], 503);
+                }
+            }
+        });
+
+        $exceptions->render(function (\PDOException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $message = $e->getMessage();
+                if (str_contains($message, '08006') || 
+                    str_contains($message, 'Connection refused') ||
+                    str_contains($message, 'Is the server running')) {
+                    return response()->json([
+                        'error_code' => 'DATABASE_CONNECTION_ERROR',
+                        'message' => 'Cannot connect to database. Please try again later.',
+                    ], 503);
+                }
+            }
+        });
     })->create();
 

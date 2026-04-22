@@ -53,6 +53,12 @@ api.interceptors.response.use(
         window.location.href = '/sign-in'
       }
     }
+
+    if (error.response?.status === 503 || error.response?.data?.error_code === 'DATABASE_CONNECTION_ERROR') {
+      if (window.location.pathname !== '/error-maintenance') {
+        window.location.href = '/error-maintenance'
+      }
+    }
     return Promise.reject(error)
   }
 )

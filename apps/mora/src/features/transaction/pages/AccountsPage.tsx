@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import BaseLayout from '@/shared/layouts/BaseLayout';
 import { Icon, Button, CardTitle, Modal, ModalHeader, Spinner, Chart, DropdownGrouping } from '@/shared/components/ui';
 import { useAccounts, useCreateAccount, useUpdateAccount, useDeleteAccount } from '../hooks/useAccounts';
@@ -12,16 +12,60 @@ export const AccountsPage: React.FC = () => {
   const { data: response, isLoading } = useAccounts({ group_by: groupBy });
   const accounts = response?.data || [];
 
-  // Build chart series from each account's embedded history
-  const chartSeries = accounts
-    .filter((acc) => acc.history?.balance?.length)
-    .map((acc) => ({
-      name: acc.name,
-      color: acc.color,
-      data: acc.history!.balance,
-    }));
+  // Account filter state: null = all selected
+  const [selectedAccountIds, setSelectedAccountIds] = useState<Set<number> | null>(null);
+
+  // Accounts that have balance history
+  const accountsWithHistory = useMemo(
+    () => accounts.filter((acc) => acc.history?.balance?.length),
+    [accounts]
+  );
+
+  // Effective selected IDs
+  const effectiveSelected = useMemo(() => {
+    if (selectedAccountIds === null) return new Set(accountsWithHistory.map((a) => a.id));
+    return selectedAccountIds;
+  }, [selectedAccountIds, accountsWithHistory]);
+
+  const toggleAccount = (id: number) => {
+    const current = effectiveSelected;
+    const next = new Set(current);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    if (next.size === accountsWithHistory.length) {
+      setSelectedAccountIds(null);
+    } else {
+      setSelectedAccountIds(next);
+    }
+  };
+
+  // Filtered chart series
+  const chartSeries = useMemo(
+    () =>
+      accountsWithHistory
+        .filter((acc) => effectiveSelected.has(acc.id))
+        .map((acc) => ({
+          name: acc.name,
+          color: acc.color,
+          data: acc.history!.balance,
+        })),
+    [accountsWithHistory, effectiveSelected]
+  );
+
   const chartLabels = accounts[0]?.history?.labels || [];
-  
+
+  // Total wealth of selected accounts only
+  const totalWealth = useMemo(
+    () =>
+      accounts
+        .filter((acc) => effectiveSelected.has(acc.id))
+        .reduce((sum, acc) => sum + acc.balance_raw, 0),
+    [accounts, effectiveSelected]
+  );
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalView, setModalView] = useState<'form' | 'delete-confirm'>('form');
   const [editingAccount, setEditingAccount] = useState<Account | undefined>(undefined);
@@ -35,9 +79,10 @@ export const AccountsPage: React.FC = () => {
       await createMutation.mutateAsync(data);
       setIsModalOpen(false);
     } catch (error: unknown) {
-      const message = error && typeof error === 'object' && 'response' in error 
-        ? (error as { response: { data: { message: string } } }).response?.data?.message 
-        : 'Gagal membuat akun baru.';
+      const message =
+        error && typeof error === 'object' && 'response' in error
+          ? (error as { response: { data: { message: string } } }).response?.data?.message
+          : 'Gagal membuat akun baru.';
       alert(message);
     }
   };
@@ -49,9 +94,10 @@ export const AccountsPage: React.FC = () => {
       setIsModalOpen(false);
       setEditingAccount(undefined);
     } catch (error: unknown) {
-      const message = error && typeof error === 'object' && 'response' in error 
-        ? (error as { response: { data: { message: string } } }).response?.data?.message 
-        : 'Gagal memperbarui akun.';
+      const message =
+        error && typeof error === 'object' && 'response' in error
+          ? (error as { response: { data: { message: string } } }).response?.data?.message
+          : 'Gagal memperbarui akun.';
       alert(message);
     }
   };
@@ -62,9 +108,10 @@ export const AccountsPage: React.FC = () => {
       setIsModalOpen(false);
       setEditingAccount(undefined);
     } catch (error: unknown) {
-      const message = error && typeof error === 'object' && 'response' in error 
-        ? (error as { response: { data: { message: string } } }).response?.data?.message 
-        : 'Gagal menghapus akun.';
+      const message =
+        error && typeof error === 'object' && 'response' in error
+          ? (error as { response: { data: { message: string } } }).response?.data?.message
+          : 'Gagal menghapus akun.';
       alert(message);
     }
   };
@@ -81,7 +128,13 @@ export const AccountsPage: React.FC = () => {
         <div className="d-flex justify-content-between align-items-center mb-3">
           <CardTitle>Daftar Akun Keuangan</CardTitle>
           <div className="d-flex gap-2">
-            <Button color="primary" onClick={() => { setEditingAccount(undefined); setIsModalOpen(true); }}>
+            <Button
+              color="primary"
+              onClick={() => {
+                setEditingAccount(undefined);
+                setIsModalOpen(true);
+              }}
+            >
               <Icon icon="plus" size={18} className="me-1" />
               Tambah Akun
             </Button>
@@ -98,23 +151,23 @@ export const AccountsPage: React.FC = () => {
               <div className="col-12 text-center py-5 text-muted">
                 Belum ada akun. Klik "Tambah Akun" untuk memulai.
               </div>
-            ) : accounts.map((account) => (
-              <div key={account.id} className="col-sm-6 col-lg-4">
-                <AccountCard 
-                  account={account} 
-                  onEdit={(acc) => openEdit(acc)} 
-                />
-              </div>
-            ))}
+            ) : (
+              accounts.map((account) => (
+                <div key={account.id} className="col-sm-6 col-lg-4">
+                  <AccountCard account={account} onEdit={(acc) => openEdit(acc)} />
+                </div>
+              ))
+            )}
           </div>
         )}
 
-        {chartSeries.length > 0 && (
+        {accountsWithHistory.length > 0 && (
           <div className="row mt-4">
             <div className="col-12">
               <div className="card shadow-sm border-0">
                 <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center mb-4">
+                  {/* Header */}
+                  <div className="d-flex justify-content-between align-items-start mb-3">
                     <div>
                       <h3 className="card-title h2 mb-1 fw-bold">Tren Kekayaan Bersih</h3>
                       <div className="text-secondary small">Perbandingan saldo antar akun Anda</div>
@@ -124,80 +177,122 @@ export const AccountsPage: React.FC = () => {
                       <div className="text-end d-none d-sm-block">
                         <div className="text-secondary small fw-medium">Total Kekayaan</div>
                         <div className="h2 fw-bold mb-0 text-primary">
-                          {formatCurrency(accounts.reduce((sum, acc) => sum + acc.balance_raw, 0))}
+                          {formatCurrency(totalWealth)}
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Account filter toggles */}
+                  <div className="d-flex flex-wrap gap-2 mb-3">
+                    {accountsWithHistory.map((acc) => {
+                      const isActive = effectiveSelected.has(acc.id);
+                      return (
+                        <button
+                          key={acc.id}
+                          type="button"
+                          onClick={() => toggleAccount(acc.id)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '4px 12px',
+                            borderRadius: '999px',
+                            border: `1.5px solid ${acc.color}`,
+                            backgroundColor: isActive ? `${acc.color}18` : 'transparent',
+                            color: isActive ? acc.color : '#aaa',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            opacity: isActive ? 1 : 0.5,
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: '50%',
+                              backgroundColor: isActive ? acc.color : '#aaa',
+                              flexShrink: 0,
+                            }}
+                          />
+                          {acc.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Chart */}
                   <div style={{ minHeight: '300px' }}>
-                    <Chart
-                      chartId="total-wealth-trend"
-                      chartData={{
-                        type: 'line',
-                        stacked: false,
-                        series: chartSeries,
-                        categories: chartLabels,
-                        strokeWidth: Array(chartSeries.length).fill(3.5),
-                        strokeCurve: 'smooth',
-                        animations: true,
-                        datalabels: false,
-                        legend: true,
-                        legendOptions: {
-                          position: 'bottom',
-                          markers: {
-                            radius: 12,
-                          }
-                        },
-                        grid: {
-                          strokeDashArray: 4,
-                          padding: { top: 20, right: 20, bottom: 0, left: 10 }
-                        },
-                        xaxis: {
-                          tooltip: { enabled: false },
-                          axisBorder: { show: false },
-                          tickAmount: 8,
-                          labels: {
-                            formatter: (val: string) => {
+                    {chartSeries.length === 0 ? (
+                      <div className="text-center text-muted py-5">
+                        Pilih minimal satu akun untuk ditampilkan.
+                      </div>
+                    ) : (
+                      <Chart
+                        chartId="total-wealth-trend"
+                        chartData={{
+                          type: 'line',
+                          stacked: false,
+                          series: chartSeries,
+                          categories: chartLabels,
+                          strokeWidth: Array(chartSeries.length).fill(3.5),
+                          strokeCurve: 'smooth',
+                          animations: true,
+                          datalabels: false,
+                          legend: false,
+                          grid: {
+                            strokeDashArray: 4,
+                            padding: { top: 20, right: 20, bottom: 0, left: 10 },
+                          },
+                          xaxis: {
+                            tooltip: { enabled: false },
+                            axisBorder: { show: false },
+                            tickAmount: 8,
+                            labels: {
+                              formatter: (val: string) => {
                                 if (!val) return '';
-                                // Week format: "2026-W17"
                                 if (val.includes('-W')) return val.split('-')[1];
-                                // Month format: "2026-04"
                                 if (/^\d{4}-\d{2}$/.test(val)) {
                                   const [y, m] = val.split('-');
                                   const date = new Date(Number(y), Number(m) - 1, 1);
                                   return date.toLocaleDateString('id-ID', { month: 'short' });
                                 }
-                                // Day format: "2026-04-22"
                                 const date = new Date(val);
                                 if (isNaN(date.getTime())) return val;
-                                return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
-                            }
-                          }
-                        },
-                        yaxis: {
-                          labels: {
-                            formatter: (val: number) => {
-                              const absVal = Math.abs(val);
-                              const sign = val < 0 ? '-' : '';
-                              if (absVal >= 1000000) return sign + (absVal / 1000000).toFixed(1) + 'jt';
-                              if (absVal >= 1000) return sign + (absVal / 1000).toFixed(0) + 'rb';
-                              return val.toString();
-                            }
-                          }
-                        },
-                        extend: JSON.stringify({
-                          tooltip: {
-                            container: 'body',
-                            shared: true,
-                            intersect: false,
-                            y: {
-                                formatter: (val: number) => formatCurrency(val)
-                            }
-                          }
-                        })
-                      }}
-                      height={24}
-                    />
+                                return date.toLocaleDateString('id-ID', {
+                                  day: '2-digit',
+                                  month: 'short',
+                                });
+                              },
+                            },
+                          },
+                          yaxis: {
+                            labels: {
+                              formatter: (val: number) => {
+                                const absVal = Math.abs(val);
+                                const sign = val < 0 ? '-' : '';
+                                if (absVal >= 1000000) return sign + (absVal / 1000000).toFixed(1) + 'jt';
+                                if (absVal >= 1000) return sign + (absVal / 1000).toFixed(0) + 'rb';
+                                return val.toString();
+                              },
+                            },
+                          },
+                          extend: JSON.stringify({
+                            tooltip: {
+                              container: 'body',
+                              shared: true,
+                              intersect: false,
+                              y: {
+                                formatter: (val: number) => formatCurrency(val),
+                              },
+                            },
+                          }),
+                        }}
+                        height={24}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -206,17 +301,19 @@ export const AccountsPage: React.FC = () => {
         )}
 
         <Modal show={isModalOpen} size={modalView === 'delete-confirm' ? 'sm' : undefined}>
-          <ModalHeader 
+          <ModalHeader
             title={
-              modalView === 'delete-confirm' 
-                ? 'Konfirmasi Penghapusan' 
-                : (editingAccount ? 'Edit Akun' : 'Tambah Akun Baru')
-            } 
-            onClose={() => { 
-                setIsModalOpen(false); 
-                setEditingAccount(undefined); 
-                setModalView('form');
-            }} 
+              modalView === 'delete-confirm'
+                ? 'Konfirmasi Penghapusan'
+                : editingAccount
+                ? 'Edit Akun'
+                : 'Tambah Akun Baru'
+            }
+            onClose={() => {
+              setIsModalOpen(false);
+              setEditingAccount(undefined);
+              setModalView('form');
+            }}
           />
           <div className="modal-body">
             {modalView === 'form' ? (
@@ -231,13 +328,23 @@ export const AccountsPage: React.FC = () => {
                 <Icon icon="alert-triangle" size={48} className="text-danger mb-3" />
                 <h3 className="mb-2">Hapus Akun "{editingAccount?.name}"?</h3>
                 <div className="text-secondary mb-3">
-                  Akun ini memiliki <strong>{(editingAccount?.transactions_count || 0) + (editingAccount?.incoming_transfers_count || 0)}</strong> transaksi yang bergantung padanya.
+                  Akun ini memiliki{' '}
+                  <strong>
+                    {(editingAccount?.transactions_count || 0) +
+                      (editingAccount?.incoming_transfers_count || 0)}
+                  </strong>{' '}
+                  transaksi yang bergantung padanya.
                 </div>
-                
-                {(editingAccount?.transactions_count || 0) + (editingAccount?.incoming_transfers_count || 0) > 0 && (
+
+                {(editingAccount?.transactions_count || 0) +
+                  (editingAccount?.incoming_transfers_count || 0) >
+                  0 && (
                   <div className="bg-danger-lt p-3 rounded text-start border border-danger-subtle mb-3">
                     <div className="small text-danger fw-bold mb-1">SISTEM MEMBLOKIR PENGHAPUSAN:</div>
-                    <div className="small">Anda tidak dapat menghapus akun yang masih memiliki data transaksi. Silakan hapus atau pindahkan transaksi terkait terlebih dahulu.</div>
+                    <div className="small">
+                      Anda tidak dapat menghapus akun yang masih memiliki data transaksi. Silakan
+                      hapus atau pindahkan transaksi terkait terlebih dahulu.
+                    </div>
                   </div>
                 )}
 
@@ -245,11 +352,15 @@ export const AccountsPage: React.FC = () => {
                   <Button className="flex-fill" onClick={() => setModalView('form')}>
                     Kembali
                   </Button>
-                  <Button 
-                    color="danger" 
-                    className="flex-fill fw-bold" 
+                  <Button
+                    color="danger"
+                    className="flex-fill fw-bold"
                     onClick={() => editingAccount && handleDelete(editingAccount.id)}
-                    disabled={(editingAccount?.transactions_count || 0) + (editingAccount?.incoming_transfers_count || 0) > 0}
+                    disabled={
+                      (editingAccount?.transactions_count || 0) +
+                        (editingAccount?.incoming_transfers_count || 0) >
+                      0
+                    }
                     loading={deleteMutation.isPending}
                   >
                     Ya, Hapus
