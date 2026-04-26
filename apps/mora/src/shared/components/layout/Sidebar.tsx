@@ -20,6 +20,7 @@ interface MenuChild {
 interface MenuSection {
   title: string
   icon?: string
+  url?: string
   type?: 'header'
   children?: Record<string, MenuChild>
 }
@@ -27,6 +28,7 @@ interface MenuSection {
 const navigationData: NavItem[] = Object.values(menuData as Record<string, MenuSection>).map((section) => ({
   label: section.title,
   icon: section.icon,
+  href: section.url ? `/${section.url.replace('.html', '').replace(/^index$/, 'dashboard').replace(/\/index$/, '')}` : '#',
   type: section.type,
   dropdown: !!section.children,
   items: section.children
@@ -96,7 +98,7 @@ function SidebarMenuItem({ item, currentPath }: { item: NavItem; currentPath: st
                   <Link
                     key={index}
                     className={clsx('dropdown-item', subActive && 'active')}
-                    to={subItem.href as any}
+                    to={subItem.href as string}
                   >
                     {subItem.label}
                   </Link>
@@ -126,7 +128,7 @@ function SidebarMenuItem({ item, currentPath }: { item: NavItem; currentPath: st
 
   return (
     <li className={clsx('nav-item', active && 'active')}>
-      <Link className="nav-link" to={item.href as any}>
+      <Link className="nav-link" to={item.href as string}>
         <span className="nav-link-icon d-md-none d-lg-inline-block">
           {item.icon && <Icon icon={item.icon} />}
         </span>

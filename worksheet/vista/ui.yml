@@ -1,8 +1,0 @@
-ui: 'tabler-ui'
-
-vista:
-  - color_mode: ['light', 'dark']
-  - color_scheme: 'indigo'
-  - font_family: 'monospace'
-  - theme_base: 'slate'
-  - corner_radius: 1

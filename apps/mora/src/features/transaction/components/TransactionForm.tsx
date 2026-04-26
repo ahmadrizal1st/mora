@@ -348,7 +348,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             Batal
           </Button>
         ) : (
-          <Button link to="/transactions" className="text-muted">
+          <Button link to="/tracker/history" className="text-muted">
             Batal
           </Button>
         )}

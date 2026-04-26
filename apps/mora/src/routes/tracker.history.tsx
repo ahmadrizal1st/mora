@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { TransactionListPage } from '@/features/transaction/pages/TransactionListPage'
 import { z } from 'zod'
 
-export const Route = createFileRoute('/transactions/')({
+export const Route = createFileRoute('/tracker/history')({
   component: TransactionListPage,
   validateSearch: z.object({
     page: z.number().optional(),

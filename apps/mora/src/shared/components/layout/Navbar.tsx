@@ -23,6 +23,7 @@ interface MenuChild {
 interface MenuSection {
   title: string
   icon?: string
+  url?: string
   columns?: number
   children?: Record<string, MenuChild>
 }
@@ -30,6 +31,7 @@ interface MenuSection {
 const navigationData: NavItem[] = Object.values(menuData as Record<string, MenuSection>).map((section) => ({
   label: section.title,
   icon: section.icon,
+  href: section.url ? `/${section.url.replace('.html', '').replace(/^index$/, 'dashboard').replace(/\/index$/, '')}` : '#',
   dropdown: !!section.children,
   columns: section.columns,
   items: section.children
