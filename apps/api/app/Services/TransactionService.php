@@ -37,6 +37,7 @@ class TransactionService
                 'account_id' => $data['account_id'],
                 'to_account_id' => $data['to_account_id'] ?? null,
                 'category_id' => $data['category_id'] ?? null,
+                'budget_item_id' => $data['budget_item_id'] ?? null,
                 'status_id' => $data['status_id'] ?? null,
                 'recurring_type_id' => $data['recurring_type_id'] ?? null,
                 'tx_date' => $data['tx_date'],
@@ -44,6 +45,18 @@ class TransactionService
                 'notes' => $data['notes'] ?? null,
                 'dynamic_fields' => $data['dynamic_fields'] ?? null,
             ];
+
+            // Auto-fill budget_item_id from default category mapping if not provided
+            if (empty($txData['budget_item_id']) && !empty($txData['category_id'])) {
+                $mapping = \App\Models\BudgetItemCategory::where('category_id', $txData['category_id'])
+                    ->whereHas('budgetItem.plan', function ($query) use ($user) {
+                        $query->where('user_id', $user->id)->where('is_active', true);
+                    })->first();
+
+                if ($mapping) {
+                    $txData['budget_item_id'] = $mapping->budget_item_id;
+                }
+            }
 
             if ($data['type'] === Transaction::TYPE_TRANSFER) {
                 if (empty($data['to_account_id'])) {
@@ -70,6 +83,7 @@ class TransactionService
                 'account',
                 'toAccount',
                 'category',
+                'budgetItem',
                 'status',
                 'currency',
                 'recurringType',
@@ -84,7 +98,7 @@ class TransactionService
     public static function show(User $user, int $id): Transaction
     {
         return $user->transactions()
-            ->with(['account', 'toAccount', 'category', 'status', 'currency', 'recurringType', 'tags'])
+            ->with(['account', 'toAccount', 'category', 'budgetItem', 'status', 'currency', 'recurringType', 'tags'])
             ->findOrFail($id);
     }
 
@@ -114,6 +128,7 @@ class TransactionService
                 'account',
                 'toAccount',
                 'category',
+                'budgetItem',
                 'status',
                 'currency',
                 'recurringType',

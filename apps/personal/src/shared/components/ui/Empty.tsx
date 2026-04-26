@@ -13,6 +13,7 @@ export interface EmptyProps {
   illustrationSize?: number
   bordered?: boolean
   to?: string
+  onClick?: () => void
   className?: string
 }
 
@@ -27,6 +28,7 @@ export function Empty({
   illustrationSize = 300,
   bordered,
   to,
+  onClick,
   className,
 }: EmptyProps) {
   const theme = document.documentElement.getAttribute('data-bs-theme') || 'light'
@@ -55,7 +57,15 @@ export function Empty({
       <p className="empty-subtitle text-secondary">{subtitle}</p>
 
       <div className="empty-action">
-        <Button text={buttonText} color="primary" icon={buttonIcon} href={!to ? "." : undefined} to={to} />
+        <Button 
+          text={buttonText} 
+          color="primary" 
+          icon={buttonIcon} 
+          href={!to && !onClick ? "." : undefined} 
+          to={to} 
+          onClick={onClick}
+          element={onClick ? 'button' : undefined}
+        />
       </div>
     </div>
   )

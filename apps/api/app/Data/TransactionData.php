@@ -19,6 +19,7 @@ class TransactionData extends Data
         public int $account_id,
         public ?int $to_account_id,
         public ?int $category_id,
+        public ?int $budget_item_id,
         public ?int $status_id,
         public ?int $recurring_type_id,
         public string $tx_date,
@@ -31,6 +32,7 @@ class TransactionData extends Data
         public AccountData|Optional $account,
         public AccountData|Optional $to_account,
         public CategoryData|Optional $category,
+        public BudgetItemData|Optional $budget_item,
         
         /** @var DataCollection<TagData>|Optional */
         public DataCollection|Optional $tags,
@@ -48,6 +50,7 @@ class TransactionData extends Data
             account_id: $transaction->account_id,
             to_account_id: $transaction->to_account_id,
             category_id: $transaction->category_id,
+            budget_item_id: $transaction->budget_item_id,
             status_id: $transaction->status_id,
             recurring_type_id: $transaction->recurring_type_id,
             tx_date: $transaction->tx_date instanceof \DateTimeInterface 
@@ -68,6 +71,9 @@ class TransactionData extends Data
                 : Optional::create(),
             category: $transaction->relationLoaded('category') && $transaction->category
                 ? CategoryData::from($transaction->category) 
+                : Optional::create(),
+            budget_item: $transaction->relationLoaded('budget_item') && $transaction->budget_item
+                ? BudgetItemData::from($transaction->budget_item) 
                 : Optional::create(),
             tags: $transaction->relationLoaded('tags')
                 ? TagData::collect($transaction->tags, DataCollection::class)

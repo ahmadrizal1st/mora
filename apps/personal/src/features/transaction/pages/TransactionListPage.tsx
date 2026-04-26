@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Icon, Badge, Pagination, Spinner, DropdownGrouping } from '@/shared/components/ui';
+import { Icon, Badge, Pagination, Spinner, DropdownGrouping, Button } from '@/shared/components/ui';
 import { MetricAreaChartCard, ComparisonChartCard, SummaryChartCard } from '@/shared/components/cards/charts';
 
 import {
@@ -26,6 +26,7 @@ export const TransactionListPage: React.FC = () => {
   // Modal & Responsive State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>(undefined);
+  const [txToDelete, setTxToDelete] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 
   React.useEffect(() => {
@@ -149,9 +150,17 @@ export const TransactionListPage: React.FC = () => {
       : <Icon icon="chevron-down" size={12} className="ms-1 text-primary" />;
   };
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
-      await deleteMutation.mutateAsync(id);
+  const handleDelete = (id: number) => {
+    setTxToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!txToDelete) return;
+    try {
+      await deleteMutation.mutateAsync(txToDelete);
+      setTxToDelete(null);
+    } catch (err) {
+      console.error('Failed to delete transaction:', err);
     }
   };
 
@@ -469,6 +478,31 @@ export const TransactionListPage: React.FC = () => {
             onCancel={() => setIsModalOpen(false)}
             isLoading={createMutation.isPending || updateMutation.isPending}
           />
+        </div>
+      </Modal>
+
+      <Modal show={!!txToDelete} onClose={() => setTxToDelete(null)} size="sm">
+        <ModalHeader title="Konfirmasi Penghapusan" onClose={() => setTxToDelete(null)} />
+        <div className="modal-body text-center py-4">
+          <Icon icon="alert-triangle" size={48} className="text-danger mb-3" />
+          <h3>Hapus Transaksi?</h3>
+          <div className="text-secondary mb-3">
+            Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan dan akan mempengaruhi saldo akun terkait.
+          </div>
+          
+          <div className="d-flex gap-2">
+            <Button className="flex-fill" onClick={() => setTxToDelete(null)}>
+              Batal
+            </Button>
+            <Button
+              color="danger"
+              className="flex-fill fw-bold"
+              onClick={confirmDelete}
+              loading={deleteMutation.isPending}
+            >
+              Ya, Hapus
+            </Button>
+          </div>
         </div>
       </Modal>
     </BaseLayout>

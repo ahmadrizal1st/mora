@@ -11,6 +11,7 @@ import {
   useCurrencies,
   useTags,
 } from '../hooks/useLookups';
+import { useActiveBudgetItems } from '../../budget/hooks/useBudget';
 import { useAccounts } from '../hooks/useAccounts';
 import {
   Button,
@@ -27,6 +28,7 @@ const transactionSchema = z.object({
   account_id: z.number({ message: 'Pilih akun' }),
   to_account_id: z.number().optional().nullable(),
   category_id: z.number().optional().nullable(),
+  budget_item_id: z.number().optional().nullable(),
   currency_id: z.number().optional(),
   tx_date: z.string().min(1, 'Tanggal wajib diisi'),
   merchant: z.string().optional(),
@@ -69,6 +71,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       account_id: initialData?.account_id,
       to_account_id: initialData?.to_account_id,
       category_id: initialData?.category_id,
+      budget_item_id: initialData?.budget_item_id,
       currency_id: initialData?.currency_id,
       tx_date: initialData?.tx_date || new Date().toISOString().split('T')[0],
       merchant: initialData?.merchant || '',
@@ -86,6 +89,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         account_id: initialData.account_id,
         to_account_id: initialData.to_account_id,
         category_id: initialData.category_id,
+        budget_item_id: initialData.budget_item_id,
         currency_id: initialData.currency_id,
         tx_date: initialData.tx_date || new Date().toISOString().split('T')[0],
         merchant: initialData.merchant || '',
@@ -99,6 +103,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         account_id: undefined,
         to_account_id: undefined,
         category_id: undefined,
+        budget_item_id: undefined,
         currency_id: undefined,
         tx_date: new Date().toISOString().split('T')[0],
         merchant: '',
@@ -114,10 +119,11 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     defaultValue: (initialData?.type as TransactionType) || 'expense',
   });
   const { data: categories = [] } = useCategories(type);
-  const { data: response } = useAccounts();
+    const { data: response } = useAccounts();
   const accounts = response?.data || [];
   const { data: currencies = [] } = useCurrencies();
   const { data: tags = [] } = useTags();
+  const { data: budgetItems = [] } = useActiveBudgetItems();
 
   const currencyOptions = React.useMemo(() => {
     // Current data might not have the default IDR in the currencies list if it's handled separately
@@ -295,17 +301,41 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       </div>
 
       {type !== 'transfer' && (
-        <div className="mb-3">
-          <label className="form-label">Merchant / Penerima</label>
-          <div className="input-icon">
-            <span className="input-icon-addon">
-              <Icon icon="building-store" size={18} />
-            </span>
-            <input
-              type="text"
-              {...register('merchant')}
-              className="form-control"
-              placeholder="Misal: Starbucks, Tokopedia, dll"
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Merchant / Penerima</label>
+            <div className="input-icon">
+              <span className="input-icon-addon">
+                <Icon icon="building-store" size={18} />
+              </span>
+              <input
+                type="text"
+                {...register('merchant')}
+                className="form-control"
+                placeholder="Misal: Starbucks, Tokopedia, dll"
+              />
+            </div>
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label d-flex align-items-center">
+              Budget Bucket
+              <span className="form-help ms-1" title="Opsional: Override keranjang budget untuk transaksi ini saja.">?</span>
+            </label>
+            <Controller
+              name="budget_item_id"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                  options={budgetItems.map(bi => ({
+                    value: bi.id,
+                    label: bi.name,
+                    color: bi.color
+                  }))}
+                  placeholder="Otomatis (Ikut Kategori)"
+                />
+              )}
             />
           </div>
         </div>

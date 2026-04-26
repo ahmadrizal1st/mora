@@ -100,6 +100,15 @@ export function Button({
   const iconSize = size ? iconSizeMap[size] : 20
   const strokeWidth = size ? strokeWidthMap[size] : 2
 
+  const handleOnClick = (e: React.MouseEvent) => {
+    if (El === 'a' && href === '#' && onClick) {
+      e.preventDefault()
+    }
+    if (onClick) {
+      onClick(e as any)
+    }
+  }
+
   const classes = clsx(
     'btn',
     height && `btn-${height}`,
@@ -183,7 +192,7 @@ export function Button({
       type={El === 'button' ? (type || 'button') as 'button' | 'submit' | 'reset' : undefined}
       id={id}
       className={classes}
-      onClick={onClick as any}
+      onClick={handleOnClick as any}
       {...(routingProps as any)}
       {...extraProps}
       {...props}

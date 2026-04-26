@@ -117,7 +117,7 @@ export function Modal({
   )
 
   const combinedStyle: CSSProperties = {
-    ...(isShown ? { display: 'block' } : {}),
+    ...(isShown ? { display: 'block' } : { display: 'none' }),
     ...style,
   }
 
@@ -135,7 +135,8 @@ export function Modal({
       style={combinedStyle}
       tabIndex={-1}
       role="dialog"
-      aria-hidden={!getIsShown(isShown)}
+      aria-modal={isShown ? 'true' : 'false'}
+      aria-hidden={!isShown}
       onClick={handleBackdropClick}
     >
       <div className={dialogClasses} role="document">

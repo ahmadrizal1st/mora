@@ -13,6 +13,7 @@ use App\Http\Controllers\{
     LookupController,
     TagController,
     TransactionController,
+    BudgetController,
 };
 use Illuminate\Support\Facades\Route;
 
@@ -90,5 +91,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('currencies', [LookupController::class, 'currencies']);
     Route::get('statuses', [LookupController::class, 'statuses']);
     Route::get('recurring-types', [LookupController::class, 'recurringTypes']);
+
+    // Budgeting
+    Route::apiResource('budgets', BudgetController::class);
+    Route::get('budgets-utilization', [BudgetController::class, 'utilization']);
 });
 

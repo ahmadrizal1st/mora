@@ -14,9 +14,9 @@ interface InputIconProps {
   readonly?: boolean
   ariaLabel?: string
   className?: string
-  inputClass?: string
-  iconClass?: string
-  state?: 'valid' | 'invalid'
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
+  [key: string]: any
 }
 
 export function InputIcon({
@@ -34,6 +34,9 @@ export function InputIcon({
   inputClass,
   iconClass,
   state,
+  onChange,
+  onBlur,
+  ...props
 }: InputIconProps) {
   const addon = (
     <span className={`input-icon-addon${iconClass ? ` ${iconClass}` : ''}`}>
@@ -48,8 +51,11 @@ export function InputIcon({
     <div className={`input-icon${className ? ` ${className}` : ''}`}>
       {prepend && addon}
       <input
+        {...props}
         type={type}
-        defaultValue={value}
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
         className={[
           'form-control',
           state ? `is-${state}` : '',
