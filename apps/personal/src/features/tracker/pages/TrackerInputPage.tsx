@@ -24,7 +24,7 @@ export default function TrackerInputPage() {
       } else {
         await createMutation.mutateAsync(data);
       }
-      navigate({ to: '/tracker/history' });
+      navigate({ to: '/transactions' });
     } catch (error) {
       console.error('Failed to save transaction:', error);
     }

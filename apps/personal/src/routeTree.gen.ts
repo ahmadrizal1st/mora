@@ -34,7 +34,6 @@ import { Route as TransactionsIndexRouteImport } from './routes/transactions.ind
 import { Route as TrackerIndexRouteImport } from './routes/tracker.index'
 import { Route as TrackerPhotoRouteImport } from './routes/tracker.photo'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
-import { Route as TrackerHistoryRouteImport } from './routes/tracker.history'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -161,11 +160,6 @@ const TrackerInputRoute = TrackerInputRouteImport.update({
   path: '/tracker/input',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TrackerHistoryRoute = TrackerHistoryRouteImport.update({
-  id: '/tracker/history',
-  path: '/tracker/history',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -189,7 +183,6 @@ export interface FileRoutesByFullPath {
   '/sign-in-illustration': typeof SignInIllustrationRoute
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
-  '/tracker/history': typeof TrackerHistoryRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/': typeof TrackerIndexRoute
@@ -217,7 +210,6 @@ export interface FileRoutesByTo {
   '/sign-in-illustration': typeof SignInIllustrationRoute
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
-  '/tracker/history': typeof TrackerHistoryRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker': typeof TrackerIndexRoute
@@ -246,7 +238,6 @@ export interface FileRoutesById {
   '/sign-in-illustration': typeof SignInIllustrationRoute
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
-  '/tracker/history': typeof TrackerHistoryRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/': typeof TrackerIndexRoute
@@ -276,7 +267,6 @@ export interface FileRouteTypes {
     | '/sign-in-illustration'
     | '/sign-in-link'
     | '/sign-up'
-    | '/tracker/history'
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/'
@@ -304,7 +294,6 @@ export interface FileRouteTypes {
     | '/sign-in-illustration'
     | '/sign-in-link'
     | '/sign-up'
-    | '/tracker/history'
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker'
@@ -332,7 +321,6 @@ export interface FileRouteTypes {
     | '/sign-in-illustration'
     | '/sign-in-link'
     | '/sign-up'
-    | '/tracker/history'
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/'
@@ -361,7 +349,6 @@ export interface RootRouteChildren {
   SignInIllustrationRoute: typeof SignInIllustrationRoute
   SignInLinkRoute: typeof SignInLinkRoute
   SignUpRoute: typeof SignUpRoute
-  TrackerHistoryRoute: typeof TrackerHistoryRoute
   TrackerInputRoute: typeof TrackerInputRoute
   TrackerPhotoRoute: typeof TrackerPhotoRoute
   TrackerIndexRoute: typeof TrackerIndexRoute
@@ -545,13 +532,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackerInputRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tracker/history': {
-      id: '/tracker/history'
-      path: '/tracker/history'
-      fullPath: '/tracker/history'
-      preLoaderRoute: typeof TrackerHistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -577,7 +557,6 @@ const rootRouteChildren: RootRouteChildren = {
   SignInIllustrationRoute: SignInIllustrationRoute,
   SignInLinkRoute: SignInLinkRoute,
   SignUpRoute: SignUpRoute,
-  TrackerHistoryRoute: TrackerHistoryRoute,
   TrackerInputRoute: TrackerInputRoute,
   TrackerPhotoRoute: TrackerPhotoRoute,
   TrackerIndexRoute: TrackerIndexRoute,

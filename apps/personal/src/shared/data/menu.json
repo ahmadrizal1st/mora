@@ -10,7 +10,7 @@
     "icon": "cash",
     "columns": 2,
     "children": {
-      "transactions":  { "url": "transaction", "title": "Riwayat Transaksi" },
+      "transactions":  { "url": "transactions", "title": "Riwayat Transaksi" },
       "tracker":       { "url": "tracker",     "title": "Catat Transaksi" },
       "accounts":      { "url": "accounts",    "title": "Kelola Akun" },
       "budget":        { "url": "budget",      "title": "Budgeting Control" },
