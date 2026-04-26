@@ -139,7 +139,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     if (Object.keys(errors).length === 0) return null;
     const formatted: Record<string, string[]> = {};
     Object.entries(errors).forEach(([key, err]) => {
-      if (err?.message) formatted[key] = [err.message as string];
+      if (err && 'message' in err && typeof err.message === 'string') {
+        formatted[key] = [err.message];
+      }
     });
     return formatted;
   };
