@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useForm, Controller, useWatch, FieldError } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type {
@@ -139,8 +139,11 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     if (Object.keys(errors).length === 0) return null;
     const formatted: Record<string, string[]> = {};
     Object.entries(errors).forEach(([key, err]) => {
-      if (err && 'message' in err && typeof err.message === 'string') {
-        formatted[key] = [err.message];
+      if (err && typeof err === 'object' && 'message' in err) {
+        const error = err as FieldError;
+        if (typeof error.message === 'string') {
+          formatted[key] = [error.message];
+        }
       }
     });
     return formatted;
