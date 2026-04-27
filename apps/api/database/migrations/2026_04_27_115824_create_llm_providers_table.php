@@ -33,7 +33,9 @@ return new class extends Migration
         });
 
         // Add the database-level check constraint using raw SQL
-        DB::statement('ALTER TABLE llm_providers ADD CONSTRAINT check_is_default_user_id CHECK (NOT (is_default = true AND user_id IS NOT NULL))');
+        if (config('database.default') !== 'sqlite') {
+            DB::statement('ALTER TABLE llm_providers ADD CONSTRAINT check_is_default_user_id CHECK (NOT (is_default = true AND user_id IS NOT NULL))');
+        }
     }
 
     /**

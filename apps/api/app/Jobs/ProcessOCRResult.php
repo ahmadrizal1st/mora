@@ -28,6 +28,11 @@ class ProcessOCRResult implements ShouldQueue
         protected ?int $userId = null
     ) {}
 
+    public function getDocumentId(): int
+    {
+        return $this->document_id;
+    }
+
     /**
      * Execute the job.
      */

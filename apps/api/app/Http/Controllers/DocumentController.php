@@ -29,7 +29,9 @@ class DocumentController extends Controller
             $file = $request->file('file');
 
             // Kirim file ke service FastAPI OCR
-            $response = Http::attach(
+            $response = Http::withHeaders([
+                'X-API-KEY' => config('services.ocr.key')
+            ])->attach(
                 'file',
                 fopen($file->getPathname(), 'r'),
                 $file->getClientOriginalName()

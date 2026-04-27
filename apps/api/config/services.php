@@ -49,6 +49,7 @@ return [
 
     'ocr' => [
         'url' => env('OCR_SERVICE_URL', 'http://localhost:8000/api/extract'),
+        'key' => env('OCR_SERVICE_KEY', 'your-secret-api-key'),
     ],
 
 ];

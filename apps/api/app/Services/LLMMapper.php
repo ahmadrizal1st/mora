@@ -45,12 +45,12 @@ class LLMMapper
                 }
             } catch (Exception $e) {
                 Log::warning("LLM Provider {$provider->name} gagal: " . $e->getMessage());
-                $lastException = $e;
+                $lastError = $e->getMessage();
                 continue;
             }
         }
 
-        throw new Exception("Semua LLM provider gagal memproses data. Terakhir: " . ($lastException ? $lastException->getMessage() : 'Unknown Error'));
+        throw new Exception("Semua LLM provider gagal memproses data. Terakhir: " . ($lastError ?: 'Unknown Error'));
     }
 
     protected function executeProvider(\App\Models\LlmProvider $provider, string $prompt): ?string
@@ -64,7 +64,7 @@ class LLMMapper
             }
         });
 
-        $url = $provider->base_url;
+        $url = str_replace('{model}', $model, $provider->base_url);
         $request = Http::asJson();
 
         if ($provider->headers) {
@@ -79,14 +79,18 @@ class LLMMapper
             $request->withHeaders(['Authorization' => $provider->api_key]);
         }
 
+        Log::info("Executing LLM Request to: " . $url);
+        Log::debug("Payload: " . json_encode($payload));
+
         $response = $request->post($url, $payload);
 
         if ($response->successful()) {
             return data_get($response->json(), $provider->response_path);
         }
 
-        Log::error("Provider {$provider->name} Error: " . $response->body());
-        return null;
+        $errorBody = $response->body();
+        Log::error("Provider {$provider->name} Error: " . $errorBody);
+        throw new Exception("Provider {$provider->name} failed with status {$response->status()}: " . substr($errorBody, 0, 200));
     }
 
     /**

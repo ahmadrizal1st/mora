@@ -76,7 +76,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.state.start_time = time.time()
 
 # Include main API router
-app.include_router(router)
+app.include_router(router, prefix="/api")
 
 @app.get("/")
 def read_root():
