@@ -41,4 +41,14 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URL'),
     ],
 
+    'llm' => [
+        'gemini_key' => env('GEMINI_API_KEY'),
+        'groq_key' => env('GROQ_API_KEY'),
+        'openrouter_key' => env('OPENROUTER_API_KEY'),
+    ],
+
+    'ocr' => [
+        'url' => env('OCR_SERVICE_URL', 'http://localhost:8000/api/extract'),
+    ],
+
 ];

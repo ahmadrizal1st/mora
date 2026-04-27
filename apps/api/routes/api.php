@@ -14,6 +14,7 @@ use App\Http\Controllers\{
     TagController,
     TransactionController,
     BudgetController,
+    DocumentController,
 };
 use Illuminate\Support\Facades\Route;
 
@@ -95,5 +96,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Budgeting
     Route::apiResource('budgets', BudgetController::class);
     Route::get('budgets-utilization', [BudgetController::class, 'utilization']);
+
+    // OCR & Documents
+    Route::post('documents/upload', [DocumentController::class, 'upload']);
 });
 
