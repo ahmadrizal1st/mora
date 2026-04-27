@@ -48,12 +48,30 @@ class ProcessOCRResult implements ShouldQueue
             $schema->value
         );
 
-        $extractedData = $mapper->map($prompt, $this->userId);
+        $structuredData = $mapper->map($prompt, $this->userId);
 
         $document->update([
-            'extracted_data' => $extractedData,
+            'extracted_data' => $structuredData,
             'status' => 'completed',
         ]);
+
+        $transaction = \App\Models\Transaction::create([
+            'user_id' => $this->userId,
+            'type' => \App\Models\Transaction::TYPE_EXPENSE,
+            'amount_raw' => $structuredData['total_amount'] ?? 0,
+            'tx_date' => $structuredData['date'] ?? now()->format('Y-m-d'),
+            'merchant' => $structuredData['merchant_name'] ?? 'Unknown',
+            'notes' => 'Generated from OCR: ' . ($document->original_filename ?? 'document'),
+            'currency_id' => 1,
+            'account_id' => 4,
+            'status_id' => 1,
+            'dynamic_fields' => [
+                'document_id' => $this->document_id,
+                'items' => $structuredData['items'] ?? [],
+            ]
+        ]);
+
+        $document->update(['transaction_id' => $transaction->id]);
     }
 
     /**

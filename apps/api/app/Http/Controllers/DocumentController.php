@@ -46,9 +46,16 @@ class DocumentController extends Controller
 
             $rawText = $response->json('text');
 
-            // Simpan ke database dengan status pending
+            // Simpan file secara lokal untuk audit trail
+            $storedPath = $file->store('documents');
+
+            // Simpan ke database dengan detail lengkap
             $document = Document::create([
+                'user_id' => auth()->id(),
                 'doc_type' => $request->doc_type,
+                'file_path' => $storedPath,
+                'mime_type' => $file->getMimeType(),
+                'original_filename' => $file->getClientOriginalName(),
                 'raw_text' => $rawText,
                 'status' => 'pending',
             ]);

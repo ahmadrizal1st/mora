@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Document extends Model
 {
     protected $fillable = [
+        'user_id',
+        'transaction_id',
         'doc_type',
+        'file_path',
+        'mime_type',
+        'original_filename',
         'raw_text',
         'extracted_data',
         'status',
