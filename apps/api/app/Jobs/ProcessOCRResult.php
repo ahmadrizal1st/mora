@@ -24,7 +24,8 @@ class ProcessOCRResult implements ShouldQueue
     public function __construct(
         protected string $raw_text,
         protected string $doc_type,
-        protected int $document_id
+        protected int $document_id,
+        protected ?int $userId = null
     ) {}
 
     /**
@@ -42,7 +43,7 @@ class ProcessOCRResult implements ShouldQueue
             $schema->value
         );
 
-        $extractedData = $mapper->map($prompt);
+        $extractedData = $mapper->map($prompt, $this->userId);
 
         $document->update([
             'extracted_data' => $extractedData,

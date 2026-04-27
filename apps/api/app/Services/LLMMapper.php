@@ -12,24 +12,39 @@ class LLMMapper
      * Mencoba memproses prompt ke berbagai provider LLM secara berurutan (fallback).
      *
      * @param string $prompt
+     * @param int|null $userId
      * @return array
      * @throws Exception
      */
-    public function map(string $prompt): array
+    public function map(string $prompt, ?int $userId = null): array
     {
-        // Urutan fallback: Gemini -> Groq -> OpenRouter
-        $providers = ['gemini', 'groq', 'openrouter'];
+        $providers = \App\Models\LlmProvider::where('is_active', true)
+            ->where(function($q) use ($userId) {
+                if ($userId) {
+                    $q->where('user_id', $userId)->orWhere('is_default', true);
+                } else {
+                    $q->where('is_default', true);
+                }
+            })
+            ->orderByRaw('user_id IS NULL ASC')
+            ->orderBy('priority')
+            ->get();
+
+        if ($providers->isEmpty()) {
+            throw new Exception("Tidak ada LLM provider yang aktif.");
+        }
+
         $lastException = null;
 
         foreach ($providers as $provider) {
             try {
-                $result = $this->callProvider($provider, $prompt);
+                $result = $this->executeProvider($provider, $prompt);
                 
                 if ($result) {
                     return $this->parseJson($result);
                 }
             } catch (Exception $e) {
-                Log::warning("LLM Provider {$provider} gagal: " . $e->getMessage());
+                Log::warning("LLM Provider {$provider->name} gagal: " . $e->getMessage());
                 $lastException = $e;
                 continue;
             }
@@ -38,94 +53,39 @@ class LLMMapper
         throw new Exception("Semua LLM provider gagal memproses data. Terakhir: " . ($lastException ? $lastException->getMessage() : 'Unknown Error'));
     }
 
-    /**
-     * Memanggil provider yang spesifik.
-     */
-    protected function callProvider(string $provider, string $prompt): ?string
+    protected function executeProvider(\App\Models\LlmProvider $provider, string $prompt): ?string
     {
-        return match ($provider) {
-            'gemini'     => $this->callGemini($prompt),
-            'groq'       => $this->callGroq($prompt),
-            'openrouter' => $this->callOpenRouter($prompt),
-            default      => null,
-        };
-    }
+        $model = $provider->default_model ?? '';
+        $payload = $provider->payload_template;
 
-    /**
-     * Google AI Studio (Gemini 1.5 Flash)
-     */
-    protected function callGemini(string $prompt): ?string
-    {
-        $key = config('services.llm.gemini_key');
-        if (!$key) throw new Exception("Gemini API Key tidak dikonfigurasi.");
+        array_walk_recursive($payload, function (&$value) use ($prompt, $model) {
+            if (is_string($value)) {
+                $value = str_replace(['{prompt}', '{model}'], [$prompt, $model], $value);
+            }
+        });
 
-        $response = Http::post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$key}", [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $prompt]
-                    ]
-                ]
-            ]
-        ]);
+        $url = $provider->base_url;
+        $request = Http::asJson();
 
-        if ($response->successful()) {
-            return $response->json('candidates.0.content.parts.0.text');
+        if ($provider->headers) {
+            $request->withHeaders($provider->headers);
         }
 
-        Log::error("Gemini Error: " . $response->body());
-        return null;
-    }
-
-    /**
-     * Groq (Llama 3)
-     */
-    protected function callGroq(string $prompt): ?string
-    {
-        $key = config('services.llm.groq_key');
-        if (!$key) throw new Exception("Groq API Key tidak dikonfigurasi.");
-
-        $response = Http::withToken($key)->post('https://api.groq.com/openai/v1/chat/completions', [
-            'model' => 'llama3-8b-8192',
-            'messages' => [
-                ['role' => 'user', 'content' => $prompt]
-            ],
-            'temperature' => 0.1,
-        ]);
-
-        if ($response->successful()) {
-            return $response->json('choices.0.message.content');
+        if ($provider->auth_type === 'bearer' && $provider->api_key) {
+            $request->withToken($provider->api_key);
+        } elseif ($provider->auth_type === 'query_param' && $provider->api_key) {
+            $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'key=' . urlencode($provider->api_key);
+        } elseif ($provider->auth_type === 'header' && $provider->api_key) {
+            $request->withHeaders(['Authorization' => $provider->api_key]);
         }
 
-        Log::error("Groq Error: " . $response->body());
-        return null;
-    }
-
-    /**
-     * OpenRouter (Universal Fallback)
-     */
-    protected function callOpenRouter(string $prompt): ?string
-    {
-        $key = config('services.llm.openrouter_key');
-        if (!$key) throw new Exception("OpenRouter API Key tidak dikonfigurasi.");
-
-        $response = Http::withToken($key)
-            ->withHeaders([
-                'HTTP-Referer' => config('app.url'),
-                'X-Title' => 'Visatamora OCR'
-            ])
-            ->post('https://openrouter.ai/api/v1/chat/completions', [
-                'model' => 'google/gemini-flash-1.5',
-                'messages' => [
-                    ['role' => 'user', 'content' => $prompt]
-                ],
-            ]);
+        $response = $request->post($url, $payload);
 
         if ($response->successful()) {
-            return $response->json('choices.0.message.content');
+            return data_get($response->json(), $provider->response_path);
         }
 
-        Log::error("OpenRouter Error: " . $response->body());
+        Log::error("Provider {$provider->name} Error: " . $response->body());
         return null;
     }
 

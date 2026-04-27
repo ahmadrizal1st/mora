@@ -55,7 +55,8 @@ class DocumentController extends Controller
             ProcessOCRResult::dispatch(
                 $rawText,
                 $request->doc_type,
-                $document->id
+                $document->id,
+                auth()->id()
             );
 
             return response()->json([
