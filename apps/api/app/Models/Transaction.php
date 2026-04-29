@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[Fillable([
     'user_id', 'type', 'amount_raw', 'currency_id', 'rate_snapshot',
     'amount_in_default', 'account_id', 'to_account_id', 'category_id',
-    'status_id', 'recurring_type_id', 'tx_date', 'merchant', 'notes',
+    'status_id', 'recurring_type_id', 'tx_date', 'tracker', 'merchant', 'notes',
     'dynamic_fields',
 ])]
 class Transaction extends Model

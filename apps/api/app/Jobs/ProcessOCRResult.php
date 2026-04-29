@@ -314,11 +314,15 @@ class ProcessOCRResult implements ShouldQueue
             $this->raw_text  // fallback: scan teks asli jika LLM tidak return kategori
         );
 
+        // Resolve tracker source type
+        $trackerSource = $this->resolveTrackerSource($document);
+
         $transaction = \App\Models\Transaction::create([
             'user_id'        => $this->userId,
             'type'           => $txType,
             'amount_raw'     => $amount,
             'tx_date'        => $structuredData['date'] ?? now()->format('Y-m-d'),
+            'tracker'        => $trackerSource,
             'merchant'       => $merchant,
             'notes'          => $notes,
             'currency_id'    => 1,
@@ -434,46 +438,51 @@ class ProcessOCRResult implements ShouldQueue
     }
 
     /**
-     * Bangun string notes berformat JSON standar.
-     *
-     * Format output:
-     *   {"tracker_text":"isi text dari user"}
-     *   {"tracker_image":"nama_file.jpg"}
-     *   {"tracker_file":"nama_file.pdf"}
-     *   {"tracker_audio":"nama_file.mp3"}
-     *
-     * Key ditentukan dari MIME type dokumen.
+     * Bangun string notes berformat list rapi (Mie Ayam = 10000).
      */
     protected function buildTrackerNotes(Document $document, array $structuredData): string
     {
-        $mime = $document->mime_type ?? '';
+        $items = $structuredData['items'] ?? [];
+        $noteLines = [];
 
-        // Tentukan tracker key berdasarkan MIME type + ekstensi file
+        foreach ($items as $item) {
+            $name = $item['name'] ?? 'Item Tanpa Nama';
+            $price = $item['price'] ?? 0;
+            
+            // Rapikan format: Huruf Kapital di awal kata
+            $name = ucwords(strtolower($name));
+            
+            $noteLines[] = "- {$name} = {$price}";
+        }
+
+        // Tambahkan deskripsi dari AI jika ada
+        if (!empty($structuredData['description'])) {
+            if (!empty($noteLines)) {
+                $noteLines[] = ""; // Spasi pemisah
+            }
+            $noteLines[] = "Info: " . $structuredData['description'];
+        }
+
+        return implode("\n", $noteLines);
+    }
+
+    /**
+     * Tentukan sumber tracker (manual, image, file, audio) berdasarkan dokumen.
+     */
+    protected function resolveTrackerSource(Document $document): string
+    {
+        $mime = $document->mime_type ?? '';
         $audioExtensions = ['webm', 'ogg', 'mp3', 'wav', 'm4a', 'aac', 'flac', 'opus'];
         $fileExt = strtolower(pathinfo($document->original_filename ?? '', PATHINFO_EXTENSION));
 
-        $key = match (true) {
-            // Text input langsung dari pengguna (TrackerTextPage)
-            $mime === 'text/plain'                                    => 'tracker_text',
-
-            // Audio: audio/* atau video/webm|mp4 (libmagic salah deteksi browser blob)
-            str_starts_with($mime, 'audio/')                         => 'tracker_audio',
-            in_array($mime, ['video/webm', 'video/mp4'], true)       => 'tracker_audio',
-            in_array($fileExt, $audioExtensions, true)               => 'tracker_audio',
-
-            // Image OCR (TrackerImagePage / TrackerPhotoPage)
-            str_starts_with($mime, 'image/')                         => 'tracker_image',
-
-            // Semua file dokumen: PDF, DOCX, XLSX, PPTX, RTF (TrackerFilePage)
-            default                                                   => 'tracker_file',
+        return match (true) {
+            $mime === 'text/plain'                                    => 'manual',
+            str_starts_with($mime, 'audio/')                         => 'audio',
+            in_array($mime, ['video/webm', 'video/mp4'], true)       => 'audio',
+            in_array($fileExt, $audioExtensions, true)               => 'audio',
+            str_starts_with($mime, 'image/')                         => 'image',
+            default                                                   => 'file',
         };
-
-        // Nilai: untuk text → isi raw text; untuk file/image/audio → nama file asli
-        $value = $key === 'tracker_text'
-            ? ($this->raw_text)
-            : ($document->original_filename ?? 'unknown');
-
-        return json_encode([$key => $value], JSON_UNESCAPED_UNICODE);
     }
 
     /**
