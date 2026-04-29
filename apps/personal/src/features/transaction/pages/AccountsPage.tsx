@@ -235,27 +235,19 @@ export const AccountsPage: React.FC = () => {
                       <Chart
                         chartId="total-wealth-trend"
                         chartData={{
-                          type: 'area',
+                          type: 'line', // Reverted to line
                           stacked: false,
                           series: chartSeries,
+                          strokeWidth: 3,
                           categories: chartLabels,
-                          strokeWidth: Array(chartSeries.length).fill(3),
                           strokeCurve: 'smooth',
                           animations: true,
                           datalabels: false,
                           legend: false,
                           grid: {
                             strokeDashArray: 4,
+                            borderColor: 'rgba(32, 107, 196, 0.15)', // Subtle primary color for grid lines
                             padding: { top: 20, right: 20, bottom: 0, left: 20 },
-                          },
-                          fill: {
-                            type: 'gradient',
-                            gradient: {
-                              shadeIntensity: 1,
-                              opacityFrom: 0.25,
-                              opacityTo: 0.05,
-                              stops: [0, 90, 100]
-                            }
                           },
                           xaxis: {
                             tooltip: { enabled: false },
@@ -294,10 +286,24 @@ export const AccountsPage: React.FC = () => {
                             },
                           },
                           extend: {
+                            chart: {
+                              animations: {
+                                enabled: true,
+                                easing: 'easeinout',
+                                speed: 600,
+                                animateGradually: {
+                                  enabled: false
+                                },
+                                dynamicAnimation: {
+                                  enabled: true,
+                                  speed: 400
+                                }
+                              }
+                            },
                             markers: {
-                              size: 4,
-                              strokeWidth: 2,
-                              hover: { size: 6 }
+                              size: 0, // Removed circles (bulatan)
+                              strokeWidth: 0,
+                              hover: { size: 5 } // Show small dot on hover for usability
                             },
                             tooltip: {
                               container: 'body',

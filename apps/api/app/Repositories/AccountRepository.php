@@ -52,4 +52,45 @@ class AccountRepository
     {
         return $account->transactions()->exists() || $account->incomingTransfers()->exists();
     }
+
+    /**
+     * Get the current absolute balance for all accounts of a user.
+     */
+    public static function getBalances(User $user): array
+    {
+        $tIncome = \App\Models\Transaction::TYPE_INCOME;
+        $tExpense = \App\Models\Transaction::TYPE_EXPENSE;
+        $tTransfer = \App\Models\Transaction::TYPE_TRANSFER;
+
+        $balances = [];
+
+        // Outgoing/Direct
+        $out = \Illuminate\Support\Facades\DB::select("
+            SELECT account_id, 
+                   SUM(CASE WHEN type = '{$tIncome}' THEN amount_raw ELSE 0 END) - 
+                   SUM(CASE WHEN type IN ('{$tExpense}', '{$tTransfer}') THEN amount_raw ELSE 0 END) as net
+            FROM transactions 
+            WHERE user_id = ? 
+            GROUP BY account_id
+        ", [$user->id]);
+
+        foreach ($out as $row) {
+            $balances[$row->account_id] = (int) $row->net;
+        }
+
+        // Incoming Transfers
+        $in = \Illuminate\Support\Facades\DB::select("
+            SELECT to_account_id as account_id, 
+                   SUM(amount_raw) as net
+            FROM transactions 
+            WHERE user_id = ? AND type = '{$tTransfer}' AND to_account_id IS NOT NULL
+            GROUP BY to_account_id
+        ", [$user->id]);
+
+        foreach ($in as $row) {
+            $balances[$row->account_id] = ($balances[$row->account_id] ?? 0) + (int) $row->net;
+        }
+
+        return $balances;
+    }
 }

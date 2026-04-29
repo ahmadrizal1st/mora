@@ -16,6 +16,7 @@ class AccountService
     public static function listWithHistory(User $user, string $groupBy = 'day', array $filters = []): Collection
     {
         $accounts = AccountRepository::getAllForUser($user);
+        $currentBalances = AccountRepository::getBalances($user);
 
         $historyData = TransactionService::getAccountsHistory($user, $groupBy, $filters);
         $labels = $historyData['labels'];
@@ -23,7 +24,7 @@ class AccountService
         $expense = $historyData['expense'];
         $initialBalances = $historyData['initial_balances'];
 
-        $accounts->each(function ($account) use ($income, $expense, $labels, $initialBalances) {
+        $accounts->each(function ($account) use ($income, $expense, $labels, $initialBalances, $currentBalances) {
             $accountData = [
                 'income' => $income[$account->id] ?? [],
                 'expense' => $expense[$account->id] ?? [],
@@ -36,8 +37,8 @@ class AccountService
             $history['labels'] = $labels;
             $account->history = $history;
             
-            // Current balance is the last point in history
-            $account->balance_raw = !empty($history['balance']) ? end($history['balance']) : 0;
+            // balance_raw is the actual current balance from all time
+            $account->balance_raw = $currentBalances[$account->id] ?? 0;
         });
 
         return $accounts;
@@ -49,6 +50,7 @@ class AccountService
     public static function showWithHistory(User $user, int $id, string $groupBy = 'day', array $filters = []): Account
     {
         $account = AccountRepository::findForUser($user, $id);
+        $currentBalances = AccountRepository::getBalances($user);
 
         $historyData = TransactionService::getAccountsHistory($user, $groupBy, $filters);
         $labels = $historyData['labels'];
@@ -68,7 +70,7 @@ class AccountService
         );
         $history['labels'] = $labels;
         $account->history = $history;
-        $account->balance_raw = !empty($history['balance']) ? end($history['balance']) : 0;
+        $account->balance_raw = $currentBalances[$account->id] ?? 0;
 
         return $account;
     }

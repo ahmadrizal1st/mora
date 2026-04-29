@@ -25,6 +25,8 @@ export interface Account {
   incoming_transfers_count?: number;
   history?: {
     balance: number[];
+    income: number[];
+    expense: number[];
     labels: string[];
   };
   created_at: string;

@@ -374,7 +374,9 @@ export function Chart({
       stroke: {
         show: true,
         width: chartData.strokeWidth ?? chartData['stroke-width'] ?? (['pie', 'donut'].includes(chartType) ? 2 : (['area', 'line', 'scatter', 'candlestick'].includes(chartType) ? (chartType === 'candlestick' ? 1 : 2) : 0)),
-        colors: chartData.strokeColors ?? chartData['stroke-colors'] ?? (['pie', 'donut'].includes(chartType) ? ['var(--tblr-bg-surface)'] : undefined),
+        colors: (chartData.strokeColors ?? chartData['stroke-colors']) 
+          ? (chartData.strokeColors ?? chartData['stroke-colors'])!.map(c => resolveCSSColor(c))
+          : (['pie', 'donut'].includes(chartType) ? [resolveCSSColor('bg-surface')] : undefined),
         dashArray: chartData.strokeDash ?? chartData['stroke-dash'] ?? 0,
         lineCap: chartData.lineCap ?? 'round',
         curve: (chartData.strokeCurve ?? chartData['stroke-curve'] ?? 'smooth') as 'smooth' | 'straight' | 'stepline',

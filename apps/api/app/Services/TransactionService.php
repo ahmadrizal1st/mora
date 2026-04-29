@@ -226,11 +226,11 @@ class TransactionService
         ];
 
         if (empty($baseFilters['date_from']) || empty($baseFilters['date_to'])) {
-            $currentFrom = \Carbon\Carbon::now()->subDays(29)->startOfDay();
-            $currentTo   = \Carbon\Carbon::now()->endOfDay();
+            $currentTo = \Carbon\Carbon::now()->endOfDay();
+            $currentFrom = $currentTo->copy()->subDays(29)->startOfDay();
         } else {
-            $currentFrom = \Carbon\Carbon::parse($baseFilters['date_from']);
-            $currentTo   = \Carbon\Carbon::parse($baseFilters['date_to']);
+            $currentFrom = \Carbon\Carbon::parse($baseFilters['date_from'])->startOfDay();
+            $currentTo   = \Carbon\Carbon::parse($baseFilters['date_to'])->endOfDay();
         }
 
         // Align boundaries
@@ -327,14 +327,11 @@ class TransactionService
         };
 
         if (empty($filters['date_from']) || empty($filters['date_to'])) {
-            $earliest = TransactionRepository::getEarliestTransactionDate($user);
-            $startDate = $earliest 
-                ? \Carbon\Carbon::parse($earliest) 
-                : \Carbon\Carbon::now()->subDays(29);
-            $endDate = \Carbon\Carbon::now();
+            $endDate = \Carbon\Carbon::now()->endOfDay();
+            $startDate = $endDate->copy()->subDays(29)->startOfDay();
         } else {
-            $startDate = \Carbon\Carbon::parse($filters['date_from']);
-            $endDate   = \Carbon\Carbon::parse($filters['date_to']);
+            $startDate = \Carbon\Carbon::parse($filters['date_from'])->startOfDay();
+            $endDate   = \Carbon\Carbon::parse($filters['date_to'])->endOfDay();
         }
 
         match ($groupBy) {

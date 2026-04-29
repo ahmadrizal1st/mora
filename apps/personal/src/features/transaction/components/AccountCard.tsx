@@ -76,16 +76,6 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
             </div>
             <h3 className="card-title h3 mb-0 fw-bold" style={{ color: textColor }}>{account.name}</h3>
           </div>
-          <div className="d-flex gap-2">
-            <button 
-              onClick={(e) => { e.stopPropagation(); onEdit(account); }}
-              className="btn btn-icon btn-sm rounded-circle opacity-0 group-hover-opacity-100 transition-opacity"
-              style={{ backgroundColor: iconBgColor, color: textColor, border: 'none' }}
-              title="Edit Akun"
-            >
-              <Icon icon="pencil" size={14} />
-            </button>
-          </div>
         </div>
 
         <div className="mt-2 mb-2">
@@ -95,23 +85,32 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
           </div>
         </div>
 
-        <div style={{ height: '70px', margin: '0 -1.5rem -1.5rem -1.5rem' }} className="mt-auto rounded-bottom overflow-hidden">
+        <div style={{ height: '70px', margin: '0 -1.5rem -1.25rem -1.5rem' }} className="mt-auto rounded-bottom overflow-hidden">
           <Chart
             chartId={`account-sparkline-${account.id}`}
             chartData={{
-              type: 'bar',
+              type: 'line',
               sparkline: true,
-              series: [{
-                name: 'Saldo',
-                data: account.history?.balance || [0, 0, 0],
-                color: chartColor
-              }],
+              series: [
+                {
+                  name: 'Pemasukan',
+                  data: account.history?.income || [0, 0, 0],
+                  color: '#ffffff' // White
+                },
+                {
+                  name: 'Pengeluaran',
+                  data: account.history?.expense || [0, 0, 0],
+                  color: '#000000' // Black
+                }
+              ],
+              strokeWidth: [2, 2],
+              strokeDash: [0, 4], // Solid for income, dashed for expense
               fill: {
-                opacity: 0.8,
+                opacity: 1,
               },
               categories: account.history?.labels || [],
               hideTooltip: true,
-              hidePoints: false,
+              hidePoints: true,
               showMarkers: false,
               xaxis: {
                 tooltip: { enabled: false },
@@ -126,25 +125,22 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
               legend: false,
               grid: { 
                 show: false,
-                padding: { top: 15, right: 0, bottom: 0, left: 0 } 
+                padding: { top: 15, right: 0, bottom: 10, left: 0 } 
               },
               extend: {
-                plotOptions: {
-                  bar: {
-                    columnWidth: '60%',
-                    borderRadius: 2
-                  }
+                stroke: {
+                  curve: 'smooth',
+                  width: [2, 1.5],
+                  dashArray: [0, 4]
                 },
                 markers: {
                   size: 0,
-                  strokeWidth: 2,
-                  hover: { size: 4 }
+                  hover: { size: 3 }
                 },
                 tooltip: {
                   theme: isDarkText ? 'light' : 'dark',
-                  fixed: {
-                    enabled: false
-                  },
+                  shared: true,
+                  intersect: false,
                   container: 'body',
                   x: { 
                     show: true,
@@ -155,16 +151,14 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
                       if (isNaN(date.getTime())) return label;
                       return date.toLocaleDateString('id-ID', {
                         day: '2-digit',
-                        month: 'long',
+                        month: 'short',
                         year: 'numeric',
                       });
                     }
                   },
                   y: {
-                    title: { formatter: () => 'Saldo: ' },
                     formatter: (val: number) => formatCurrency(val)
                   },
-                  marker: { show: true }
                 }
               }
             }}
