@@ -51,16 +51,46 @@ class SuryaEngine(BaseOCREngine):
                 return {"text": "", "confidence": 0.0, "engine": "surya-ocr"}
 
             ocr_result = results[0]
-            text_lines = [line.text for line in ocr_result.text_lines if line.text]
-            full_text = "\n".join(text_lines)
+            
+            # Sort lines by Y-coordinate to handle columns better
+            # We group lines that have similar Y-top coordinates
+            lines = []
+            for line in ocr_result.text_lines:
+                if not line.text:
+                    continue
+                # bbox is usually [x1, y1, x2, y2]
+                y_top = line.bbox[1]
+                lines.append({
+                    'text': line.text,
+                    'y': y_top,
+                    'x': line.bbox[0],
+                    'conf': getattr(line, "confidence", 0.85)
+                })
+            
+            # Sort primarily by Y, then by X
+            lines.sort(key=lambda l: (l['y'], l['x']))
+            
+            # Group into horizontal lines with a tolerance (e.g., 15 pixels for receipt lines)
+            grouped_lines = []
+            if lines:
+                current_line = [lines[0]]
+                for i in range(1, len(lines)):
+                    if abs(lines[i]['y'] - current_line[0]['y']) < 15:
+                        current_line.append(lines[i])
+                    else:
+                        # Sort the finished line by X coordinate
+                        current_line.sort(key=lambda l: l['x'])
+                        grouped_lines.append(" ".join([l['text'] for l in current_line]))
+                        current_line = [lines[i]]
+                
+                # Add the last line
+                current_line.sort(key=lambda l: l['x'])
+                grouped_lines.append(" ".join([l['text'] for l in current_line]))
 
-            # Compute average confidence from text lines
-            confidences = [
-                getattr(line, "confidence", 0.85)
-                for line in ocr_result.text_lines
-                if line.text
-            ]
-            avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
+            full_text = "\n".join(grouped_lines)
+
+            # Compute average confidence
+            avg_confidence = sum([l['conf'] for l in lines]) / len(lines) if lines else 0.0
 
             return {
                 "text": full_text,

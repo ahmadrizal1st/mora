@@ -222,7 +222,6 @@ class ProcessOCRResult implements ShouldQueue
         // agar LLM tidak salah sangka sebagai decimal point.
         // Contoh: "10.000" -> "10000"
         $this->raw_text = preg_replace('/(\d)\.(\d{3})\b/', '$1$2', $this->raw_text);
-        $this->raw_text = preg_replace('/(\d)\.(\d)/', '$1$2', $this->raw_text);
 
         $prompt = $builder->build(
             $this->raw_text,
@@ -257,13 +256,12 @@ class ProcessOCRResult implements ShouldQueue
                     if ($itemPrice < 1000 && str_contains(strtolower($this->raw_text), 'ribu')) {
                         $itemPrice *= 1000;
                     }
-                    
                     $sumOfItems += (int) $itemPrice;
                     $hasValidPrices = true;
                 }
             }
-            // Gunakan hasil penjumlahan server jika ditemukan harga yang valid
-            if ($hasValidPrices && $sumOfItems > 0) {
+            // Gunakan hasil penjumlahan server HANYA JIKA amount utama kosong/nol.
+            if ($amount <= 0 && $hasValidPrices && $sumOfItems > 0) {
                 $amount = $sumOfItems;
             }
         }
