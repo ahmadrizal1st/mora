@@ -29,10 +29,11 @@ enum DocumentSchema: string
                 ],
                 'payment_method' => 'string | nullable | e.g. Cash, Transfer, QRIS, GoPay, OVO, Dana, Debit, Credit',
                 'currency'       => 'string | currency code, default IDR if not mentioned',
+                'type'           => 'string | REQUIRED - Always infer from context. Use "expense" for spending and "income" for earnings/salary.',
             ],
 
             self::INCOME => [
-                'source_name'    => 'string | CLEAN name of payer or income source (e.g., "Company Name", "Boss Name"). Remove "dapat", "masuk", "gaji".',
+                'source_name'    => 'string | CLEAN name of payer or income source (e.g., "Company Name", "Boss Name"). Remove "dapat", "masuk". Correct typos (e.g., "Gadji" -> "Gaji").',
                 'date'           => 'string (YYYY-MM-DD) | date of transaction. Infer from context. Default to today.',
                 'amount'         => 'number | The total sum of income as a FULL INTEGER (e.g., 5000000). NEVER use decimal points.',
                 'category'       => 'string | REQUIRED - Always infer from context. Use ONE of: Salary, Bonus, Freelance, Investment, Gift, Sales, Other Income. Examples: gaji=Salary, bonus/thr=Bonus, proyek/side job=Freelance, dividen/saham=Investment, kado/angpao=Gift, jualan=Sales.',
@@ -45,6 +46,7 @@ enum DocumentSchema: string
                 ],
                 'payment_method' => 'string | nullable | e.g. Transfer, Cash, Deposit',
                 'currency'       => 'string | currency code, default IDR if not mentioned',
+                'type'           => 'string | REQUIRED - Always infer from context. Use "income" for earnings/salary and "expense" for spending.',
             ],
         };
     }

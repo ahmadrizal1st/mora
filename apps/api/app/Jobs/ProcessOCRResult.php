@@ -209,6 +209,13 @@ class ProcessOCRResult implements ShouldQueue
     {
         $document = Document::findOrFail($this->document_id);
 
+        // PRE-DETECTION: Only log potential type mismatch, don't override doc_type yet
+        // to avoid sending the wrong schema if the detection is a false positive.
+        $isIncomePattern = preg_match('/\b(gaji|salary|income|thr|bonus|investasi|profit)\b/i', $this->raw_text);
+        if ($this->doc_type === 'expense' && $isIncomePattern) {
+            Log::info("Potential INCOME detected for Document #{$this->document_id} via pattern matching.");
+        }
+
         $schema      = DocumentSchema::from($this->doc_type);
         $isTextInput = $document->mime_type === 'text/plain';
 
@@ -270,7 +277,7 @@ class ProcessOCRResult implements ShouldQueue
             ?? $structuredData['source_name']           // INCOME
             ?? $structuredData['vendor_name']           // INVOICE
             ?? $structuredData['speaker_name']          // AUDIO_NOTE
-            ?? ($structuredData['summary']              // AUDIO_NOTE fallback: ringkasan
+            ?? (isset($structuredData['summary'])
                 ? mb_strimwidth($structuredData['summary'], 0, 50, '...')
                 : null)
             ?? 'Unknown';
@@ -280,15 +287,22 @@ class ProcessOCRResult implements ShouldQueue
             $merchant = $structuredData['items'][0]['name'];
         }
 
-        // Resolve transaction type (Default: Expense)
-        $txType = \App\Models\Transaction::TYPE_EXPENSE;
-        
-        // Cek jika doc_type adalah income atau kategori menjurus ke income
-        $incomeCategories = ['Salary', 'Bonus', 'Freelance', 'Investment', 'Gift', 'Sales', 'Other Income'];
+        // Resolve transaction type (Priority: LLM Result -> User Selection -> Manual Detection)
+        $txType = $structuredData['type'] ?? null;
         $extractedCategory = $structuredData['category'] ?? '';
-        
-        if ($this->doc_type === 'income' || in_array($extractedCategory, $incomeCategories)) {
-            $txType = \App\Models\Transaction::TYPE_INCOME;
+
+        // Validasi txType dari LLM
+        if (!in_array($txType, [\App\Models\Transaction::TYPE_INCOME, \App\Models\Transaction::TYPE_EXPENSE])) {
+            $incomeKeywords = [
+                'Salary', 'Bonus', 'Freelance', 'Investment', 'Gift', 'Sales', 'Other Income',
+                'Gaji', 'Bonus', 'Proyek', 'Investasi', 'Hadiah', 'Penjualan', 'Pendapatan', 'THR'
+            ];
+            
+            // Manual detection as fallback
+            $isIncomeDetected = in_array(Str::title($extractedCategory), $incomeKeywords) 
+                || preg_match('/\b(gaji|salary|income|thr|bonus|investasi|profit)\b/i', $this->raw_text);
+
+            $txType = $isIncomeDetected ? \App\Models\Transaction::TYPE_INCOME : $this->doc_type;
         }
 
         // Resolve category_id dari nama kategori yang dikembalikan LLM
@@ -296,6 +310,7 @@ class ProcessOCRResult implements ShouldQueue
         $categoryId = $this->resolveCategoryId(
             $extractedCategory,
             $this->userId,
+            $txType,         // NEW: Pass txType to filter correct categories
             $this->raw_text  // fallback: scan teks asli jika LLM tidak return kategori
         );
 
@@ -329,7 +344,7 @@ class ProcessOCRResult implements ShouldQueue
      * Resolve category_id dari nama kategori (bahasa Inggris/Indonesia) yang dikirim LLM.
      * Jika LLM tidak memberikan kategori, fallback ke scan raw_text via CATEGORY_MAP.
      */
-    protected function resolveCategoryId(?string $llmCategory, ?int $userId, string $rawText = ''): ?int
+    protected function resolveCategoryId(?string $llmCategory, ?int $userId, string $txType, string $rawText = ''): ?int
     {
         $normalized = strtolower(trim($llmCategory ?? ''));
 
@@ -349,7 +364,7 @@ class ProcessOCRResult implements ShouldQueue
 
         // 2. Jika tidak ada di map, coba exact/partial match llmCategory langsung ke DB
         if (!$mappedName && !empty($normalized)) {
-            $direct = Category::where('tx_type', 'expense')
+            $direct = Category::where('tx_type', $txType)
                 ->where(function ($q) use ($normalized) {
                     $q->whereRaw('LOWER(name) = ?', [$normalized])
                       ->orWhereRaw('LOWER(name) LIKE ?', ["%{$normalized}%"]);
@@ -363,7 +378,7 @@ class ProcessOCRResult implements ShouldQueue
 
         // 3. Cari berdasarkan mappedName di DB
         if ($mappedName) {
-            $cat = Category::where('tx_type', 'expense')
+            $cat = Category::where('tx_type', $txType)
                 ->whereRaw('LOWER(name) = ?', [strtolower($mappedName)])
                 ->first();
 
@@ -372,10 +387,16 @@ class ProcessOCRResult implements ShouldQueue
             }
         }
 
-        // 4. Fallback ke 'Lainnya'
-        $fallback = Category::where('tx_type', 'expense')
-            ->whereRaw('LOWER(name) = ?', ['lainnya'])
+        // 4. Fallback ke 'Lainnya' / 'Pendapatan Lainnya' berdasarkan tipe transaksi
+        $fallbackName = $txType === \App\Models\Transaction::TYPE_INCOME ? 'pendapatan lainnya' : 'lainnya';
+        $fallback = Category::where('tx_type', $txType)
+            ->whereRaw('LOWER(name) = ?', [$fallbackName])
             ->first();
+
+        // Second fallback: just get the first one from this type if even fallback doesn't exist
+        if (!$fallback) {
+            $fallback = Category::where('tx_type', $txType)->first();
+        }
 
         return $fallback?->id;
     }

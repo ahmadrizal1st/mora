@@ -6,6 +6,7 @@ import { useProcessText } from '../hooks/useTracker';
 
 export default function TrackerTextPage() {
   const [text, setText] = useState('');
+  const [docType, setDocType] = useState('expense');
   const processTextMutation = useProcessText();
   const navigate = useNavigate();
 
@@ -13,7 +14,7 @@ export default function TrackerTextPage() {
     if (!text.trim()) return;
 
     try {
-      await processTextMutation.mutateAsync({ text });
+      await processTextMutation.mutateAsync({ text, docType });
       
       // Navigate to transactions or show success
       // Since it's processed asynchronously, we might just navigate to a pending state
@@ -38,6 +39,26 @@ export default function TrackerTextPage() {
                 </div>
               </div>
               <div className="card-body p-4 p-md-5">
+                <div className="mb-4">
+                  <label className="form-label fw-semibold">Transaction Type</label>
+                  <div className="d-flex gap-2">
+                    <button
+                      type="button"
+                      className={`btn flex-fill ${docType === 'expense' ? 'btn-danger' : 'btn-outline-danger'}`}
+                      onClick={() => setDocType('expense')}
+                    >
+                      <i className="ti ti-minus me-2"></i> Expense
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn flex-fill ${docType === 'income' ? 'btn-success' : 'btn-outline-success'}`}
+                      onClick={() => setDocType('income')}
+                    >
+                      <i className="ti ti-plus me-2"></i> Income
+                    </button>
+                  </div>
+                </div>
+
                 <div className="mb-4">
                   <label className="form-label fw-semibold">Transaction Details</label>
                   <AutosizeTextarea
