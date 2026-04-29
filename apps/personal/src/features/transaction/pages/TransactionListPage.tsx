@@ -191,7 +191,7 @@ export const TransactionListPage: React.FC = () => {
         month: 'short',
         year: 'numeric'
       }).format(date);
-    } catch (e) {
+    } catch {
       return '-';
     }
   };
@@ -202,12 +202,9 @@ export const TransactionListPage: React.FC = () => {
       pageActions={<DropdownGrouping defaultValue={groupBy} onChange={setGroupBy} />}
     >
       <div className="container-xl">
-        <div
-          className="row row-cards g-2 g-lg-3 mb-2 flex-nowrap overflow-x-auto d-md-flex flex-md-wrap overflow-md-visible hide-scrollbar pb-1"
-          style={{ scrollSnapType: 'x mandatory' }}
-        >
+        <div className="row row-cards g-2 g-lg-3 mb-3">
           {/* Summary Cards */}
-          <div className="col-auto col-md-6 col-lg-3 mobile-slider-item">
+          <div className="col-6 col-md-6 col-lg-3">
             <MetricAreaChartCard
               title="Total Pemasukan"
               value={isLoadingSummary ? '...' : formatCurrency(summary?.total_income || 0)}
@@ -216,10 +213,10 @@ export const TransactionListPage: React.FC = () => {
               chartId="income-chart"
               series={chartData.incomeSeries}
               categories={chartData.incomeLabels}
-              style={{ height: '152px' }}
+              style={{ height: '140px' }}
             />
           </div>
-          <div className="col-auto col-md-6 col-lg-3 mobile-slider-item">
+          <div className="col-6 col-md-6 col-lg-3">
             <MetricAreaChartCard
               title="Total Pengeluaran"
               value={isLoadingSummary ? '...' : formatCurrency(summary?.total_expense || 0)}
@@ -228,20 +225,20 @@ export const TransactionListPage: React.FC = () => {
               chartId="expense-chart"
               series={chartData.expenseSeries}
               categories={chartData.expenseLabels}
-              style={{ height: '152px' }}
+              style={{ height: '140px' }}
             />
           </div>
-          <div className="col-auto col-md-6 col-lg-3 mobile-slider-item">
+          <div className="col-6 col-md-6 col-lg-3">
             <ComparisonChartCard
               title="Saldo Bersih"
               value={isLoadingSummary ? '...' : formatCurrency(summary?.net_balance || 0)}
               trendValue={summary?.balance_trend || 0}
               series={chartData.comparisonSeries}
               categories={chartData.comparisonLabels}
-              style={{ height: '152px' }}
+              style={{ height: '140px' }}
             />
           </div>
-          <div className="col-auto col-md-6 col-lg-3 mobile-slider-item">
+          <div className="col-6 col-md-6 col-lg-3">
             <SummaryChartCard
               title="Jumlah Transaksi"
               value={isLoadingSummary ? '...' : (summary?.transaction_count || 0).toString()}
@@ -249,7 +246,7 @@ export const TransactionListPage: React.FC = () => {
               chartId="tx-count-chart"
               series={chartData.countSeries}
               categories={chartData.countLabels}
-              style={{ height: '152px' }}
+              style={{ height: '140px' }}
             />
           </div>
         </div>
