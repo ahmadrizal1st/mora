@@ -4,7 +4,6 @@ import SingleLayout from '@/shared/layouts/SingleLayout'
 import { ResetPasswordCard } from '@/shared/components/cards/ResetPasswordCard'
 import { useResetPasswordMutation } from '../hooks/useResetPasswordMutation'
 import { useSearch } from '@tanstack/react-router'
-import { AxiosError } from 'axios'
 
 export default function ResetPassword() {
   // TanStack Router search params for token
@@ -32,8 +31,9 @@ export default function ResetPassword() {
       password,
       password_confirmation: passwordConfirmation
     }, {
-      onError: (err: AxiosError<{ message?: string }>) => {
-        setError(err.response?.data?.message || 'Failed to reset password.')
+      onError: (err) => {
+        const responseData = err.response?.data as { message?: string } | undefined
+        setError(responseData?.message || 'Failed to reset password.')
       }
     })
   }

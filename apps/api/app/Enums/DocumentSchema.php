@@ -8,6 +8,7 @@ enum DocumentSchema: string
     case RECEIPT = 'receipt';
     case KTP = 'ktp';
     case AUDIO_NOTE = 'audio_note';
+    case EXPENSE = 'expense';
 
     /**
      * Get the expected data structure for the LLM extraction.
@@ -73,6 +74,16 @@ enum DocumentSchema: string
                 'transcription' => 'string | full text transcription of the audio',
                 'summary' => 'string | concise summary of the note',
                 'tags' => 'array of strings | relevant keywords or categories',
+            ],
+
+            self::EXPENSE => [
+                'merchant_name'  => 'string | name of merchant, store, or payee',
+                'date'           => 'string (YYYY-MM-DD) | date of transaction, infer from context if relative (e.g. "kemarin", "tadi")',
+                'amount'         => 'number | transaction amount in numeric form (e.g. 25000 not "25rb")',
+                'category'       => 'string | nullable | inferred category e.g. Food, Transport, Shopping, Entertainment, Health',
+                'description'    => 'string | nullable | brief description or note about the expense',
+                'payment_method' => 'string | nullable | e.g. Cash, Transfer, QRIS, Debit, Credit',
+                'currency'       => 'string | currency code, default IDR if not mentioned',
             ],
         };
     }

@@ -7,23 +7,30 @@ import { useSignInMutation } from '@/features/auth/hooks/useSignInMutation'
 import { useMutation } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import type { SignInFormData } from '@/features/auth/components/SignInForm'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 
 export default function SignIn() {
   const loginWithGoogle = useAuthStore(s => s.loginWithGoogle)
   const navigate = useNavigate()
-  const signInMutation = useSignInMutation()
+  const { redirect } = useSearch({ from: '/sign-in' })
+  const signInMutation = useSignInMutation(redirect)
 
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>(undefined)
 
-  const googleSignInMutation = useMutation({
+  const googleSignInMutation = useMutation<void, AxiosError, string>({
     mutationFn: async (credential: string) => {
       await loginWithGoogle(credential)
     },
-    onSuccess: () => navigate({ to: '/dashboard' }),
-    onError: (err: AxiosError<{ message?: string }>) => {
-      const responseData = err.response?.data
+    onSuccess: () => {
+      if (redirect) {
+        window.location.href = redirect
+      } else {
+        navigate({ to: '/dashboard' })
+      }
+    },
+    onError: (err) => {
+      const responseData = err.response?.data as { message?: string } | undefined
       setError(responseData?.message || 'Google login failed.')
     }
   })
@@ -32,8 +39,8 @@ export default function SignIn() {
     setError(null)
     setFieldErrors(undefined)
     signInMutation.mutate(data, {
-      onError: (err: AxiosError<{ message?: string, errors?: Record<string, string[]> }>) => {
-        const responseData = err.response?.data
+      onError: (err) => {
+        const responseData = err.response?.data as { message?: string, errors?: Record<string, string[]> } | undefined
         setError(responseData?.message || 'Login failed. Please check your credentials.')
         setFieldErrors(responseData?.errors)
       }

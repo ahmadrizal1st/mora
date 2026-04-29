@@ -81,4 +81,48 @@ class DocumentController extends Controller
             ], 503);
         }
     }
+
+    /**
+     * Handle direct text processing and dispatch LLM mapping job.
+     */
+    public function processText(Request $request)
+    {
+        $request->validate([
+            'text' => 'required|string',
+            'doc_type' => ['required', new Enum(DocumentSchema::class)],
+        ]);
+
+        try {
+            $rawText = $request->input('text');
+
+            // Simpan ke database dengan detail text
+            $document = Document::create([
+                'user_id' => auth()->id(),
+                'doc_type' => $request->doc_type,
+                'raw_text' => $rawText,
+                'mime_type' => 'text/plain',
+                'status' => 'pending',
+            ]);
+
+            // Jalankan mapping LLM secara async
+            ProcessOCRResult::dispatch(
+                $rawText,
+                $request->doc_type,
+                $document->id,
+                auth()->id()
+            );
+
+            return response()->json([
+                'message' => 'Text received and processing started.',
+                'document_id' => $document->id,
+            ], 202);
+
+        } catch (Exception $e) {
+            Log::error("Text Processing Error: " . $e->getMessage());
+            
+            return response()->json([
+                'message' => 'Failed to process text. Please try again later.',
+            ], 500);
+        }
+    }
 }

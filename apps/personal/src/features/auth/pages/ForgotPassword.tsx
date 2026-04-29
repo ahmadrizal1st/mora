@@ -3,7 +3,6 @@ import { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { ForgotPasswordCard } from '@/shared/components/cards/ForgotPasswordCard'
 import { useForgotPasswordMutation } from '../hooks/useForgotPasswordMutation'
-import { AxiosError } from 'axios'
 
 export default function ForgotPassword() {
   const [error, setError] = useState<string | null>(null)
@@ -18,8 +17,9 @@ export default function ForgotPassword() {
       onSuccess: () => {
         setSuccess(true)
       },
-      onError: (err: AxiosError<{ message?: string }>) => {
-        setError(err.response?.data?.message || 'Failed to send reset link.')
+      onError: (err) => {
+        const responseData = err.response?.data as { message?: string } | undefined
+        setError(responseData?.message || 'Failed to send reset link.')
       }
     })
   }

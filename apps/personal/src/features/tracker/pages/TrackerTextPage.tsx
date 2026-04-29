@@ -2,26 +2,27 @@ import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
 import { Button, AutosizeTextarea } from '@/shared/components/ui';
+import { useProcessText } from '../hooks/useTracker';
 
 export default function TrackerTextPage() {
   const [text, setText] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const processTextMutation = useProcessText();
   const navigate = useNavigate();
 
   const handleProcess = async () => {
     if (!text.trim()) return;
 
-    setIsProcessing(true);
-    // Simulate processing delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsProcessing(false);
-
-    // Navigate to manual input with some mock data or just empty
-    // In a real app, we would parse the text and pass the data
-    navigate({ 
-      to: '/tracker/input',
-      search: { text: text.substring(0, 50) } // Example of passing something
-    });
+    try {
+      await processTextMutation.mutateAsync({ text });
+      
+      // Navigate to transactions or show success
+      // Since it's processed asynchronously, we might just navigate to a pending state
+      // or to the transaction list where it will appear.
+      navigate({ to: '/transactions' });
+    } catch (error) {
+      console.error('Failed to process text:', error);
+      alert('Gagal memproses teks transaksi');
+    }
   };
 
   return (
@@ -51,11 +52,11 @@ export default function TrackerTextPage() {
                 
                 <div className="d-grid">
                   <Button
-                    text={isProcessing ? 'Processing...' : 'Extract Transaction'}
+                    text={processTextMutation.isPending ? 'Processing...' : 'Extract Transaction'}
                     color="primary"
                     size="lg"
-                    loading={isProcessing}
-                    disabled={!text.trim() || isProcessing}
+                    loading={processTextMutation.isPending}
+                    disabled={!text.trim() || processTextMutation.isPending}
                     onClick={handleProcess}
                   />
                 </div>

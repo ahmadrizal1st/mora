@@ -61,4 +61,9 @@ export const AuthService = {
   async send2FACode(data: PhoneCredentials): Promise<void> {
     await api.post('security/2fa/send', data)
   },
+
+  async refresh(): Promise<AuthResponse> {
+    const response = await api.post<{ data: AuthResponse }>('auth/refresh')
+    return response.data.data
+  },
 }

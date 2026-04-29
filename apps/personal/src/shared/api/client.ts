@@ -38,19 +38,42 @@ api.interceptors.response.use(
   (response) => {
     return response
   },
-  (error) => {
+  async (error) => {
     if (import.meta.env.DEV) {
       console.error(`❌ [API Error] ${error.config?.method?.toUpperCase()} ${error.config?.url}`, error.response?.data || error.message)
     }
 
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      localStorage.removeItem('auth-storage')
+    if (error.response?.status === 401 && !error.config._retry) {
+      error.config._retry = true;
       
-      // Redirect to login if not already there
-      if (!window.location.pathname.startsWith('/sign-in') && !window.location.pathname.startsWith('/sign-up')) {
-        window.location.href = '/sign-in'
+      try {
+        // Attempt to refresh token
+        // Use a clean axios call or ensure this doesn't trigger the interceptor again
+        const response = await axios.post(`${API_URL}/auth/refresh`, {}, {
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        const { access_token } = response.data.data;
+        
+        if (access_token) {
+          localStorage.setItem('token', access_token);
+          // Update the original request with new token
+          error.config.headers.Authorization = `Bearer ${access_token}`;
+          return api(error.config);
+        }
+      } catch {
+        // Refresh failed, logout and redirect
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('auth-storage');
+        
+        const currentPath = window.location.pathname;
+        if (!currentPath.startsWith('/sign-in') && !currentPath.startsWith('/sign-up')) {
+          window.location.href = `/sign-in?redirect=${encodeURIComponent(currentPath)}`;
+        }
       }
     }
 

@@ -23,10 +23,6 @@ export interface MyRouterContext {
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: ({ context, location }) => {
-    if (!context.auth || context.auth.isLoading) {
-      return
-    }
-
     const publicPaths = [
       '/',
       '/sign-in',
@@ -47,7 +43,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     const isAuthenticated = context.auth.isAuthenticated
 
     if (!isAuthenticated && !isPublicPath) {
-      throw redirect({ to: '/sign-in' })
+      throw redirect({ 
+        to: '/sign-in',
+        search: {
+          redirect: pathname,
+        },
+      })
     }
 
     const guestOnlyPaths = ['/', '/sign-in', '/sign-up', '/forgot-password', '/reset-password']

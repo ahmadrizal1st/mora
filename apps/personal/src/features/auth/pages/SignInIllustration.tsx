@@ -19,13 +19,14 @@ export default function SignInIllustration() {
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>(undefined)
 
-  const googleSignInMutation = useMutation({
+  const googleSignInMutation = useMutation<void, AxiosError<any>, string>({
     mutationFn: async (credential: string) => {
       await loginWithGoogle(credential)
     },
     onSuccess: () => navigate({ to: '/dashboard' }),
-    onError: (err: AxiosError<{ message?: string }>) => {
-      setError(err.response?.data?.message || 'Google login failed.')
+    onError: (err) => {
+      const responseData = err.response?.data as { message?: string } | undefined
+      setError(responseData?.message || 'Google login failed.')
     }
   })
 
@@ -33,8 +34,8 @@ export default function SignInIllustration() {
     setError(null)
     setFieldErrors(undefined)
     signInMutation.mutate(data, {
-      onError: (err: AxiosError<{ message?: string, errors?: Record<string, string[]> }>) => {
-        const responseData = err.response?.data
+      onError: (err) => {
+        const responseData = err.response?.data as { message?: string, errors?: Record<string, string[]> } | undefined
         setError(responseData?.message || 'Login failed. Please check your credentials.')
         setFieldErrors(responseData?.errors)
       }

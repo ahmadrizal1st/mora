@@ -99,5 +99,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // OCR & Documents
     Route::post('documents/upload', [DocumentController::class, 'upload']);
+    Route::post('documents/text', [DocumentController::class, 'processText']);
 });
-
