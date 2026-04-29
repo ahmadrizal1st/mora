@@ -88,6 +88,7 @@ export interface Transaction {
   to_account?: Account;
   category_id?: number | null;
   category?: Category;
+  budget_item_id?: number | null;
   status_id?: number | null;
   status?: Status;
   recurring_type_id?: number;

@@ -7,6 +7,7 @@ import {
   useUpdateTransaction, 
   useTransaction 
 } from '@/features/transaction/hooks/useTransactions';
+import type { Transaction } from '@/features/transaction/types/transaction.types';
 
 export default function TrackerInputPage() {
   const search = useSearch({ from: '/tracker/input' });
@@ -16,6 +17,15 @@ export default function TrackerInputPage() {
   const { data: existingTx, isLoading: isLoadingTx, error: txError } = useTransaction(id as number);
   const createMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction();
+
+  // Create pre-filled data if coming from a tracker
+  const preFilledData = !id ? {
+    merchant: search.merchant || '',
+    amount_raw: search.amount || 0,
+    notes: search.text || '',
+    type: 'expense' as const,
+    tx_date: new Date().toISOString().split('T')[0],
+  } : undefined;
 
   const handleSubmit = async (data: TransactionFormValues) => {
     try {
@@ -62,7 +72,7 @@ export default function TrackerInputPage() {
               </div>
               <div className="card-body p-4 p-md-5">
                 <TransactionForm
-                  initialData={existingTx}
+                  initialData={existingTx || (preFilledData as Partial<Transaction>)}
                   onSubmit={handleSubmit}
                   isLoading={createMutation.isPending || updateMutation.isPending}
                 />

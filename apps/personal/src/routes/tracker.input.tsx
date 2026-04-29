@@ -6,5 +6,8 @@ export const Route = createFileRoute('/tracker/input')({
   component: TrackerInputPage,
   validateSearch: z.object({
     id: z.number().optional(),
+    text: z.string().optional(),
+    amount: z.number().optional(),
+    merchant: z.string().optional(),
   }),
 })

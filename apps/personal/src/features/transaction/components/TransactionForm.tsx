@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Controller, useWatch, FieldError } from 'react-hook-form';
+import { useForm, Controller, useWatch, type FieldError } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type {
@@ -45,7 +45,7 @@ const transactionSchema = z.object({
 export type TransactionFormValues = z.infer<typeof transactionSchema>;
 
 interface TransactionFormProps {
-  initialData?: Transaction;
+  initialData?: Partial<Transaction>;
   onSubmit: (data: TransactionFormValues) => void;
   isLoading?: boolean;
   onCancel?: () => void;

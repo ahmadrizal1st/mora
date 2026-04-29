@@ -33,8 +33,12 @@ import { Route as R2StepVerificationRouteImport } from './routes/2-step-verifica
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions.index'
 import { Route as TrackerIndexRouteImport } from './routes/tracker.index'
+import { Route as TrackerTextRouteImport } from './routes/tracker.text'
 import { Route as TrackerPhotoRouteImport } from './routes/tracker.photo'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
+import { Route as TrackerImageRouteImport } from './routes/tracker.image'
+import { Route as TrackerFileRouteImport } from './routes/tracker.file'
+import { Route as TrackerAudioRouteImport } from './routes/tracker.audio'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -156,6 +160,11 @@ const TrackerIndexRoute = TrackerIndexRouteImport.update({
   path: '/tracker/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackerTextRoute = TrackerTextRouteImport.update({
+  id: '/tracker/text',
+  path: '/tracker/text',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackerPhotoRoute = TrackerPhotoRouteImport.update({
   id: '/tracker/photo',
   path: '/tracker/photo',
@@ -164,6 +173,21 @@ const TrackerPhotoRoute = TrackerPhotoRouteImport.update({
 const TrackerInputRoute = TrackerInputRouteImport.update({
   id: '/tracker/input',
   path: '/tracker/input',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackerImageRoute = TrackerImageRouteImport.update({
+  id: '/tracker/image',
+  path: '/tracker/image',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackerFileRoute = TrackerFileRouteImport.update({
+  id: '/tracker/file',
+  path: '/tracker/file',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackerAudioRoute = TrackerAudioRouteImport.update({
+  id: '/tracker/audio',
+  path: '/tracker/audio',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -190,8 +214,12 @@ export interface FileRoutesByFullPath {
   '/sign-in-illustration': typeof SignInIllustrationRoute
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
+  '/tracker/audio': typeof TrackerAudioRoute
+  '/tracker/file': typeof TrackerFileRoute
+  '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
+  '/tracker/text': typeof TrackerTextRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
 }
@@ -218,8 +246,12 @@ export interface FileRoutesByTo {
   '/sign-in-illustration': typeof SignInIllustrationRoute
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
+  '/tracker/audio': typeof TrackerAudioRoute
+  '/tracker/file': typeof TrackerFileRoute
+  '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
+  '/tracker/text': typeof TrackerTextRoute
   '/tracker': typeof TrackerIndexRoute
   '/transactions': typeof TransactionsIndexRoute
 }
@@ -247,8 +279,12 @@ export interface FileRoutesById {
   '/sign-in-illustration': typeof SignInIllustrationRoute
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
+  '/tracker/audio': typeof TrackerAudioRoute
+  '/tracker/file': typeof TrackerFileRoute
+  '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
+  '/tracker/text': typeof TrackerTextRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
 }
@@ -277,8 +313,12 @@ export interface FileRouteTypes {
     | '/sign-in-illustration'
     | '/sign-in-link'
     | '/sign-up'
+    | '/tracker/audio'
+    | '/tracker/file'
+    | '/tracker/image'
     | '/tracker/input'
     | '/tracker/photo'
+    | '/tracker/text'
     | '/tracker/'
     | '/transactions/'
   fileRoutesByTo: FileRoutesByTo
@@ -305,8 +345,12 @@ export interface FileRouteTypes {
     | '/sign-in-illustration'
     | '/sign-in-link'
     | '/sign-up'
+    | '/tracker/audio'
+    | '/tracker/file'
+    | '/tracker/image'
     | '/tracker/input'
     | '/tracker/photo'
+    | '/tracker/text'
     | '/tracker'
     | '/transactions'
   id:
@@ -333,8 +377,12 @@ export interface FileRouteTypes {
     | '/sign-in-illustration'
     | '/sign-in-link'
     | '/sign-up'
+    | '/tracker/audio'
+    | '/tracker/file'
+    | '/tracker/image'
     | '/tracker/input'
     | '/tracker/photo'
+    | '/tracker/text'
     | '/tracker/'
     | '/transactions/'
   fileRoutesById: FileRoutesById
@@ -362,8 +410,12 @@ export interface RootRouteChildren {
   SignInIllustrationRoute: typeof SignInIllustrationRoute
   SignInLinkRoute: typeof SignInLinkRoute
   SignUpRoute: typeof SignUpRoute
+  TrackerAudioRoute: typeof TrackerAudioRoute
+  TrackerFileRoute: typeof TrackerFileRoute
+  TrackerImageRoute: typeof TrackerImageRoute
   TrackerInputRoute: typeof TrackerInputRoute
   TrackerPhotoRoute: typeof TrackerPhotoRoute
+  TrackerTextRoute: typeof TrackerTextRoute
   TrackerIndexRoute: typeof TrackerIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
 }
@@ -538,6 +590,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackerIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tracker/text': {
+      id: '/tracker/text'
+      path: '/tracker/text'
+      fullPath: '/tracker/text'
+      preLoaderRoute: typeof TrackerTextRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tracker/photo': {
       id: '/tracker/photo'
       path: '/tracker/photo'
@@ -550,6 +609,27 @@ declare module '@tanstack/react-router' {
       path: '/tracker/input'
       fullPath: '/tracker/input'
       preLoaderRoute: typeof TrackerInputRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tracker/image': {
+      id: '/tracker/image'
+      path: '/tracker/image'
+      fullPath: '/tracker/image'
+      preLoaderRoute: typeof TrackerImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tracker/file': {
+      id: '/tracker/file'
+      path: '/tracker/file'
+      fullPath: '/tracker/file'
+      preLoaderRoute: typeof TrackerFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tracker/audio': {
+      id: '/tracker/audio'
+      path: '/tracker/audio'
+      fullPath: '/tracker/audio'
+      preLoaderRoute: typeof TrackerAudioRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -578,8 +658,12 @@ const rootRouteChildren: RootRouteChildren = {
   SignInIllustrationRoute: SignInIllustrationRoute,
   SignInLinkRoute: SignInLinkRoute,
   SignUpRoute: SignUpRoute,
+  TrackerAudioRoute: TrackerAudioRoute,
+  TrackerFileRoute: TrackerFileRoute,
+  TrackerImageRoute: TrackerImageRoute,
   TrackerInputRoute: TrackerInputRoute,
   TrackerPhotoRoute: TrackerPhotoRoute,
+  TrackerTextRoute: TrackerTextRoute,
   TrackerIndexRoute: TrackerIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,
 }
