@@ -10,6 +10,7 @@ export interface DropzoneProps {
   description?: string
   custom?: boolean
   className?: string
+  onAddedFile?: (file: File) => void // Tetap simpan ini agar fungsi tracker jalan
 }
 
 export function Dropzone({
@@ -20,6 +21,7 @@ export function Dropzone({
   description = '(This is just a demo dropzone. Selected files are **not** actually uploaded.)',
   custom = false,
   className,
+  onAddedFile,
 }: DropzoneProps) {
   const dropzoneRef = useRef<HTMLDivElement>(null)
 
@@ -27,7 +29,7 @@ export function Dropzone({
     if (!dropzoneRef.current) return
 
     let active = true
-    let dz: { destroy: () => void; emit: (event: string, ...args: unknown[]) => void } | null = null
+    let dz: any = null
 
     import('dropzone').then(({ default: DropzoneLib }) => {
       if (!active || !dropzoneRef.current) return
@@ -40,7 +42,11 @@ export function Dropzone({
         dictDefaultMessage: custom ? "" : text,
         autoProcessQueue: false,
         init: function() {
-          this.on("addedfile", (file: { name: string }) => {
+          this.on("addedfile", (file: any) => {
+            // Callback ke parent
+            if (onAddedFile) onAddedFile(file);
+
+            // Simulasi progress agar loader bergerak
             setTimeout(() => {
               this.emit("uploadprogress", file, 100, 1024);
               this.emit("success", file, "Success", null);
@@ -48,7 +54,7 @@ export function Dropzone({
             }, 500);
           });
         }
-      }) as unknown as { destroy: () => void; emit: (event: string, ...args: unknown[]) => void }
+      })
     })
 
     return () => {

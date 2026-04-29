@@ -51,32 +51,33 @@ export default function TrackerInputPage() {
   }
 
   return (
-    <BaseLayout pageTitle={id ? 'Edit Transaksi' : 'Tambah Transaksi'}>
-      <div className="container-xl py-4">
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-10 col-lg-9 col-xl-8">
-            {txError && (
-              <div className="mb-3">
-                <ErrorAlert 
-                  message="Gagal Memuat Data: Data transaksi tidak ditemukan atau terjadi kesalahan." 
-                />
-              </div>
-            )}
-            
-            <div className="card shadow-sm border-0 overflow-hidden">
-              <div className="card-header bg-transparent border-0 pt-4 px-4 px-md-5 d-block">
-                <h2 className="card-title h2 fw-bold text-dark mb-0">
-                  {id ? 'Edit Transaksi' : 'Transaksi Manual'}
-                </h2>
-                <div className="text-secondary small mt-1">Lengkapi detail transaksi di bawah ini</div>
-              </div>
-              <div className="card-body p-4 p-md-5">
-                <TransactionForm
-                  initialData={existingTx || (preFilledData as Partial<Transaction>)}
-                  onSubmit={handleSubmit}
-                  isLoading={createMutation.isPending || updateMutation.isPending}
-                />
-              </div>
+    <BaseLayout
+      pageTitle={id ? 'Edit Transaction' : 'Manual Entry'}
+      pagePretitle="Tracking"
+      pageDescription={id ? 'Perbarui detail transaksi Anda.' : 'Lengkapi detail transaksi di bawah ini secara manual.'}
+    >
+      <div className="row justify-content-center">
+        <div className="col-12 col-md-10 col-lg-9 col-xl-8">
+          {txError && (
+            <div className="mb-3">
+              <ErrorAlert 
+                message="Gagal Memuat Data: Data transaksi tidak ditemukan atau terjadi kesalahan." 
+              />
+            </div>
+          )}
+          
+          <div className="card shadow-sm">
+            <div className="card-header">
+              <h3 className="card-title">
+                {id ? 'Transaction Details' : 'New Transaction'}
+              </h3>
+            </div>
+            <div className="card-body">
+              <TransactionForm
+                initialData={existingTx || (preFilledData as Partial<Transaction>)}
+                onSubmit={handleSubmit}
+                isLoading={createMutation.isPending || updateMutation.isPending}
+              />
             </div>
           </div>
         </div>

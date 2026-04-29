@@ -19,7 +19,6 @@ export default function TrackerAudioPage() {
   const navigate = useNavigate();
   const uploadMutation = useUploadDocument();
 
-  // Timer saat recording
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (recordingState === 'recording') {
@@ -28,7 +27,6 @@ export default function TrackerAudioPage() {
     return () => clearInterval(interval);
   }, [recordingState]);
 
-  // Cleanup stream saat unmount
   useEffect(() => {
     return () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -68,7 +66,7 @@ export default function TrackerAudioPage() {
         stream.getTracks().forEach((t) => t.stop());
       };
 
-      recorder.start(250); // collect every 250ms
+      recorder.start(250);
       setRecordingState('recording');
     } catch {
       setError('Tidak dapat mengakses mikrofon. Pastikan izin mikrofon diberikan.');
@@ -90,7 +88,6 @@ export default function TrackerAudioPage() {
     });
 
     try {
-      // Gunakan schema 'expense' agar LLM ekstrak merchant + amount dari transkripsi
       await uploadMutation.mutateAsync({ file: audioFile, docType: 'expense' });
       navigate({ to: '/transactions' });
     } catch {
@@ -108,122 +105,144 @@ export default function TrackerAudioPage() {
   };
 
   return (
-    <BaseLayout pageTitle="Voice Note Tracker">
-      <div className="container-xl py-4">
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-10 col-lg-8">
-            <div className="card shadow-sm border-0 overflow-hidden">
-              <div className="card-header bg-transparent border-0 pt-4 px-4 px-md-5 d-block">
-                <h2 className="card-title h2 fw-bold text-dark mb-0">Record Voice Note</h2>
-                <div className="text-secondary small mt-1">
-                  Ceritakan transaksi kamu, AI akan mengekstrak detailnya
-                </div>
+    <BaseLayout
+      pageTitle="Voice Note"
+      pagePretitle="Audio Tracking"
+      pageDescription="Ucapkan rincian transaksi Anda. AI akan mengubah suara Anda menjadi data transaksi."
+    >
+      <div className="row justify-content-center">
+        <div className="col-12 col-md-10 col-lg-8">
+          <div className="card shadow-sm">
+            <div className="card-header">
+              <h3 className="card-title">Record Voice Note</h3>
+            </div>
+            <div className="card-body text-center py-5">
+              {/* Recording circle */}
+              <div
+                className="mx-auto mb-4 d-flex align-items-center justify-content-center"
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: '50%',
+                  backgroundColor: recordingState === 'recording' ? 'rgba(214, 57, 57, 0.1)' : recordingState === 'stopped' ? 'rgba(47, 179, 68, 0.1)' : '#f8f9fa',
+                  border: `2px solid ${recordingState === 'recording' ? '#d63939' : recordingState === 'stopped' ? '#2fb344' : '#e9ecef'}`,
+                  transition: 'all 0.3s ease',
+                  cursor: recordingState === 'recording' ? 'pointer' : 'default',
+                  animation: recordingState === 'recording' ? 'pulse-red 2s infinite' : 'none',
+                }}
+                onClick={recordingState === 'recording' ? stopRecording : undefined}
+              >
+                <Icon
+                  icon={
+                    recordingState === 'recording' ? 'player-stop' :
+                    recordingState === 'stopped' ? 'check' :
+                    'microphone'
+                  }
+                  size={48}
+                  color={
+                    recordingState === 'recording' ? '#d63939' :
+                    recordingState === 'stopped' ? '#2fb344' :
+                    '#6c757d'
+                  }
+                />
               </div>
 
-              <div className="card-body p-4 p-md-5 text-center">
-                {/* Recording circle */}
-                <div
-                  className="mx-auto mb-4 d-flex align-items-center justify-content-center"
-                  style={{
-                    width: 150,
-                    height: 150,
-                    borderRadius: '50%',
-                    backgroundColor: recordingState === 'recording' ? '#fff1f0' : recordingState === 'stopped' ? '#f0fff4' : '#f8f9fa',
-                    border: `4px solid ${recordingState === 'recording' ? '#d63939' : recordingState === 'stopped' ? '#2fb344' : '#e9ecef'}`,
-                    transition: 'all 0.3s ease',
-                    cursor: recordingState === 'recording' ? 'pointer' : 'default',
-                    animation: recordingState === 'recording' ? 'pulse-red 2s infinite' : 'none',
-                  }}
-                  onClick={recordingState === 'recording' ? stopRecording : undefined}
-                >
-                  <Icon
-                    icon={
-                      recordingState === 'recording' ? 'player-stop' :
-                      recordingState === 'stopped' ? 'check' :
-                      'microphone'
-                    }
-                    size={64}
-                    color={
-                      recordingState === 'recording' ? '#d63939' :
-                      recordingState === 'stopped' ? '#2fb344' :
-                      '#6c757d'
-                    }
-                  />
+              {/* Timer */}
+              <div className={recordingState === 'recording' ? 'text-danger' : recordingState === 'stopped' ? 'text-success' : 'text-dark'}>
+                <span className="display-5 fw-bold">{formatTime(timer)}</span>
+              </div>
+              <p className="text-secondary mt-2">
+                {recordingState === 'idle' && 'Tekan tombol di bawah untuk mulai merekam'}
+                {recordingState === 'recording' && 'Merekam suara Anda...'}
+                {recordingState === 'stopped' && 'Rekaman selesai — siap diproses'}
+              </p>
+
+              {/* Audio preview */}
+              {audioUrl && (
+                <div className="my-4 px-md-5">
+                  <div className="bg-light p-3 rounded-3 border">
+                    <audio controls src={audioUrl} className="w-100" />
+                  </div>
                 </div>
+              )}
 
-                {/* Timer */}
-                <h1 className={`display-4 fw-bold mb-1 ${recordingState === 'recording' ? 'text-danger' : recordingState === 'stopped' ? 'text-success' : 'text-dark'}`}>
-                  {formatTime(timer)}
-                </h1>
-                <p className="text-secondary mb-4">
-                  {recordingState === 'idle' && 'Tekan tombol untuk mulai merekam'}
-                  {recordingState === 'recording' && 'Merekam... klik lingkaran atau tombol Stop'}
-                  {recordingState === 'stopped' && 'Rekaman selesai — dengarkan atau kirim langsung'}
-                </p>
-
-                {/* Audio preview */}
-                {audioUrl && (
-                  <div className="mb-4">
-                    <audio controls src={audioUrl} className="w-100" style={{ borderRadius: '8px' }} />
+              {error && (
+                <div className="alert alert-danger text-start mt-3" role="alert">
+                  <div className="d-flex">
+                    <div><Icon icon="alert-circle" className="alert-icon me-2" /></div>
+                    <div>{error}</div>
                   </div>
-                )}
+                </div>
+              )}
 
-                {error && (
-                  <div className="alert alert-danger py-2 px-3 mb-3 small text-start">{error}</div>
-                )}
-
-                {uploadMutation.isSuccess && (
-                  <div className="alert alert-success py-2 px-3 mb-3 small text-start">
-                    <Icon icon="check" size={14} className="me-1" />
-                    Berhasil! Transaksi sedang diproses AI dan akan muncul di daftar transaksi.
+              {uploadMutation.isSuccess && (
+                <div className="alert alert-success text-start mt-3" role="alert">
+                  <div className="d-flex">
+                    <div><Icon icon="check" className="alert-icon me-2" /></div>
+                    <div>Berhasil! Suara Anda sedang diproses AI.</div>
                   </div>
+                </div>
+              )}
+            </div>
+            <div className="card-footer">
+              <div className="d-grid gap-2">
+                {recordingState === 'idle' && (
+                  <Button
+                    text="Mulai Rekam"
+                    color="primary"
+                    icon="microphone"
+                    onClick={startRecording}
+                  />
                 )}
 
-                {/* Action buttons */}
-                <div className="d-grid gap-2">
-                  {recordingState === 'idle' && (
-                    <Button
-                      text="Mulai Rekam"
-                      color="warning"
-                      size="lg"
-                      onClick={startRecording}
-                    />
-                  )}
+                {recordingState === 'recording' && (
+                  <Button
+                    text="Stop & Selesai"
+                    color="danger"
+                    icon="player-stop"
+                    onClick={stopRecording}
+                  />
+                )}
 
-                  {recordingState === 'recording' && (
-                    <Button
-                      text="Stop & Selesai"
-                      color="danger"
-                      size="lg"
-                      onClick={stopRecording}
-                    />
-                  )}
-
-                  {recordingState === 'stopped' && (
-                    <>
+                {recordingState === 'stopped' && (
+                  <div className="row g-2">
+                    <div className="col-8">
                       <Button
-                        text={uploadMutation.isPending ? 'Mengirim Rekaman...' : 'Kirim & Proses'}
-                        color="primary"
-                        size="lg"
+                        text={uploadMutation.isPending ? 'Mengirim...' : 'Kirim & Proses'}
+                        color="success"
+                        block
                         loading={uploadMutation.isPending}
                         disabled={uploadMutation.isPending}
                         onClick={handleProcess}
                       />
+                    </div>
+                    <div className="col-4">
                       <Button
-                        text="Rekam Ulang"
+                        text="Ulang"
+                        variant="outline"
                         color="secondary"
-                        size="lg"
+                        block
                         disabled={uploadMutation.isPending}
                         onClick={handleReset}
                       />
-                    </>
-                  )}
-                </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
-                <div className="mt-4 p-3 bg-light rounded-2 text-start small text-secondary">
-                  <div className="fw-bold mb-1">Contoh yang bisa diucapkan:</div>
-                  <em className="d-block mb-1">"Beli kopi latte 35 ribu di Starbucks tadi siang"</em>
-                  <em className="d-block">"Bayar listrik rumah 500 ribu lewat Tokopedia"</em>
+          <div className="card mt-4 border-0 shadow-sm bg-primary-lt">
+            <div className="card-body">
+              <h4 className="card-title text-primary">Tips Rekaman</h4>
+              <div className="text-secondary small">
+                <div className="mb-2">
+                  <Icon icon="quote" size={14} className="me-2 text-primary" />
+                  "Tadi siang beli makan nasi goreng 25 ribu di warung Pak Slamet"
+                </div>
+                <div>
+                  <Icon icon="quote" size={14} className="me-2 text-primary" />
+                  "Bayar tagihan listrik 450 ribu rupiah lewat aplikasi bank"
                 </div>
               </div>
             </div>

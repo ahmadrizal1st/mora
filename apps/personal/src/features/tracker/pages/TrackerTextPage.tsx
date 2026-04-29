@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Button, AutosizeTextarea } from '@/shared/components/ui';
+import { Button, AutosizeTextarea, Icon } from '@/shared/components/ui';
 import { useProcessText } from '../hooks/useTracker';
 
 export default function TrackerTextPage() {
@@ -13,61 +13,89 @@ export default function TrackerTextPage() {
     if (!text.trim()) return;
 
     try {
-      // Backend automatically detects type. We pass 'expense' as a base hint
-      // but ProcessOCRResult.php will override it if LLM detects income.
       await processTextMutation.mutateAsync({ text, docType: 'expense' });
-      
       navigate({ to: '/transactions' });
     } catch (error) {
       console.error('Failed to process text:', error);
-      alert('Gagal memproses teks transaksi');
     }
   };
 
   return (
-    <BaseLayout pageTitle="Track via Text">
-      <div className="container-xl py-4">
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-10 col-lg-8">
-            <div className="card shadow-sm border-0">
-              <div className="card-header bg-transparent border-0 pt-4 px-4 px-md-5 d-block">
-                <h2 className="card-title h2 fw-bold text-dark mb-0">Paste Transaction Text</h2>
-                <div className="text-secondary small mt-1">
-                  AI akan otomatis mendeteksi tipe transaksi (Pemasukan/Pengeluaran)
-                </div>
+    <BaseLayout
+      pageTitle="Track via Text"
+      pagePretitle="Manual Entry"
+      pageDescription="AI akan otomatis mendeteksi tipe transaksi (Pemasukan/Pengeluaran) dari teks yang Anda masukkan."
+    >
+      <div className="row justify-content-center">
+        <div className="col-12 col-md-10 col-lg-8">
+          <div className="card shadow-sm">
+            <div className="card-header">
+              <h3 className="card-title">Paste Transaction Text</h3>
+            </div>
+            <div className="card-body">
+              <div className="mb-3">
+                <label className="form-label fw-semibold">Transaction Details</label>
+                <AutosizeTextarea
+                  placeholder="Example: Bayar bakso 25rb di malang kemarin"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  rows={5}
+                  className="form-control"
+                  style={{ minHeight: '150px' }}
+                />
+                <small className="form-hint mt-2">
+                  Tips: Masukkan jumlah, kategori, dan tanggal jika memungkinkan untuk akurasi lebih baik.
+                </small>
               </div>
-              <div className="card-body p-4 p-md-5">
 
-                <div className="mb-4">
-                  <label className="form-label fw-semibold">Transaction Details</label>
-                  <AutosizeTextarea
-                    placeholder="Example: Bayar bakso 25rb di malang kemarin"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    rows={5}
-                    className="form-control-lg"
-                    style={{ minHeight: '150px' }}
-                  />
+              {processTextMutation.isError && (
+                <div className="alert alert-danger" role="alert">
+                  <div className="d-flex">
+                    <div>
+                      <Icon icon="alert-circle" className="alert-icon" />
+                    </div>
+                    <div>
+                      Gagal memproses teks transaksi. Silakan coba lagi.
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="d-grid">
+              )}
+            </div>
+            <div className="card-footer text-end">
+              <div className="d-flex align-items-center justify-content-between">
+                <div className="text-secondary small">
+                  <Icon icon="info-circle" size={14} className="me-1" />
+                  Multiple lines supported
+                </div>
+                <div className="btn-list">
+                  <Button
+                    text="Clear"
+                    variant="link"
+                    color="secondary"
+                    onClick={() => setText('')}
+                    disabled={!text || processTextMutation.isPending}
+                  />
                   <Button
                     text={processTextMutation.isPending ? 'Processing...' : 'Extract Transaction'}
                     color="primary"
-                    size="lg"
                     loading={processTextMutation.isPending}
                     disabled={!text.trim() || processTextMutation.isPending}
                     onClick={handleProcess}
                   />
                 </div>
-                
-                <div className="mt-4 p-3 bg-light rounded-2 small text-secondary">
-                  <div className="fw-bold mb-1">Tips:</div>
-                  <ul className="mb-0 ps-3">
-                    <li>Include amount, category, and date if possible</li>
-                    <li>You can paste multiple lines</li>
-                    <li>AI will try to extract the merchant name automatically</li>
-                  </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="card mt-4 bg-primary-lt border-0">
+            <div className="card-body">
+              <div className="d-flex align-items-center">
+                <Icon icon="sparkles" size={24} className="text-primary me-3" />
+                <div>
+                  <div className="fw-bold text-primary">Magic Extraction</div>
+                  <div className="text-secondary small">
+                    AI kami akan mencoba mengenali nama merchant, kategori, dan jumlah secara otomatis.
+                  </div>
                 </div>
               </div>
             </div>
