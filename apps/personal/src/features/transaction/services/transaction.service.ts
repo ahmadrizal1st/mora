@@ -14,8 +14,20 @@ export const transactionService = {
    * Fetch paginated list of transactions with optional filters.
    */
   async getTransactions(params?: TransactionFilters): Promise<PaginatedResponse<Transaction>> {
-    const response = await api.get<PaginatedResponse<Transaction>>('/transactions', { params });
-    return response.data;
+    const response = await api.get<{ data: Transaction[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }>('/transactions', { params });
+    // Flatten meta into root level to match PaginatedResponse<T> interface
+    return {
+      data: response.data.data,
+      current_page: response.data.meta.current_page,
+      last_page: response.data.meta.last_page,
+      per_page: response.data.meta.per_page,
+      total: response.data.meta.total,
+      from: ((response.data.meta.current_page - 1) * response.data.meta.per_page) + 1,
+      to: Math.min(response.data.meta.current_page * response.data.meta.per_page, response.data.meta.total),
+      prev_page_url: null,
+      next_page_url: null,
+      path: '/transactions',
+    };
   },
 
   /**

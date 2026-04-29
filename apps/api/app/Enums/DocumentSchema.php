@@ -77,12 +77,12 @@ enum DocumentSchema: string
             ],
 
             self::EXPENSE => [
-                'merchant_name'  => 'string | name of merchant, store, or payee',
-                'date'           => 'string (YYYY-MM-DD) | date of transaction, infer from context if relative (e.g. "kemarin", "tadi")',
-                'amount'         => 'number | transaction amount in numeric form (e.g. 25000 not "25rb")',
-                'category'       => 'string | nullable | inferred category e.g. Food, Transport, Shopping, Entertainment, Health',
+                'merchant_name'  => 'string | name of merchant, store, or payee. If unclear, use the item name.',
+                'date'           => 'string (YYYY-MM-DD) | date of transaction. Infer from context ("kemarin"=yesterday, "tadi"=today). Default to today if unknown.',
+                'amount'         => 'number | TOTAL transaction amount as integer. IMPORTANT: shorthand rules: "rb"/"ribu" after number = x1000 (e.g. 250rb=250000, 150rb=150000, 25rb=25000), "k" after number = x1000 (e.g. 10k=10000), "jt"/"juta" after number = x1000000. If multiple items, SUM all amounts.',
+                'category'       => 'string | REQUIRED - Always infer from context. Use ONE of: Food, Transport, Shopping, Health, Education, Entertainment, Utilities, Household, Personal Care, Insurance, Subscription, Installment, Other. Examples: makan/minum=Food, bensin/parkir/ojek=Transport, obat/apotek/dokter=Health, les/kursus/sekolah=Education, netflix/spotify/langganan=Subscription, cicilan/angsuran/kredit=Installment, potong rambut/salon/barbershop=Personal Care, listrik/internet/pln/indihome=Utilities, belanja/toko=Shopping.',
                 'description'    => 'string | nullable | brief description or note about the expense',
-                'payment_method' => 'string | nullable | e.g. Cash, Transfer, QRIS, Debit, Credit',
+                'payment_method' => 'string | nullable | e.g. Cash, Transfer, QRIS, GoPay, OVO, Dana, Debit, Credit',
                 'currency'       => 'string | currency code, default IDR if not mentioned',
             ],
         };

@@ -226,12 +226,8 @@ class TransactionService
         ];
 
         if (empty($baseFilters['date_from']) || empty($baseFilters['date_to'])) {
-            $earliest = TransactionRepository::getEarliestTransactionDate($user, $baseFilters['account_id']);
-            
-            $currentFrom = $earliest
-                ? \Carbon\Carbon::parse($earliest)
-                : \Carbon\Carbon::now()->subDays(29);
-            $currentTo = \Carbon\Carbon::now();
+            $currentFrom = \Carbon\Carbon::now()->subDays(29)->startOfDay();
+            $currentTo   = \Carbon\Carbon::now()->endOfDay();
         } else {
             $currentFrom = \Carbon\Carbon::parse($baseFilters['date_from']);
             $currentTo   = \Carbon\Carbon::parse($baseFilters['date_to']);
