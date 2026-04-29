@@ -18,6 +18,7 @@ class DocumentController extends Controller
      */
     public function upload(Request $request)
     {
+        set_time_limit(0);
         $request->validate([
             'file' => 'required|file|max:10240', // max 10MB
             'doc_type' => ['required', new Enum(DocumentSchema::class)],
@@ -27,15 +28,26 @@ class DocumentController extends Controller
 
         try {
             $file = $request->file('file');
+            $mime = $file->getMimeType() ?? '';
+
+            // Tentukan bahasa untuk Whisper:
+            // - Gunakan field 'language' dari request jika ada
+            // - Default 'id' untuk audio agar Whisper tidak salah deteksi ke English
+            // - Default 'en' untuk file dokumen
+            $isAudio = str_starts_with($mime, 'audio/')
+                || in_array($mime, ['video/webm', 'video/mp4'], true);
+            $language = $request->input('language', $isAudio ? 'id' : 'en');
 
             // Kirim file ke service FastAPI OCR
             $response = Http::withHeaders([
                 'X-API-KEY' => config('services.ocr.key')
-            ])->attach(
+            ])->timeout(300)->attach(
                 'file',
                 fopen($file->getPathname(), 'r'),
                 $file->getClientOriginalName()
-            )->post($ocrUrl);
+            )->post($ocrUrl, [
+                'language' => $language,
+            ]);
 
             if ($response->failed()) {
                 return response()->json([

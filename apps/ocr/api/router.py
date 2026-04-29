@@ -28,7 +28,12 @@ SUPPORTED_MIME_TYPES = [
     "audio/mpeg",
     "audio/wav",
     "audio/x-m4a",
-    "audio/ogg"
+    "audio/ogg",
+    "audio/webm",           # Chrome / Firefox MediaRecorder default
+    "audio/webm;codecs=opus",
+    "audio/mp4",            # Safari MediaRecorder
+    "video/webm",           # libmagic detects .webm audio blobs as video/webm
+    "video/mp4",            # libmagic detects .mp4 audio blobs as video/mp4
 ]
 
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
@@ -159,13 +164,22 @@ async def _process_single_file(
     mime_type = magic.from_buffer(head, mime=True)
     file.file.seek(0)
     
-    # Fallback to extension-based detection if libmagic fails (common for Office files in some environments)
-    if mime_type == "application/octet-stream":
+    # Fallback to extension-based detection if libmagic fails or misdetects
+    # browser audio blobs (.webm / .ogg recorded by MediaRecorder)
+    AUDIO_EXTENSIONS = {'.webm', '.ogg', '.mp3', '.wav', '.m4a', '.mp4', '.aac', '.flac'}
+    file_ext = os.path.splitext(file.filename)[1].lower()
+
+    if mime_type == "application/octet-stream" or (
+        mime_type.startswith("video/") and file_ext in AUDIO_EXTENSIONS
+    ):
         import mimetypes
         ext_mime, _ = mimetypes.guess_type(file.filename)
         if ext_mime:
             mime_type = ext_mime
-    
+        elif file_ext in AUDIO_EXTENSIONS:
+            # Last resort: treat as audio/webm so ffmpeg can handle it
+            mime_type = "audio/webm"
+
     if mime_type not in SUPPORTED_MIME_TYPES:
         raise HTTPException(status_code=415, detail=f"Unsupported file type: {mime_type}")
     

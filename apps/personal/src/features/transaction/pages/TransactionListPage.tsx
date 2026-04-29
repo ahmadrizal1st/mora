@@ -135,12 +135,14 @@ export const TransactionListPage: React.FC = () => {
   };
 
   const handleSort = (column: string) => {
-    setFilters(prev => ({
-      ...prev,
-      sort_dir: prev.sort_by === column && prev.sort_dir === 'asc' ? 'desc' : 'asc',
-      sort_by: column,
-      page: 1
-    }));
+    setFilters(prev => {
+      // If same column → toggle; new column → always start desc
+      const isSameCol = prev.sort_by === column;
+      const newDir = isSameCol
+        ? (prev.sort_dir === 'desc' ? 'asc' : 'desc')
+        : 'desc';
+      return { ...prev, sort_by: column, sort_dir: newDir, page: 1 };
+    });
   };
 
   const getSortIcon = (column: string) => {

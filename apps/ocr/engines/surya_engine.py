@@ -3,77 +3,88 @@ from PIL import Image
 from engines.base import BaseOCREngine
 
 class SuryaEngine(BaseOCREngine):
-    _det_model = None
-    _det_processor = None
-    _rec_model = None
-    _rec_processor = None
+    _initialized = False
+    _det_predictor = None
+    _rec_predictor = None
 
     def __init__(self):
         self.device = "cpu"
 
     def _load_models(self):
         """
-        Lazy loading of Surya OCR models using the newer Predictor API.
+        Lazy loading of Surya OCR models.
+        Surya 0.17.x API:
+          - RecognitionPredictor(foundation_predictor)
+          - rec_predictor(images, task_names=["ocr"], det_predictor=det_predictor)
         """
-        if self._rec_model is None:
+        if not self.__class__._initialized:
             from surya.detection import DetectionPredictor
             from surya.recognition import RecognitionPredictor
-            
+            from surya.foundation import FoundationPredictor
+
             print("Loading Surya OCR models on CPU...")
-            self._det_predictor = DetectionPredictor()
-            self._rec_predictor = RecognitionPredictor()
-            # Set a flag so we don't reload
-            self._rec_model = True 
+            foundation_predictor = FoundationPredictor()
+            self.__class__._det_predictor = DetectionPredictor()
+            self.__class__._rec_predictor = RecognitionPredictor(foundation_predictor)
+            self.__class__._initialized = True
+            print("Surya OCR models loaded.")
 
     def extract(self, file_path: str, langs: list = None) -> dict:
         """
-        Performs OCR on an image file using Surya Predictors.
+        Performs OCR on an image file using Surya 0.17.x Predictor API.
+        The new API: rec_predictor(images, det_predictor=det_predictor)
+        `langs` parameter is ignored in the new API (auto-detected).
         """
         try:
             self._load_models()
-            
-            if langs is None:
-                langs = ["en"]
 
             image = Image.open(file_path).convert("RGB")
-            
-            # Predict layout/detection
-            predictions = self._det_predictor([image])
-            # Predict recognition
-            results = self._rec_predictor([image], [langs], predictions)
-            
-            if not results:
+
+            # Surya 0.17.x: pass det_predictor as keyword argument
+            # task_names defaults to None which triggers auto-detection
+            results = self.__class__._rec_predictor(
+                [image],
+                det_predictor=self.__class__._det_predictor,
+            )
+
+            if not results or not results[0].text_lines:
                 return {"text": "", "confidence": 0.0, "engine": "surya-ocr"}
 
             ocr_result = results[0]
-            text_lines = [line.text for line in ocr_result.text_lines]
+            text_lines = [line.text for line in ocr_result.text_lines if line.text]
             full_text = "\n".join(text_lines)
-            
-            # Use average confidence if available
-            avg_confidence = getattr(ocr_result, 'confidence', 0.85)
-            
+
+            # Compute average confidence from text lines
+            confidences = [
+                getattr(line, "confidence", 0.85)
+                for line in ocr_result.text_lines
+                if line.text
+            ]
+            avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
+
             return {
                 "text": full_text,
-                "confidence": avg_confidence,
-                "engine": "surya-ocr"
+                "confidence": round(avg_confidence, 4),
+                "engine": "surya-ocr",
             }
-            
+
         except Exception as e:
             return {
                 "text": "",
                 "confidence": 0.0,
                 "engine": "surya-ocr",
-                "error": str(e)
+                "error": str(e),
             }
 
     def get_status(self) -> dict:
         return {
             "name": "Surya OCR",
-            "status": "ready" if self._rec_model else "idle",
-            "loaded": self._rec_model is not None,
+            "status": "ready" if self.__class__._initialized else "idle",
+            "loaded": self.__class__._initialized,
             "model": "surya",
-            "device": self.device
+            "device": self.device,
         }
+
 
 # Singleton instance for easy reuse
 surya_engine = SuryaEngine()

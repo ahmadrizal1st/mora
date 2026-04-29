@@ -11,8 +11,12 @@ class DetectorService:
         Routes the file to the appropriate extraction engine based on MIME type.
         """
         # 1. Audio formats (Transcription)
-        audio_mimes = ["audio/mpeg", "audio/wav", "audio/x-m4a", "audio/ogg"]
-        if mime_type in audio_mimes:
+        audio_mimes = [
+            "audio/mpeg", "audio/wav", "audio/x-m4a", "audio/ogg",
+            "audio/webm", "audio/webm;codecs=opus", "audio/mp4",  # browser MediaRecorder
+            "video/webm", "video/mp4",  # libmagic may misdetect audio blobs as video
+        ]
+        if mime_type in audio_mimes or mime_type.startswith("audio/"):
             lang = langs[0] if langs else None
             result = whisper_engine.extract(file_path, lang=lang)
             return {

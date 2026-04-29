@@ -1,10 +1,14 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TrackerService } from '../services/tracker.service';
 
 export const useUploadDocument = () => {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ file, docType = 'expense' }: { file: File; docType?: string }) => 
+    mutationFn: ({ file, docType = 'expense' }: { file: File; docType?: string }) =>
       TrackerService.uploadDocument(file, docType),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
   });
 };
 

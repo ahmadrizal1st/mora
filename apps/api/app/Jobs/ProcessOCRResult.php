@@ -152,6 +152,23 @@ class ProcessOCRResult implements ShouldQueue
         'cicilan'           => 'Cicilan',
         'kredit'            => 'Cicilan',
         'angsuran'          => 'Cicilan',
+
+        // Income Categories
+        'salary'            => 'Gaji',
+        'gaji'              => 'Gaji',
+        'bonus'             => 'Bonus',
+        'thr'               => 'Bonus',
+        'freelance'         => 'Freelance',
+        'proyek'            => 'Freelance',
+        'side job'          => 'Freelance',
+        'investment'        => 'Investasi',
+        'investasi'         => 'Investasi',
+        'gift'              => 'Hadiah',
+        'hadiah'            => 'Hadiah',
+        'sales'             => 'Penjualan',
+        'jualan'            => 'Penjualan',
+        'other income'      => 'Pendapatan Lainnya',
+        'pendapatan'        => 'Pendapatan Lainnya',
     ];
 
     /**
@@ -195,6 +212,12 @@ class ProcessOCRResult implements ShouldQueue
         $schema      = DocumentSchema::from($this->doc_type);
         $isTextInput = $document->mime_type === 'text/plain';
 
+        // Sanitize raw_text: Hapus titik di antara angka (thousand separator) 
+        // agar LLM tidak salah sangka sebagai decimal point.
+        // Contoh: "10.000" -> "10000"
+        $this->raw_text = preg_replace('/(\d)\.(\d{3})\b/', '$1$2', $this->raw_text);
+        $this->raw_text = preg_replace('/(\d)\.(\d)/', '$1$2', $this->raw_text);
+
         $prompt = $builder->build(
             $this->raw_text,
             $schema->schema(),
@@ -209,30 +232,79 @@ class ProcessOCRResult implements ShouldQueue
             'status'         => 'completed',
         ]);
 
-        // Resolve amount (EXPENSE = 'amount', INVOICE/RECEIPT = 'total_amount')
+        // Resolve amount (EXPENSE = 'amount', INVOICE/RECEIPT = 'total_amount', AUDIO = 0)
         $amount = $structuredData['amount']
             ?? $structuredData['total_amount']
             ?? 0;
 
-        // Notes berbeda tergantung sumber
-        $notes = $document->mime_type === 'text/plain'
-            ? ($structuredData['description'] ?? 'Generated from text input')
-            : 'Generated from OCR: ' . ($document->original_filename ?? 'document');
+        // NEW: Jika ada data items, kita hitung ulang total amount di sisi server
+        // untuk menghindari kesalahan hitung (halusinasi) dari LLM.
+        if (!empty($structuredData['items']) && is_array($structuredData['items'])) {
+            $sumOfItems = 0;
+            $hasValidPrices = false;
+            foreach ($structuredData['items'] as $item) {
+                if (isset($item['price']) && is_numeric($item['price'])) {
+                    $itemPrice = (float) $item['price'];
+                    
+                    // SAFETY: Jika angka sangat kecil (misal 10.0) padahal ada kata "ribu"
+                    // di teks asli, kita kalikan 1000.
+                    if ($itemPrice < 1000 && str_contains(strtolower($this->raw_text), 'ribu')) {
+                        $itemPrice *= 1000;
+                    }
+                    
+                    $sumOfItems += (int) $itemPrice;
+                    $hasValidPrices = true;
+                }
+            }
+            // Gunakan hasil penjumlahan server jika ditemukan harga yang valid
+            if ($hasValidPrices && $sumOfItems > 0) {
+                $amount = $sumOfItems;
+            }
+        }
+
+        // Notes berformat JSON standar, key menyesuaikan sumber tracker
+        $notes = $this->buildTrackerNotes($document, $structuredData);
+
+        // Resolve merchant name — berbeda per schema
+        $merchant = $structuredData['merchant_name']   // EXPENSE / RECEIPT
+            ?? $structuredData['source_name']           // INCOME
+            ?? $structuredData['vendor_name']           // INVOICE
+            ?? $structuredData['speaker_name']          // AUDIO_NOTE
+            ?? ($structuredData['summary']              // AUDIO_NOTE fallback: ringkasan
+                ? mb_strimwidth($structuredData['summary'], 0, 50, '...')
+                : null)
+            ?? 'Unknown';
+
+        // Jika merchant tetap Unknown (case-insensitive) tapi ada data items, gunakan item pertama
+        if (strtolower($merchant) === 'unknown' && !empty($structuredData['items'][0]['name'])) {
+            $merchant = $structuredData['items'][0]['name'];
+        }
+
+        // Resolve transaction type (Default: Expense)
+        $txType = \App\Models\Transaction::TYPE_EXPENSE;
+        
+        // Cek jika doc_type adalah income atau kategori menjurus ke income
+        $incomeCategories = ['Salary', 'Bonus', 'Freelance', 'Investment', 'Gift', 'Sales', 'Other Income'];
+        $extractedCategory = $structuredData['category'] ?? '';
+        
+        if ($this->doc_type === 'income' || in_array($extractedCategory, $incomeCategories)) {
+            $txType = \App\Models\Transaction::TYPE_INCOME;
+        }
 
         // Resolve category_id dari nama kategori yang dikembalikan LLM
         // Jika LLM tidak memberikan kategori, sistem akan scan raw_text langsung
         $categoryId = $this->resolveCategoryId(
-            $structuredData['category'] ?? null,
+            $extractedCategory,
             $this->userId,
             $this->raw_text  // fallback: scan teks asli jika LLM tidak return kategori
         );
 
         $transaction = \App\Models\Transaction::create([
             'user_id'        => $this->userId,
-            'type'           => \App\Models\Transaction::TYPE_EXPENSE,
+            'type'           => $txType,
             'amount_raw'     => $amount,
             'tx_date'        => $structuredData['date'] ?? now()->format('Y-m-d'),
-            'merchant'       => $structuredData['merchant_name'] ?? 'Unknown',
+            'merchant'       => $merchant,
             'notes'          => $notes,
             'currency_id'    => 1,
             'account_id'     => 4,
@@ -338,6 +410,49 @@ class ProcessOCRResult implements ShouldQueue
             $transaction->tags()->sync($tagIds);
             Log::info("Attached tags " . implode(',', $tagIds) . " to Transaction #{$transaction->id}");
         }
+    }
+
+    /**
+     * Bangun string notes berformat JSON standar.
+     *
+     * Format output:
+     *   {"tracker_text":"isi text dari user"}
+     *   {"tracker_image":"nama_file.jpg"}
+     *   {"tracker_file":"nama_file.pdf"}
+     *   {"tracker_audio":"nama_file.mp3"}
+     *
+     * Key ditentukan dari MIME type dokumen.
+     */
+    protected function buildTrackerNotes(Document $document, array $structuredData): string
+    {
+        $mime = $document->mime_type ?? '';
+
+        // Tentukan tracker key berdasarkan MIME type + ekstensi file
+        $audioExtensions = ['webm', 'ogg', 'mp3', 'wav', 'm4a', 'aac', 'flac', 'opus'];
+        $fileExt = strtolower(pathinfo($document->original_filename ?? '', PATHINFO_EXTENSION));
+
+        $key = match (true) {
+            // Text input langsung dari pengguna (TrackerTextPage)
+            $mime === 'text/plain'                                    => 'tracker_text',
+
+            // Audio: audio/* atau video/webm|mp4 (libmagic salah deteksi browser blob)
+            str_starts_with($mime, 'audio/')                         => 'tracker_audio',
+            in_array($mime, ['video/webm', 'video/mp4'], true)       => 'tracker_audio',
+            in_array($fileExt, $audioExtensions, true)               => 'tracker_audio',
+
+            // Image OCR (TrackerImagePage / TrackerPhotoPage)
+            str_starts_with($mime, 'image/')                         => 'tracker_image',
+
+            // Semua file dokumen: PDF, DOCX, XLSX, PPTX, RTF (TrackerFilePage)
+            default                                                   => 'tracker_file',
+        };
+
+        // Nilai: untuk text → isi raw text; untuk file/image/audio → nama file asli
+        $value = $key === 'tracker_text'
+            ? ($this->raw_text)
+            : ($document->original_filename ?? 'unknown');
+
+        return json_encode([$key => $value], JSON_UNESCAPED_UNICODE);
     }
 
     /**

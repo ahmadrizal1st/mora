@@ -9,12 +9,29 @@ import {
   type UpdateTransactionDTO 
 } from '../types/transaction.types';
 
+/**
+ * Converts frontend sort_by / sort_dir fields into the spatie/query-builder
+ * `sort` param format (e.g. "-tx_date", "merchant").
+ * Falls back to "-created_at" (newest first) when no sort is active.
+ */
+function buildSortParam(filters?: TransactionFilters): string {
+  if (filters?.sort_by) {
+    const dir = filters.sort_dir === 'asc' ? '' : '-';
+    return `${dir}${filters.sort_by}`;
+  }
+  return '-created_at';
+}
+
 export const transactionService = {
   /**
    * Fetch paginated list of transactions with optional filters.
    */
   async getTransactions(params?: TransactionFilters): Promise<PaginatedResponse<Transaction>> {
-    const response = await api.get<{ data: Transaction[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }>('/transactions', { params });
+    // Strip custom frontend keys and build the spatie-compatible sort param
+    const { sort_by, sort_dir, ...rest } = params ?? {};
+    const queryParams = { ...rest, sort: buildSortParam(params) };
+
+    const response = await api.get<{ data: Transaction[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }>('/transactions', { params: queryParams });
     // Flatten meta into root level to match PaginatedResponse<T> interface
     return {
       data: response.data.data,

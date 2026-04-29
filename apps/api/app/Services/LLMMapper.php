@@ -85,7 +85,10 @@ class LLMMapper
         $response = $request->post($url, $payload);
 
         if ($response->successful()) {
-            return data_get($response->json(), $provider->response_path);
+            $responseBody = $response->json();
+            $extractedData = data_get($responseBody, $provider->response_path);
+            Log::debug("Provider {$provider->name} Response: " . json_encode($extractedData));
+            return $extractedData;
         }
 
         $errorBody = $response->body();

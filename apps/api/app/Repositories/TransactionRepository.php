@@ -42,7 +42,7 @@ class TransactionRepository
                 })
             )
             ->allowedSorts('tx_date', 'amount_raw', 'merchant', 'created_at', 'type')
-            ->defaultSort('-tx_date')
+            ->defaultSort('-created_at', '-tx_date')
             ->with(['account', 'toAccount', 'category', 'status', 'currency', 'recurringType', 'tags']);
     }
 
