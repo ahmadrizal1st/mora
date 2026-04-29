@@ -38,6 +38,7 @@ export default function TrackerImagePage() {
                 className="mb-4"
                 text="Klik atau drag gambar ke sini"
                 description="JPG, PNG, WebP — Maks. 5 MB"
+                acceptedFiles="image/jpeg,image/png,image/webp"
                 onAddedFile={(f) => setFile(f)}
                 custom
               />

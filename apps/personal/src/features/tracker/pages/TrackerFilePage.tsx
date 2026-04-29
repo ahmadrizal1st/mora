@@ -38,6 +38,7 @@ export default function TrackerFilePage() {
                 className="mb-4"
                 text="Klik atau drag file ke sini"
                 description="PDF, DOCX, XLSX, CSV — Maks. 10 MB"
+                acceptedFiles=".pdf,.docx,.xlsx,.csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
                 onAddedFile={(f) => setFile(f)}
                 custom
               />

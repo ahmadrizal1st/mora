@@ -10,7 +10,9 @@ export interface DropzoneProps {
   description?: string
   custom?: boolean
   className?: string
+  acceptedFiles?: string // Contoh: "image/*,application/pdf"
   onAddedFile?: (file: File) => void // Tetap simpan ini agar fungsi tracker jalan
+  disabled?: boolean
 }
 
 export function Dropzone({
@@ -21,7 +23,9 @@ export function Dropzone({
   description = '(This is just a demo dropzone. Selected files are **not** actually uploaded.)',
   custom = false,
   className,
+  acceptedFiles,
   onAddedFile,
+  disabled,
 }: DropzoneProps) {
   const dropzoneRef = useRef<HTMLDivElement>(null)
 
@@ -39,8 +43,10 @@ export function Dropzone({
       dz = new DropzoneLib(dropzoneRef.current, {
         url: action,
         uploadMultiple: multiple,
+        acceptedFiles: acceptedFiles,
         dictDefaultMessage: custom ? "" : text,
         autoProcessQueue: false,
+        clickable: !disabled,
         init: function() {
           this.on("addedfile", (file: any) => {
             // Callback ke parent
@@ -53,6 +59,15 @@ export function Dropzone({
               this.emit("complete", file);
             }, 500);
           });
+
+          // Handle error (e.g. invalid file type)
+          this.on("error", (file: any, message: string) => {
+            console.error("Dropzone Error:", message);
+            // Optionally remove the file if it's invalid
+            if (message.includes("You can't upload files of this type")) {
+              setTimeout(() => this.removeFile(file), 2000);
+            }
+          });
         }
       })
     })
@@ -63,7 +78,7 @@ export function Dropzone({
         dz.destroy()
       }
     }
-  }, [action, multiple, custom, text])
+  }, [action, multiple, custom, text, acceptedFiles, disabled])
 
   return (
     <div
