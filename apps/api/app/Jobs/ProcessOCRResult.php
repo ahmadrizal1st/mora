@@ -76,7 +76,6 @@ class ProcessOCRResult implements ShouldQueue
         'cinema'            => 'Hiburan',
         'movie'             => 'Hiburan',
         'musik'             => 'Hiburan',
-        'musik'             => 'Hiburan',
 
         // Health
         'health'            => 'Kesehatan',

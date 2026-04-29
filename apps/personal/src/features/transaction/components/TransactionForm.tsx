@@ -3,7 +3,6 @@ import { useForm, Controller, useWatch, type FieldError } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type {
-  TransactionType,
   Transaction
 } from '../types/transaction.types';
 import {
@@ -23,10 +22,9 @@ import {
 import { ErrorAlert } from '@/shared/components/ui/ErrorAlert';
 
 const transactionSchema = z.object({
-  type: z.enum(['income', 'expense', 'transfer']),
+  type: z.enum(['income', 'expense']),
   amount_raw: z.number().min(1, 'Nominal harus lebih dari 0'),
   account_id: z.number({ message: 'Pilih akun' }),
-  to_account_id: z.number().optional().nullable(),
   category_id: z.number().optional().nullable(),
   budget_item_id: z.number().optional().nullable(),
   currency_id: z.number().optional(),
@@ -34,12 +32,6 @@ const transactionSchema = z.object({
   merchant: z.string().optional(),
   notes: z.string().optional(),
   tag_ids: z.array(z.number()),
-}).refine((data) => {
-  if (data.type === 'transfer' && !data.to_account_id) return false;
-  return true;
-}, {
-  message: 'Akun tujuan wajib diisi untuk transfer',
-  path: ['to_account_id'],
 });
 
 export type TransactionFormValues = z.infer<typeof transactionSchema>;
@@ -66,10 +58,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   } = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
-      type: (initialData?.type as TransactionType) || 'expense',
+      type: (initialData?.type === 'income' ? 'income' : 'expense') as 'income' | 'expense',
       amount_raw: initialData?.amount_raw || 0,
       account_id: initialData?.account_id,
-      to_account_id: initialData?.to_account_id,
       category_id: initialData?.category_id,
       budget_item_id: initialData?.budget_item_id,
       currency_id: initialData?.currency_id,
@@ -84,10 +75,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   React.useEffect(() => {
     if (initialData) {
       reset({
-        type: (initialData.type as TransactionType) || 'expense',
+        type: (initialData.type === 'income' ? 'income' : 'expense') as 'income' | 'expense',
         amount_raw: initialData.amount_raw || 0,
         account_id: initialData.account_id,
-        to_account_id: initialData.to_account_id,
         category_id: initialData.category_id,
         budget_item_id: initialData.budget_item_id,
         currency_id: initialData.currency_id,
@@ -101,7 +91,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         type: 'expense',
         amount_raw: 0,
         account_id: undefined,
-        to_account_id: undefined,
         category_id: undefined,
         budget_item_id: undefined,
         currency_id: undefined,
@@ -116,7 +105,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   const type = useWatch({
     control,
     name: 'type',
-    defaultValue: (initialData?.type as TransactionType) || 'expense',
+    defaultValue: (initialData?.type === 'income' ? 'income' : 'expense') as 'income' | 'expense',
   });
   const { data: categories = [] } = useCategories(type);
     const { data: response } = useAccounts();
@@ -169,7 +158,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       <div className="mb-3">
         <label className="form-label">Tipe Transaksi</label>
         <div className="form-selectgroup">
-          {(['expense', 'income', 'transfer'] as const).map((t) => (
+          {(['expense', 'income'] as const).map((t) => (
             <label key={t} className="form-selectgroup-item">
               <input
                 type="radio"
@@ -178,7 +167,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                 className="form-selectgroup-input"
               />
               <span className="form-selectgroup-label text-capitalize">
-                {t === 'income' ? 'Pemasukan' : t === 'expense' ? 'Pengeluaran' : 'Transfer'}
+                {t === 'income' ? 'Pemasukan' : 'Pengeluaran'}
               </span>
             </label>
           ))}
@@ -236,7 +225,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
       <div className="row">
         <div className="col-md-6 mb-3">
-          <label className="form-label">{type === 'transfer' ? 'Dari Akun' : 'Akun'}</label>
+          <label className="form-label">Akun</label>
           <Controller
             name="account_id"
             control={control}
@@ -255,53 +244,30 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           />
         </div>
 
-        {type === 'transfer' ? (
-          <div className="col-md-6 mb-3">
-            <label className="form-label">Ke Akun</label>
-            <Controller
-              name="to_account_id"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  value={field.value || ''}
-                  onChange={field.onChange}
-                  options={accounts.map(a => ({
-                    value: a.id,
-                    label: `${a.name} (${a.currency?.code || 'IDR'})`
-                  }))}
-                  placeholder="Pilih Akun Tujuan"
-                  error={errors.to_account_id?.message}
-                />
-              )}
-            />
-          </div>
-        ) : (
-          <div className="col-md-6 mb-3">
-            <label className="form-label">Kategori</label>
-            <Controller
-              name="category_id"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  value={field.value || ''}
-                  onChange={field.onChange}
-                  options={categories.map(c => ({
-                    value: c.id,
-                    label: c.name,
-                    icon: c.icon,
-                    color: c.color
-                  }))}
-                  placeholder="Pilih Kategori"
-                  error={errors.category_id?.message}
-                />
-              )}
-            />
-          </div>
-        )}
+        <div className="col-md-6 mb-3">
+          <label className="form-label">Kategori</label>
+          <Controller
+            name="category_id"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value || ''}
+                onChange={field.onChange}
+                options={categories.map(c => ({
+                  value: c.id,
+                  label: c.name,
+                  icon: c.icon,
+                  color: c.color
+                }))}
+                placeholder="Pilih Kategori"
+                error={errors.category_id?.message}
+              />
+            )}
+          />
+        </div>
       </div>
 
-      {type !== 'transfer' && (
-        <div className="row">
+      <div className="row">
           <div className="col-md-6 mb-3">
             <label className="form-label">Merchant / Penerima</label>
             <div className="input-icon">
@@ -337,9 +303,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                 />
               )}
             />
-          </div>
         </div>
-      )}
+      </div>
 
       <div className="mb-3">
         <label className="form-label">Tags</label>

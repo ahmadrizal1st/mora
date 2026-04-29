@@ -25,6 +25,7 @@ class TransactionData extends Data
         public string $tx_date,
         public ?string $merchant,
         public ?string $notes,
+        public ?string $tracker,
         public ?array $dynamic_fields,
         
         // Relations
@@ -58,6 +59,7 @@ class TransactionData extends Data
                 : (string) $transaction->tx_date,
             merchant: $transaction->merchant,
             notes: $transaction->notes,
+            tracker: $transaction->tracker,
             dynamic_fields: $transaction->dynamic_fields,
             
             currency: $transaction->relationLoaded('currency') 

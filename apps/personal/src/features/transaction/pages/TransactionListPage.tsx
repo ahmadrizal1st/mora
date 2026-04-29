@@ -335,8 +335,23 @@ export const TransactionListPage: React.FC = () => {
                     </td>
                     <td className="td-truncate">
                       <div className="d-flex flex-column">
-                        <span className="fw-medium text-dark text-truncate" style={{ maxWidth: '120px' }}>{tx.merchant || (tx.type === 'transfer' ? 'Transfer Dana' : 'Umum')}</span>
-                        {tx.notes && <span className="text-secondary small text-truncate" style={{ maxWidth: '120px' }}>{tx.notes}</span>}
+                        <div className="d-flex align-items-center gap-1">
+                          {tx.tracker === 'image' && <Icon icon="photo" size={12} className="text-secondary" title="Dari Foto" />}
+                          {tx.tracker === 'audio' && <Icon icon="microphone" size={12} className="text-secondary" title="Dari Suara" />}
+                          {tx.tracker === 'file' && <Icon icon="file-text" size={12} className="text-secondary" title="Dari File" />}
+                          <span className="fw-medium text-dark text-truncate" style={{ maxWidth: '120px' }}>
+                            {tx.merchant || (tx.type === 'transfer' ? 'Transfer Dana' : 'Umum')}
+                          </span>
+                        </div>
+                        {tx.notes && (
+                          <span 
+                            className="text-secondary small text-truncate" 
+                            style={{ maxWidth: '120px' }} 
+                            title={tx.notes}
+                          >
+                            {tx.notes.replace(/\n/g, ', ')}
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="align-middle">

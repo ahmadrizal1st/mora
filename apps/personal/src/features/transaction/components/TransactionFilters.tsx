@@ -48,7 +48,6 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
     { value: '', label: 'Semua Tipe' },
     { value: 'income', label: 'Pemasukan' },
     { value: 'expense', label: 'Pengeluaran' },
-    { value: 'transfer', label: 'Transfer' },
   ];
 
   const perPageOptions = [

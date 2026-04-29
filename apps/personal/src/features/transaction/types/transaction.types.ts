@@ -96,6 +96,7 @@ export interface Transaction {
   tx_date: string;
   merchant?: string;
   notes?: string;
+  tracker?: 'manual' | 'image' | 'file' | 'audio';
   dynamic_fields?: Record<string, unknown>;
   tags?: Tag[];
   created_at: string;

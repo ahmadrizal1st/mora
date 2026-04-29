@@ -16,14 +16,14 @@ enum DocumentSchema: string
     {
         return match ($this) {
             self::EXPENSE => [
-                'merchant_name'  => 'string | CLEAN name of merchant or store. Remove filler words like "beli", "tambah", "ambil". Correct typos (e.g., "belimi" -> "Mie"). If no store is mentioned, use the main item name.',
+                'merchant_name'  => 'string | CLEAN name of merchant or store. Remove filler words like "beli", "tambah", "ambil". Correct typos (e.g., "starbuck" -> "Starbucks", "indomret" -> "Indomaret"). If no store is mentioned, use the main item name.',
                 'date'           => 'string (YYYY-MM-DD) | date of transaction. Infer from context ("kemarin"=yesterday, "tadi"=today). Default to today if unknown.',
                 'amount'         => 'number | The total sum of expenses as a FULL INTEGER (e.g., 10000, NOT 10.0). NEVER use decimal points.',
                 'category'       => 'string | REQUIRED - Always infer from context. Use ONE of: Food, Transport, Shopping, Health, Education, Entertainment, Utilities, Household, Personal Care, Insurance, Subscription, Installment, Other. Examples: makan/minum=Food, bensin/parkir/ojek=Transport, obat/apotek/dokter=Health, les/kursus/sekolah=Education, netflix/spotify/langganan=Subscription, cicilan/angsuran/kredit=Installment, potong rambut/salon/barbershop=Personal Care, listrik/internet/pln/indihome=Utilities, belanja/toko=Shopping.',
                 'description'    => 'string | nullable | brief description or note about the expense',
                 'items'          => [
                     [
-                        'name'  => 'string | CLEAN item name (e.g., "Mie Ayam" instead of "belimi ayam"). Remove "tambah", "sama", etc.',
+                        'name'  => 'string | CLEAN item name. FIX TYPOS & EXPAND ABBREVIATIONS (e.g., "st" -> "Es Teh", "sir" -> "Es Jeruk", "baksos" -> "Bakso", "belimi" -> "Mie Ayam"). Remove filler words like "tambah", "sama", etc.',
                         'price' => 'number | FULL INTEGER price (e.g., 10000). NEVER use decimals like 10.0 or 15.5.',
                     ]
                 ],

@@ -6,7 +6,6 @@ import { useProcessText } from '../hooks/useTracker';
 
 export default function TrackerTextPage() {
   const [text, setText] = useState('');
-  const [docType, setDocType] = useState('expense');
   const processTextMutation = useProcessText();
   const navigate = useNavigate();
 
@@ -14,11 +13,10 @@ export default function TrackerTextPage() {
     if (!text.trim()) return;
 
     try {
-      await processTextMutation.mutateAsync({ text, docType });
+      // Backend automatically detects type. We pass 'expense' as a base hint
+      // but ProcessOCRResult.php will override it if LLM detects income.
+      await processTextMutation.mutateAsync({ text, docType: 'expense' });
       
-      // Navigate to transactions or show success
-      // Since it's processed asynchronously, we might just navigate to a pending state
-      // or to the transaction list where it will appear.
       navigate({ to: '/transactions' });
     } catch (error) {
       console.error('Failed to process text:', error);
@@ -35,29 +33,10 @@ export default function TrackerTextPage() {
               <div className="card-header bg-transparent border-0 pt-4 px-4 px-md-5 d-block">
                 <h2 className="card-title h2 fw-bold text-dark mb-0">Paste Transaction Text</h2>
                 <div className="text-secondary small mt-1">
-                  Paste SMS, bank notifications, or typed details to extract data
+                  AI akan otomatis mendeteksi tipe transaksi (Pemasukan/Pengeluaran)
                 </div>
               </div>
               <div className="card-body p-4 p-md-5">
-                <div className="mb-4">
-                  <label className="form-label fw-semibold">Transaction Type</label>
-                  <div className="d-flex gap-2">
-                    <button
-                      type="button"
-                      className={`btn flex-fill ${docType === 'expense' ? 'btn-danger' : 'btn-outline-danger'}`}
-                      onClick={() => setDocType('expense')}
-                    >
-                      <i className="ti ti-minus me-2"></i> Expense
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn flex-fill ${docType === 'income' ? 'btn-success' : 'btn-outline-success'}`}
-                      onClick={() => setDocType('income')}
-                    >
-                      <i className="ti ti-plus me-2"></i> Income
-                    </button>
-                  </div>
-                </div>
 
                 <div className="mb-4">
                   <label className="form-label fw-semibold">Transaction Details</label>
