@@ -6,7 +6,7 @@ from api.router import router
 from utils.limiter import limiter
 
 app = FastAPI(
-    title="OCR Service API",
+    title="AI Service API",
     description="FastAPI Service for Document Extraction and OCR",
     version="1.0.0"
 )
@@ -80,4 +80,4 @@ app.include_router(router, prefix="/api")
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to OCR Service API"}
+    return {"message": "Welcome to AI Service API"}

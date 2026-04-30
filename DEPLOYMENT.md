@@ -18,7 +18,7 @@ Internet / Browser
 └──────┬────────────────┘
        │
        ├──→ api.visatamora.com  ──→ Laravel API  :9000 (php-fpm)
-       ├──→ ocr.visatamora.com  ──→ FastAPI OCR  :8001 (uvicorn)
+       ├──→ ai.visatamora.com   ──→ FastAPI AI   :8001 (uvicorn)
        └──→ visatamora.com      ──→ React Build  (static files)
 
                     ▼
@@ -29,7 +29,7 @@ Internet / Browser
 > | Service | Internal Port |
 > |---------|--------------|
 > | PHP-FPM (Laravel) | unix socket |
-> | Uvicorn (FastAPI OCR) | 8001 |
+> | Uvicorn (FastAPI AI) | 8001 |
 > | Nginx | 80 / 443 |
 > | PostgreSQL | 5432 |
 
@@ -258,9 +258,9 @@ QUEUE_CONNECTION=database
 GEMINI_API_KEY=your_gemini_api_key
 GROQ_API_KEY=your_groq_api_key
 
-# OCR Service — port 8001 (internal, tidak expose ke luar)
-OCR_URL=http://127.0.0.1:8001/api/extract
-OCR_KEY=vistamora_secure_secret_key_2026
+# AI Service — port 8001 (internal, tidak expose ke luar)
+AI_URL=http://127.0.0.1:8001/api/extract
+AI_KEY=vistamora_secure_secret_key_2026
 
 # Google OAuth
 GOOGLE_CLIENT_ID=your_google_client_id
@@ -332,7 +332,7 @@ nano .env
 ```
 
 ```env
-APP_NAME="OCR Service"
+APP_NAME="AI Service"
 APP_ENV="production"
 APP_PORT=8001
 APP_HOST="127.0.0.1"
@@ -340,14 +340,14 @@ APP_HOST="127.0.0.1"
 UPLOAD_DIR="./uploads"
 MODEL_CACHE_DIR="./.models"
 
-# Harus sama dengan OCR_KEY di apps/api/.env
+# Harus sama dengan AI_KEY di apps/api/.env
 API_KEY="vistamora_secure_secret_key_2026"
 ```
 
 ### 6.3 Test Jalankan Manual (untuk verifikasi)
 
 ```bash
-cd /var/www/visatamora/apps/ocr
+cd /var/www/visatamora/apps/ai
 source venv/bin/activate
 
 uvicorn main:app --host 127.0.0.1 --port 8001 --workers 2
@@ -417,16 +417,16 @@ server {
 }
 ```
 
-### 8.2 Konfigurasi untuk FastAPI OCR
+### 8.2 Konfigurasi untuk FastAPI AI
 
 ```bash
-sudo nano /etc/nginx/sites-available/visatamora-ocr
+sudo nano /etc/nginx/sites-available/visatamora-ai
 ```
 
 ```nginx
 server {
     listen 80;
-    server_name ocr.visatamora.com;
+    server_name ai.visatamora.com;
 
     client_max_body_size 100M;
 
@@ -440,8 +440,8 @@ server {
         proxy_connect_timeout 60;
     }
 
-    access_log /var/log/nginx/visatamora-ocr-access.log;
-    error_log  /var/log/nginx/visatamora-ocr-error.log;
+    access_log /var/log/nginx/visatamora-ai-access.log;
+    error_log  /var/log/nginx/visatamora-ai-error.log;
 }
 ```
 
@@ -479,7 +479,7 @@ server {
 ```bash
 # Enable semua site
 sudo ln -s /etc/nginx/sites-available/visatamora-api      /etc/nginx/sites-enabled/
-sudo ln -s /etc/nginx/sites-available/visatamora-ocr      /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/visatamora-ai      /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/visatamora-frontend /etc/nginx/sites-enabled/
 
 # Hapus default config
@@ -519,25 +519,25 @@ stdout_logfile=/var/log/supervisor/visatamora-queue.log
 stopwaitsecs=3600
 ```
 
-### 9.2 Supervisor untuk FastAPI OCR
+### 9.2 Supervisor untuk FastAPI AI
 
 ```bash
-sudo nano /etc/supervisor/conf.d/visatamora-ocr.conf
+sudo nano /etc/supervisor/conf.d/visatamora-ai.conf
 ```
 
 ```ini
-[program:visatamora-ocr]
+[program:visatamora-ai]
 process_name=%(program_name)s
-command=/var/www/visatamora/apps/ocr/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8001 --workers 2
-directory=/var/www/visatamora/apps/ocr
+command=/var/www/visatamora/apps/ai/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8001 --workers 2
+directory=/var/www/visatamora/apps/ai
 autostart=true
 autorestart=true
 stopasgroup=true
 killasgroup=true
 user=www-data
 redirect_stderr=true
-stdout_logfile=/var/log/supervisor/visatamora-ocr.log
-environment=HOME="/var/www/visatamora/apps/ocr"
+stdout_logfile=/var/log/supervisor/visatamora-ai.log
+environment=HOME="/var/www/visatamora/apps/ai"
 ```
 
 ### 9.3 Aktifkan Supervisor
@@ -553,7 +553,7 @@ sudo supervisorctl status
 
 Output yang diharapkan:
 ```
-visatamora-ocr          RUNNING   pid 12345, uptime 0:00:05
+visatamora-ai          RUNNING   pid 12345, uptime 0:00:05
 visatamora-queue:00     RUNNING   pid 12346, uptime 0:00:05
 visatamora-queue:01     RUNNING   pid 12347, uptime 0:00:05
 ```
@@ -571,7 +571,7 @@ sudo apt install -y certbot python3-certbot-nginx
 # Generate SSL certificate
 sudo certbot --nginx -d visatamora.com -d www.visatamora.com
 sudo certbot --nginx -d api.visatamora.com
-sudo certbot --nginx -d ocr.visatamora.com
+sudo certbot --nginx -d ai.visatamora.com
 
 # Verifikasi auto-renewal
 sudo certbot renew --dry-run
@@ -613,7 +613,7 @@ server {
     }
 }
 
-# OCR FastAPI — port 8002 (proxy ke uvicorn :8001 internal)
+# AI FastAPI — port 8002 (proxy ke uvicorn :8001 internal)
 server {
     listen 8002;
     server_name _;
@@ -653,12 +653,12 @@ sudo supervisorctl status
 # 2. Test endpoint Laravel API
 curl -I http://192.168.64.10:8000/api/health
 
-# 3. Test OCR FastAPI
+# 3. Test AI FastAPI
 curl -I http://192.168.64.10:8001/docs
 
 # 4. Cek log real-time
 sudo tail -f /var/log/supervisor/visatamora-queue.log
-sudo tail -f /var/log/supervisor/visatamora-ocr.log
+sudo tail -f /var/log/supervisor/visatamora-ai.log
 sudo tail -f /var/log/nginx/visatamora-api-error.log
 ```
 
@@ -677,11 +677,11 @@ php artisan migrate --force
 php artisan config:cache && php artisan route:cache && php artisan view:cache
 sudo supervisorctl restart visatamora-queue:*
 
-# Update OCR (jika ada perubahan)
-cd ../ocr
+# Update AI (jika ada perubahan)
+cd ../ai
 source venv/bin/activate
 pip install -r requirements.txt
-sudo supervisorctl restart visatamora-ocr
+sudo supervisorctl restart visatamora-ai
 
 # Rebuild frontend
 cd ../personal
@@ -695,11 +695,11 @@ pnpm install && pnpm build
 | Masalah | Solusi |
 |---------|--------|
 | **502 Bad Gateway (Nginx → PHP-FPM)** | `sudo systemctl restart php8.3-fpm` |
-| **502 Bad Gateway (Nginx → Uvicorn)** | `sudo supervisorctl restart visatamora-ocr` |
+| **502 Bad Gateway (Nginx → AI)** | `sudo supervisorctl restart visatamora-ai` |
 | **Queue tidak memproses job** | `sudo supervisorctl restart visatamora-queue:*` |
 | **Error permission di Laravel storage** | `sudo chown -R www-data:www-data apps/api/storage` |
 | **Frontend SPA 404** | Pastikan `try_files $uri $uri/ /index.html` ada di Nginx |
-| **OCR gagal install requirements** | `sudo apt install -y build-essential libffi-dev` dulu |
+| **AI gagal install requirements** | `sudo apt install -y build-essential libffi-dev` dulu |
 | **Port sudah dipakai** | `ss -tlnp \| grep 8001` untuk cek port |
 
 ---
@@ -715,14 +715,36 @@ pnpm install && pnpm build
 - [ ] Nginx berjalan
 - [ ] Supervisor berjalan
 - [ ] Repository di-clone ke `/var/www/visatamora`
-- [ ] `apps/api/.env` dikonfigurasi (DB, LLM keys, OCR_URL)
+- [ ] `apps/api/.env` dikonfigurasi (DB, LLM keys, AI_URL)
 - [ ] `php artisan key:generate` dijalankan
 - [ ] `php artisan migrate --force` dijalankan
 - [ ] `apps/api/storage` permissions benar (www-data)
-- [ ] OCR venv dibuat & requirements terinstall
-- [ ] `apps/ocr/.env` dikonfigurasi (port 8001, API_KEY sama)
+- [ ] AI venv dibuat & requirements terinstall
+- [ ] `apps/ai/.env` dikonfigurasi (port 8001, API_KEY sama)
 - [ ] Frontend di-build (`pnpm build`)
 - [ ] Nginx site config aktif & `nginx -t` OK
-- [ ] Supervisor jobs berjalan (queue:00, queue:01, ocr)
+- [ ] Supervisor jobs berjalan (queue:00, queue:01, ai)
 - [ ] SSL terpasang (jika pakai domain asli)
 - [ ] Semua endpoint diverifikasi dengan `curl`
+
+---
+
+## 🐳 BAGIAN 14 — Deployment dengan Docker (Alternatif)
+
+Jika kamu ingin melakukan deployment yang lebih cepat dan terisolasi, gunakan Docker Compose.
+
+### 14.1 Install Docker
+```bash
+# Ubuntu 24.04
+sudo apt install -y docker.io docker-compose
+sudo usermod -aG docker $USER
+```
+
+### 14.2 Jalankan Service
+Panduan lengkap ada di file [DOCKER.md](DOCKER.md).
+
+```bash
+cd /var/www/visatamora
+docker-compose up -d --build
+```
+

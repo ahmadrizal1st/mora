@@ -38,7 +38,7 @@ SUPPORTED_MIME_TYPES = [
 ]
 
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
-TEMP_DIR = "/tmp/ocr"
+TEMP_DIR = "/tmp/ai"
 
 @router.get("/health", tags=["System"])
 def health_check(request: Request):

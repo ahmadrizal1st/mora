@@ -11,7 +11,7 @@ class PDFService:
         """
         # Create a unique temporary directory for this PDF's pages
         session_id = str(uuid.uuid4())
-        temp_page_dir = os.path.join("/tmp/ocr", session_id)
+        temp_page_dir = os.path.join("/tmp/ai", session_id)
         os.makedirs(temp_page_dir, exist_ok=True)
         
         try:

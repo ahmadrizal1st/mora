@@ -7,7 +7,7 @@ Monorepo ini mendukung deployment menggunakan Docker & Docker Compose untuk memu
 - **db**: PostgreSQL 16 (Port 5432)
 - **api**: Laravel 13 (Port 8000)
 - **worker**: Laravel Queue Worker (Background processing)
-- **ocr**: FastAPI Service (Port 8001)
+- **ai**: FastAPI Service (Port 8001)
 - **frontend**: React + Vite (Port 5173)
 
 ---
@@ -20,7 +20,7 @@ Pastikan file `.env` sudah ada di setiap aplikasi.
 
 ```bash
 cp apps/api/.env.example apps/api/.env
-cp apps/ocr/.env.template apps/ocr/.env
+cp apps/ai/.env.template apps/ai/.env
 # Update DB_HOST=db di apps/api/.env
 ```
 
@@ -47,7 +47,7 @@ docker exec -it visatamora_api php artisan migrate --force
 |---------|-----|
 | **Frontend** | [http://localhost:5173](http://localhost:5173) |
 | **API Backend** | [http://localhost:8000](http://localhost:8000) |
-| **OCR Documentation** | [http://localhost:8001/docs](http://localhost:8001/docs) |
+| **AI Documentation** | [http://localhost:8001/docs](http://localhost:8001/docs) |
 | **Database** | `localhost:5432` (User: `postgres`, Pass: `123`) |
 
 ---
@@ -62,7 +62,7 @@ docker-compose logs -f
 
 # Log service tertentu
 docker-compose logs -f api
-docker-compose logs -f ocr
+docker-compose logs -f ai
 ```
 
 ### Restart Service
@@ -77,14 +77,14 @@ docker-compose restart api
 # Masuk ke Laravel
 docker exec -it visatamora_api bash
 
-# Masuk ke OCR
-docker exec -it visatamora_ocr bash
+# Masuk ke AI
+docker exec -it visatamora_ai bash
 ```
 
 ---
 
 ## ⚠️ Catatan Penting
 
-1. **Memory OCR**: Service OCR membutuhkan memory cukup besar (minimal 8GB direkomendasikan) untuk memuat model ML (surya-ocr & whisper).
-2. **Network**: Semua container berada dalam satu network Docker. Service `api` memanggil `db` menggunakan hostname `db`, dan memanggil `ocr` menggunakan hostname `ocr`.
-3. **Persistensi**: Data database disimpan di volume `pgdata`, dan model OCR disimpan di volume `ocr_models` agar tidak download ulang saat container restart.
+1. **Memory AI**: Service AI membutuhkan memory cukup besar (minimal 8GB direkomendasikan) untuk memuat model ML (surya-ai & whisper).
+2. **Network**: Semua container berada dalam satu network Docker. Service `api` memanggil `db` menggunakan hostname `db`, dan memanggil `ai` menggunakan hostname `ai`.
+3. **Persistensi**: Data database disimpan di volume `pgdata`, dan model AI disimpan di volume `ai_models` agar tidak download ulang saat container restart.

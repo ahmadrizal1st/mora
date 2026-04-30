@@ -51,21 +51,21 @@ services:
       - ./apps/api:/var/www
       - /var/www/vendor
 
-  # FastAPI OCR
-  ocr:
+  # AI Service (OCR + Whisper)
+  ai:
     build:
-      context: ./apps/ocr
+      context: ./apps/ai
       dockerfile: Dockerfile
-    container_name: visatamora_ocr
+    container_name: visatamora_ai
     restart: unless-stopped
     ports:
       - "8001:8000"
     env_file:
-      - ./apps/ocr/.env
+      - ./apps/ai/.env
     volumes:
-      - ./apps/ocr:/app
-      - /tmp/ocr:/tmp/ocr
-      - ocr_models:/app/.models
+      - ./apps/ai:/app
+      - /tmp/ai:/tmp/ai
+      - ai_models:/app/.models
     deploy:
       resources:
         limits:
@@ -85,4 +85,4 @@ services:
 
 volumes:
   pgdata:
-  ocr_models:
+  ai_models:

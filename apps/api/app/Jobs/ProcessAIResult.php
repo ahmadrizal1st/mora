@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
-class ProcessOCRResult implements ShouldQueue
+class ProcessAIResult implements ShouldQueue
 {
     use Queueable;
 
@@ -262,7 +262,7 @@ class ProcessOCRResult implements ShouldQueue
             $document->update(['transaction_id' => $createdTransactionIds[0]]);
         }
 
-        Log::info("ProcessOCRResult completed for Document #{$this->document_id}: Created " . count($createdTransactionIds) . " transactions.");
+        Log::info("ProcessAIResult completed for Document #{$this->document_id}: Created " . count($createdTransactionIds) . " transactions.");
     }
 
     /**
@@ -527,6 +527,6 @@ class ProcessOCRResult implements ShouldQueue
             'error_message' => $exception->getMessage(),
         ]);
 
-        Log::error("ProcessOCRResult failed for Document #{$this->document_id}: " . $exception->getMessage());
+        Log::error("ProcessAIResult failed for Document #{$this->document_id}: " . $exception->getMessage());
     }
 }

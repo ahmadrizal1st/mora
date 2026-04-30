@@ -6,7 +6,7 @@ Monorepo ini terdiri dari **4 aplikasi** yang saling terhubung. Semua service ha
 apps/
 ├── api/        → Laravel 13 (REST API + Queue)
 ├── personal/   → React + Vite (Frontend)
-├── ocr/        → FastAPI (OCR & Audio ML Service)
+├── ai/         → FastAPI (AI & Audio ML Service)
 ├── business/   → (coming soon)
 └── logistic/   → (coming soon)
 ```
@@ -21,9 +21,9 @@ apps/
 | Composer | latest | Laravel API |
 | Node.js | ^20 | Frontend |
 | pnpm | latest | Frontend |
-| Python | ^3.10 | OCR FastAPI |
+| Python | ^3.10 | AI FastAPI |
 | PostgreSQL | ^14 | Laravel API |
-| Poppler | latest | OCR (pdf2image) |
+| Poppler | latest | AI (pdf2image) |
 
 > Install Poppler di macOS: `brew install poppler`
 
@@ -100,9 +100,9 @@ QUEUE_CONNECTION=database
 GEMINI_API_KEY=your_gemini_api_key
 GROQ_API_KEY=your_groq_api_key
 
-# OCR Service (untuk tracker Image & File)
-OCR_URL=http://localhost:8000/api/extract
-OCR_KEY=your-secret-api-key
+# AI Service (untuk tracker Image & File)
+AI_URL=http://localhost:8000/api/extract
+AI_KEY=your-secret-api-key
 
 # OAuth Google
 GOOGLE_CLIENT_ID=your_google_client_id
@@ -141,18 +141,18 @@ cd apps/api
 php artisan pail
 ```
 
-> ⚠️ **Queue worker wajib dijalankan.** Tanpanya, semua proses OCR/LLM (tracker image, file, text, audio) tidak akan dieksekusi meskipun data sudah tersimpan.
+> ⚠️ **Queue worker wajib dijalankan.** Tanpanya, semua proses AI/LLM (tracker image, file, text, audio) tidak akan dieksekusi meskipun data sudah tersimpan.
 
 ---
 
-## 🤖 3. OCR FastAPI Service (`apps/ocr`)
+## 🤖 3. AI FastAPI Service (`apps/ai`)
 
 Digunakan untuk tracker **Image**, **File**, dan **Audio**. Tracker **Text** tidak memerlukan service ini.
 
 ### Setup Pertama Kali
 
 ```bash
-cd apps/ocr
+cd apps/ai
 
 # 1. Buat virtual environment
 python3 -m venv venv
@@ -163,7 +163,7 @@ source venv/bin/activate  # macOS/Linux
 
 # 3. Install dependencies Python
 pip install -r requirements.txt
-# ⚠️ Proses ini lama — surya-ocr & faster-whisper perlu download model ML
+# ⚠️ Proses ini lama — surya-ai & faster-whisper perlu download model ML
 
 # 4. Salin dan konfigurasi env
 cp .env.template .env
@@ -172,7 +172,7 @@ cp .env.template .env
 ### Konfigurasi `.env`
 
 ```env
-APP_NAME="OCR Service"
+APP_NAME="AI Service"
 APP_ENV="development"
 APP_PORT=8000
 APP_HOST="0.0.0.0"
@@ -180,14 +180,14 @@ APP_HOST="0.0.0.0"
 UPLOAD_DIR="./uploads"
 MODEL_CACHE_DIR="./.models"
 
-# Harus sama dengan OCR_KEY di apps/api/.env
+# Harus sama dengan AI_KEY di apps/api/.env
 API_KEY="vistamora_secure_secret_key_2026"
 ```
 
-### Menjalankan OCR Service
+### Menjalankan AI Service
 
 ```bash
-cd apps/ocr
+cd apps/ai
 source venv/bin/activate
 
 # Development (dengan auto-reload)
@@ -203,11 +203,11 @@ Dokumentasi API: `http://localhost:8000/docs`
 ### Alternatif — Jalankan dengan Docker
 
 ```bash
-cd apps/ocr
+cd apps/ai
 docker-compose up --build
 ```
 
-> Docker image memerlukan minimal **8GB RAM** (untuk model ML surya-ocr & faster-whisper).
+> Docker image memerlukan minimal **8GB RAM** (untuk model ML surya-ai & faster-whisper).
 
 ---
 
@@ -257,13 +257,13 @@ php artisan serve
 ```bash
 cd apps/api
 php artisan queue:work --tries=3
-# Memproses job LLM (OCR result → transaksi)
+# Memproses job LLM (AI result → transaksi)
 # Tanpa ini, hasil tracker TIDAK akan tersimpan ke database
 ```
 
-**Terminal 3 — OCR FastAPI ML Service**
+**Terminal 3 — AI FastAPI ML Service**
 ```bash
-cd apps/ocr
+cd apps/ai
 source venv/bin/activate
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 # Berjalan di: http://localhost:8000
@@ -304,13 +304,13 @@ cd apps/api && composer run dev
 │  POST /api/documents/text    ──→ [processText()]                    │
 └──────────────┬───────────────────────────────┬──────────────────────┘
                │                               │
-     (Image/File/Audio)               (Text — bypass OCR)
+     (Image/File/Audio)               (Text — bypass AI)
                │                               │
                ▼                               │
 ┌──────────────────────────┐                   │
-│   OCR FastAPI (Python)   │                   │
+│   AI FastAPI (Python)   │                   │
 │   :8000/api/extract      │                   │
-│   surya-ocr / whisper    │                   │
+│   surya-ai / whisper    │                   │
 └──────────────┬───────────┘                   │
                │ raw_text                      │ raw_text
                └───────────────┬───────────────┘
@@ -323,7 +323,7 @@ cd apps/api && composer run dev
                                 ▼
                     ┌─────────────────────┐
                     │  Queue Worker       │
-                    │  ProcessOCRResult   │
+                    │  ProcessAIResult   │
                     │  (php artisan       │
                     │   queue:work)       │
                     └──────────┬──────────┘
@@ -343,7 +343,7 @@ cd apps/api && composer run dev
 
 ### Service yang Dibutuhkan per Fitur
 
-| Fitur Tracker | PostgreSQL | Laravel API | Queue Worker | OCR FastAPI | LLM Key |
+| Fitur Tracker | PostgreSQL | Laravel API | Queue Worker | AI FastAPI | LLM Key |
 |---------------|:----------:|:-----------:|:------------:|:-----------:|:-------:|
 | **Text**      | ✅ | ✅ | ✅ | ❌ | ✅ |
 | **Image**     | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -359,8 +359,8 @@ cd apps/api && composer run dev
 | POST | `/api/auth/login` | Login user |
 | POST | `/api/auth/register` | Registrasi |
 | GET | `/api/transactions` | List transaksi |
-| POST | `/api/documents/upload` | Upload file (OCR) |
-| POST | `/api/documents/text` | Input teks langsung (bypass OCR) |
+| POST | `/api/documents/upload` | Upload file (AI) |
+| POST | `/api/documents/text` | Input teks langsung (bypass AI) |
 | GET | `/api/budgets` | List budget |
 | GET | `/api/currencies` | List mata uang |
 
@@ -376,14 +376,14 @@ cd apps/api && composer run dev
 - Cek log: `php artisan pail` atau `storage/logs/laravel.log`
 - Cek status job: `SELECT * FROM jobs;` di database
 
-### OCR Service tidak bisa diakses
+### AI Service tidak bisa diakses
 - Pastikan venv aktif sebelum menjalankan uvicorn
 - Pastikan port 8000 tidak dipakai proses lain: `lsof -i :8000`
-- Pastikan `API_KEY` di `.env` OCR sama dengan `OCR_KEY` di `.env` Laravel
+- Pastikan `API_KEY` di `.env` AI sama dengan `AI_KEY` di `.env` Laravel
 
-### Error saat install requirements.txt (OCR)
+### Error saat install requirements.txt (AI)
 - Pastikan Poppler terinstall: `brew install poppler`
-- Jika `surya-ocr` gagal, pastikan Python >= 3.10 dan pip terbaru: `pip install --upgrade pip`
+- Jika `surya-ai` gagal, pastikan Python >= 3.10 dan pip terbaru: `pip install --upgrade pip`
 
 ---
 
@@ -404,8 +404,8 @@ cd apps/personal
 rm -rf node_modules
 pnpm install
 
-# Reinstall OCR Python
-cd apps/ocr
+# Reinstall AI Python
+cd apps/ai
 rm -rf venv
 python3 -m venv venv
 source venv/bin/activate

@@ -47,9 +47,9 @@ return [
         'openrouter_key' => env('OPENROUTER_API_KEY'),
     ],
 
-    'ocr' => [
-        'url' => env('OCR_SERVICE_URL', 'http://localhost:8000/api/extract'),
-        'key' => env('OCR_SERVICE_KEY', 'your-secret-api-key'),
+    'ai' => [
+        'url' => env('AI_SERVICE_URL', 'http://localhost:8000/api/extract'),
+        'key' => env('AI_SERVICE_KEY', 'your-secret-api-key'),
     ],
 
 ];

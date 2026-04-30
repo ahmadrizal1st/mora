@@ -6,22 +6,22 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
-class OcrIntegrationTest extends TestCase
+class AiIntegrationTest extends TestCase
 {
-    protected string $ocrServiceUrl;
+    protected string $aiServiceUrl;
 
     protected function setUp(): void
     {
         parent::setUp();
         
         // URL service FastAPI, bisa disesuaikan dengan environment / config
-        $this->ocrServiceUrl = config('services.ocr.url', 'http://localhost:8000/api/extract');
+        $this->aiServiceUrl = config('services.ai.url', 'http://localhost:8000/api/extract');
     }
 
     /**
      * Test case: Success response dengan confidence tinggi.
      */
-    public function test_ocr_success_response(): void
+    public function test_ai_success_response(): void
     {
         // Menggunakan Http::fake() untuk mem-mock response dari FastAPI
         // Hapus atau comment Http::fake() ini jika ingin melakukan real HTTP request ke OCR service yang menyala.
@@ -42,7 +42,7 @@ class OcrIntegrationTest extends TestCase
         // Request menggunakan Http facade Laravel
         $response = Http::attach(
             'file', file_get_contents($file->getPathname()), $file->getClientOriginalName()
-        )->post($this->ocrServiceUrl);
+        )->post($this->aiServiceUrl);
 
         // Verifikasi Status Code
         $this->assertTrue($response->successful());
@@ -71,7 +71,7 @@ class OcrIntegrationTest extends TestCase
     /**
      * Test case: File tidak didukung (contoh: format file salah atau corrupt).
      */
-    public function test_ocr_unsupported_file_response(): void
+    public function test_ai_unsupported_file_response(): void
     {
         Http::fake([
             '*' => Http::response([
@@ -84,7 +84,7 @@ class OcrIntegrationTest extends TestCase
 
         $response = Http::attach(
             'file', file_get_contents($file->getPathname()), $file->getClientOriginalName()
-        )->post($this->ocrServiceUrl);
+        )->post($this->aiServiceUrl);
 
         // Verifikasi Error HTTP Status
         $this->assertTrue($response->clientError());
@@ -98,7 +98,7 @@ class OcrIntegrationTest extends TestCase
     /**
      * Test case: Response success tetapi dengan confidence rendah (buram/tidak terbaca).
      */
-    public function test_ocr_low_confidence_response(): void
+    public function test_ai_low_confidence_response(): void
     {
         Http::fake([
             '*' => Http::response([
@@ -115,7 +115,7 @@ class OcrIntegrationTest extends TestCase
 
         $response = Http::attach(
             'file', file_get_contents($file->getPathname()), $file->getClientOriginalName()
-        )->post($this->ocrServiceUrl);
+        )->post($this->aiServiceUrl);
 
         $this->assertTrue($response->successful());
         

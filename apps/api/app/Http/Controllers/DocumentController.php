@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\DocumentSchema;
-use App\Jobs\ProcessOCRResult;
+use App\Jobs\ProcessAIResult;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -24,7 +24,7 @@ class DocumentController extends Controller
             'doc_type' => ['required', new Enum(DocumentSchema::class)],
         ]);
 
-        $ocrUrl = config('services.ocr.url', 'http://localhost:8000/api/extract');
+        $aiUrl = config('services.ai.url', 'http://localhost:8000/api/extract');
 
         try {
             $file = $request->file('file');
@@ -40,18 +40,18 @@ class DocumentController extends Controller
 
             // Kirim file ke service FastAPI OCR
             $response = Http::withHeaders([
-                'X-API-KEY' => config('services.ocr.key')
+                'X-API-KEY' => config('services.ai.key')
             ])->timeout(300)->attach(
                 'file',
                 fopen($file->getPathname(), 'r'),
                 $file->getClientOriginalName()
-            )->post($ocrUrl, [
+            )->post($aiUrl, [
                 'language' => $language,
             ]);
 
             if ($response->failed()) {
                 return response()->json([
-                    'message' => 'OCR Service returned an error.',
+                    'message' => 'AI Service returned an error.',
                     'details' => $response->json('message') ?? 'Unknown error'
                 ], 502);
             }
@@ -73,7 +73,7 @@ class DocumentController extends Controller
             ]);
 
             // Jalankan mapping LLM secara async
-            ProcessOCRResult::dispatch(
+            ProcessAIResult::dispatch(
                 $rawText,
                 $request->doc_type,
                 $document->id,
@@ -86,10 +86,10 @@ class DocumentController extends Controller
             ], 202);
 
         } catch (Exception $e) {
-            Log::error("OCR Service Error: " . $e->getMessage());
+            Log::error("AI Service Error: " . $e->getMessage());
             
             return response()->json([
-                'message' => 'Failed to reach OCR service. Please try again later.',
+                'message' => 'Failed to reach AI service. Please try again later.',
             ], 503);
         }
     }
@@ -117,7 +117,7 @@ class DocumentController extends Controller
             ]);
 
             // Jalankan mapping LLM secara async
-            ProcessOCRResult::dispatch(
+            ProcessAIResult::dispatch(
                 $rawText,
                 $request->doc_type,
                 $document->id,

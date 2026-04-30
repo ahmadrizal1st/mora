@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\DocumentSchema;
-use App\Jobs\ProcessOCRResult;
+use App\Jobs\ProcessAIResult;
 use App\Models\Document;
 use App\Models\User;
 use App\Services\LLMMapper;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
-class ProcessOCRResultJobTest extends TestCase
+class ProcessAIResultJobTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -32,7 +32,7 @@ class ProcessOCRResultJobTest extends TestCase
                 ->andReturn(['total' => 1000]);
         });
 
-        $job = new ProcessOCRResult('Sample OCR Text', 'invoice', $document->id, $user->id);
+        $job = new ProcessAIResult('Sample OCR Text', 'invoice', $document->id, $user->id);
         $job->handle($mockMapper, app(PromptBuilder::class));
 
         $document->refresh();
@@ -49,7 +49,7 @@ class ProcessOCRResultJobTest extends TestCase
         ]);
 
         $exception = new \Exception('LLM Error');
-        $job = new ProcessOCRResult('Sample OCR Text', 'invoice', $document->id);
+        $job = new ProcessAIResult('Sample OCR Text', 'invoice', $document->id);
         
         $job->failed($exception);
 

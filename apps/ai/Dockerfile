@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create temporary directory for OCR processing
-RUN mkdir -p /tmp/ocr
+RUN mkdir -p /tmp/ai
 
 # Expose port
 EXPOSE 8000
