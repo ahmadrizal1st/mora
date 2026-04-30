@@ -30,6 +30,7 @@ interface BaseLayoutProps {
   pagePretitle?: React.ReactNode
   pageDescription?: string
   pageActions?: ReactNode
+  pageHeaderClass?: string
   bodyClass?: string
   hideFooter?: boolean
   dir?: 'ltr' | 'rtl'
@@ -60,6 +61,7 @@ export default function BaseLayout({
   pagePretitle,
   pageDescription,
   pageActions,
+  pageHeaderClass,
   bodyClass,
   hideFooter = false,
   dir,
@@ -103,9 +105,10 @@ export default function BaseLayout({
             actions={pageActions}
             showBackButton={showBackButton}
             containerClass={containerFlushMobile ? 'px-2 px-md-2' : undefined}
-            className={clsx((navbarOverlap && navbarDark) && 'text-white')}
+            className={clsx((navbarOverlap && navbarDark) && 'text-white', pageHeaderClass)}
           />
         )}
+
 
         <main id="content" className={clsx('page-body', bodyClass, flush && 'pt-0')}>
           {wrapperFull || noContainer ? (
