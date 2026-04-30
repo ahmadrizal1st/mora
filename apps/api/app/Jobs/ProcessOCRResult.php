@@ -168,6 +168,12 @@ class ProcessOCRResult implements ShouldQueue
         'jualan'            => 'Penjualan',
         'other income'      => 'Pendapatan Lainnya',
         'pendapatan'        => 'Pendapatan Lainnya',
+        'income'            => 'Pendapatan Lainnya',
+        'electronic'        => 'Belanja',
+        'electronics'       => 'Belanja',
+        'gadget'            => 'Belanja',
+        'marketplace'       => 'Belanja',
+        'ecommerce'         => 'Belanja',
     ];
 
     /**
@@ -208,19 +214,11 @@ class ProcessOCRResult implements ShouldQueue
     {
         $document = Document::findOrFail($this->document_id);
 
-        // PRE-DETECTION: Only log potential type mismatch, don't override doc_type yet
-        // to avoid sending the wrong schema if the detection is a false positive.
-        $isIncomePattern = preg_match('/\b(gaji|salary|income|thr|bonus|investasi|profit)\b/i', $this->raw_text);
-        if ($this->doc_type === 'expense' && $isIncomePattern) {
-            Log::info("Potential INCOME detected for Document #{$this->document_id} via pattern matching.");
-        }
-
         $schema      = DocumentSchema::from($this->doc_type);
         $isTextInput = $document->mime_type === 'text/plain';
 
         // Sanitize raw_text: Hapus titik di antara angka (thousand separator) 
         // agar LLM tidak salah sangka sebagai decimal point.
-        // Contoh: "10.000" -> "10000"
         $this->raw_text = preg_replace('/(\d)\.(\d{3})\b/', '$1$2', $this->raw_text);
 
         $prompt = $builder->build(
@@ -237,22 +235,54 @@ class ProcessOCRResult implements ShouldQueue
             'status'         => 'completed',
         ]);
 
+        // Support for multiple transactions in one document
+        $transactionsData = [];
+        if (isset($structuredData['transactions']) && is_array($structuredData['transactions'])) {
+            $transactionsData = $structuredData['transactions'];
+        } else {
+            // Fallback for single transaction structure
+            $transactionsData = [$structuredData];
+        }
+
+        $createdTransactionIds = [];
+
+        foreach ($transactionsData as $txData) {
+            try {
+                $transaction = $this->processTransaction($txData, $document);
+                if ($transaction) {
+                    $createdTransactionIds[] = $transaction->id;
+                }
+            } catch (\Exception $e) {
+                Log::error("Failed to process individual transaction in Document #{$this->document_id}: " . $e->getMessage());
+            }
+        }
+
+        // Link the first transaction to the document for backward compatibility
+        if (!empty($createdTransactionIds)) {
+            $document->update(['transaction_id' => $createdTransactionIds[0]]);
+        }
+
+        Log::info("ProcessOCRResult completed for Document #{$this->document_id}: Created " . count($createdTransactionIds) . " transactions.");
+    }
+
+    /**
+     * Process and save a single transaction from extracted data.
+     */
+    protected function processTransaction(array $data, Document $document): ?\App\Models\Transaction
+    {
         // Resolve amount (EXPENSE = 'amount', INVOICE/RECEIPT = 'total_amount', AUDIO = 0)
-        $amount = $structuredData['amount']
-            ?? $structuredData['total_amount']
+        $amount = $data['amount']
+            ?? $data['total_amount']
             ?? 0;
 
         // NEW: Jika ada data items, kita hitung ulang total amount di sisi server
-        // untuk menghindari kesalahan hitung (halusinasi) dari LLM.
-        if (!empty($structuredData['items']) && is_array($structuredData['items'])) {
+        if (!empty($data['items']) && is_array($data['items'])) {
             $sumOfItems = 0;
             $hasValidPrices = false;
-            foreach ($structuredData['items'] as $item) {
+            foreach ($data['items'] as $item) {
                 if (isset($item['price']) && is_numeric($item['price'])) {
                     $itemPrice = (float) $item['price'];
                     
-                    // SAFETY: Jika angka sangat kecil (misal 10.0) padahal ada kata "ribu"
-                    // di teks asli, kita kalikan 1000.
                     if ($itemPrice < 1000 && str_contains(strtolower($this->raw_text), 'ribu')) {
                         $itemPrice *= 1000;
                     }
@@ -260,86 +290,88 @@ class ProcessOCRResult implements ShouldQueue
                     $hasValidPrices = true;
                 }
             }
-            // Gunakan hasil penjumlahan server HANYA JIKA amount utama kosong/nol.
             if ($amount <= 0 && $hasValidPrices && $sumOfItems > 0) {
                 $amount = $sumOfItems;
             }
         }
 
         // Notes berformat JSON standar, key menyesuaikan sumber tracker
-        $notes = $this->buildTrackerNotes($document, $structuredData);
+        $notes = $this->buildTrackerNotes($document, $data);
 
-        // Resolve merchant name — berbeda per schema
-        $merchant = $structuredData['merchant_name']   // EXPENSE / RECEIPT
-            ?? $structuredData['source_name']           // INCOME
-            ?? $structuredData['vendor_name']           // INVOICE
-            ?? $structuredData['speaker_name']          // AUDIO_NOTE
-            ?? (isset($structuredData['summary'])
-                ? mb_strimwidth($structuredData['summary'], 0, 50, '...')
-                : null)
+        // Resolve merchant name
+        $merchant = $data['merchant_name']
+            ?? $data['source_name']
+            ?? $data['vendor_name']
+            ?? $data['speaker_name']
+            ?? $data['payer']
+            ?? $data['recipient']
+            ?? (isset($data['summary']) ? mb_strimwidth($data['summary'], 0, 50, '...') : null)
             ?? 'Unknown';
 
-        // Jika merchant tetap Unknown (case-insensitive) tapi ada data items, gunakan item pertama
-        if (strtolower($merchant) === 'unknown' && !empty($structuredData['items'][0]['name'])) {
-            $merchant = $structuredData['items'][0]['name'];
+        if (strtolower($merchant) === 'unknown' && !empty($data['items'][0]['name'])) {
+            $merchant = $data['items'][0]['name'];
         }
 
-        // Resolve transaction type (Priority: LLM Result -> User Selection -> Manual Detection)
-        $txType = $structuredData['type'] ?? null;
-        $extractedCategory = $structuredData['category'] ?? '';
+        // Resolve transaction type
+        $txType = $data['type'] ?? null;
+        $extractedCategory = $data['category'] ?? '';
 
-        // Validasi txType dari LLM
         if (!in_array($txType, [\App\Models\Transaction::TYPE_INCOME, \App\Models\Transaction::TYPE_EXPENSE])) {
             $incomeKeywords = [
                 'Salary', 'Bonus', 'Freelance', 'Investment', 'Gift', 'Sales', 'Other Income',
                 'Gaji', 'Bonus', 'Proyek', 'Investasi', 'Hadiah', 'Penjualan', 'Pendapatan', 'THR'
             ];
             
-            // Manual detection as fallback
             $isIncomeDetected = in_array(Str::title($extractedCategory), $incomeKeywords) 
                 || preg_match('/\b(gaji|salary|income|thr|bonus|investasi|profit)\b/i', $this->raw_text);
 
-            $txType = $isIncomeDetected ? \App\Models\Transaction::TYPE_INCOME : $this->doc_type;
+            $txType = $isIncomeDetected ? \App\Models\Transaction::TYPE_INCOME : \App\Models\Transaction::TYPE_EXPENSE;
         }
 
-        // Resolve category_id dari nama kategori yang dikembalikan LLM
-        // Jika LLM tidak memberikan kategori, sistem akan scan raw_text langsung
+        // Resolve category_id
         $categoryId = $this->resolveCategoryId(
             $extractedCategory,
             $this->userId,
-            $txType,         // NEW: Pass txType to filter correct categories
-            $this->raw_text  // fallback: scan teks asli jika LLM tidak return kategori
+            $txType,
+            $this->raw_text
         );
 
         // Resolve tracker source type
         $trackerSource = $this->resolveTrackerSource($document);
 
+        // Resolve account_id: Priority 1. User default, 2. Account named 'BCA' or 'Dompet', 3. First account
+        $accountId = \App\Models\Account::where('user_id', $this->userId)
+            ->where(function($q) {
+                $q->where('name', 'LIKE', '%BCA%')
+                  ->orWhere('name', 'LIKE', '%Dompet%');
+            })->first()?->id 
+            ?? \App\Models\Account::where('user_id', $this->userId)->first()?->id
+            ?? 4; // Absolute fallback
+
         $transaction = \App\Models\Transaction::create([
             'user_id'        => $this->userId,
             'type'           => $txType,
-            'amount_raw'     => $amount,
-            'tx_date'        => $structuredData['date'] ?? now()->format('Y-m-d'),
+            'amount_raw'     => (int) str_replace(['.', ','], '', (string)$amount),
+            'tx_date'        => $data['date'] ?? now()->format('Y-m-d'),
             'tracker'        => $trackerSource,
             'merchant'       => $merchant,
             'notes'          => $notes,
             'currency_id'    => 1,
-            'account_id'     => 4,
+            'account_id'     => $accountId,
             'status_id'      => 1,
             'category_id'    => $categoryId,
             'dynamic_fields' => [
                 'document_id' => $this->document_id,
-                'items'       => $structuredData['items'] ?? [],
+                'items'       => $data['items'] ?? [],
             ],
         ]);
 
-        // Attach tags berdasarkan kategori
+        // Attach tags
         $this->attachTags($transaction, $categoryId, $this->userId);
 
-        $document->update(['transaction_id' => $transaction->id]);
-
-        Log::info("ProcessOCRResult completed for Document #{$this->document_id}: " .
-            "tx_id={$transaction->id}, amount={$amount}, category_id={$categoryId}");
+        return $transaction;
     }
+
 
     /**
      * Resolve category_id dari nama kategori (bahasa Inggris/Indonesia) yang dikirim LLM.
@@ -437,9 +469,9 @@ class ProcessOCRResult implements ShouldQueue
     /**
      * Bangun string notes berformat list rapi (Mie Ayam = 10000).
      */
-    protected function buildTrackerNotes(Document $document, array $structuredData): string
+    protected function buildTrackerNotes(Document $document, array $data): string
     {
-        $items = $structuredData['items'] ?? [];
+        $items = $data['items'] ?? [];
         $noteLines = [];
 
         foreach ($items as $item) {
@@ -453,15 +485,16 @@ class ProcessOCRResult implements ShouldQueue
         }
 
         // Tambahkan deskripsi dari AI jika ada
-        if (!empty($structuredData['description'])) {
+        if (!empty($data['description'])) {
             if (!empty($noteLines)) {
                 $noteLines[] = ""; // Spasi pemisah
             }
-            $noteLines[] = "Info: " . $structuredData['description'];
+            $noteLines[] = "Info: " . $data['description'];
         }
 
         return implode("\n", $noteLines);
     }
+
 
     /**
      * Tentukan sumber tracker (manual, image, file, audio) berdasarkan dokumen.
@@ -469,11 +502,13 @@ class ProcessOCRResult implements ShouldQueue
     protected function resolveTrackerSource(Document $document): string
     {
         $mime = $document->mime_type ?? '';
+        $filename = $document->original_filename ?? '';
         $audioExtensions = ['webm', 'ogg', 'mp3', 'wav', 'm4a', 'aac', 'flac', 'opus'];
-        $fileExt = strtolower(pathinfo($document->original_filename ?? '', PATHINFO_EXTENSION));
+        $fileExt = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         return match (true) {
             $mime === 'text/plain'                                    => 'manual',
+            str_starts_with($filename, 'scan-')                      => 'scan',
             str_starts_with($mime, 'audio/')                         => 'audio',
             in_array($mime, ['video/webm', 'video/mp4'], true)       => 'audio',
             in_array($fileExt, $audioExtensions, true)               => 'audio',

@@ -3,6 +3,19 @@ import { useNavigate, useLocation } from '@tanstack/react-router';
 import { Button } from '@/shared/components/ui/Button';
 import { Badge } from '@/shared/components/ui/Badge';
 import { getPerspectiveTransform, applyHomography } from '../utils/perspectiveTransform';
+import { useUploadDocument } from '@/features/tracker/hooks/useTracker';
+
+const dataURLtoFile = (dataurl: string, filename: string) => {
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)![1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
+};
 
 import {
   type Point,
@@ -22,6 +35,7 @@ interface LocationState {
 export default function TrackerPhotoPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const uploadMutation = useUploadDocument();
   const locationState = location.state as LocationState;
   const videoRef = useRef<HTMLVideoElement>(null);
   const capturedCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -562,27 +576,27 @@ export default function TrackerPhotoPage() {
     };
   }, [mode, drawCapturedOverlay, clearAutoCrop]);
 
+  const [downloadTimestamp] = useState(() => Date.now());
+  const downloadFilename = `scan-${downloadTimestamp}.${outputFormat === 'jpeg' ? 'jpg' : 'png'}`;
+
   const processAndNavigate = useCallback(async (dataUrl: string) => {
     clearAutoCrop();
     setIsProcessing(true);
     setProcessingLabel('AI sedang membaca struk...');
-    await sleep(2000);
 
-    const mockAmount = Math.floor(Math.random() * 500000) + 15000;
-    const prefillData = {
-      amount: mockAmount,
-      date: new Date().toISOString().split('T')[0],
-      category: 'food',
-      description: 'Scan Struk Otomatis',
-      image: dataUrl,
-    };
-    setIsProcessing(false);
-    // @ts-expect-error: Bypass strict state type matching for ad-hoc prefill object
-    navigate({ to: '/tracker/input', state: { prefill: prefillData } });
-  }, [navigate, clearAutoCrop]);
+    try {
+      const file = dataURLtoFile(dataUrl, downloadFilename);
+      await uploadMutation.mutateAsync({ file, docType: 'expense' });
+      navigate({ to: '/transactions' });
+    } catch (err) {
+      console.error(err);
+      setStatusMsg('Gagal memproses struk. Silakan coba lagi.');
+      setStatusType('error');
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [navigate, clearAutoCrop, uploadMutation, downloadFilename]);
 
-  const [downloadTimestamp] = useState(() => Date.now());
-  const downloadFilename = `scan-${downloadTimestamp}.${outputFormat === 'jpeg' ? 'jpg' : 'png'}`;
 
   const cropAndWarp = useCallback(async () => {
     clearAutoCrop();

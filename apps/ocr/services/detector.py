@@ -44,6 +44,7 @@ class DetectorService:
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
             "text/plain",
+            "text/csv",
             "application/rtf",
             "text/rtf"
         ]

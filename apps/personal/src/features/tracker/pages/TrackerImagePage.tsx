@@ -5,16 +5,18 @@ import { Button, Icon, Dropzone } from '@/shared/components/ui';
 import { useUploadDocument } from '../hooks/useTracker';
 
 export default function TrackerImagePage() {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const uploadMutation = useUploadDocument();
 
   const handleProcess = async () => {
-    if (!file) return;
+    if (files.length === 0) return;
     setError(null);
     try {
-      await uploadMutation.mutateAsync({ file, docType: 'expense' });
+      await Promise.all(
+        files.map(file => uploadMutation.mutateAsync({ file, docType: 'expense' }))
+      );
       navigate({ to: '/transactions' });
     } catch {
       setError('Gagal memproses gambar. Silakan coba lagi.');
@@ -24,7 +26,6 @@ export default function TrackerImagePage() {
   return (
     <BaseLayout
       pageTitle="Scan Receipt"
-      pagePretitle="OCR Tracking"
       pageDescription="Upload foto struk belanja Anda. AI akan mengekstrak detail transaksi secara otomatis."
     >
       <div className="row justify-content-center">
@@ -39,9 +40,27 @@ export default function TrackerImagePage() {
                 text="Klik atau drag gambar ke sini"
                 description="JPG, PNG, WebP — Maks. 5 MB"
                 acceptedFiles="image/jpeg,image/png,image/webp"
-                onAddedFile={(f) => setFile(f)}
+                onAddedFile={(f) => setFiles(prev => [...prev, f])}
+                multiple
                 custom
               />
+
+              {files.length > 0 && (
+                <div className="mb-4">
+                  <div className="text-muted small mb-2">{files.length} gambar dipilih:</div>
+                  <div className="list-group list-group-flush border rounded">
+                    {files.map((f, i) => (
+                      <div key={i} className="list-group-item d-flex justify-content-between align-items-center py-2">
+                        <div className="d-flex align-items-center">
+                          <Icon icon="photo" size={16} className="text-secondary me-2" />
+                          <span className="small text-truncate" style={{ maxWidth: '200px' }}>{f.name}</span>
+                        </div>
+                        <span className="badge bg-light text-dark fw-normal">{(f.size / 1024).toFixed(0)} KB</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {error && (
                 <div className="alert alert-danger" role="alert">
@@ -64,10 +83,10 @@ export default function TrackerImagePage() {
             <div className="card-footer text-end">
               <div className="btn-list">
                 <Button
-                  text={uploadMutation.isPending ? 'Mengekstrak Teks...' : 'Scan Sekarang'}
+                  text={uploadMutation.isPending ? 'Mengekstrak Teks...' : `Scan ${files.length} Gambar`}
                   color="primary"
                   loading={uploadMutation.isPending}
-                  disabled={!file || uploadMutation.isPending}
+                  disabled={files.length === 0 || uploadMutation.isPending}
                   onClick={handleProcess}
                 />
               </div>

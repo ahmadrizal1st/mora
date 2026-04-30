@@ -5,16 +5,19 @@ import { Button, Icon, Dropzone } from '@/shared/components/ui';
 import { useUploadDocument } from '../hooks/useTracker';
 
 export default function TrackerFilePage() {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const uploadMutation = useUploadDocument();
 
   const handleProcess = async () => {
-    if (!file) return;
+    if (files.length === 0) return;
     setError(null);
     try {
-      await uploadMutation.mutateAsync({ file, docType: 'expense' });
+      // Parallel upload all files
+      await Promise.all(
+        files.map(file => uploadMutation.mutateAsync({ file, docType: 'expense' }))
+      );
       navigate({ to: '/transactions' });
     } catch {
       setError('Gagal memproses dokumen. Silakan coba lagi.');
@@ -24,7 +27,6 @@ export default function TrackerFilePage() {
   return (
     <BaseLayout
       pageTitle="Import Document"
-      pagePretitle="File Tracking"
       pageDescription="Import laporan bank, invoice, atau dokumen lainnya untuk dianalisis oleh AI."
     >
       <div className="row justify-content-center">
@@ -39,9 +41,27 @@ export default function TrackerFilePage() {
                 text="Klik atau drag file ke sini"
                 description="PDF, DOCX, XLSX, CSV — Maks. 10 MB"
                 acceptedFiles=".pdf,.docx,.xlsx,.csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
-                onAddedFile={(f) => setFile(f)}
+                onAddedFile={(f) => setFiles(prev => [...prev, f])}
+                multiple
                 custom
               />
+
+              {files.length > 0 && (
+                <div className="mb-4">
+                  <div className="text-muted small mb-2">{files.length} file dipilih:</div>
+                  <div className="list-group list-group-flush border rounded">
+                    {files.map((f, i) => (
+                      <div key={i} className="list-group-item d-flex justify-content-between align-items-center py-2">
+                        <div className="d-flex align-items-center">
+                          <Icon icon="file-description" size={16} className="text-secondary me-2" />
+                          <span className="small text-truncate" style={{ maxWidth: '200px' }}>{f.name}</span>
+                        </div>
+                        <span className="badge bg-light text-dark fw-normal">{(f.size / 1024).toFixed(0)} KB</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {error && (
                 <div className="alert alert-danger" role="alert">
@@ -64,10 +84,10 @@ export default function TrackerFilePage() {
             <div className="card-footer text-end">
               <div className="btn-list">
                 <Button
-                  text={uploadMutation.isPending ? 'Menganalisis...' : 'Import Data'}
+                  text={uploadMutation.isPending ? 'Menganalisis...' : `Import ${files.length} File`}
                   color="primary"
                   loading={uploadMutation.isPending}
-                  disabled={!file || uploadMutation.isPending}
+                  disabled={files.length === 0 || uploadMutation.isPending}
                   onClick={handleProcess}
                 />
               </div>

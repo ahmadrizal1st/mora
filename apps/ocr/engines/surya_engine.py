@@ -80,12 +80,12 @@ class SuryaEngine(BaseOCREngine):
                     else:
                         # Sort the finished line by X coordinate
                         current_line.sort(key=lambda l: l['x'])
-                        grouped_lines.append(" ".join([l['text'] for l in current_line]))
+                        grouped_lines.append(" | ".join([l['text'] for l in current_line]))
                         current_line = [lines[i]]
                 
                 # Add the last line
                 current_line.sort(key=lambda l: l['x'])
-                grouped_lines.append(" ".join([l['text'] for l in current_line]))
+                grouped_lines.append(" | ".join([l['text'] for l in current_line]))
 
             full_text = "\n".join(grouped_lines)
 

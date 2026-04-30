@@ -53,7 +53,6 @@ export default function TrackerInputPage() {
   return (
     <BaseLayout
       pageTitle={id ? 'Edit Transaction' : 'Manual Entry'}
-      pagePretitle="Tracking"
       pageDescription={id ? 'Perbarui detail transaksi Anda.' : 'Lengkapi detail transaksi di bawah ini secara manual.'}
     >
       <div className="row justify-content-center">

@@ -23,7 +23,6 @@ export default function TrackerTextPage() {
   return (
     <BaseLayout
       pageTitle="Track via Text"
-      pagePretitle="Manual Entry"
       pageDescription="AI akan otomatis mendeteksi tipe transaksi (Pemasukan/Pengeluaran) dari teks yang Anda masukkan."
     >
       <div className="row justify-content-center">

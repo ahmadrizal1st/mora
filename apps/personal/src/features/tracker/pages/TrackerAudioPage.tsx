@@ -107,7 +107,6 @@ export default function TrackerAudioPage() {
   return (
     <BaseLayout
       pageTitle="Voice Note"
-      pagePretitle="Audio Tracking"
       pageDescription="Ucapkan rincian transaksi Anda. AI akan mengubah suara Anda menjadi data transaksi."
     >
       <div className="row justify-content-center">
