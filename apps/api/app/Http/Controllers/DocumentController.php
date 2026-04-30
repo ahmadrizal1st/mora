@@ -14,83 +14,54 @@ use Exception;
 class DocumentController extends Controller
 {
     /**
-     * Handle document upload, OCR processing, and dispatch LLM mapping job.
+     * Handle document upload and dispatch processing job.
      */
     public function upload(Request $request)
     {
-        set_time_limit(0);
         $request->validate([
             'file' => 'required|file|max:10240', // max 10MB
             'doc_type' => ['required', new Enum(DocumentSchema::class)],
         ]);
-
-        $aiUrl = config('services.ai.url', 'http://localhost:8000/api/extract');
 
         try {
             $file = $request->file('file');
             $mime = $file->getMimeType() ?? '';
 
             // Tentukan bahasa untuk Whisper:
-            // - Gunakan field 'language' dari request jika ada
-            // - Default 'id' untuk audio agar Whisper tidak salah deteksi ke English
-            // - Default 'en' untuk file dokumen
             $isAudio = str_starts_with($mime, 'audio/')
                 || in_array($mime, ['video/webm', 'video/mp4'], true);
             $language = $request->input('language', $isAudio ? 'id' : 'en');
 
-            // Kirim file ke service FastAPI OCR
-            $response = Http::withHeaders([
-                'X-API-KEY' => config('services.ai.key')
-            ])->timeout(300)->attach(
-                'file',
-                fopen($file->getPathname(), 'r'),
-                $file->getClientOriginalName()
-            )->post($aiUrl, [
-                'language' => $language,
-            ]);
-
-            if ($response->failed()) {
-                return response()->json([
-                    'message' => 'AI Service returned an error.',
-                    'details' => $response->json('message') ?? 'Unknown error'
-                ], 502);
-            }
-
-            $rawText = $response->json('text');
-
-            // Simpan file secara lokal untuk audit trail
+            // Simpan file secara lokal
             $storedPath = $file->store('documents');
 
-            // Simpan ke database dengan detail lengkap
+            // Simpan ke database dengan status pending
             $document = Document::create([
                 'user_id' => auth()->id(),
                 'doc_type' => $request->doc_type,
                 'file_path' => $storedPath,
-                'mime_type' => $file->getMimeType(),
+                'mime_type' => $mime,
                 'original_filename' => $file->getClientOriginalName(),
-                'raw_text' => $rawText,
                 'status' => 'pending',
             ]);
 
-            // Jalankan mapping LLM secara async
-            ProcessAIResult::dispatch(
-                $rawText,
-                $request->doc_type,
+            // Jalankan seluruh pemrosesan (FastAPI + LLM) secara async
+            \App\Jobs\ProcessDocumentJob::dispatch(
                 $document->id,
-                auth()->id()
+                $language
             );
 
             return response()->json([
-                'message' => 'Document uploaded and processing started.',
+                'message' => 'Document uploaded and processing started in background.',
                 'document_id' => $document->id,
             ], 202);
 
         } catch (Exception $e) {
-            Log::error("AI Service Error: " . $e->getMessage());
+            Log::error("Document Upload Error: " . $e->getMessage());
             
             return response()->json([
-                'message' => 'Failed to reach AI service. Please try again later.',
-            ], 503);
+                'message' => 'Failed to start document processing.',
+            ], 500);
         }
     }
 
@@ -116,13 +87,8 @@ class DocumentController extends Controller
                 'status' => 'pending',
             ]);
 
-            // Jalankan mapping LLM secara async
-            ProcessAIResult::dispatch(
-                $rawText,
-                $request->doc_type,
-                $document->id,
-                auth()->id()
-            );
+            // Jalankan pemrosesan via Job agar konsisten dengan notifikasi
+            \App\Jobs\ProcessDocumentJob::dispatch($document->id);
 
             return response()->json([
                 'message' => 'Text received and processing started.',
@@ -133,7 +99,7 @@ class DocumentController extends Controller
             Log::error("Text Processing Error: " . $e->getMessage());
             
             return response()->json([
-                'message' => 'Failed to process text. Please try again later.',
+                'message' => 'Failed to process text.',
             ], 500);
         }
     }

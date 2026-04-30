@@ -17,9 +17,12 @@ export default function TrackerImagePage() {
       await Promise.all(
         files.map(file => uploadMutation.mutateAsync({ file, docType: 'expense' }))
       );
-      navigate({ to: '/transactions' });
+      // Success alert is shown in the UI via uploadMutation.isSuccess
+      setTimeout(() => {
+        navigate({ to: '/transactions' });
+      }, 2000);
     } catch {
-      setError('Gagal memproses gambar. Silakan coba lagi.');
+      setError('Gagal mengunggah gambar. Silakan coba lagi.');
     }
   };
 

@@ -1,106 +1,131 @@
-// src/components/cards/NavbarNotifications.tsx
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { clsx } from 'clsx'
 import { Icon } from '../ui/Icon'
 import { Button } from '../ui/Button'
-import notificationsData from '../../data/notifications.json'
+import { notificationApi, type Notification } from '@/shared/api/notifications'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/id'
 
-interface Notification {
-  id: string
-  title: string
-  description: string
-  status?: string
-  priority?: string
-  icon?: string
-  color?: string
-  action_url?: string
-  is_important?: boolean
-  timestamp?: string
-}
+dayjs.extend(relativeTime)
+dayjs.locale('id')
 
 interface NavbarNotificationsProps {
-  notifications?: Notification[]
   limit?: number
   isPage?: boolean
 }
 
-function timeAgo(timestamp: string): string {
-  const diff = Date.now() - new Date(timestamp).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins}m ago`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  return `${Math.floor(hours / 24)}d ago`
-}
-
-function dotColor(notification: Notification): string {
-  if (notification.priority === 'critical') return 'bg-red status-dot-animated'
-  if (notification.priority === 'high') return 'bg-orange status-dot-animated'
-  if (notification.color === 'success') return 'bg-green'
-  if (notification.color === 'danger') return 'bg-red'
-  if (notification.color === 'warning') return 'bg-yellow'
-  if (notification.status === 'unread') return 'bg-blue status-dot-animated'
-  return ''
+function dotColor(n: Notification): string {
+  if (n.data.status === 'error') return 'bg-red status-dot-animated'
+  if (n.data.status === 'success') return 'bg-green'
+  if (n.read_at) return ''
+  return 'bg-blue status-dot-animated'
 }
 
 export function NavbarNotifications({
-  notifications = notificationsData as Notification[],
   limit = 5,
   isPage = false,
 }: NavbarNotificationsProps) {
-  const items = isPage ? notifications : notifications.slice(0, limit)
-  const unreadCount = notifications.filter(n => n.status === 'unread').length
+  const queryClient = useQueryClient()
+
+  const { data: notificationsData, isLoading } = useQuery({
+    queryKey: ['notifications', { limit: isPage ? 20 : limit }],
+    queryFn: () => notificationApi.getNotifications({ per_page: isPage ? 20 : limit }),
+    refetchInterval: 15000,
+  })
+
+  const markAllReadMutation = useMutation({
+    mutationFn: () => notificationApi.markAllAsRead(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] })
+    },
+  })
+
+  const markAsReadMutation = useMutation({
+    mutationFn: (id: string) => notificationApi.markAsRead(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] })
+    },
+  })
+
+  const toggleStarMutation = useMutation({
+    mutationFn: (id: string) => notificationApi.toggleStar(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] })
+    },
+  })
+
+  const items = notificationsData?.data || []
+  const unreadCount = items.filter(n => !n.read_at).length
+
+  if (isLoading && !notificationsData) {
+    return (
+      <div className="p-4 text-center">
+        <div className="spinner-border spinner-border-sm text-secondary" role="status"></div>
+      </div>
+    )
+  }
 
   return (
     <div className={isPage ? "card border-0 shadow-none rounded-0" : "card"}>
-      {!isPage && (
-        <div className="card-header d-flex align-items-center">
-          <h3 className="card-title">
-            Notifications
-            {unreadCount > 0 && (
-              <span className="badge bg-red text-red-fg ms-2">{unreadCount}</span>
-            )}
-          </h3>
-          <div className="btn-close ms-auto" data-bs-dismiss="dropdown" />
-        </div>
-      )}
+      <div className="card-header d-flex align-items-center">
+        <h3 className="card-title">
+          Notifications
+          {unreadCount > 0 && (
+            <span className="badge bg-red text-red-fg ms-2">{unreadCount}</span>
+          )}
+        </h3>
+        <div className="btn-close ms-auto" data-bs-dismiss="dropdown" />
+      </div>
 
-      <div className="list-group list-group-flush list-group-hoverable">
+      <div className="list-group list-group-flush list-group-hoverable" style={{ maxHeight: isPage ? 'none' : '25rem', overflowY: 'auto' }}>
         {items.map((n) => (
-          <div key={n.id} className={clsx(isPage ? "list-group-item rounded-0 px-3 py-2 py-md-3" : "list-group-item")}>
-            <div className="row align-items-center g-2 g-md-3">
+          <div key={n.id} className={clsx("list-group-item", n.read_at && "bg-light")}>
+            <div className="row align-items-center">
               <div className="col-auto">
-                <span className={`status-dot rounded-circle d-block ${dotColor(n)}`} />
+                <span className={`status-dot d-block ${dotColor(n)}`} />
               </div>
               <div className="col text-truncate">
-                <a href={n.action_url || '#'} className="text-body d-block fw-bold mb-0 text-truncate" style={{ fontSize: isPage ? '0.875rem' : 'inherit' }}>
-                  {n.title}
+                <a 
+                  href={n.data.url || '#'} 
+                  className="text-body d-block fw-medium"
+                  onClick={() => {
+                    if (!n.read_at) markAsReadMutation.mutate(n.id)
+                  }}
+                >
+                  {n.data.title}
                 </a>
-                <div className="text-secondary text-truncate mt-n1" style={{ fontSize: isPage ? '0.75rem' : '0.85rem' }}>
-                  {n.description}
+                <div className="d-block text-secondary text-truncate mt-n1">
+                  {n.data.message}
                 </div>
               </div>
-              <div className="col-auto text-secondary text-nowrap" style={{ fontSize: '0.7rem' }}>
-                {n.timestamp ? timeAgo(n.timestamp) : ''}
+              <div className="col-auto text-secondary small">
+                {dayjs(n.created_at).fromNow()}
               </div>
-              {n.is_important && (
-                <div className="col-auto">
-                  <a href="#" className="list-group-item-actions d-none d-md-block show">
-                    <Icon icon="star" color="yellow" size="sm" />
-                  </a>
-                </div>
-              )}
+              <div className="col-auto">
+                <a 
+                  href="#" 
+                  className={clsx("list-group-item-actions", n.is_starred ? "show" : "")}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleStarMutation.mutate(n.id);
+                  }}
+                >
+                  <Icon icon={n.is_starred ? "star-filled" : "star"} color={n.is_starred ? "yellow" : "muted"} />
+                </a>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className={clsx("card-footer", isPage && "px-3")}>
-        <div className="row">
+      <div className="card-footer">
+        <div className="row align-items-center">
           <div className="col">
-            <Button block text="Archive all" />
+            <Button block text="View all" to="/notifications" />
           </div>
           <div className="col">
-            <Button block text="Mark all as read" />
+            <Button block text="Mark all as read" onClick={() => markAllReadMutation.mutate()} loading={markAllReadMutation.isPending} disabled={unreadCount === 0} />
           </div>
         </div>
       </div>

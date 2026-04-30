@@ -97,6 +97,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('budgets', BudgetController::class);
     Route::get('budgets-utilization', [BudgetController::class, 'utilization']);
 
+    // Notifications
+    Route::get('notifications', [\App\Http\Controllers\NotificationController::class, 'index']);
+    Route::get('notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount']);
+    Route::post('notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead']);
+    Route::post('notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead']);
+    Route::post('notifications/{id}/star', [\App\Http\Controllers\NotificationController::class, 'toggleStar']);
+    Route::delete('notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
+
     // OCR & Documents
     Route::post('documents/upload', [DocumentController::class, 'upload']);
     Route::post('documents/text', [DocumentController::class, 'processText']);

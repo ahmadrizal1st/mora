@@ -18,9 +18,13 @@ export default function TrackerFilePage() {
       await Promise.all(
         files.map(file => uploadMutation.mutateAsync({ file, docType: 'expense' }))
       );
-      navigate({ to: '/transactions' });
+      
+      // Delay to let user see success message
+      setTimeout(() => {
+        navigate({ to: '/transactions' });
+      }, 2000);
     } catch {
-      setError('Gagal memproses dokumen. Silakan coba lagi.');
+      setError('Gagal mengunggah dokumen. Silakan coba lagi.');
     }
   };
 

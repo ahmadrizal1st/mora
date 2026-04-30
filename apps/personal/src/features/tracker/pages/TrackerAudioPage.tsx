@@ -89,9 +89,13 @@ export default function TrackerAudioPage() {
 
     try {
       await uploadMutation.mutateAsync({ file: audioFile, docType: 'expense' });
-      navigate({ to: '/transactions' });
+      
+      // Delay to let user see success message
+      setTimeout(() => {
+        navigate({ to: '/transactions' });
+      }, 2000);
     } catch {
-      setError('Gagal mengirim rekaman. Silakan coba lagi.');
+      setError('Gagal mengunggah rekaman. Silakan coba lagi.');
     }
   };
 

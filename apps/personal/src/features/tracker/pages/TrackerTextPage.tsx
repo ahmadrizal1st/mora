@@ -14,7 +14,12 @@ export default function TrackerTextPage() {
 
     try {
       await processTextMutation.mutateAsync({ text, docType: 'expense' });
-      navigate({ to: '/transactions' });
+      // Clear text after success
+      setText('');
+      // Delay navigation to let background process start
+      setTimeout(() => {
+        navigate({ to: '/transactions' });
+      }, 1500);
     } catch (error) {
       console.error('Failed to process text:', error);
     }

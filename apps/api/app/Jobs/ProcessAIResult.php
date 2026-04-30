@@ -257,9 +257,22 @@ class ProcessAIResult implements ShouldQueue
             }
         }
 
-        // Link the first transaction to the document for backward compatibility
-        if (!empty($createdTransactionIds)) {
-            $document->update(['transaction_id' => $createdTransactionIds[0]]);
+        // Send success notification
+        if ($this->userId) {
+            $user = \App\Models\User::find($this->userId);
+            if ($user) {
+                $count = count($createdTransactionIds);
+                $msg = $count > 0 
+                    ? "Berhasil menambahkan {$count} transaksi dari dokumen Anda."
+                    : "Dokumen berhasil diproses, namun tidak ada transaksi yang terdeteksi.";
+                
+                $user->notify(new \App\Notifications\TrackerProcessedNotification(
+                    'success',
+                    'Tracker Berhasil Diproses',
+                    $msg,
+                    ['document_id' => $document->id, 'transaction_ids' => $createdTransactionIds]
+                ));
+            }
         }
 
         Log::info("ProcessAIResult completed for Document #{$this->document_id}: Created " . count($createdTransactionIds) . " transactions.");
@@ -522,10 +535,25 @@ class ProcessAIResult implements ShouldQueue
      */
     public function failed(Throwable $exception): void
     {
-        Document::where('id', $this->document_id)->update([
-            'status'        => 'failed',
-            'error_message' => $exception->getMessage(),
-        ]);
+        $document = Document::find($this->document_id);
+        if ($document) {
+            $document->update([
+                'status'        => 'failed',
+                'error_message' => $exception->getMessage(),
+            ]);
+
+            if ($this->userId) {
+                $user = \App\Models\User::find($this->userId);
+                if ($user) {
+                    $user->notify(new \App\Notifications\TrackerProcessedNotification(
+                        'error',
+                        'Gagal Memproses Data AI',
+                        "Terjadi kesalahan saat mengolah data transaksi: " . $exception->getMessage(),
+                        ['document_id' => $document->id]
+                    ));
+                }
+            }
+        }
 
         Log::error("ProcessAIResult failed for Document #{$this->document_id}: " . $exception->getMessage());
     }

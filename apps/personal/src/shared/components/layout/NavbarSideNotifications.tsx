@@ -1,22 +1,22 @@
 import { clsx } from 'clsx'
 import { Link } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import { Icon } from '../ui/Icon'
 import { NavbarNotifications } from '../cards/NavbarNotifications'
-import notificationsData from '../../data/notifications.json'
+import { notificationApi } from '@/shared/api/notifications'
 
 interface NavbarSideNotificationsProps {
   className?: string
 }
 
-interface Notification {
-  status: string
-  [key: string]: unknown
-}
-
 export function NavbarSideNotifications({ className }: NavbarSideNotificationsProps) {
-  const unreadCount = (notificationsData as Notification[]).filter(
-    (n) => n.status === 'unread'
-  ).length
+  const { data: countData } = useQuery({
+    queryKey: ['notifications', 'unread-count'],
+    queryFn: () => notificationApi.getUnreadCount(),
+    refetchInterval: 15000, // Poll every 15 seconds
+  })
+
+  const unreadCount = countData?.unread_count ?? 0
 
   return (
     <div className={clsx('nav-item dropdown', className)}>
@@ -39,7 +39,7 @@ export function NavbarSideNotifications({ className }: NavbarSideNotificationsPr
         {unreadCount > 0 && <span className="badge badge-dot bg-red" />}
       </Link>
 
-      <div className="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card">
+      <div className="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card" style={{ width: '672px', maxWidth: '100vw' }}>
         <NavbarNotifications />
       </div>
     </div>

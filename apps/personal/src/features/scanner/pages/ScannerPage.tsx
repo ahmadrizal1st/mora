@@ -582,15 +582,22 @@ export default function TrackerPhotoPage() {
   const processAndNavigate = useCallback(async (dataUrl: string) => {
     clearAutoCrop();
     setIsProcessing(true);
-    setProcessingLabel('AI sedang membaca struk...');
+    setProcessingLabel('Mengunggah struk...');
 
     try {
       const file = dataURLtoFile(dataUrl, downloadFilename);
       await uploadMutation.mutateAsync({ file, docType: 'expense' });
+      
+      // Since it's 202 Accepted, we tell the user it's processing in background
+      setStatusMsg('✓ Struk berhasil diunggah! AI sedang memproses di latar belakang.');
+      setStatusType('ok');
+      
+      // Wait a moment for the user to read the message before navigating
+      await sleep(1500);
       navigate({ to: '/transactions' });
     } catch (err) {
       console.error(err);
-      setStatusMsg('Gagal memproses struk. Silakan coba lagi.');
+      setStatusMsg('Gagal mengunggah struk. Silakan coba lagi.');
       setStatusType('error');
     } finally {
       setIsProcessing(false);
@@ -883,7 +890,7 @@ export default function TrackerPhotoPage() {
           {mode === 'captured' && (
             <>
               <div className="col-6">
-                <Button element="button" onClick={resetToCamera} white block className="fw-bold" size="lg">
+                <Button element="button" onClick={resetToCamera} block className="fw-bold" size="lg">
                   Ulangi
                 </Button>
               </div>
@@ -903,10 +910,10 @@ export default function TrackerPhotoPage() {
                 </Button>
               </div>
               <div className="col-3">
-                <Button element="a" href={resultImage} download={downloadFilename} white block className="fw-bold px-0" size="lg" icon="download" iconOnly />
+                <Button element="a" href={resultImage} download={downloadFilename} block className="fw-bold px-0" size="lg" icon="download" iconOnly />
               </div>
               <div className="col-3">
-                <Button element="button" onClick={resetToCamera} white block className="fw-bold px-0" size="lg" icon="refresh" iconOnly />
+                <Button element="button" onClick={resetToCamera} block className="fw-bold px-0" size="lg" icon="refresh" iconOnly />
               </div>
             </>
           )}

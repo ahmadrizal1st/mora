@@ -25,8 +25,8 @@ export interface ButtonProps {
   dots?: boolean
   href?: string
   to?: string
-  params?: any
-  search?: any
+  params?: Record<string, unknown>
+  search?: Record<string, unknown>
   hash?: string
   external?: boolean
   element?: 'a' | 'button' | 'div'
@@ -36,7 +36,7 @@ export interface ButtonProps {
   toastId?: string
   dismiss?: boolean
   className?: string
-  onClick?: () => void
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void
   roundedCircle?: boolean
   white?: boolean
   [key: string]: unknown
@@ -100,12 +100,12 @@ export function Button({
   const iconSize = size ? iconSizeMap[size] : 20
   const strokeWidth = size ? strokeWidthMap[size] : 2
 
-  const handleOnClick = (e: React.MouseEvent) => {
+  const handleOnClick = (e: React.MouseEvent<HTMLElement>) => {
     if (El === 'a' && href === '#' && onClick) {
       e.preventDefault()
     }
     if (onClick) {
-      onClick(e as any)
+      onClick(e as React.MouseEvent<HTMLElement>)
     }
   }
 
@@ -145,9 +145,11 @@ export function Button({
 
   // Generate TanStack Router link props if 'to' is provided
   const linkProps = useLinkProps({
-    to: (to || '') as any,
-    params,
-    search,
+    to: (to || '') as string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params: params as any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    search: search as any,
     hash,
     disabled,
   })
@@ -189,13 +191,15 @@ export function Button({
   return (
     <El
       href={El === 'a' && !to ? href : undefined}
-      type={El === 'button' ? (type || 'button') as 'button' | 'submit' | 'reset' : undefined}
+      {...(El === 'button' ? { type: type || 'button' } : {})}
       id={id}
-      className={classes}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onClick={handleOnClick as any}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {...(routingProps as any)}
       {...extraProps}
       {...props}
+      className={classes}
     >
       {content}
     </El>
