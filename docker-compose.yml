@@ -1,0 +1,88 @@
+services:
+  # Database
+  db:
+    image: postgres:16-alpine
+    container_name: visatamora_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vistamora
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Laravel API
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: visatamora_api
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file:
+      - ./apps/api/.env
+    environment:
+      DB_HOST: db
+    ports:
+      - "8000:8000"
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    volumes:
+      - ./apps/api:/var/www
+      - /var/www/vendor
+
+  # Laravel Queue Worker
+  worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: visatamora_worker
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file:
+      - ./apps/api/.env
+    environment:
+      DB_HOST: db
+    command: php artisan queue:work --tries=3
+    volumes:
+      - ./apps/api:/var/www
+      - /var/www/vendor
+
+  # FastAPI OCR
+  ocr:
+    build:
+      context: ./apps/ocr
+      dockerfile: Dockerfile
+    container_name: visatamora_ocr
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    env_file:
+      - ./apps/ocr/.env
+    volumes:
+      - ./apps/ocr:/app
+      - /tmp/ocr:/tmp/ocr
+      - ocr_models:/app/.models
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+
+  # Frontend React
+  frontend:
+    build:
+      context: ./apps/personal
+      dockerfile: Dockerfile
+    container_name: visatamora_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  ocr_models:
