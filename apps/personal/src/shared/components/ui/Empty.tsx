@@ -23,8 +23,8 @@ export function Empty({
   illustration,
   title = 'No results found',
   subtitle = "Try adjusting your search or filter to find what you're looking for.",
-  buttonText = 'Search again',
-  buttonIcon = 'search',
+  buttonText,
+  buttonIcon,
   illustrationSize = 300,
   bordered,
   to,
@@ -56,17 +56,19 @@ export function Empty({
       <p className="empty-title">{title}</p>
       <p className="empty-subtitle text-secondary">{subtitle}</p>
 
-      <div className="empty-action">
-        <Button 
-          text={buttonText} 
-          color="primary" 
-          icon={buttonIcon} 
-          href={!to && !onClick ? "." : undefined} 
-          to={to} 
-          onClick={onClick}
-          element={onClick ? 'button' : undefined}
-        />
-      </div>
+      {buttonText && (
+        <div className="empty-action">
+          <Button 
+            text={buttonText} 
+            color="primary" 
+            icon={buttonIcon} 
+            href={!to && !onClick ? "." : undefined} 
+            to={to} 
+            onClick={onClick}
+            element={onClick ? 'button' : undefined}
+          />
+        </div>
+      )}
     </div>
   )
 }

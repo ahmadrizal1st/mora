@@ -39,7 +39,7 @@ export function NavbarSideNotifications({ className }: NavbarSideNotificationsPr
         {unreadCount > 0 && <span className="badge badge-dot bg-red" />}
       </Link>
 
-      <div className="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card" style={{ width: '672px', maxWidth: '100vw' }}>
+      <div className="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card" style={{ width: '600px', maxWidth: '100vw' }}>
         <NavbarNotifications />
       </div>
     </div>

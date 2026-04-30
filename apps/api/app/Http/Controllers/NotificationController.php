@@ -12,10 +12,23 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $notifications = $request->user()
-            ->notifications()
-            ->latest()
-            ->paginate($request->input('per_page', 15));
+        $query = $request->user()->notifications();
+
+        if ($request->has('filter')) {
+            $filter = $request->get('filter');
+            if ($filter === 'unread') {
+                $query->whereNull('read_at');
+            } elseif ($filter === 'starred') {
+                $query->where('is_starred', true);
+            } elseif ($filter === 'archive') {
+                $query->whereNotNull('read_at');
+            } elseif (in_array(strtolower($filter), ['budgeting', 'saving', 'credit', 'expense', 'income'])) {
+                $query->where('label', strtolower($filter));
+            }
+        }
+
+        $notifications = $query->latest()
+            ->paginate($request->input('per_page', 20));
 
         return response()->json($notifications);
     }

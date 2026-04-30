@@ -12,6 +12,7 @@ export interface Notification {
   };
   read_at: string | null;
   is_starred: boolean;
+  label?: string;
   created_at: string;
 }
 
@@ -23,7 +24,7 @@ export interface PaginatedNotifications {
 }
 
 export const notificationApi = {
-  getNotifications: async (params?: { page?: number; per_page?: number }) => {
+  getNotifications: async (params?: { page?: number; per_page?: number; filter?: string }) => {
     const { data } = await api.get<PaginatedNotifications>('/notifications', { params });
     return data;
   },

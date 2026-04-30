@@ -14,6 +14,7 @@ import { Route as SignInLinkRouteImport } from './routes/sign-in-link'
 import { Route as SignInIllustrationRouteImport } from './routes/sign-in-illustration'
 import { Route as SignInCoverRouteImport } from './routes/sign-in-cover'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotificationsRouteImport } from './routes/notifications'
@@ -63,6 +64,11 @@ const SignInCoverRoute = SignInCoverRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -209,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/settings': typeof SettingsRoute
   '/sign-in': typeof SignInRoute
   '/sign-in-cover': typeof SignInCoverRoute
   '/sign-in-illustration': typeof SignInIllustrationRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/settings': typeof SettingsRoute
   '/sign-in': typeof SignInRoute
   '/sign-in-cover': typeof SignInCoverRoute
   '/sign-in-illustration': typeof SignInIllustrationRoute
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/settings': typeof SettingsRoute
   '/sign-in': typeof SignInRoute
   '/sign-in-cover': typeof SignInCoverRoute
   '/sign-in-illustration': typeof SignInIllustrationRoute
@@ -308,6 +317,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/reset-password'
+    | '/settings'
     | '/sign-in'
     | '/sign-in-cover'
     | '/sign-in-illustration'
@@ -340,6 +350,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/reset-password'
+    | '/settings'
     | '/sign-in'
     | '/sign-in-cover'
     | '/sign-in-illustration'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/reset-password'
+    | '/settings'
     | '/sign-in'
     | '/sign-in-cover'
     | '/sign-in-illustration'
@@ -405,6 +417,7 @@ export interface RootRouteChildren {
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SettingsRoute: typeof SettingsRoute
   SignInRoute: typeof SignInRoute
   SignInCoverRoute: typeof SignInCoverRoute
   SignInIllustrationRoute: typeof SignInIllustrationRoute
@@ -455,6 +468,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -653,6 +673,7 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SettingsRoute: SettingsRoute,
   SignInRoute: SignInRoute,
   SignInCoverRoute: SignInCoverRoute,
   SignInIllustrationRoute: SignInIllustrationRoute,
