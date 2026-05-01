@@ -14,7 +14,7 @@ use App\Http\Controllers\{
     TagController,
     TransactionController,
     BudgetController,
-    DocumentController,
+    DocumentExtractionController,
     NotificationController,
 };
 use Illuminate\Support\Facades\Route;
@@ -107,6 +107,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('notifications/{id}', [NotificationController::class, 'destroy']);
 
     // OCR & Documents
-    Route::post('documents/upload', [DocumentController::class, 'upload']);
-    Route::post('documents/text', [DocumentController::class, 'processText']);
+    Route::post('documents/upload', [DocumentExtractionController::class, 'upload']);
+    Route::post('documents/text', [DocumentExtractionController::class, 'processText']);
 });

@@ -2,14 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Enums\DocumentSchema;
 use App\Jobs\ProcessAIResult;
 use App\Models\Document;
 use App\Models\User;
 use App\Services\LLMMapper;
 use App\Services\PromptBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
 use Mockery\MockInterface;
 use Tests\TestCase;
 

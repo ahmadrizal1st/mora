@@ -60,10 +60,18 @@ class BudgetService
 
             if (!empty($data['items'])) {
                 foreach ($data['items'] as $itemData) {
+                    $percentage = $itemData['percentage'] ?? 0;
+                    $amountLimit = $itemData['amount_limit'] ?? 0;
+
+                    // Jika limit nol tapi persentase ada, hitung otomatis dari baseline
+                    if ($amountLimit <= 0 && $percentage > 0 && $plan->income_baseline > 0) {
+                        $amountLimit = ($percentage / 100) * $plan->income_baseline;
+                    }
+
                     $item = $plan->items()->create([
                         'name' => $itemData['name'],
-                        'percentage' => $itemData['percentage'] ?? null,
-                        'amount_limit' => $itemData['amount_limit'] ?? null,
+                        'percentage' => $percentage,
+                        'amount_limit' => $amountLimit,
                         'color' => $itemData['color'] ?? null,
                         'icon' => $itemData['icon'] ?? null,
                     ]);
@@ -117,10 +125,18 @@ class BudgetService
                 // For simplicity in this plan, we replace items if provided
                 $plan->items()->delete();
                 foreach ($data['items'] as $itemData) {
+                    $percentage = $itemData['percentage'] ?? 0;
+                    $amountLimit = $itemData['amount_limit'] ?? 0;
+
+                    // Jika limit nol tapi persentase ada, hitung otomatis dari baseline
+                    if ($amountLimit <= 0 && $percentage > 0 && $plan->income_baseline > 0) {
+                        $amountLimit = ($percentage / 100) * $plan->income_baseline;
+                    }
+
                     $item = $plan->items()->create([
                         'name' => $itemData['name'],
-                        'percentage' => $itemData['percentage'] ?? null,
-                        'amount_limit' => $itemData['amount_limit'] ?? null,
+                        'percentage' => $percentage,
+                        'amount_limit' => $amountLimit,
                         'color' => $itemData['color'] ?? null,
                         'icon' => $itemData['icon'] ?? null,
                     ]);

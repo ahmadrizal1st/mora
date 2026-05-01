@@ -48,7 +48,7 @@ class AccountController extends Controller
      *
      * GET /api/accounts/{id}
      */
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, string $id): JsonResponse
     {
         [$groupBy, $filters] = $this->resolveRequestParams($request);
 
@@ -64,7 +64,7 @@ class AccountController extends Controller
      *
      * PUT /api/accounts/{id}
      */
-    public function update(UpdateAccountRequest $request, int $id): JsonResponse
+    public function update(UpdateAccountRequest $request, string $id): JsonResponse
     {
         $account = AccountService::update($request->user(), $id, $request->validated());
 
@@ -79,7 +79,7 @@ class AccountController extends Controller
      *
      * DELETE /api/accounts/{id}
      */
-    public function destroy(Request $request, int $id): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
         AccountService::destroy($request->user(), $id);
 

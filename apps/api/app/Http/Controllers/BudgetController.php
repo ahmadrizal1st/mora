@@ -27,7 +27,7 @@ class BudgetController extends Controller
         ]);
     }
 
-    public function update(UpdateBudgetRequest $request, int $id): JsonResponse
+    public function update(UpdateBudgetRequest $request, string $id): JsonResponse
     {
         $plan = BudgetService::update($request->user(), $id, $request->validated());
         return response()->json([
@@ -35,7 +35,7 @@ class BudgetController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, int $id): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
         BudgetService::destroy($request->user(), $id);
         return response()->json(null, 204);

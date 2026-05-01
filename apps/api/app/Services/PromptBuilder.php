@@ -19,32 +19,40 @@ class PromptBuilder
         return <<<PROMPT
 You are a financial parser. Extract transactions into this JSON schema: {$schemaJson}
 
-TYPE CLASSIFICATION (income vs expense):
-1. BALANCE DELTA (Highest Priority):
-   - Balance increases = income | Balance decreases = expense
-2. COLUMN HEADERS:
-   - Statements often use 2 columns: DEBET/DB/D (expense) vs KREDIT/CR/C/K (income).
-3. DEBIT/EXPENSE Indicators:
-   - Suffix: DB, DR, D (e.g., 50000 DB).
-   - Keywords: PEMBELIAN, PURCHASE, WITHDRAWAL, TARIK TUNAI, BIAYA, TRANSFER KELUAR, ADMIN, PENALTY.
-   - E-Wallet TopUp: GOPAY TOPUP, OVO TOP UP, DANA TOP UP, SHOPEEPAY, LINKAJA.
-   - Bills/Merchants: PLN, BPJS, TELKOM, TOKOPEDIA, SHOPEE, LAZADA.
-4. CREDIT/INCOME Indicators:
-   - Suffix: CR, C, K, KREDIT (or NO suffix like BCA).
-   - Keywords: SETORAN, TRANSFER MASUK, INCOMING, REFUND, CASHBACK, REWARD.
-   - E-Wallet Cashout: GoPay Bank Transfer, DOMPET ANAK BANGSA, AIRPAY INTERNATION, OVO Cash Masuk, Tarik Saldo DANA.
-5. EDGE CASES:
-   - "BIF TRANSFER DR" = income (incoming BI-FAST).
-   - Refund/Cashback = income.
-   - Admin Fee/Tax = expense.
-   - Ambiguous? Check balance. If still unsure, label "unknown".
+DOCUMENT TYPES:
+- TEXT/IMAGE/AUDIO: Always 1 transaction. IMPORTANT: The 'tx' array MUST have exactly ONE entry.
+- RECEIPT/INVOICE: Group ALL items into ONE transaction. Put items in the 'items' array, NOT in separate 'tx' entries.
+- STATEMENT/MUTASI: Multiple transactions allowed. Extract each row as a separate 'tx' entry.
+
+## BANK STATEMENT & E-WALLET RULES:
+1. **COLUMN MAPPING**: TANGGAL, DESCRIPTION/KETERANGAN, AMOUNT/MUTASI, SALDO/BALANCE (NEVER use Saldo as amount).
+2. **TYPE**: Expense (DB, Debit, negative, or withdrawal keywords) | Income (CR, Kredit, positive, or deposit keywords).
+3. **MERCHANT**: Extract from QR descriptions, transfer names, or e-wallet history details.
+
+## HANDWRITTEN & RECEIPT RULES (CRITICAL):
+1. **THE TOTAL RULE**: If you see a list (grocery/handwritten) with a "TOTAL" at the bottom, the ONLY 'amount' for the transaction is that TOTAL.
+2. **NO SPLITTING**: DO NOT create multiple transactions for a list of items. 'tx' array MUST have only 1 entry.
+3. **NOTES**: Put all individual items into the 'items' array; they will automatically be moved to 'notes'.
+4. **MERCHANT CLEANING**: Extract the clean STORE NAME or PERSON NAME. Remove OCR noise, weird characters, or numbers that don't belong. Fix common typos (e.g., "Indomaret" instead of "Indomar3t").
+5. **IGNORE WATERMARKS**: DO NOT use watermarks (like "Lemon8", "Canva", "@username", or app logos) as the merchant name. If no store name is found, use "Belanja".
+6. **FLEXIBLE SEARCH**: If the merchant name is inside a sentence (e.g., "Transfer ke Budi Santoso" or "QRIS - Warung Ibu"), extract only the name ("Budi Santoso" or "Warung Ibu").
+
+PROHIBITED:
+- NO splitting a single receipt into multiple transactions.
+- NO using individual item prices as the main transaction amount.
+- NEVER use SALDO (balance) column values as amounts.
+
+TYPE CLASSIFICATION (Fallback):
+1. BALANCE DELTA: Incr = income | Decr = expense.
+2. E-WALLET: Top-up = income | Payment/Transfer = expense.
+3. BANK: DB/DR/D = expense | CR/C/K/KREDIT = income.
 
 EXTRACTION RULES:
 1. Output ONLY valid JSON (no markdown blocks or text).
 2. DATE: YYYY-MM-DD.
 3. AMOUNT: Number only (e.g. "10.000" -> 10000). Use dot for decimals.
 4. ITEMS: Extract item name, price, and qty.
-5. MULTIPLE: Extract ALL transactions into the 'tx' array.
+5. MULTIPLE: For statements/histories, extract ALL individual transactions.
 6. COMPACT: Omit null/unknown fields.
 
 Input:

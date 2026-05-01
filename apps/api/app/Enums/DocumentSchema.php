@@ -28,9 +28,9 @@ enum DocumentSchema: string
                         'category'    => 'string',
                         'description' => 'string',
                         'items'       => [
-                            ['name' => 'string', 'price' => 'number']
+                            ['name' => 'string', 'price' => 'number', 'qty' => 'number']
                         ],
-                        'type'        => 'expense',
+                        'type'        => 'income | expense',
                     ]
                 ],
             ],

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Enum;
 use Exception;
 
-class DocumentController extends Controller
+class DocumentExtractionController extends Controller
 {
     /**
      * Handle document upload and dispatch processing job.

@@ -2,7 +2,7 @@
 
 use App\Models\User;
 use App\Models\Document;
-use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DocumentExtractionController;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 
@@ -20,7 +20,7 @@ $request = Request::create('/api/documents/upload', 'POST', [
 echo "Starting Upload...\n";
 
 // 2. Call Controller
-$controller = app(DocumentController::class);
+$controller = app(DocumentExtractionController::class);
 $response = $controller->upload($request);
 
 echo "Upload Response: " . $response->getContent() . "\n";

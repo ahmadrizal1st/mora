@@ -227,31 +227,69 @@ class ProcessAIResult implements ShouldQueue
         $schema      = DocumentSchema::from($this->doc_type);
         $isTextInput = $document->mime_type === 'text/plain';
 
-        // Sanitize raw_text: Hapus titik di antara angka (thousand separator) 
-        // agar LLM tidak salah sangka sebagai decimal point.
-        $this->raw_text = preg_replace('/(\d)\.(\d{3})\b/', '$1$2', $this->raw_text);
-
-        // PROTEKSI TOKEN: Batasi teks mentah hingga maksimal ~8.000 karakter.
-        // Teks Bahasa Indonesia bisa memakan lebih banyak token per karakter.
-        // 8.000 karakter diprediksi sekitar 2.500 - 3.200 token, yang aman dari batas 6.000 TPM.
-        if (strlen($this->raw_text) > 8000) {
-            $this->raw_text = substr($this->raw_text, 0, 8000) . "\n...[DIPOTONG KARENA TERLALU PANJANG]...";
-            Log::warning("Dokumen ID {$this->document_id} dipotong karena melebihi batas 8.000 karakter.");
+        // SMART CHUNKING: Pecah teks menjadi beberapa bagian jika terlalu panjang
+        // Ini memastikan akurasi tetap terjaga untuk dokumen multi-halaman (Mutasi Bank).
+        $chunks = [];
+        if (str_contains($this->raw_text, '--- Page')) {
+            $chunks = preg_split('/--- Page \d+ ---/', $this->raw_text, -1, PREG_SPLIT_NO_EMPTY);
+        } else {
+            // Split setiap 4000 karakter agar aman dari limit 6000 TPM Groq
+            $chunks = str_split($this->raw_text, 4000);
         }
 
-        $prompt = $builder->build(
-            $this->raw_text,
-            $schema->schema(),
-            $schema->value,
-            $isTextInput
-        );
+        $allTx = [];
+        $lastStructuredData = [];
 
-        $structuredData = $mapper->map($prompt, $this->userId);
+        foreach ($chunks as $index => $chunkText) {
+            if (empty(trim($chunkText))) continue;
 
+            // Delay singkat untuk menghindari Rate Limit TPM (6.000)
+            if ($index > 0) sleep(2);
+
+            $prompt = $builder->build(
+                $chunkText,
+                $schema->schema(),
+                $schema->value,
+                $isTextInput
+            );
+
+            $maxRetries = 3;
+            $retryCount = 0;
+            $chunkSuccess = false;
+
+            while ($retryCount < $maxRetries && !$chunkSuccess) {
+                try {
+                    $structuredData = $mapper->map($prompt, $this->userId);
+                    $lastStructuredData = $structuredData;
+                    
+                    $txArray = $structuredData['tx'] ?? $structuredData['transactions'] ?? [];
+                    if (is_array($txArray)) {
+                        $allTx = array_merge($allTx, $txArray);
+                    }
+                    $chunkSuccess = true;
+                } catch (Exception $e) {
+                    $errorMsg = $e->getMessage();
+                    if (str_contains($errorMsg, '429') || str_contains($errorMsg, 'rate limit')) {
+                        $retryCount++;
+                        Log::warning("Chunk #{$index} terkena Rate Limit (429). Retry #{$retryCount} dalam 15 detik...");
+                        sleep(15); // Tunggu window TPM sedikit longgar
+                    } else {
+                        Log::error("Gagal memproses chunk #{$index}: " . $errorMsg);
+                        break; // Jangan retry jika error bukan rate limit
+                    }
+                }
+            }
+        }
+
+        $finalStructuredData = ['tx' => $allTx];
+        
         $document->update([
-            'parsed_data' => $structuredData,
-        'status'         => DocumentStatus::COMPLETED->value,
+            'parsed_data' => $finalStructuredData,
+            'status'      => DocumentStatus::COMPLETED->value,
         ]);
+
+        // Gunakan structured data hasil gabungan untuk proses selanjutnya
+        $structuredData = $finalStructuredData;
 
         // Support for multiple transactions in one document
         $createdTransactionIds = [];
@@ -307,8 +345,23 @@ class ProcessAIResult implements ShouldQueue
             foreach ($data['items'] as $item) {
                 $sumOfItems += (float) ($item['price'] ?? 0);
             }
-            if ($amount <= 0 && $sumOfItems > 0) {
+            
+            // Logika Prioritas:
+            // 1. Cari kata kunci "Total" di raw text (Prioritas Utama)
+            $rawText = $document->raw_text ?? '';
+            $foundTotal = 0;
+            if (preg_match('/(?:Total|TOTAL|Grand Total|SUM)[^\d]*([\d.,]+)/i', $rawText, $matches)) {
+                $foundTotal = (float) str_replace(['.', ','], '', $matches[1]);
+            }
+
+            if ($foundTotal > 0) {
+                Log::info("Prioritas 1: Menggunakan 'Total' dari Raw Text Dokumen #{$document->id}: {$foundTotal}");
+                $amount = $foundTotal;
+            } elseif ($sumOfItems > 0) {
+                Log::info("Prioritas 2: Menggunakan 'Sum of Items' Dokumen #{$document->id}: {$sumOfItems}");
                 $amount = $sumOfItems;
+            } else {
+                Log::info("Prioritas 3: Menggunakan nominal dari AI Dokumen #{$document->id}: {$amount}");
             }
         }
 
@@ -558,10 +611,21 @@ class ProcessAIResult implements ShouldQueue
             if ($this->userId) {
                 $user = User::find($this->userId);
                 if ($user) {
+                    $rawError = strtolower($exception->getMessage());
+                    $userMessage = "Terjadi kendala sistem saat memproses dokumen Anda. Silakan coba lagi nanti.";
+
+                    if (str_contains($rawError, '413') || str_contains($rawError, 'too large') || str_contains($rawError, 'maximum context length')) {
+                        $userMessage = "Dokumen yang Anda unggah terlalu panjang atau halamannya terlalu banyak. Silakan potong dokumen menjadi lebih pendek.";
+                    } elseif (str_contains($rawError, '429') || str_contains($rawError, 'rate limit') || str_contains($rawError, 'quota exceeded')) {
+                        $userMessage = "Server AI kami saat ini sedang penuh atau mencapai batas antrean. Silakan coba unggah kembali dalam 1-2 menit.";
+                    } elseif (str_contains($rawError, 'api key') || str_contains($rawError, 'unauthorized')) {
+                        $userMessage = "Konfigurasi AI bermasalah. Pastikan API Key di pengaturan sudah benar.";
+                    }
+
                     $user->notify(new TrackerProcessedNotification(
                         'error',
                         'Gagal Memproses Data AI',
-                        "Terjadi kesalahan saat mengolah data transaksi: " . $exception->getMessage(),
+                        $userMessage,
                         ['document_id' => $document->id]
                     ));
                 }
