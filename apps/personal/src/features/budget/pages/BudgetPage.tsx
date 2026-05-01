@@ -11,12 +11,12 @@ import dayjs from 'dayjs';
 
 export const BudgetPage: React.FC = () => {
   const [plans, setPlans] = useState<BudgetPlan[]>([]);
-  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [utilization, setUtilization] = useState<BudgetUtilization | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<BudgetPlan | null>(null);
-  const [planToDelete, setPlanToDelete] = useState<number | null>(null);
+  const [planToDelete, setPlanToDelete] = useState<string | null>(null);
 
   const fetchData = React.useCallback(async () => {
     try {
@@ -42,7 +42,7 @@ export const BudgetPage: React.FC = () => {
     fetchData();
   }, [fetchData]);
 
-  const handleDeleteClick = (e: React.MouseEvent, id: number) => {
+  const handleDeleteClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     setPlanToDelete(id);
   };

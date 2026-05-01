@@ -97,7 +97,7 @@ export const AccountsPage: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteMutation.mutateAsync(id);
       setIsModalOpen(false);

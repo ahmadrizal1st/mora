@@ -41,6 +41,7 @@ export default function CreditsPage() {
         due_date: data.due_date || null,
         notes: data.notes || null,
       };
+      if (!selectedAccount) throw new Error('Account not selected');
       const res = await axios.post(`/accounts/${selectedAccount.id}/credit`, payload);
       return res.data;
     },
@@ -52,7 +53,7 @@ export default function CreditsPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       await axios.delete(`/accounts/${id}/credit`);
     },
     onSuccess: () => {
@@ -108,7 +109,7 @@ export default function CreditsPage() {
             showSearch={true}
             triggerClassName="btn btn-primary w-100 fw-bold border-0 shadow-sm text-white"
             onChange={(val) => {
-              const acc = accounts.find(a => a.id === Number(val));
+              const acc = accounts.find(a => a.id === val);
               if (acc) openForm(acc);
             }}
           />

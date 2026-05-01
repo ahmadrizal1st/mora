@@ -71,7 +71,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
               className="fw-bold text-uppercase mb-1" 
               style={{ color: secondaryTextColor, fontSize: '10px', letterSpacing: '1px' }}
             >
-              {account.type.replace('-', ' ')}
+              {account.account_type.replace('-', ' ')}
             </div>
             <h3 className="card-title h3 mb-0 fw-bold" style={{ color: textColor }}>{account.name}</h3>
           </div>

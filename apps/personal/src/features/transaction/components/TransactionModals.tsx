@@ -9,7 +9,7 @@ interface TransactionModalsProps {
   editingTransaction: Transaction | undefined;
   onFormSubmit: (data: TransactionFormValues) => Promise<void>;
   isFormLoading: boolean;
-  txToDelete: number | null;
+  txToDelete: string | null;
   onDeleteClose: () => void;
   onDeleteConfirm: () => Promise<void>;
   isDeleteLoading: boolean;

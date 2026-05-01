@@ -13,7 +13,7 @@ export const accountService = {
   /**
    * Fetch a single account.
    */
-  async getAccount(id: number): Promise<Account> {
+  async getAccount(id: string): Promise<Account> {
     const response = await api.get<{ data: Account }>(`/accounts/${id}`);
     return response.data.data;
   },
@@ -29,7 +29,7 @@ export const accountService = {
   /**
    * Update an existing account.
    */
-  async updateAccount(id: number, data: UpdateAccountDTO): Promise<Account> {
+  async updateAccount(id: string, data: UpdateAccountDTO): Promise<Account> {
     const response = await api.put<{ data: Account }>(`/accounts/${id}`, data);
     return response.data.data;
   },
@@ -37,7 +37,7 @@ export const accountService = {
   /**
    * Delete an account.
    */
-  async deleteAccount(id: number): Promise<void> {
+  async deleteAccount(id: string): Promise<void> {
     await api.delete(`/accounts/${id}`);
   },
 };

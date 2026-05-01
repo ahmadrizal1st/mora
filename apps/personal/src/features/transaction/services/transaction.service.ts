@@ -50,7 +50,7 @@ export const transactionService = {
   /**
    * Fetch a single transaction by ID.
    */
-  async getTransaction(id: number): Promise<Transaction> {
+  async getTransaction(id: string): Promise<Transaction> {
     const response = await api.get<{ data: Transaction }>(`/transactions/${id}`);
     return response.data.data;
   },
@@ -66,7 +66,7 @@ export const transactionService = {
   /**
    * Update an existing transaction.
    */
-  async updateTransaction(id: number, data: UpdateTransactionDTO): Promise<Transaction> {
+  async updateTransaction(id: string, data: UpdateTransactionDTO): Promise<Transaction> {
     const response = await api.put<{ data: Transaction }>(`/transactions/${id}`, data);
     return response.data.data;
   },
@@ -74,14 +74,14 @@ export const transactionService = {
   /**
    * Delete a transaction.
    */
-  async deleteTransaction(id: number): Promise<void> {
+  async deleteTransaction(id: string): Promise<void> {
     await api.delete(`/transactions/${id}`);
   },
 
   /**
    * Fetch transaction summary (income, expense, net) for a period.
    */
-  async getSummary(params?: { date_from?: string; date_to?: string; account_id?: number; group_by?: string }): Promise<TransactionSummary> {
+  async getSummary(params?: { date_from?: string; date_to?: string; account_id?: string; group_by?: string }): Promise<TransactionSummary> {
     const response = await api.get<{ data: TransactionSummary }>('/transactions-summary', { params });
     return response.data.data;
   },
@@ -105,7 +105,7 @@ export const transactionService = {
   /**
    * Fetch historical aggregated data for charts.
    */
-  async getHistory(params?: { date_from?: string; date_to?: string; account_id?: number; group_by?: string }): Promise<TransactionHistory> {
+  async getHistory(params?: { date_from?: string; date_to?: string; account_id?: string; group_by?: string }): Promise<TransactionHistory> {
     const response = await api.get<{ data: TransactionHistory }>('/transactions-history', { params });
     return response.data.data;
   },

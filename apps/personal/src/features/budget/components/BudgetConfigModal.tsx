@@ -24,12 +24,13 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
   const { control, handleSubmit, reset, formState: { isSubmitting } } = useForm<CreateBudgetPlanDTO>({
     defaultValues: {
       name: 'Budget Plan Baru',
-      method: '50_30_20',
+      budget_method: '50_30_20',
       income_baseline: 10000000,
-      duration: 'monthly',
+      period: 'monthly',
       start_date: dayjs().startOf('month').format('YYYY-MM-DD'),
       end_date: dayjs().endOf('month').format('YYYY-MM-DD'),
       is_active: true,
+      rollover_enabled: false,
       items: DEFAULT_ITEMS
     }
   });
@@ -39,7 +40,7 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
     name: "items"
   });
 
-  const method = useWatch({ control, name: 'method' });
+  const budgetMethod = useWatch({ control, name: 'budget_method' });
   const items = useWatch({ control, name: 'items' });
   const incomeBaseline = useWatch({ control, name: 'income_baseline' });
   const totalPercentage = items?.reduce((sum, item) => sum + (Number(item.percentage) || 0), 0) || 0;
@@ -50,12 +51,13 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
       if (editData) {
         reset({
           name: editData.name,
-          method: editData.method,
+          budget_method: editData.budget_method,
           income_baseline: Number(editData.income_baseline),
-          duration: editData.duration,
+          period: editData.period,
           start_date: editData.start_date,
           end_date: editData.end_date,
           is_active: editData.is_active,
+          rollover_enabled: editData.rollover_enabled,
           items: editData.items?.map(item => ({
             name: item.name,
             percentage: Number(item.percentage),
@@ -67,12 +69,13 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
       } else {
         reset({
           name: 'Budget Plan Baru',
-          method: '50_30_20',
+          budget_method: '50_30_20',
           income_baseline: 10000000,
-          duration: 'monthly',
+          period: 'monthly',
           start_date: dayjs().startOf('month').format('YYYY-MM-DD'),
           end_date: dayjs().endOf('month').format('YYYY-MM-DD'),
           is_active: true,
+          rollover_enabled: false,
           items: DEFAULT_ITEMS
         });
       }
@@ -81,10 +84,10 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
 
   // Only auto-replace items if we are NOT in edit mode
   useEffect(() => {
-    if (!editData && method && METHOD_DEFAULT_ITEMS[method]) {
-      replace(METHOD_DEFAULT_ITEMS[method]);
+    if (!editData && budgetMethod && METHOD_DEFAULT_ITEMS[budgetMethod]) {
+      replace(METHOD_DEFAULT_ITEMS[budgetMethod]);
     }
-  }, [method, replace, editData]);
+  }, [budgetMethod, replace, editData]);
 
   const onSubmit = async (data: CreateBudgetPlanDTO) => {
     if (totalPercentage !== 100) {
@@ -178,7 +181,7 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
             <div className="col-md-6 mb-3">
               <label className="form-label">Metode Budgeting</label>
               <Controller
-                name="method"
+                name="budget_method"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -211,13 +214,13 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
             </div>
           </div>
 
-          {method && BUDGET_METHODS_INFO[method] && (
+          {budgetMethod && BUDGET_METHODS_INFO[budgetMethod] && (
             <div className="alert alert-info py-2 mb-4">
               <div className="d-flex">
                 <Icon icon="info-circle" className="me-2 mt-1" />
                 <div>
-                  <div className="font-weight-bold text-dark">{BUDGET_METHODS_INFO[method].title}</div>
-                  <div className="small opacity-80">{BUDGET_METHODS_INFO[method].description}</div>
+                  <div className="font-weight-bold text-dark">{BUDGET_METHODS_INFO[budgetMethod].title}</div>
+                  <div className="small opacity-80">{BUDGET_METHODS_INFO[budgetMethod].description}</div>
                 </div>
               </div>
             </div>

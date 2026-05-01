@@ -24,14 +24,14 @@ import { ErrorAlert } from '@/shared/components/ui/ErrorAlert';
 const transactionSchema = z.object({
   type: z.enum(['income', 'expense']),
   amount_raw: z.number().min(1, 'Nominal harus lebih dari 0'),
-  account_id: z.number({ message: 'Pilih akun' }),
-  category_id: z.number().optional().nullable(),
-  budget_item_id: z.number().optional().nullable(),
-  currency_id: z.number().optional(),
+  account_id: z.string({ message: 'Pilih akun' }),
+  category_id: z.string().optional().nullable(),
+  budget_item_id: z.string().optional().nullable(),
+  currency_id: z.string().optional(),
   tx_date: z.string().min(1, 'Tanggal wajib diisi'),
   merchant: z.string().optional(),
   notes: z.string().optional(),
-  tag_ids: z.array(z.number()),
+  tag_ids: z.array(z.string()),
 });
 
 export type TransactionFormValues = z.infer<typeof transactionSchema>;
@@ -123,7 +123,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     
     // Ensure IDR is always an option if not present
     if (!options.find(o => o.label === 'IDR')) {
-      options.unshift({ value: 0, label: 'IDR' });
+      options.unshift({ value: '0', label: 'IDR' });
     }
     
     return options;
@@ -187,8 +187,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     className="h-100"
                     triggerClassName="rounded-end-0 border-end-0"
                     options={currencyOptions}
-                    value={field.value || 0}
-                    onChange={(val) => field.onChange(val === 0 ? undefined : val)}
+                    value={field.value || '0'}
+                    onChange={(val) => field.onChange(val === '0' ? undefined : val)}
                     placeholder="IDR"
                   />
                 )}

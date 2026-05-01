@@ -58,7 +58,8 @@ export function ChartSparkline({
 
     const opts: ApexOptions = {
       chart: {
-        type: apexType as string as Parameters<typeof ApexCharts>[1]['chart']['type'],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        type: apexType as any,
         fontFamily: 'inherit',
         height: Math.round(height * 16),
         ...(isSquare ? { width: Math.round(height * 16) } : {}),

@@ -5,7 +5,7 @@ import { z } from 'zod'
 export const Route = createFileRoute('/tracker/input')({
   component: TrackerInputPage,
   validateSearch: z.object({
-    id: z.number().optional(),
+    id: z.string().optional(),
     text: z.string().optional(),
     amount: z.number().optional(),
     merchant: z.string().optional(),

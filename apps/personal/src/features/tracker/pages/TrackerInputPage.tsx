@@ -14,7 +14,7 @@ export default function TrackerInputPage() {
   const id = search.id;
   const navigate = useNavigate();
 
-  const { data: existingTx, isLoading: isLoadingTx, error: txError } = useTransaction(id as number);
+  const { data: existingTx, isLoading: isLoadingTx, error: txError } = useTransaction(id as string);
   const createMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction();
 
@@ -30,9 +30,10 @@ export default function TrackerInputPage() {
   const handleSubmit = async (data: TransactionFormValues) => {
     try {
       if (id) {
-        await updateMutation.mutateAsync({ id, data });
+        await updateMutation.mutateAsync({ id: id as string, data });
       } else {
-        await createMutation.mutateAsync(data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await createMutation.mutateAsync({ ...data, input_method: 'manual' } as any);
       }
       navigate({ to: '/transactions' });
     } catch (error) {

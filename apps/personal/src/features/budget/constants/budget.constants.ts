@@ -48,7 +48,7 @@ export interface DefaultBudgetItem {
   percentage: number;
   color: string;
   icon: string;
-  category_ids: number[];
+  category_ids: string[];
 }
 
 export const METHOD_DEFAULT_ITEMS: Record<string, DefaultBudgetItem[]> = {

@@ -12,7 +12,7 @@ export const budgetService = {
     return response.data.data;
   },
 
-  async getUtilization(planId?: number): Promise<BudgetUtilization> {
+  async getUtilization(planId?: string): Promise<BudgetUtilization> {
     const response = await api.get<{ data: BudgetUtilization }>('/budgets-utilization', { 
       params: { plan_id: planId } 
     });
@@ -24,12 +24,12 @@ export const budgetService = {
     return response.data.data;
   },
 
-  async updatePlan(id: number, data: UpdateBudgetPlanDTO): Promise<BudgetPlan> {
+  async updatePlan(id: string, data: UpdateBudgetPlanDTO): Promise<BudgetPlan> {
     const response = await api.put<{ data: BudgetPlan }>(`/budgets/${id}`, data);
     return response.data.data;
   },
 
-  async deletePlan(id: number): Promise<void> {
+  async deletePlan(id: string): Promise<void> {
     await api.delete(`/budgets/${id}`);
   },
 };

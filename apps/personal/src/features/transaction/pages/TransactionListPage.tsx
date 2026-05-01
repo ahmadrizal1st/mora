@@ -26,7 +26,7 @@ export const TransactionListPage: FC = () => {
   // Modal & Responsive State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>(undefined);
-  const [txToDelete, setTxToDelete] = useState<number | null>(null);
+  const [txToDelete, setTxToDelete] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 
   useEffect(() => {
@@ -75,9 +75,11 @@ export const TransactionListPage: FC = () => {
   const handleFormSubmit = async (data: TransactionFormValues) => {
     try {
       if (editingTransaction) {
-        await updateMutation.mutateAsync({ id: editingTransaction.id, data });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await updateMutation.mutateAsync({ id: editingTransaction.id, data: data as any });
       } else {
-        await createMutation.mutateAsync(data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await createMutation.mutateAsync({ ...data, input_method: 'manual' } as any);
       }
       setIsModalOpen(false);
     } catch (err) {

@@ -16,14 +16,14 @@ export const useTransactionChartData = (filters?: TransactionFilters) => {
   });
 };
 
-export const useTransactionHistory = (params?: { date_from?: string; date_to?: string; account_id?: number; group_by?: string }) => {
+export const useTransactionHistory = (params?: { date_from?: string; date_to?: string; account_id?: string; group_by?: string }) => {
   return useQuery({
     queryKey: ['transaction-history', params],
     queryFn: () => transactionService.getHistory(params),
   });
 };
 
-export const useTransaction = (id: number) => {
+export const useTransaction = (id: string) => {
   return useQuery({
     queryKey: ['transaction', id],
     queryFn: () => transactionService.getTransaction(id),
@@ -31,7 +31,7 @@ export const useTransaction = (id: number) => {
   });
 };
 
-export const useTransactionSummary = (params?: { date_from?: string; date_to?: string; account_id?: number; group_by?: string }) => {
+export const useTransactionSummary = (params?: { date_from?: string; date_to?: string; account_id?: string; group_by?: string }) => {
   return useQuery({
     queryKey: ['transaction-summary', params],
     queryFn: () => transactionService.getSummary(params),
@@ -55,7 +55,7 @@ export const useUpdateTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateTransactionDTO }) => 
+    mutationFn: ({ id, data }: { id: string; data: UpdateTransactionDTO }) => 
       transactionService.updateTransaction(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
@@ -70,7 +70,7 @@ export const useDeleteTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => transactionService.deleteTransaction(id),
+    mutationFn: (id: string) => transactionService.deleteTransaction(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['transaction-summary'] });

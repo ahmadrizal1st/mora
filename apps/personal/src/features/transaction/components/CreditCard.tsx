@@ -7,7 +7,7 @@ import type { Account } from '../types/transaction.types';
 interface CreditCardProps {
   account: Account;
   onEdit: (account: Account) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 export const CreditCard: React.FC<CreditCardProps> = ({ account, onEdit, onDelete }) => {
@@ -29,7 +29,7 @@ export const CreditCard: React.FC<CreditCardProps> = ({ account, onEdit, onDelet
   const secondaryTextColor = isDarkText ? 'rgba(29, 39, 59, 0.6)' : 'rgba(255, 255, 255, 0.7)';
   const iconBgColor = isDarkText ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.15)';
   
-  const accountIcon = account.type === 'bank' ? 'building-bank' : account.type === 'cash' ? 'wallet' : account.type === 'e-wallet' ? 'device-mobile' : 'credit-card';
+  const accountIcon = account.account_type === 'bank' ? 'building-bank' : account.account_type === 'cash' ? 'wallet' : account.account_type === 'e-wallet' ? 'device-mobile' : 'credit-card';
 
   return (
     <div 
@@ -86,7 +86,7 @@ export const CreditCard: React.FC<CreditCardProps> = ({ account, onEdit, onDelet
               className="fw-bold text-uppercase mb-1" 
               style={{ color: secondaryTextColor, fontSize: '10px', letterSpacing: '1px' }}
             >
-              {account.type.replace('-', ' ')}
+              {account.account_type.replace('-', ' ')}
             </div>
             <h3 className="card-title h3 mb-0 fw-bold" style={{ color: textColor }}>{account.name}</h3>
           </div>

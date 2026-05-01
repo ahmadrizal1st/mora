@@ -19,7 +19,7 @@ export const BudgetPlanCard: React.FC<BudgetPlanCardProps> = ({
   onEdit, 
   onDelete 
 }) => {
-  const methodInfo = BUDGET_METHODS_INFO[plan.method] || { title: plan.method, description: '' };
+  const methodInfo = BUDGET_METHODS_INFO[plan.budget_method] || { title: plan.budget_method, description: '' };
   const startDate = dayjs(plan.start_date);
   const endDate = dayjs(plan.end_date);
   const today = dayjs();

@@ -8,7 +8,7 @@ export const useBudgetPlans = () => {
   });
 };
 
-export const useBudgetUtilization = (planId?: number) => {
+export const useBudgetUtilization = (planId?: string) => {
   return useQuery({
     queryKey: ['budget-utilization', planId],
     queryFn: () => budgetService.getUtilization(planId),
