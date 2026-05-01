@@ -17,20 +17,38 @@ class PromptBuilder
         $schemaJson = json_encode($schema);
 
         return <<<PROMPT
-Extract transactions from the text below into the provided JSON schema.
-Schema: {$schemaJson}
+You are a financial parser. Extract transactions into this JSON schema: {$schemaJson}
+
+TYPE CLASSIFICATION (income vs expense):
+1. BALANCE DELTA (Highest Priority):
+   - Balance increases = income | Balance decreases = expense
+2. COLUMN HEADERS:
+   - Statements often use 2 columns: DEBET/DB/D (expense) vs KREDIT/CR/C/K (income).
+3. DEBIT/EXPENSE Indicators:
+   - Suffix: DB, DR, D (e.g., 50000 DB).
+   - Keywords: PEMBELIAN, PURCHASE, WITHDRAWAL, TARIK TUNAI, BIAYA, TRANSFER KELUAR, ADMIN, PENALTY.
+   - E-Wallet TopUp: GOPAY TOPUP, OVO TOP UP, DANA TOP UP, SHOPEEPAY, LINKAJA.
+   - Bills/Merchants: PLN, BPJS, TELKOM, TOKOPEDIA, SHOPEE, LAZADA.
+4. CREDIT/INCOME Indicators:
+   - Suffix: CR, C, K, KREDIT (or NO suffix like BCA).
+   - Keywords: SETORAN, TRANSFER MASUK, INCOMING, REFUND, CASHBACK, REWARD.
+   - E-Wallet Cashout: GoPay Bank Transfer, DOMPET ANAK BANGSA, AIRPAY INTERNATION, OVO Cash Masuk, Tarik Saldo DANA.
+5. EDGE CASES:
+   - "BIF TRANSFER DR" = income (incoming BI-FAST).
+   - Refund/Cashback = income.
+   - Admin Fee/Tax = expense.
+   - Ambiguous? Check balance. If still unsure, label "unknown".
+
+EXTRACTION RULES:
+1. Output ONLY valid JSON (no markdown blocks or text).
+2. DATE: YYYY-MM-DD.
+3. AMOUNT: Number only (e.g. "10.000" -> 10000). Use dot for decimals.
+4. ITEMS: Extract item name, price, and qty.
+5. MULTIPLE: Extract ALL transactions into the 'tx' array.
+6. COMPACT: Omit null/unknown fields.
 
 Input:
 {$rawText}
-
-Rules:
-1. Output ONLY valid JSON. No conversational filler.
-2. DATE: Must use YYYY-MM-DD.
-3. AMOUNT: Number only. If currency is IDR and value looks like '10.000', treat it as 10000. Use dot (.) for decimal.
-4. ITEMS: Extract each item name and its price into the 'items' array.
-5. COMPACT: Omit fields that are null or unknown.
-6. LANGUAGE: Input may be in Indonesian or English. Extract merchant names accurately.
-7. MULTIPLE: If multiple receipts/transactions exist in one text, extract all of them into the 'tx' array.
 PROMPT;
     }
 }

@@ -231,6 +231,14 @@ class ProcessAIResult implements ShouldQueue
         // agar LLM tidak salah sangka sebagai decimal point.
         $this->raw_text = preg_replace('/(\d)\.(\d{3})\b/', '$1$2', $this->raw_text);
 
+        // PROTEKSI TOKEN: Batasi teks mentah hingga maksimal ~8.000 karakter.
+        // Teks Bahasa Indonesia bisa memakan lebih banyak token per karakter.
+        // 8.000 karakter diprediksi sekitar 2.500 - 3.200 token, yang aman dari batas 6.000 TPM.
+        if (strlen($this->raw_text) > 8000) {
+            $this->raw_text = substr($this->raw_text, 0, 8000) . "\n...[DIPOTONG KARENA TERLALU PANJANG]...";
+            Log::warning("Dokumen ID {$this->document_id} dipotong karena melebihi batas 8.000 karakter.");
+        }
+
         $prompt = $builder->build(
             $this->raw_text,
             $schema->schema(),
