@@ -2,36 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\NotificationData;
+use App\Http\Requests\ListNotificationRequest;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Notifications\DatabaseNotification;
+use Spatie\LaravelData\DataCollection;
 
 class NotificationController extends Controller
 {
     /**
      * Get user notifications.
      */
-    public function index(Request $request): JsonResponse
+    public function index(ListNotificationRequest $request): JsonResponse
     {
-        $query = $request->user()->notifications();
+        $notifications = NotificationService::list(
+            $request->user(), 
+            $request->validated()
+        );
 
-        if ($request->has('filter')) {
-            $filter = $request->get('filter');
-            if ($filter === 'unread') {
-                $query->whereNull('read_at');
-            } elseif ($filter === 'starred') {
-                $query->where('is_starred', true);
-            } elseif ($filter === 'archive') {
-                $query->whereNotNull('read_at');
-            } elseif (in_array(strtolower($filter), ['budgeting', 'saving', 'credit', 'expense', 'income'])) {
-                $query->where('label', strtolower($filter));
-            }
-        }
-
-        $notifications = $query->latest()
-            ->paginate($request->input('per_page', 20));
-
-        return response()->json($notifications);
+        return response()->json([
+            'data' => NotificationData::collect($notifications, DataCollection::class),
+            'meta' => [
+                'current_page' => $notifications->currentPage(),
+                'last_page' => $notifications->lastPage(),
+                'per_page' => $notifications->perPage(),
+                'total' => $notifications->total(),
+            ]
+        ]);
     }
 
     /**
@@ -49,11 +47,7 @@ class NotificationController extends Controller
      */
     public function markAsRead(Request $request, $id): JsonResponse
     {
-        $notification = $request->user()
-            ->notifications()
-            ->findOrFail($id);
-
-        $notification->markAsRead();
+        NotificationService::markAsRead($request->user(), $id);
 
         return response()->json(['message' => 'Notification marked as read.']);
     }
@@ -63,7 +57,7 @@ class NotificationController extends Controller
      */
     public function markAllAsRead(Request $request): JsonResponse
     {
-        $request->user()->unreadNotifications->markAsRead();
+        NotificationService::markAllAsRead($request->user());
 
         return response()->json(['message' => 'All notifications marked as read.']);
     }
@@ -73,13 +67,12 @@ class NotificationController extends Controller
      */
     public function toggleStar(Request $request, $id): JsonResponse
     {
-        $notification = $request->user()
-            ->notifications()
-            ->findOrFail($id);
+        $isStarred = NotificationService::toggleStar($request->user(), $id);
 
-        $notification->forceFill(['is_starred' => !$notification->is_starred])->save();
-
-        return response()->json(['message' => 'Notification starred status updated.', 'is_starred' => $notification->is_starred]);
+        return response()->json([
+            'message' => 'Notification starred status updated.', 
+            'is_starred' => $isStarred
+        ]);
     }
 
     /**
@@ -87,11 +80,7 @@ class NotificationController extends Controller
      */
     public function destroy(Request $request, $id): JsonResponse
     {
-        $notification = $request->user()
-            ->notifications()
-            ->findOrFail($id);
-
-        $notification->delete();
+        NotificationService::destroy($request->user(), $id);
 
         return response()->json(['message' => 'Notification deleted.']);
     }
