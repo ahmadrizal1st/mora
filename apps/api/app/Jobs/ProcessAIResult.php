@@ -293,22 +293,13 @@ class ProcessAIResult implements ShouldQueue
         $notes    = $data['description'] ?? $data['desc'] ?? null;
         $extractedCategory = $data['category'] ?? $data['c'] ?? '';
 
-        // NEW: Jika ada data items, kita hitung ulang total amount di sisi server
+        // NEW: Jika ada data items, kita hitung ulang total amount jika diperlukan
         if (!empty($data['items']) && is_array($data['items'])) {
             $sumOfItems = 0;
-            $hasValidPrices = false;
             foreach ($data['items'] as $item) {
-                if (isset($item['price']) && is_numeric($item['price'])) {
-                    $itemPrice = (float) $item['price'];
-                    
-                    if ($itemPrice < 1000 && str_contains(strtolower($this->raw_text), 'ribu')) {
-                        $itemPrice *= 1000;
-                    }
-                    $sumOfItems += (int) $itemPrice;
-                    $hasValidPrices = true;
-                }
+                $sumOfItems += (float) ($item['price'] ?? 0);
             }
-            if ($amount <= 0 && $hasValidPrices && $sumOfItems > 0) {
+            if ($amount <= 0 && $sumOfItems > 0) {
                 $amount = $sumOfItems;
             }
         }
@@ -493,15 +484,22 @@ class ProcessAIResult implements ShouldQueue
     {
         $items = $data['items'] ?? [];
         $noteLines = [];
+        $merchant = $data['merchant'] ?? $data['m'] ?? $data['merchant_name'] ?? 'Transaksi';
 
         foreach ($items as $item) {
-            $name = $item['name'] ?? 'Item Tanpa Nama';
+            $name = $item['name'] ?? 'Item';
             $price = $item['price'] ?? 0;
             
+            // Jika nama item unknown, gunakan nama merchant sebagai fallback
+            if (empty($name) || strtolower($name) === 'unknown' || strtolower($name) === 'item tanpa nama') {
+                $name = $merchant;
+            }
+
             // Rapikan format: Huruf Kapital di awal kata
             $name = ucwords(strtolower($name));
             
-            $noteLines[] = "- {$name} = {$price}";
+            $formattedPrice = number_format((float)$price, 0, ',', '.');
+            $noteLines[] = "- {$name} = Rp {$formattedPrice}";
         }
 
         // Tambahkan deskripsi dari AI jika ada
