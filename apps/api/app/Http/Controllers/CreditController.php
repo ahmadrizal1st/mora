@@ -17,7 +17,9 @@ class CreditController extends Controller
         $perPage = $request->input('per_page', 15);
         $credits = CreditService::list($request->user(), $perPage);
 
-        return response()->json($credits);
+        return response()->json([
+            'data' => $credits
+        ]);
     }
 
     /**

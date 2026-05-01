@@ -37,7 +37,7 @@ class DocumentController extends Controller
 
             // Simpan ke database dengan status pending
             $document = Document::create([
-                'user_id' => auth()->id(),
+                'user_id' => $request->user()->id,
                 'doc_type' => $request->doc_type,
                 'file_path' => $storedPath,
                 'mime_type' => $mime,

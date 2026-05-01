@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 
@@ -10,7 +11,7 @@ class NotificationController extends Controller
     /**
      * Get user notifications.
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $query = $request->user()->notifications();
 
@@ -36,7 +37,7 @@ class NotificationController extends Controller
     /**
      * Get unread notifications count.
      */
-    public function unreadCount(Request $request)
+    public function unreadCount(Request $request): JsonResponse
     {
         return response()->json([
             'unread_count' => $request->user()->unreadNotifications()->count()
@@ -46,7 +47,7 @@ class NotificationController extends Controller
     /**
      * Mark a specific notification as read.
      */
-    public function markAsRead(Request $request, $id)
+    public function markAsRead(Request $request, $id): JsonResponse
     {
         $notification = $request->user()
             ->notifications()
@@ -60,7 +61,7 @@ class NotificationController extends Controller
     /**
      * Mark all notifications as read.
      */
-    public function markAllAsRead(Request $request)
+    public function markAllAsRead(Request $request): JsonResponse
     {
         $request->user()->unreadNotifications->markAsRead();
 
@@ -70,7 +71,7 @@ class NotificationController extends Controller
     /**
      * Toggle starred status of a notification.
      */
-    public function toggleStar(Request $request, $id)
+    public function toggleStar(Request $request, $id): JsonResponse
     {
         $notification = $request->user()
             ->notifications()
@@ -84,7 +85,7 @@ class NotificationController extends Controller
     /**
      * Delete a notification.
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, $id): JsonResponse
     {
         $notification = $request->user()
             ->notifications()
