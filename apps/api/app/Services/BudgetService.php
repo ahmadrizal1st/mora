@@ -8,10 +8,14 @@ use App\Models\BudgetItem;
 use App\Models\BudgetItemCategory;
 use App\Repositories\BudgetRepository;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 class BudgetService
 {
-    public static function list(User $user)
+    /**
+     * List all budget plans for the user.
+     */
+    public static function list(User $user): \Illuminate\Database\Eloquent\Collection
     {
         return BudgetRepository::list($user);
     }
@@ -34,7 +38,7 @@ class BudgetService
                 })->exists();
 
             if ($overlap) {
-                throw new \Exception("Budget plan overlaps with an existing plan's period.");
+                throw new Exception("Budget plan overlaps with an existing plan's period.");
             }
 
             // Deactivate other plans if this one is active (though now we use dates)
@@ -78,7 +82,7 @@ class BudgetService
         return DB::transaction(function () use ($user, $id, $data) {
             $plan = BudgetRepository::findById($id);
             if (!$plan || $plan->user_id !== $user->id) {
-                throw new \Exception('Budget plan tidak ditemukan');
+                throw new Exception('Budget plan tidak ditemukan');
             }
 
             if (isset($data['start_date']) || isset($data['end_date'])) {
@@ -98,7 +102,7 @@ class BudgetService
                     })->exists();
 
                 if ($overlap) {
-                    throw new \Exception("Budget plan overlaps with an existing plan's period.");
+                    throw new Exception("Budget plan overlaps with an existing plan's period.");
                 }
             }
 
@@ -130,15 +134,21 @@ class BudgetService
         });
     }
 
+    /**
+     * Delete a budget plan.
+     */
     public static function destroy(User $user, int $id): void
     {
         $plan = BudgetRepository::findById($id);
         if (!$plan || $plan->user_id !== $user->id) {
-            throw new \Exception('Budget plan tidak ditemukan');
+            throw new Exception('Budget plan tidak ditemukan');
         }
         $plan->delete();
     }
 
+    /**
+     * Get utilization data for a plan.
+     */
     public static function getUtilization(User $user, ?int $planId = null): ?array
     {
         $plan = $planId 

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Services\OtpService;
+use Google_Client;
 
 class AuthService
 {
@@ -171,7 +172,7 @@ class AuthService
      */
     public static function loginWithGoogle(string $idToken): array
     {
-        $client = new \Google_Client(['client_id' => config('services.google.client_id')]);
+        $client = new Google_Client(['client_id' => config('services.google.client_id')]);
         $payload = $client->verifyIdToken($idToken);
 
         if (! $payload) {

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\LlmProvider;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -18,7 +19,7 @@ class LLMMapper
      */
     public function map(string $prompt, ?int $userId = null): array
     {
-        $providers = \App\Models\LlmProvider::where('is_active', true)
+        $providers = LlmProvider::where('is_active', true)
             ->where(function($q) use ($userId) {
                 if ($userId) {
                     $q->where('user_id', $userId)->orWhere('is_default', true);
@@ -53,7 +54,7 @@ class LLMMapper
         throw new Exception("Semua LLM provider gagal memproses data. Terakhir: " . ($lastError ?: 'Unknown Error'));
     }
 
-    protected function executeProvider(\App\Models\LlmProvider $provider, string $prompt): ?string
+    protected function executeProvider(LlmProvider $provider, string $prompt): ?string
     {
         $model = $provider->default_model ?? '';
         $payload = $provider->payload_template;

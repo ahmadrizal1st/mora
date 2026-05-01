@@ -2,12 +2,14 @@
 
 namespace App\Services;
 
+use App\Models\BudgetItemCategory;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Repositories\TransactionRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class TransactionService
 {
@@ -48,7 +50,7 @@ class TransactionService
 
             // Auto-fill budget_item_id from default category mapping if not provided
             if (empty($txData['budget_item_id']) && !empty($txData['category_id'])) {
-                $mapping = \App\Models\BudgetItemCategory::where('category_id', $txData['category_id'])
+                $mapping = BudgetItemCategory::where('category_id', $txData['category_id'])
                     ->whereHas('budgetItem.plan', function ($query) use ($user) {
                         $query->where('user_id', $user->id)->where('is_active', true);
                     })->first();
@@ -158,8 +160,8 @@ class TransactionService
         $dateFromRaw = $filters['date_from'] ?? null;
         $dateToRaw   = $filters['date_to']   ?? null;
 
-        $dateFrom = $dateFromRaw ? \Carbon\Carbon::parse($dateFromRaw)->startOfDay() : null;
-        $dateTo   = $dateToRaw   ? \Carbon\Carbon::parse($dateToRaw)->endOfDay()     : null;
+        $dateFrom = $dateFromRaw ? Carbon::parse($dateFromRaw)->startOfDay() : null;
+        $dateTo   = $dateToRaw   ? Carbon::parse($dateToRaw)->endOfDay()     : null;
 
         $currentFilters = array_merge($filters, [
             'date_from' => $dateFrom ? $dateFrom->toDateTimeString() : null,
@@ -226,11 +228,11 @@ class TransactionService
         ];
 
         if (empty($baseFilters['date_from']) || empty($baseFilters['date_to'])) {
-            $currentTo = \Carbon\Carbon::now()->endOfDay();
+            $currentTo = Carbon::now()->endOfDay();
             $currentFrom = $currentTo->copy()->subDays(29)->startOfDay();
         } else {
-            $currentFrom = \Carbon\Carbon::parse($baseFilters['date_from'])->startOfDay();
-            $currentTo   = \Carbon\Carbon::parse($baseFilters['date_to'])->endOfDay();
+            $currentFrom = Carbon::parse($baseFilters['date_from'])->startOfDay();
+            $currentTo   = Carbon::parse($baseFilters['date_to'])->endOfDay();
         }
 
         // Align boundaries
@@ -271,9 +273,17 @@ class TransactionService
         ]);
         $prevResults = TransactionRepository::fetchHistoryRows($user, $pgFormat, $prevFilters)->keyBy('label');
 
-        $income = $expense = $count = $labels = $p_income = $p_expense = $p_count = [];
+        $income = [];
+        $expense = [];
+        $count = [];
+        $labels = [];
+        $p_income = [];
+        $p_expense = [];
+        $p_count = [];
+
         $curr = $currentFrom->copy();
         $prev = $prevFrom->copy();
+
         $phpFormat = match ($groupBy) {
             'week'  => 'o-\WW',
             'month' => 'Y-m',
@@ -307,10 +317,15 @@ class TransactionService
         }
 
         return [
-            'income' => $income, 'income_labels' => $labels,
-            'expense' => $expense, 'expense_labels' => $labels,
-            'count' => $count, 'count_labels' => $labels,
-            'prev_income' => $p_income, 'prev_expense' => $p_expense, 'prev_count' => $p_count,
+            'income'         => $income,
+            'income_labels'  => $labels,
+            'expense'        => $expense,
+            'expense_labels' => $labels,
+            'count'          => $count,
+            'count_labels'   => $labels,
+            'prev_income'    => $p_income,
+            'prev_expense'   => $p_expense,
+            'prev_count'     => $p_count,
         ];
     }
 
@@ -320,18 +335,24 @@ class TransactionService
     public static function getAccountsHistory(User $user, string $groupBy = 'day', array $filters = []): array
     {
         $pgFormat = match ($groupBy) {
-            'week' => 'IYYY-"W"IW', 'month' => 'YYYY-MM', 'year' => 'YYYY', default => 'YYYY-MM-DD',
+            'week'  => 'IYYY-"W"IW',
+            'month' => 'YYYY-MM',
+            'year'  => 'YYYY',
+            default => 'YYYY-MM-DD',
         };
         $phpFormat = match ($groupBy) {
-            'week' => 'o-\WW', 'month' => 'Y-m', 'year' => 'Y', default => 'Y-m-d',
+            'week'  => 'o-\WW',
+            'month' => 'Y-m',
+            'year'  => 'Y',
+            default => 'Y-m-d',
         };
 
         if (empty($filters['date_from']) || empty($filters['date_to'])) {
-            $endDate = \Carbon\Carbon::now()->endOfDay();
+            $endDate = Carbon::now()->endOfDay();
             $startDate = $endDate->copy()->subDays(29)->startOfDay();
         } else {
-            $startDate = \Carbon\Carbon::parse($filters['date_from'])->startOfDay();
-            $endDate   = \Carbon\Carbon::parse($filters['date_to'])->endOfDay();
+            $startDate = Carbon::parse($filters['date_from'])->startOfDay();
+            $endDate   = Carbon::parse($filters['date_to'])->endOfDay();
         }
 
         match ($groupBy) {
@@ -347,10 +368,16 @@ class TransactionService
         [$txOut, $txIn] = TransactionRepository::getAccountsHistoryData($user, $pgFormat, $startStr, $endStr);
         $initialBalances = TransactionRepository::getInitialBalances($user, $startStr);
 
-        $labels = []; $curr = $startDate->copy();
+        $labels = [];
+        $curr = $startDate->copy();
         while ($curr->lte($endDate)) {
             $labels[] = $curr->format($phpFormat);
-            match ($groupBy) { 'week' => $curr->addWeek(), 'month' => $curr->addMonth(), 'year' => $curr->addYear(), default => $curr->addDay() };
+            match ($groupBy) {
+                'week'  => $curr->addWeek(),
+                'month' => $curr->addMonth(),
+                'year'  => $curr->addYear(),
+                default => $curr->addDay(),
+            };
         }
 
         $income = $expense = [];
@@ -375,9 +402,14 @@ class TransactionService
         $incomeByLabel = $netChanges['income'] ?? []; $expenseByLabel = $netChanges['expense'] ?? [];
         $balance = $income = $expense = []; $currentRunningTarget = $initialBalance;
         foreach ($labels as $label) {
-            $inc = (int)($incomeByLabel[$label] ?? 0); $exp = (int)($expenseByLabel[$label] ?? 0);
-            $income[] = $inc; $expense[] = $exp;
-            $currentRunningTarget += ($inc - $exp); $balance[] = $currentRunningTarget;
+            $inc = (int)($incomeByLabel[$label] ?? 0);
+            $exp = (int)($expenseByLabel[$label] ?? 0);
+            
+            $income[] = $inc;
+            $expense[] = $exp;
+            
+            $currentRunningTarget += ($inc - $exp);
+            $balance[] = $currentRunningTarget;
         }
         return ['balance' => $balance, 'income' => $income, 'expense' => $expense];
     }

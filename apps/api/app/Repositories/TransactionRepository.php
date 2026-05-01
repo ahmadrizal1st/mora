@@ -67,9 +67,15 @@ class TransactionRepository
         $base = $user->transactions()
             ->whereIn('type', [Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE]);
 
-        if ($accountId) $base->where('account_id', $accountId);
-        if ($dateFrom)  $base->where('tx_date', '>=', $dateFrom);
-        if ($dateTo)    $base->where('tx_date', '<=', $dateTo);
+        if ($accountId) {
+            $base->where('account_id', $accountId);
+        }
+        if ($dateFrom) {
+            $base->where('tx_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $base->where('tx_date', '<=', $dateTo);
+        }
 
         $income  = (int) (clone $base)->where('type', Transaction::TYPE_INCOME)->sum('amount_raw');
         $expense = (int) (clone $base)->where('type', Transaction::TYPE_EXPENSE)->sum('amount_raw');
@@ -79,16 +85,24 @@ class TransactionRepository
             $transferOutQ = $user->transactions()
                 ->where('type', Transaction::TYPE_TRANSFER)
                 ->where('account_id', $accountId);
-            if ($dateFrom) $transferOutQ->where('tx_date', '>=', $dateFrom);
-            if ($dateTo)   $transferOutQ->where('tx_date', '<=', $dateTo);
+            if ($dateFrom) {
+                $transferOutQ->where('tx_date', '>=', $dateFrom);
+            }
+            if ($dateTo) {
+                $transferOutQ->where('tx_date', '<=', $dateTo);
+            }
             $expense += (int) $transferOutQ->sum('amount_raw');
             $count   += $transferOutQ->count();
 
             $transferInQ = $user->transactions()
                 ->where('type', Transaction::TYPE_TRANSFER)
                 ->where('to_account_id', $accountId);
-            if ($dateFrom) $transferInQ->where('tx_date', '>=', $dateFrom);
-            if ($dateTo)   $transferInQ->where('tx_date', '<=', $dateTo);
+            if ($dateFrom) {
+                $transferInQ->where('tx_date', '>=', $dateFrom);
+            }
+            if ($dateTo) {
+                $transferInQ->where('tx_date', '<=', $dateTo);
+            }
             $income += (int) $transferInQ->sum('amount_raw');
             $count  += $transferInQ->count();
         }

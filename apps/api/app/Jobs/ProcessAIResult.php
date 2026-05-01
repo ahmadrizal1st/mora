@@ -3,15 +3,21 @@
 namespace App\Jobs;
 
 use App\Enums\DocumentSchema;
+use App\Enums\DocumentStatus;
+use App\Models\Account;
 use App\Models\Category;
 use App\Models\Document;
 use App\Models\Tag;
+use App\Models\Transaction;
+use App\Models\User;
+use App\Notifications\TrackerProcessedNotification;
 use App\Services\LLMMapper;
 use App\Services\PromptBuilder;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Exception;
 use Throwable;
 
 class ProcessAIResult implements ShouldQueue
@@ -232,7 +238,7 @@ class ProcessAIResult implements ShouldQueue
 
         $document->update([
             'extracted_data' => $structuredData,
-            'status'         => 'completed',
+            'status'         => DocumentStatus::COMPLETED->value,
         ]);
 
         // Support for multiple transactions in one document
@@ -252,21 +258,21 @@ class ProcessAIResult implements ShouldQueue
                 if ($transaction) {
                     $createdTransactionIds[] = $transaction->id;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error("Failed to process individual transaction in Document #{$this->document_id}: " . $e->getMessage());
             }
         }
 
         // Send success notification
         if ($this->userId) {
-            $user = \App\Models\User::find($this->userId);
+            $user = User::find($this->userId);
             if ($user) {
                 $count = count($createdTransactionIds);
                 $msg = $count > 0 
                     ? "Berhasil menambahkan {$count} transaksi dari dokumen Anda."
                     : "Dokumen berhasil diproses, namun tidak ada transaksi yang terdeteksi.";
                 
-                $user->notify(new \App\Notifications\TrackerProcessedNotification(
+                $user->notify(new TrackerProcessedNotification(
                     'success',
                     'Tracker Berhasil Diproses',
                     $msg,
@@ -281,7 +287,7 @@ class ProcessAIResult implements ShouldQueue
     /**
      * Process and save a single transaction from extracted data.
      */
-    protected function processTransaction(array $data, Document $document): ?\App\Models\Transaction
+    protected function processTransaction(array $data, Document $document): ?Transaction
     {
         // Resolve amount (EXPENSE = 'amount', INVOICE/RECEIPT = 'total_amount', AUDIO = 0)
         $amount = $data['amount']
@@ -329,7 +335,7 @@ class ProcessAIResult implements ShouldQueue
         $txType = $data['type'] ?? null;
         $extractedCategory = $data['category'] ?? '';
 
-        if (!in_array($txType, [\App\Models\Transaction::TYPE_INCOME, \App\Models\Transaction::TYPE_EXPENSE])) {
+        if (!in_array($txType, [Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE])) {
             $incomeKeywords = [
                 'Salary', 'Bonus', 'Freelance', 'Investment', 'Gift', 'Sales', 'Other Income',
                 'Gaji', 'Bonus', 'Proyek', 'Investasi', 'Hadiah', 'Penjualan', 'Pendapatan', 'THR'
@@ -338,7 +344,7 @@ class ProcessAIResult implements ShouldQueue
             $isIncomeDetected = in_array(Str::title($extractedCategory), $incomeKeywords) 
                 || preg_match('/\b(gaji|salary|income|thr|bonus|investasi|profit)\b/i', $this->raw_text);
 
-            $txType = $isIncomeDetected ? \App\Models\Transaction::TYPE_INCOME : \App\Models\Transaction::TYPE_EXPENSE;
+            $txType = $isIncomeDetected ? Transaction::TYPE_INCOME : Transaction::TYPE_EXPENSE;
         }
 
         // Resolve category_id
@@ -353,15 +359,15 @@ class ProcessAIResult implements ShouldQueue
         $trackerSource = $this->resolveTrackerSource($document);
 
         // Resolve account_id: Priority 1. User default, 2. Account named 'BCA' or 'Dompet', 3. First account
-        $accountId = \App\Models\Account::where('user_id', $this->userId)
+        $accountId = Account::where('user_id', $this->userId)
             ->where(function($q) {
                 $q->where('name', 'LIKE', '%BCA%')
                   ->orWhere('name', 'LIKE', '%Dompet%');
             })->first()?->id 
-            ?? \App\Models\Account::where('user_id', $this->userId)->first()?->id
+            ?? Account::where('user_id', $this->userId)->first()?->id
             ?? 4; // Absolute fallback
 
-        $transaction = \App\Models\Transaction::create([
+        $transaction = Transaction::create([
             'user_id'        => $this->userId,
             'type'           => $txType,
             'amount_raw'     => (int) str_replace(['.', ','], '', (string)$amount),
@@ -434,7 +440,7 @@ class ProcessAIResult implements ShouldQueue
         }
 
         // 4. Fallback ke 'Lainnya' / 'Pendapatan Lainnya' berdasarkan tipe transaksi
-        $fallbackName = $txType === \App\Models\Transaction::TYPE_INCOME ? 'pendapatan lainnya' : 'lainnya';
+        $fallbackName = $txType === Transaction::TYPE_INCOME ? 'pendapatan lainnya' : 'lainnya';
         $fallback = Category::where('tx_type', $txType)
             ->whereRaw('LOWER(name) = ?', [$fallbackName])
             ->first();
@@ -451,7 +457,7 @@ class ProcessAIResult implements ShouldQueue
      * Attach tags ke transaksi berdasarkan kategori yang terdeteksi.
      * Hanya attach tag milik user yang sudah ada di DB.
      */
-    protected function attachTags(\App\Models\Transaction $transaction, ?int $categoryId, ?int $userId): void
+    protected function attachTags(Transaction $transaction, ?int $categoryId, ?int $userId): void
     {
         if (!$categoryId || !$userId) {
             return;
@@ -538,14 +544,14 @@ class ProcessAIResult implements ShouldQueue
         $document = Document::find($this->document_id);
         if ($document) {
             $document->update([
-                'status'        => 'failed',
+                'status'        => DocumentStatus::FAILED->value,
                 'error_message' => $exception->getMessage(),
             ]);
 
             if ($this->userId) {
-                $user = \App\Models\User::find($this->userId);
+                $user = User::find($this->userId);
                 if ($user) {
-                    $user->notify(new \App\Notifications\TrackerProcessedNotification(
+                    $user->notify(new TrackerProcessedNotification(
                         'error',
                         'Gagal Memproses Data AI',
                         "Terjadi kesalahan saat mengolah data transaksi: " . $exception->getMessage(),
