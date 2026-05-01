@@ -9,7 +9,7 @@ export const useAccounts = (filters?: AccountFilters) => {
   });
 };
 
-export const useAccount = (id: number) => {
+export const useAccount = (id: string) => {
   return useQuery({
     queryKey: ['account', id],
     queryFn: () => accountService.getAccount(id),
@@ -32,7 +32,7 @@ export const useUpdateAccount = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateAccountDTO }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateAccountDTO }) =>
       accountService.updateAccount(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
@@ -45,7 +45,7 @@ export const useDeleteAccount = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => accountService.deleteAccount(id),
+    mutationFn: (id: string) => accountService.deleteAccount(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
     },

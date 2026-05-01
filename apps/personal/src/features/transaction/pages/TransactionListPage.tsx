@@ -208,19 +208,21 @@ export const TransactionListPage: FC = () => {
             deletePendingId={deleteMutation.isPending ? deleteMutation.variables : null}
           />
 
-          {response && response.last_page > 1 && (
+          {response && response.total > 0 && (
             <div className="card-footer d-flex flex-column flex-md-row align-items-center justify-content-between bg-transparent border-top-0 py-3 gap-3">
               <div className="text-secondary small d-flex align-items-center">
-                Menampilkan&nbsp;<strong>{response.from}</strong>&nbsp;–&nbsp;<strong>{response.to}</strong>&nbsp;dari&nbsp;<strong>{response.total}</strong>&nbsp;transaksi
+                Menampilkan&nbsp;<strong>{response.from || 0}</strong>&nbsp;–&nbsp;<strong>{response.to || 0}</strong>&nbsp;dari&nbsp;<strong>{response.total}</strong>&nbsp;transaksi
               </div>
-              <div className="pagination-wrapper">
-                <Pagination
-                  activeItem={filters.page || 1}
-                  count={response.last_page}
-                  className="m-0"
-                  onPageChange={(page) => setFilters({ ...filters, page })}
-                />
-              </div>
+              {response.last_page > 1 && (
+                <div className="pagination-wrapper">
+                  <Pagination
+                    activeItem={filters.page || 1}
+                    count={response.last_page}
+                    className="m-0"
+                    onPageChange={(page) => setFilters({ ...filters, page })}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

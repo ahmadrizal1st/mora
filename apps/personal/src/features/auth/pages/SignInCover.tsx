@@ -18,8 +18,8 @@ export default function SignInCover() {
     setError(null)
     setFieldErrors(undefined)
     signInMutation.mutate(data, {
-      onError: (err: AxiosError<any>) => {
-        const responseData = err.response?.data
+      onError: (err: AxiosError) => {
+        const responseData = err.response?.data as { errors?: Record<string, string[]> } | undefined
         setError(getApiErrorMessage(err, 'Login failed. Please check your credentials.'))
         setFieldErrors(responseData?.errors)
       }

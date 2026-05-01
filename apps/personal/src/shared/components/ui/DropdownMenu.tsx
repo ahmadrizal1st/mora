@@ -137,7 +137,7 @@ export function DropdownMenu({
           className={clsx('dropdown-item', selectedPerson === person.id && 'active')}
           onClick={(e) => {
             e.preventDefault()
-            setSelectedPerson(person.id as any)
+            setSelectedPerson(Number(person.id))
             setIsOpen(false)
           }}
         >

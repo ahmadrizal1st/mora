@@ -4,6 +4,7 @@ import ApexCharts from 'apexcharts'
 import type { ApexOptions } from 'apexcharts'
 import { useTheme } from '@/shared/context/ThemeContext'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ApexAxisChartSeries = any
 
 export interface ChartSparklineProps {
@@ -57,7 +58,7 @@ export function ChartSparkline({
 
     const opts: ApexOptions = {
       chart: {
-        type: apexType as any,
+        type: apexType as string as Parameters<typeof ApexCharts>[1]['chart']['type'],
         fontFamily: 'inherit',
         height: Math.round(height * 16),
         ...(isSquare ? { width: Math.round(height * 16) } : {}),

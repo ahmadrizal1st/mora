@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
-import * as mapboxgl from 'mapbox-gl'
-type Map = any
-type ErrorEvent = any
+import mapboxgl from 'mapbox-gl'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MapInstance = any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MapErrorEvent = { error: any }
 import site from '../../data/site.json'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_KEY || site.mapboxKey
@@ -37,7 +39,7 @@ export function MapBox({
   const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
-    let map: Map | null = null
+    let map: MapInstance | null = null
     let resizeObserver: ResizeObserver | null = null
     let timer: NodeJS.Timeout | null = null
 
@@ -58,7 +60,8 @@ export function MapBox({
       })
 
       if (typeof window !== 'undefined') {
-        const win = window as unknown as { tabler_map: Record<string, Map> }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const win = window as unknown as { tabler_map: Record<string, any> }
         win.tabler_map = win.tabler_map || {}
         win.tabler_map[id] = map
       }
@@ -67,7 +70,7 @@ export function MapBox({
         map?.resize()
       })
 
-      map.on('error', (e: ErrorEvent) => {
+      map.on('error', (e: MapErrorEvent) => {
         console.warn('Mapbox error:', e.error)
         const error = e.error as unknown as { status?: number }
         if (error?.status === 401 || error?.status === 403) {
@@ -98,7 +101,8 @@ export function MapBox({
       if (resizeObserver) resizeObserver.disconnect()
       if (map) map.remove()
       if (typeof window !== 'undefined') {
-        const win = window as unknown as { tabler_map: Record<string, Map> }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const win = window as unknown as { tabler_map: Record<string, any> }
         if (win.tabler_map) {
           delete win.tabler_map[id]
         }

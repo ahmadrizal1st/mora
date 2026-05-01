@@ -11,7 +11,12 @@ export interface CreditAccount {
   id: string;
   account_id: string;
   user_id: string;
+  limit: number;
   limit_amount: number;
+  total_amount: number;
+  installment_amount: number;
+  installment_type: 'monthly';
+  due_date?: string;
   interest_rate?: number;
   billing_cycle_day?: number;
   due_date_day?: number;
@@ -30,6 +35,7 @@ export interface Account {
   currency?: Currency;
   color: string;
   account_type: 'cash' | 'bank' | 'e-wallet' | 'investment' | 'credit' | 'saving' | 'loan';
+  credit?: CreditAccount;
   transactions_count?: number;
   incoming_transfers_count?: number;
   history?: {
@@ -110,7 +116,7 @@ export interface Transaction {
   tx_date: string;
   merchant?: string;
   notes?: string;
-  input_method: 'manual' | 'image' | 'file' | 'audio' | 'automation';
+  input_method: 'manual' | 'image' | 'file' | 'audio' | 'automation' | 'text';
   dynamic_fields?: Record<string, unknown>;
   tags?: Tag[];
   created_at: string;

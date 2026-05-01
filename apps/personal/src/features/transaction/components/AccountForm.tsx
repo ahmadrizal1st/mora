@@ -8,8 +8,8 @@ import { Button, Select } from '@/shared/components/ui';
 
 const accountSchema = z.object({
   name: z.string().min(1, 'Nama akun wajib diisi'),
-  type: z.enum(['cash', 'bank', 'e-wallet', 'investment']),
-  currency_id: z.number({ message: 'Pilih mata uang' }),
+  account_type: z.enum(['cash', 'bank', 'e-wallet', 'investment', 'credit', 'saving', 'loan']),
+  currency_id: z.string({ message: 'Pilih mata uang' }),
   color: z.string(),
 });
 
@@ -38,8 +38,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     resolver: zodResolver(accountSchema),
     defaultValues: React.useMemo(() => ({
       name: initialData?.name || '',
-      type: initialData?.type || 'bank',
-      currency_id: initialData?.currency_id as number,
+      account_type: initialData?.account_type || 'bank',
+      currency_id: initialData?.currency_id || '',
       color: initialData?.color || '#206bc4',
     }), [initialData]),
   });
@@ -48,15 +48,15 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     if (initialData) {
       reset({
         name: initialData.name || '',
-        type: initialData.type || 'bank',
+        account_type: initialData.account_type || 'bank',
         currency_id: initialData.currency_id,
         color: initialData.color || '#206bc4',
       });
     } else {
       reset({
         name: '',
-        type: 'bank',
-        currency_id: undefined as unknown as number,
+        account_type: 'bank',
+        currency_id: '',
         color: '#206bc4',
       });
     }
@@ -81,7 +81,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         <div className="col-md-6 mb-3">
           <label className="form-label">Tipe Akun</label>
           <Controller
-            name="type"
+            name="account_type"
             control={control}
             render={({ field }) => (
               <Select
@@ -94,7 +94,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                   { value: 'investment', label: 'Investasi' },
                 ]}
                 placeholder="Pilih Tipe"
-                error={errors.type?.message}
+                error={errors.account_type?.message}
               />
             )}
           />

@@ -8,7 +8,7 @@ export const useSignInMutation = (redirectPath?: string) => {
   const login = useAuthStore((s) => s.login)
   const navigate = useNavigate()
 
-  return useMutation<void, AxiosError<any>, LoginCredentials>({
+  return useMutation<void, AxiosError, LoginCredentials>({
     mutationKey: ['auth', 'signIn'],
     mutationFn: async (credentials: LoginCredentials) => {
       await login(credentials)

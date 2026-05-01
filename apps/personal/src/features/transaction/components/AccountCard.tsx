@@ -25,7 +25,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
   const secondaryTextColor = isDarkText ? 'rgba(29, 39, 59, 0.6)' : 'rgba(255, 255, 255, 0.7)';
   const iconBgColor = isDarkText ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.15)';
 
-  const accountIcon = account.type === 'bank' ? 'building-bank' : account.type === 'cash' ? 'wallet' : account.type === 'e-wallet' ? 'device-mobile' : 'credit-card';
+  const accountIcon = account.account_type === 'bank' ? 'building-bank' : account.account_type === 'cash' ? 'wallet' : account.account_type === 'e-wallet' ? 'device-mobile' : 'credit-card';
 
   return (
     <div 

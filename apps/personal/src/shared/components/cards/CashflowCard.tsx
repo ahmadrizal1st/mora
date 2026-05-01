@@ -75,6 +75,7 @@ export function CashflowCard() {
         <div className="mt-auto">
           <Chart
             chartId="visual-asset-growth"
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             chartData={customGrowthData as any}
           />
         </div>

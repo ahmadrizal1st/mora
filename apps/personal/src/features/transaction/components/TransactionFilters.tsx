@@ -16,7 +16,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   onClear
 }) => {
   const { data: response } = useAccounts();
-  const accounts = response?.data || [];
+  const accounts = useMemo(() => response?.data || [], [response?.data]);
   const { data: categories = [] } = useCategories();
   const { data: statuses = [] } = useStatuses();
   const { data: tags = [] } = useTags();
@@ -96,7 +96,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             <Select
               options={accountOptions}
               value={filters.account_id || ''}
-              onChange={(val) => handleFilterChange('account_id', val ? Number(val) : undefined)}
+              onChange={(val) => handleFilterChange('account_id', val ? String(val) : undefined)}
               placeholder="Semua Akun"
             />
           </div>
@@ -106,7 +106,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             <Select
               options={categoryOptions}
               value={filters.category_id || ''}
-              onChange={(val) => handleFilterChange('category_id', val ? Number(val) : undefined)}
+              onChange={(val) => handleFilterChange('category_id', val ? String(val) : undefined)}
               placeholder="Semua"
             />
           </div>
@@ -117,7 +117,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
               multiple
               options={tagOptions}
               value={filters.tag_ids || []}
-              onChange={(vals) => handleFilterChange('tag_ids', Array.isArray(vals) ? vals.map(Number) : [])}
+              onChange={(vals) => handleFilterChange('tag_ids', Array.isArray(vals) ? vals.map(String) : [])}
               placeholder="Filter by tags..."
             />
           </div>
@@ -148,7 +148,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             <Select
               options={statusOptions}
               value={filters.status_id || ''}
-              onChange={(val) => handleFilterChange('status_id', val ? Number(val) : undefined)}
+              onChange={(val) => handleFilterChange('status_id', val ? String(val) : undefined)}
               placeholder="Semua Status"
               showSearch={false}
             />

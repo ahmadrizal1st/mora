@@ -30,7 +30,7 @@ export default function TwoStepVerification() {
       phone, 
       country_code: countryCode 
     }, {
-      onError: (err: AxiosError<any>) => {
+      onError: (err: AxiosError) => {
         setError(getApiErrorMessage(err, 'Failed to send verification code.'))
       }
     })

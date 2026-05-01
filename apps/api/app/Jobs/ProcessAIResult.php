@@ -330,8 +330,11 @@ class ProcessAIResult implements ShouldQueue
             ?? (isset($data['summary']) ? mb_strimwidth($data['summary'], 0, 50, '...') : null)
             ?? 'Unknown';
 
-        if (strtolower($merchant) === 'unknown' && !empty($data['items'][0]['name'])) {
-            $merchant = $data['items'][0]['name'];
+        $merchantLower = strtolower($merchant);
+        if (($merchantLower === 'unknown' || $merchantLower === 'unspecified') && !empty($data['items'][0]['name'])) {
+            $merchant = ucwords(strtolower($data['items'][0]['name']));
+        } else if ($merchantLower === 'unspecified') {
+            $merchant = 'Lain-lain';
         }
 
         // Resolve transaction type

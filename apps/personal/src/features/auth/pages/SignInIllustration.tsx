@@ -19,7 +19,7 @@ export default function SignInIllustration() {
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>(undefined)
 
-  const googleSignInMutation = useMutation<void, AxiosError<any>, string>({
+  const googleSignInMutation = useMutation<void, AxiosError, string>({
     mutationFn: async (credential: string) => {
       await loginWithGoogle(credential)
     },

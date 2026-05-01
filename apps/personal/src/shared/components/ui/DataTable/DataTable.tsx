@@ -9,6 +9,7 @@ import {
 import { Icon } from '../Icon';
 
 interface DataTableProps<TData> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<TData, any>[];
   data: TData[];
   isLoading?: boolean;

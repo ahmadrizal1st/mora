@@ -33,6 +33,7 @@ export function Dropzone({
     if (!dropzoneRef.current) return
 
     let active = true
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let dz: any = null
 
     import('dropzone').then(({ default: DropzoneLib }) => {
@@ -48,6 +49,7 @@ export function Dropzone({
         autoProcessQueue: false,
         clickable: !disabled,
         init: function() {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           this.on("addedfile", (file: any) => {
             // Callback ke parent
             if (onAddedFile) onAddedFile(file);
@@ -61,6 +63,7 @@ export function Dropzone({
           });
 
           // Handle error (e.g. invalid file type)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           this.on("error", (file: any, message: string) => {
             console.error("Dropzone Error:", message);
             // Optionally remove the file if it's invalid
@@ -78,6 +81,7 @@ export function Dropzone({
         dz.destroy()
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, multiple, custom, text, acceptedFiles, disabled])
 
   return (

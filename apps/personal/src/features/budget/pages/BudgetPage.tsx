@@ -18,7 +18,7 @@ export const BudgetPage: React.FC = () => {
   const [editingPlan, setEditingPlan] = useState<BudgetPlan | null>(null);
   const [planToDelete, setPlanToDelete] = useState<number | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     try {
       setLoading(true);
       const plansData = await budgetService.getPlans();
@@ -36,11 +36,11 @@ export const BudgetPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPlanId]);
 
   useEffect(() => {
     fetchData();
-  }, [selectedPlanId]);
+  }, [fetchData]);
 
   const handleDeleteClick = (e: React.MouseEvent, id: number) => {
     e.stopPropagation();

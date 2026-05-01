@@ -16,7 +16,7 @@ export const AccountsPage: React.FC = () => {
   const accounts: Account[] = useMemo(() => response?.data ?? [], [response?.data]);
 
   // Account filter state: null = all selected
-  const [selectedAccountIds, setSelectedAccountIds] = useState<Set<number> | null>(null);
+  const [selectedAccountIds, setSelectedAccountIds] = useState<Set<string> | null>(null);
 
   // Accounts that have balance history
   const accountsWithHistory = useMemo(
@@ -30,7 +30,7 @@ export const AccountsPage: React.FC = () => {
     return selectedAccountIds;
   }, [selectedAccountIds, accountsWithHistory]);
 
-  const toggleAccount = (id: number) => {
+  const toggleAccount = (id: string) => {
     const current = effectiveSelected;
     const next = new Set(current);
     if (next.has(id)) {

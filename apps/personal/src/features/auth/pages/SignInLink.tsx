@@ -20,7 +20,7 @@ export default function SignInLink() {
       onSuccess: () => {
         setIsSent(true)
       },
-      onError: (err: AxiosError<any>) => {
+      onError: (err: AxiosError) => {
         setError(getApiErrorMessage(err, 'Failed to send magic link.'))
       }
     })

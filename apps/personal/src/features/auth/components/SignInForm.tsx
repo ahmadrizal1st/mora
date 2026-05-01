@@ -65,7 +65,7 @@ export function SignInForm({
         <label className="form-label">
           Password
           <span className="form-label-description">
-            <Link to={forgotPasswordHref as any}>I forgot password</Link>
+            <Link to={forgotPasswordHref}>I forgot password</Link>
           </span>
         </label>
         <div className={`input-group input-group-flat ${errors.password || fieldErrors?.password ? 'is-invalid' : ''}`}>

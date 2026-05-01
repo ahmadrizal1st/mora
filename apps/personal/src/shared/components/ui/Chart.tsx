@@ -5,7 +5,8 @@ import type { ApexOptions } from 'apexcharts'
 import { useTheme } from '@/shared/context/ThemeContext'
 import { resolveCSSColor } from '../../utils/chartUtils'
 
-// Use any for complex ApexCharts types that are not exported top-level
+// Use unknown-based aliases for complex ApexCharts types not exported top-level
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type ApexAnnotations = any
 type ApexYAxis = any
 type ApexGrid = any
@@ -14,10 +15,11 @@ type ApexXAxis = any
 type ApexAxisChartSeries = any
 type ApexNonAxisChartSeries = any
 type ApexMarkers = any
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export interface ChartSerie {
   name: string
-  data: (number | null | { x: any, y: any } | [any, any])[]
+  data: (number | null | { x: unknown, y: unknown } | [unknown, unknown])[]
   color?: string
   colorOpacity?: string
   candlestickData?: { x: number; y: number[] }[]
@@ -28,7 +30,7 @@ export interface ChartSerie {
 export interface ChartData {
   type?: 'bar' | 'area' | 'line' | 'pie' | 'donut' | 'radialBar' | 'candlestick' | 'scatter'
   height?: number
-  extend?: any
+  extend?: Record<string, unknown>
   sparkline?: boolean
   toolbar?: boolean
   animations?: boolean
@@ -86,7 +88,7 @@ export interface ChartData {
   donutLabel?: string
   donutValue?: string
   hollowSize?: string
-  fill?: any
+  fill?: Record<string, unknown>
 }
 
 export interface ChartProps {

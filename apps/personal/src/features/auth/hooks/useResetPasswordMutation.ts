@@ -7,7 +7,7 @@ import { AxiosError } from 'axios'
 export const useResetPasswordMutation = () => {
   const navigate = useNavigate()
 
-  return useMutation<void, AxiosError<any>, ResetPasswordCredentials>({
+  return useMutation<void, AxiosError, ResetPasswordCredentials>({
     mutationKey: ['auth', 'resetPassword'],
     mutationFn: async (credentials: ResetPasswordCredentials) => {
       await AuthService.resetPassword(credentials)

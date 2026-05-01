@@ -28,7 +28,7 @@ export const transactionService = {
    */
   async getTransactions(params?: TransactionFilters): Promise<PaginatedResponse<Transaction>> {
     // Strip custom frontend keys and build the spatie-compatible sort param
-    const { sort_by, sort_dir, ...rest } = params ?? {};
+    const { ...rest } = params ?? {};
     const queryParams = { ...rest, sort: buildSortParam(params) };
 
     const response = await api.get<{ data: Transaction[]; meta: { current_page: number; last_page: number; per_page: number; total: number } }>('/transactions', { params: queryParams });

@@ -34,6 +34,7 @@ export interface SelectProps {
   className?: string
   defaultValue?: string | number | (string | number)[]
   value?: string | number | (string | number)[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange?: (value: any) => void
   indicator?: 'avatar' | 'flag' | 'label'
   placement?: 'start' | 'end'
@@ -281,7 +282,7 @@ export function Select({
         <span className="text-truncate">{opt?.label}</span>
       </div>
     )
-  }, [selected, multiple, allOptions, placeholder, indicator, search, isOpen, onChange, removeValue])
+  }, [selected, multiple, allOptions, placeholder, indicator, search, isOpen, onChange, removeValue, triggerClassName])
 
   const handleContainerClick = () => {
     if (disabled) return

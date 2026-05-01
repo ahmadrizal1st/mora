@@ -7,12 +7,12 @@ interface TransactionTableProps {
   transactions: Transaction[] | undefined;
   isLoading: boolean;
   onEdit: (tx: Transaction, e: MouseEvent) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
   onSort: (column: string) => void;
   getSortIcon: (column: string) => ReactNode;
   formatCurrency: (amount: number) => string;
   formatDate: (dateString: string, type?: 'date' | 'time') => string;
-  deletePendingId?: number | null;
+  deletePendingId?: string | null;
 }
 
 export const TransactionTable: FC<TransactionTableProps> = ({
@@ -83,9 +83,11 @@ export const TransactionTable: FC<TransactionTableProps> = ({
               <td className="td-truncate">
                 <div className="d-flex flex-column">
                   <div className="d-flex align-items-center gap-1">
-                    {tx.tracker === 'image' && <span title="Dari Foto"><Icon icon="photo" size={12} className="text-secondary" /></span>}
-                    {tx.tracker === 'audio' && <span title="Dari Suara"><Icon icon="microphone" size={12} className="text-secondary" /></span>}
-                    {tx.tracker === 'file' && <span title="Dari File"><Icon icon="file-text" size={12} className="text-secondary" /></span>}
+                    {tx.input_method === 'image' && <span title="Dari Foto"><Icon icon="photo" size={12} className="text-secondary" /></span>}
+                    {tx.input_method === 'audio' && <span title="Dari Suara"><Icon icon="microphone" size={12} className="text-secondary" /></span>}
+                    {tx.input_method === 'file' && <span title="Dari File"><Icon icon="file-text" size={12} className="text-secondary" /></span>}
+                    {tx.input_method === 'text' && <span title="Dari Teks"><Icon icon="align-left" size={12} className="text-secondary" /></span>}
+                    {tx.input_method === 'manual' && <span title="Input Manual"><Icon icon="pencil" size={12} className="text-secondary" /></span>}
                     <span className="fw-medium text-dark text-truncate" style={{ maxWidth: '120px' }}>
                       {tx.merchant || (tx.type === 'transfer' ? 'Transfer Dana' : 'Umum')}
                     </span>

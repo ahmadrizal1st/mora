@@ -5,6 +5,7 @@ import { useAccounts } from '../hooks/useAccounts';
 import axios from '@/shared/api/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { CreditCard } from '../components/CreditCard';
+import type { Account } from '../types/transaction.types';
 
 export default function CreditsPage() {
   const queryClient = useQueryClient();
@@ -22,7 +23,7 @@ export default function CreditsPage() {
   });
   const creditAccounts = creditsResponse?.data || [];
 
-  const [selectedAccount, setSelectedAccount] = useState<any>(null);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     limit: 0,
@@ -34,7 +35,7 @@ export default function CreditsPage() {
   });
 
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: typeof formData) => {
       const payload = {
         ...data,
         due_date: data.due_date || null,
@@ -59,7 +60,7 @@ export default function CreditsPage() {
     }
   });
 
-  const openForm = (account: any) => {
+  const openForm = (account: Account) => {
     setSelectedAccount(account);
     if (account.credit) {
       setFormData({
@@ -83,7 +84,7 @@ export default function CreditsPage() {
     setIsModalOpen(true);
   };
 
-  const accountOptions = accounts.map((acc: any) => ({
+  const accountOptions = accounts.map((acc: Account) => ({
     value: acc.id,
     label: acc.name,
     color: acc.color
@@ -138,7 +139,7 @@ export default function CreditsPage() {
                     </div>
                   </div>
                 ) : (
-                  creditAccounts.map((acc: any) => (
+                  creditAccounts.map((acc: Account) => (
                     <div key={acc.id} className="col-sm-6 col-lg-4">
                       <CreditCard 
                         account={acc} 
@@ -247,7 +248,7 @@ export default function CreditsPage() {
                 className="form-control" 
                 rows={3} 
                 value={formData.notes}
-                onChange={(e: any) => setFormData({...formData, notes: e.target.value})}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({...formData, notes: e.target.value})}
                 placeholder="Misal: Cicilan rumah ke-12"
               />
             </div>

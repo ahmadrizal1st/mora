@@ -13,8 +13,8 @@ interface ChartSeriesItem {
 
 interface AccountsSummaryChartProps {
   accountsWithHistory: Account[];
-  effectiveSelected: Set<number>;
-  toggleAccount: (id: number) => void;
+  effectiveSelected: Set<string>;
+  toggleAccount: (id: string) => void;
   groupBy: GroupBy;
   setGroupBy: (val: GroupBy) => void;
   totalWealth: number;
