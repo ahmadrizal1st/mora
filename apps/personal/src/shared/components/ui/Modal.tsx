@@ -147,7 +147,3 @@ export function Modal({
     </div>
   )
 }
-
-function getIsShown(isShown: boolean | undefined): boolean {
-  return !!isShown
-}

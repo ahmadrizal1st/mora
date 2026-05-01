@@ -1,5 +1,5 @@
 import BaseLayout from '@/shared/layouts/BaseLayout'
-import { Avatar, Button, Icon } from '@/shared/components/ui'
+import { Avatar, Button } from '@/shared/components/ui'
 import peopleData from '@/shared/data/people.json'
 import type { Person } from '@/shared/types/common.types'
 import { useState } from 'react'
@@ -33,7 +33,7 @@ export default function SettingsPage() {
               <div className="card-body">
                 <h4 className="subheader">Business settings</h4>
                 <div className="list-group list-group-transparent">
-                  {navItems.map((item, index) => (
+                  {navItems.map((item) => (
                     <div key={item.id}>
                       {item.subheader && (
                         <h4 className="subheader mt-4">{item.subheader}</h4>
@@ -65,7 +65,7 @@ export default function SettingsPage() {
                 <h3 className="card-title">Profile Details</h3>
                 <div className="row align-items-center mb-4">
                   <div className="col-auto">
-                    <Avatar size="xl" person={person as any} shape="rounded" />
+                    <Avatar size="xl" person={person} shape="rounded" />
                   </div>
                   <div className="col-auto">
                     <Button text="Change avatar" />
@@ -84,7 +84,7 @@ export default function SettingsPage() {
                       className="form-control"
                       id="business-name"
                       name="business-name"
-                      defaultValue={person.company ?? ''}
+                      defaultValue={(person.company as string) ?? ''}
                     />
                   </div>
                   <div className="col-md">

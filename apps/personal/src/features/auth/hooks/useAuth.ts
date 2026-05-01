@@ -15,7 +15,7 @@ export const useAuth = () => {
         if (token && !user) {
           await refreshUser()
         }
-      } catch (error) {
+      } catch {
         // Silently handle
       } finally {
         setIsLoading(false)

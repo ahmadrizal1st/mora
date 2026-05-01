@@ -43,7 +43,15 @@ export const BUDGET_METHODS_INFO: Record<string, { title: string; description: s
   }
 };
 
-export const METHOD_DEFAULT_ITEMS: Record<string, any[]> = {
+export interface DefaultBudgetItem {
+  name: string;
+  percentage: number;
+  color: string;
+  icon: string;
+  category_ids: number[];
+}
+
+export const METHOD_DEFAULT_ITEMS: Record<string, DefaultBudgetItem[]> = {
   '50_30_20': [
     { name: 'Needs', percentage: 50, color: 'blue', icon: 'smart-home', category_ids: [] },
     { name: 'Wants', percentage: 30, color: 'orange', icon: 'shopping-cart', category_ids: [] },

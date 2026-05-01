@@ -1,47 +1,43 @@
-// src/pages/DashboardCrypto.tsx
+import {} from 'react'
 import BaseLayout from '@/shared/layouts/BaseLayout'
-import { Avatar } from '@/shared/components/ui/Avatar'
 import { Trending } from '@/shared/components/ui/Trending'
 import { SwitchIcon } from '@/shared/components/ui/SwitchIcon'
 import { NavSegmented } from '@/shared/components/ui/NavSegmented'
 import { Chart, type ChartData } from '@/shared/components/ui/Chart'
 import { CardDropdown } from '@/shared/components/ui/CardDropdown'
+import { StatCard } from '@/shared/components/cards/StatCard'
 
 // Data
-import cryptoCurrencies from '@/shared/data/crypto-currencies.json'
-import cryptoMarkets from '@/shared/data/crypto-markets.json'
-import cryptoOrders from '@/shared/data/crypto-orders.json'
-import chartsData from '@/shared/data/charts.json'
+import cryptoCurrenciesJson from '@/shared/data/crypto-currencies.json'
+import cryptoMarketsJson from '@/shared/data/crypto-markets.json'
+import cryptoOrdersJson from '@/shared/data/crypto-orders.json'
+import chartsDataJson from '@/shared/data/charts.json'
 
-interface StatCardProps {
-  title: string
-  icon: string
-  main: string
-  sub: string
-  extra?: React.ReactNode
+interface CryptoCurrency {
+  symbol: string
+  price: string
+  p24h: number
+  'volume-24h': string
 }
 
-function StatCard({ title, icon, main, sub, extra }: StatCardProps) {
-  return (
-    <div className="card">
-      <div className="card-body">
-        <div className="row">
-          <div className="col mt-0">
-            <h5 className="card-title">{title}</h5>
-          </div>
-          <div className="col-auto">
-            <Avatar icon={icon} color="primary-lt" />
-          </div>
-        </div>
-        <div className="mb-1">
-          <span className="h3">{main}</span>
-          <span className="text-muted"> {sub}</span>
-        </div>
-        {extra && <div className="mb-0">{extra}</div>}
-      </div>
-    </div>
-  )
+interface CryptoMarket {
+  favorite: boolean
+  coin: string
+  price: string
+  volume: string
+  change: string
 }
+
+interface CryptoOrder {
+  price: string
+  btc: string
+  sum: string
+}
+
+const cryptoCurrencies = cryptoCurrenciesJson as unknown as CryptoCurrency[]
+const cryptoMarkets = cryptoMarketsJson as unknown as CryptoMarket[]
+const cryptoOrders = cryptoOrdersJson as unknown as { sell_orders: CryptoOrder[], buy_orders: CryptoOrder[] }
+const chartsData = chartsDataJson as unknown as Record<string, ChartData>
 
 export default function DashboardCrypto() {
   const btc = cryptoCurrencies.find(c => c.symbol === 'BTC')!
@@ -61,7 +57,7 @@ export default function DashboardCrypto() {
   const ethBtc = (ethPriceNum / btcPriceNum).toFixed(8)
   const xmrBtc = (xmrPriceNum / btcPriceNum).toFixed(8)
 
-  const candlestickData = (chartsData as Record<string, any>)['dashboard-crypto-candlestick'] as ChartData
+  const candlestickData = chartsData['dashboard-crypto-candlestick']
 
   return (
     <BaseLayout pageTitle="Crypto Dashboard" pagePretitle="Dashboards">

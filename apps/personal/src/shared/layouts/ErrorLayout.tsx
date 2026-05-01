@@ -61,7 +61,7 @@ export default function ErrorLayout({
   illustration,
   to = '/'
 }: ErrorLayoutProps) {
-  const finalType = type || (errorCode as any) || '404'
+  const finalType = type || (errorCode as string) || '404'
   const errorConfig = { ...defaultErrors, ...errors }[finalType] || defaultErrors['404']
 
   const finalHeader = header || errorConfig.header || 'Oops… You just found an error page'

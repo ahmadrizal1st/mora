@@ -56,7 +56,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       reset({
         name: '',
         type: 'bank',
-        currency_id: undefined as any,
+        currency_id: undefined as unknown as number,
         color: '#206bc4',
       });
     }

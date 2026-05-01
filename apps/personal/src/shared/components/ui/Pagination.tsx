@@ -3,7 +3,6 @@ import { Icon } from './Icon'
 
 export interface PaginationProps {
   count?: number
-  offset?: number
   activeItem?: number
   firstLast?: boolean
   text?: boolean
@@ -15,7 +14,6 @@ export interface PaginationProps {
 
 export function Pagination({
   count = 5,
-  offset,
   activeItem = 1,
   firstLast,
   text,

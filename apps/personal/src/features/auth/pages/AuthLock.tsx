@@ -6,6 +6,7 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { useSignInMutation } from '../hooks/useSignInMutation'
 import { AxiosError } from 'axios'
 import { type Person } from '@/shared/types/common.types'
+import { getApiErrorMessage } from '@/shared/utils/errorUtils'
 
 export default function AuthLock() {
   const user = useAuthStore(s => s.user)
@@ -24,8 +25,8 @@ export default function AuthLock() {
       email: user.email, 
       password 
     }, {
-      onError: (err: AxiosError<{ message?: string }>) => {
-        setError(err.response?.data?.message || 'Unlock failed. Please check your password.')
+      onError: (err: AxiosError) => {
+        setError(getApiErrorMessage(err, 'Unlock failed. Please check your password.'))
       }
     })
   }

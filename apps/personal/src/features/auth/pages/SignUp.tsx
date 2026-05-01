@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { SignUpCard } from '@/shared/components/cards/SignUpCard'
 import { useNavigate } from '@tanstack/react-router'
+import axios from 'axios'
 import { type RegisterCredentials, useAuth } from '@/features/auth'
 
 export default function SignUp() {
@@ -18,21 +19,20 @@ export default function SignUp() {
     setIsLoading(true)
     try {
       await register(data)
-      navigate('/dashboard')
+      navigate({ to: '/dashboard' })
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string; error?: string; errors?: Record<string, string[]> } }; data?: { message?: string; errors?: Record<string, string[]> } | string }
-      console.error('[SignUp] Registration error:', error)
-      console.error('[SignUp] err.response:', error.response)
-      console.error('[SignUp] err.response?.data:', error.response?.data)
+      console.error('[SignUp] Registration error:', err)
 
-      const responseData = error?.response?.data ?? error?.data ?? null
+      let message = 'Registration failed. Please check your data.'
+      let errors: Record<string, string[]> | undefined = undefined
 
-      const message =
-        responseData?.message ||
-        (typeof responseData === 'string' ? responseData : null) ||
-        'Registration failed. Please check your data.'
-
-      const errors = responseData?.errors ?? null
+      if (axios.isAxiosError(err)) {
+        const responseData = err.response?.data as { message?: string; errors?: Record<string, string[]> } | undefined
+        message = responseData?.message || message
+        errors = responseData?.errors
+      } else if (err instanceof Error) {
+        message = err.message
+      }
 
       setError(message)
       setFieldErrors(errors)

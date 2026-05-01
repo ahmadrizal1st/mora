@@ -36,7 +36,7 @@ export default function ProfilePage() {
           <div className="row g-3 align-items-center flex-column flex-md-row text-center text-md-start">
             <div className="col-auto">
               <Avatar
-                person={person as any}
+                person={person}
                 size="xl"
                 shape="rounded"
               />
@@ -110,7 +110,7 @@ export default function ProfilePage() {
                   icon="user-plus"
                 >
                   <div className="avatar-list mt-3">
-                    {people.slice(0, 3).map((p: any, i: number) => (
+                    {people.slice(0, 3).map((p, i: number) => (
                       <Avatar key={i} person={p} status="success" />
                     ))}
                   </div>
@@ -159,7 +159,7 @@ export default function ProfilePage() {
             <div className="col-lg-4">
               <div className="row row-cards">
                 <div className="col-12">
-                  <UserInfoCard person={person as any} />
+                  <UserInfoCard person={person} />
                 </div>
                 <div className="col-12">
                   <div className="card">

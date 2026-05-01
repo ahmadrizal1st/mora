@@ -39,6 +39,7 @@ export interface SelectProps {
   placement?: 'start' | 'end'
   error?: string
   triggerClassName?: string
+  disabled?: boolean
 }
 
 function isOptGroup(item: SelectOption | SelectOptGroup): item is SelectOptGroup {
@@ -62,6 +63,7 @@ export function Select({
   placement = 'start',
   error,
   triggerClassName,
+  disabled,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -282,6 +284,7 @@ export function Select({
   }, [selected, multiple, allOptions, placeholder, indicator, search, isOpen, onChange, removeValue])
 
   const handleContainerClick = () => {
+    if (disabled) return
     setIsOpen(!isOpen)
     if (!isOpen && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 0)
@@ -303,6 +306,7 @@ export function Select({
           'position-relative',
           isOpen && 'show focus',
           (state || error) && `is-${state || (error ? 'invalid' : '')}`,
+          disabled && 'disabled opacity-50 cursor-not-allowed',
           triggerClassName
         )}
         onClick={handleContainerClick}

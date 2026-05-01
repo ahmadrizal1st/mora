@@ -5,6 +5,7 @@ import { type BudgetPlan, type CreateBudgetPlanDTO } from '../types/budget.types
 import { budgetService } from '../services/budget.service';
 import { DEFAULT_ITEMS, BUDGET_METHODS_INFO, METHOD_DEFAULT_ITEMS } from '../constants/budget.constants';
 import dayjs from 'dayjs';
+import { getApiErrorMessage } from '@/shared/utils/errorUtils';
 
 interface BudgetConfigModalProps {
   isOpen: boolean;
@@ -46,7 +47,6 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
   // Reset form when editData changes or modal opens
   useEffect(() => {
     if (isOpen) {
-      setError(null);
       if (editData) {
         reset({
           name: editData.name,
@@ -100,22 +100,27 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
       }
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Gagal menyimpan budget plan. Pastikan rentang tanggal tidak bertabrakan.');
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, 'Gagal menyimpan budget plan. Pastikan rentang tanggal tidak bertabrakan.'));
       console.error('Failed to save budget plan', err);
     }
+  };
+
+  const handleClose = () => {
+    setError(null);
+    onClose();
   };
 
   return (
     <Modal 
       show={isOpen} 
-      onClose={onClose} 
+      onClose={handleClose} 
       size="lg"
     >
-      <ModalHeader title={editData ? "Edit Budget Plan" : "Setup Budget Plan Baru"} onClose={onClose} />
+      <ModalHeader title={editData ? "Edit Budget Plan" : "Setup Budget Plan Baru"} onClose={handleClose} />
       <div className="modal-body pb-4">
         {error && (
-          <Alert color="danger" dismissible onDismiss={() => setError(null)} className="mb-3">
+          <Alert type="danger" showClose className="mb-3" title="Terjadi Kesalahan">
             <Icon icon="alert-triangle" className="me-2" />
             {error}
           </Alert>
@@ -272,7 +277,7 @@ export const BudgetConfigModal: React.FC<BudgetConfigModalProps> = ({
           )}
 
           <div className="d-flex justify-content-end align-items-center gap-3 mt-4">
-            <Button color="link" onClick={onClose} element="button" className="text-muted border-0">
+            <Button color="link" onClick={handleClose} element="button" className="text-muted border-0">
               Batal
             </Button>
             <Button 

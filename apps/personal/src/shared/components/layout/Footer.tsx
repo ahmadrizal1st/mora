@@ -25,9 +25,9 @@ export function Footer({
               </li>
               {version && (
                 <li className="list-inline-item">
-                  <Link to="/changelog" className="link-secondary">
+                  <a href="#" className="link-secondary">
                     v{version}
-                  </Link>
+                  </a>
                 </li>
               )}
             </ul>

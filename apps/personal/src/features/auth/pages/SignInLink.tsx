@@ -4,6 +4,7 @@ import { Link } from '@tanstack/react-router'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { useMagicLinkMutation } from '../hooks/useMagicLinkMutation'
 import { AxiosError } from 'axios'
+import { getApiErrorMessage } from '@/shared/utils/errorUtils'
 
 export default function SignInLink() {
   const [email, setEmail] = useState('')
@@ -19,8 +20,8 @@ export default function SignInLink() {
       onSuccess: () => {
         setIsSent(true)
       },
-      onError: (err: AxiosError<{ message?: string }>) => {
-        setError(err.response?.data?.message || 'Failed to send magic link.')
+      onError: (err: AxiosError<any>) => {
+        setError(getApiErrorMessage(err, 'Failed to send magic link.'))
       }
     })
   }

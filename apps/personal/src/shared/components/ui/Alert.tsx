@@ -15,6 +15,7 @@ export interface AlertProps {
   avatar?: boolean
   buttons?: boolean
   className?: string
+  children?: React.ReactNode
 }
 
 const defaultIcons: Record<string, string> = {
@@ -38,6 +39,7 @@ export function Alert({
   avatar,
   buttons,
   className,
+  children,
 }: AlertProps) {
   const resolvedIcon = icon || defaultIcons[type]
 
@@ -70,7 +72,7 @@ export function Alert({
         </div>
       ) : (
         <>
-          {title}
+          {children || title}
           {action && <a href="#" className="alert-action">{action}</a>}
           {link && <a href="#" className="alert-link">{link}</a>}
         </>

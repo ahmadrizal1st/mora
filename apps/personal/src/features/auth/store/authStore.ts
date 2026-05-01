@@ -91,7 +91,7 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         try {
           await AuthService.logout()
-        } catch (error) {
+        } catch {
           // Silent catch
         } finally {
           set({ user: null, token: null, isAuthenticated: false })
@@ -105,7 +105,7 @@ export const useAuthStore = create<AuthState>()(
           const userData = await AuthService.getMe()
           localStorage.setItem('user', JSON.stringify(userData))
           set({ user: userData })
-        } catch (error) {
+        } catch {
           get().logout()
         }
       },

@@ -24,7 +24,6 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
   const isDarkText = textColor === '#1d273b';
   const secondaryTextColor = isDarkText ? 'rgba(29, 39, 59, 0.6)' : 'rgba(255, 255, 255, 0.7)';
   const iconBgColor = isDarkText ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.15)';
-  const chartColor = isDarkText ? 'rgba(29, 39, 59, 0.5)' : 'rgba(255, 255, 255, 0.6)';
 
   const accountIcon = account.type === 'bank' ? 'building-bank' : account.type === 'cash' ? 'wallet' : account.type === 'e-wallet' ? 'device-mobile' : 'credit-card';
 
@@ -144,7 +143,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
                   container: 'body',
                   x: { 
                     show: true,
-                    formatter: (_val: any, { dataPointIndex }: any) => {
+                    formatter: (_val: unknown, { dataPointIndex }: { dataPointIndex: number }) => {
                       const label = account.history?.labels?.[dataPointIndex];
                       if (!label) return _val;
                       const date = new Date(label);

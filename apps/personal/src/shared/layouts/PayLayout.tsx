@@ -20,7 +20,7 @@ export default function PayLayout({ children, closeHref = '/' }: PayLayoutProps)
         <div className="container-fluid">
           <NavbarLogo smallLogo />
           <div>
-            <Link to={closeHref as any} className="btn btn-close" aria-label="Close" />
+            <Link to={closeHref as "/"} className="btn btn-close" aria-label="Close" />
           </div>
         </div>
       </header>

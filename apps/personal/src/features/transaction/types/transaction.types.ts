@@ -10,6 +10,19 @@ export interface Currency {
   is_active: boolean;
 }
 
+export interface CreditInfo {
+  id: number;
+  account_id: number;
+  limit: number;
+  total_amount: number;
+  installment_amount: number;
+  installment_type: string;
+  due_date: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Account {
   id: number;
   user_id: number;
@@ -21,6 +34,7 @@ export interface Account {
   type: 'cash' | 'bank' | 'e-wallet' | 'investment';
   is_credit?: boolean;
   credit_limit?: number;
+  credit?: CreditInfo;
   transactions_count?: number;
   incoming_transfers_count?: number;
   history?: {

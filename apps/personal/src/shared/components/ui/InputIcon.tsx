@@ -7,7 +7,7 @@ interface InputIconProps {
   loader?: boolean
   prepend?: boolean
   type?: string
-  value?: string
+  value?: string | number
   placeholder?: string
   rounded?: boolean
   light?: boolean
@@ -16,7 +16,7 @@ interface InputIconProps {
   className?: string
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export function InputIcon({

@@ -1,50 +1,31 @@
-// src/components/cards/StatCard.tsx
-import { Icon } from '../ui/Icon'
-import { Trending } from '../ui/Trending'
+import { type FC, type ReactNode } from 'react'
+import { Avatar } from '@/shared/components/ui/Avatar'
 
 interface StatCardProps {
-  title?: string
-  value?: string | number
-  icon?: string
-  iconColor?: string
-  trendValue?: number
-  description?: string
-  className?: string
+  title: string
+  icon: string
+  main: string
+  sub: string
+  extra?: ReactNode
 }
 
-export function StatCard({
-  title = 'Statistic',
-  value = '0',
-  icon,
-  iconColor,
-  trendValue,
-  description,
-  className,
-}: StatCardProps) {
+export const StatCard: FC<StatCardProps> = ({ title, icon, main, sub, extra }) => {
   return (
-    <div className={`card${className ? ` ${className}` : ''}`}>
+    <div className="card">
       <div className="card-body">
-        <div className="row align-items-center">
-          <div className="col">
-            <h4 className="subheader mb-1">{title}</h4>
-            <div className="h3 m-0">{value}</div>
-            {description && <div className="text-secondary mt-1">{description}</div>}
+        <div className="row">
+          <div className="col mt-0">
+            <h5 className="card-title">{title}</h5>
           </div>
           <div className="col-auto">
-            {icon && (
-              <span className={`avatar avatar-lg ${iconColor ? `bg-${iconColor}-lt` : ''}`}>
-                <Icon icon={icon} color={iconColor} />
-              </span>
-            )}
+            <Avatar icon={icon} color="primary-lt" />
           </div>
         </div>
-        {trendValue !== undefined && (
-          <div className="mt-3 d-flex align-items-baseline">
-            <div className="me-auto">
-              <Trending value={trendValue} />
-            </div>
-          </div>
-        )}
+        <div className="mb-1">
+          <span className="h3">{main}</span>
+          <span className="text-muted"> {sub}</span>
+        </div>
+        {extra && <div className="mb-0">{extra}</div>}
       </div>
     </div>
   )

@@ -1,18 +1,18 @@
 import { clsx } from 'clsx'
 import { Icon } from './Icon'
 
-interface Person {
-  id?: number | string
+import { type Person } from '@/shared/types/common.types'
+
+interface AvatarPerson {
   full_name?: string
   photo?: string
-  job_title?: string
-  email?: string
+  avatar?: string
 }
 
 interface AvatarProps {
   src?: string
   placeholder?: string
-  person?: Person
+  person?: AvatarPerson
   personId?: number
   people?: Person[]
   size?: 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
@@ -103,7 +103,7 @@ export function Avatar({
       if (!resolvedSrc) resolvedPlaceholder = getInitials(p.full_name || '')
     }
   } else if (person) {
-    const pSrc = resolveAvatarUrl(person.photo)
+    const pSrc = resolveAvatarUrl(person.photo || person.avatar)
     if (pSrc) resolvedSrc = pSrc
     if (!resolvedSrc && !placeholder) {
       resolvedPlaceholder = getInitials(person.full_name || '')

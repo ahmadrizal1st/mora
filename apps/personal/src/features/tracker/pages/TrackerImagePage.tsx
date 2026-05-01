@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
 import { Button, Icon, Dropzone } from '@/shared/components/ui';
 import { useUploadDocument } from '../hooks/useTracker';
+import { getApiErrorMessage } from '@/shared/utils/errorUtils';
 
 export default function TrackerImagePage() {
   const [files, setFiles] = useState<File[]>([]);
@@ -14,15 +15,15 @@ export default function TrackerImagePage() {
     if (files.length === 0) return;
     setError(null);
     try {
+      // Process all files in parallel
       await Promise.all(
         files.map(file => uploadMutation.mutateAsync({ file, docType: 'expense' }))
       );
-      // Success alert is shown in the UI via uploadMutation.isSuccess
-      setTimeout(() => {
-        navigate({ to: '/transactions' });
-      }, 2000);
-    } catch {
-      setError('Gagal mengunggah gambar. Silakan coba lagi.');
+      
+      // Success! Navigate to transactions after processing
+      navigate({ to: '/transactions' });
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Gagal mengunggah gambar. Silakan coba lagi.'));
     }
   };
 

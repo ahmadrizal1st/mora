@@ -15,6 +15,7 @@ export interface Person {
   city?: string
   country_code?: string
   time_zone?: string
+  company?: string
   [key: string]: unknown
 }
 

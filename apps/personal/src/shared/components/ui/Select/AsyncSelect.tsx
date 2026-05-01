@@ -1,24 +1,23 @@
-import React from 'react';
 import AsyncSelectBase from 'react-select/async';
 import { type StylesConfig } from 'react-select';
 
-interface AsyncSelectProps {
-  loadOptions: (inputValue: string) => Promise<any[]>;
-  onChange: (value: any) => void;
-  value?: any;
+interface AsyncSelectProps<Option = unknown> {
+  loadOptions: (inputValue: string) => Promise<Option[]>;
+  onChange: (value: Option | null) => void;
+  value?: Option | null;
   placeholder?: string;
   isClearable?: boolean;
 }
 
-export const AsyncSelect: React.FC<AsyncSelectProps> = ({
+export function AsyncSelect<Option = unknown>({
   loadOptions,
   onChange,
   value,
   placeholder = 'Cari...',
   isClearable = true,
-}) => {
+}: AsyncSelectProps<Option>) {
   // Styling agar sesuai dengan Tabler
-  const customStyles: StylesConfig<any, false> = {
+  const customStyles: StylesConfig<Option, false> = {
     control: (base, state) => ({
       ...base,
       borderColor: state.isFocused ? '#206bc4' : '#dadcde',
@@ -42,7 +41,7 @@ export const AsyncSelect: React.FC<AsyncSelectProps> = ({
       cacheOptions
       defaultOptions
       loadOptions={loadOptions}
-      onChange={onChange}
+      onChange={(newValue) => onChange(newValue as Option | null)}
       value={value}
       placeholder={placeholder}
       isClearable={isClearable}
@@ -51,4 +50,4 @@ export const AsyncSelect: React.FC<AsyncSelectProps> = ({
       loadingMessage={() => 'Mencari...'}
     />
   );
-};
+}

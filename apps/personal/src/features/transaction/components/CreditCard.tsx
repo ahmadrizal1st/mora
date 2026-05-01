@@ -2,15 +2,17 @@ import React from 'react';
 import { Icon } from '@/shared/components/ui/Icon';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
 
+import type { Account } from '../types/transaction.types';
+
 interface CreditCardProps {
-  account: any;
-  onEdit: (account: any) => void;
+  account: Account;
+  onEdit: (account: Account) => void;
   onDelete: (id: number) => void;
 }
 
 export const CreditCard: React.FC<CreditCardProps> = ({ account, onEdit, onDelete }) => {
   const credit = account.credit;
-  const utilization = credit?.limit > 0 ? (credit.total_amount / credit.limit) * 100 : 0;
+  const utilization = (credit && credit.limit > 0) ? (credit.total_amount / credit.limit) * 100 : 0;
   
   // Determine if background is light or dark to set text color
   const getContrastColor = (hexColor: string) => {

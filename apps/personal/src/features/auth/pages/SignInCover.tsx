@@ -7,6 +7,7 @@ import { Photo } from '@/shared/components/ui/Photo'
 import { useSignInMutation } from '../hooks/useSignInMutation'
 import { AxiosError } from 'axios'
 import type { SignInFormData } from '@/features/auth/components/SignInForm'
+import { getApiErrorMessage } from '@/shared/utils/errorUtils'
 
 export default function SignInCover() {
   const signInMutation = useSignInMutation()
@@ -17,9 +18,9 @@ export default function SignInCover() {
     setError(null)
     setFieldErrors(undefined)
     signInMutation.mutate(data, {
-      onError: (err: AxiosError<{ message?: string, errors?: Record<string, string[]> }>) => {
+      onError: (err: AxiosError<any>) => {
         const responseData = err.response?.data
-        setError(responseData?.message || 'Login failed. Please check your credentials.')
+        setError(getApiErrorMessage(err, 'Login failed. Please check your credentials.'))
         setFieldErrors(responseData?.errors)
       }
     })

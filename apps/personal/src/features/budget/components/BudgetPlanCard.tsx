@@ -2,7 +2,6 @@ import React from 'react';
 import { Icon, Badge, Progress } from '@/shared/components/ui';
 import { type BudgetPlan, type BudgetUtilization } from '../types/budget.types';
 import { BUDGET_METHODS_INFO } from '../constants/budget.constants';
-import { cn } from '@/shared/utils/cn';
 import dayjs from 'dayjs';
 
 interface BudgetPlanCardProps {

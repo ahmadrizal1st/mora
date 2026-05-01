@@ -4,6 +4,7 @@ import SingleLayout from '@/shared/layouts/SingleLayout'
 import flags from '@/shared/data/flags.json'
 import { useSend2FACodeMutation } from '../hooks/useSend2FACodeMutation'
 import { AxiosError } from 'axios'
+import { getApiErrorMessage } from '@/shared/utils/errorUtils'
 
 interface FlagEntry {
   name: string
@@ -29,8 +30,8 @@ export default function TwoStepVerification() {
       phone, 
       country_code: countryCode 
     }, {
-      onError: (err: AxiosError<{ message?: string }>) => {
-        setError(err.response?.data?.message || 'Failed to send verification code.')
+      onError: (err: AxiosError<any>) => {
+        setError(getApiErrorMessage(err, 'Failed to send verification code.'))
       }
     })
   }
