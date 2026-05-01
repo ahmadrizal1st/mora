@@ -18,9 +18,12 @@ export interface Notification {
 
 export interface PaginatedNotifications {
   data: Notification[];
-  current_page: number;
-  last_page: number;
-  total: number;
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
 }
 
 export const notificationApi = {

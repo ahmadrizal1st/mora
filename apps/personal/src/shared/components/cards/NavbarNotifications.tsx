@@ -199,7 +199,7 @@ export function NavbarNotifications({
         isPage ? (
           <div className="card-footer d-flex align-items-center bg-transparent border-0 mt-auto">
             <p className="m-0 text-secondary">
-              Showing <span>{Math.min(1 + (page - 1) * limit, notificationsData?.total || 0)}</span> to <span>{Math.min(page * limit, notificationsData?.total || 0)}</span> of <span>{notificationsData?.total || 0}</span> entries
+              Showing <span>{Math.min(1 + (page - 1) * limit, notificationsData?.meta.total || 0)}</span> to <span>{Math.min(page * limit, notificationsData?.meta.total || 0)}</span> of <span>{notificationsData?.meta.total || 0}</span> entries
             </p>
             <ul className="pagination m-0 ms-auto">
               <li className={clsx("page-item", page === 1 && "disabled")}>
@@ -208,10 +208,10 @@ export function NavbarNotifications({
                   prev
                 </a>
               </li>
-              {[...Array(Math.min(5, notificationsData?.last_page || 1))].map((_, i) => {
+              {[...Array(Math.min(5, notificationsData?.meta.last_page || 1))].map((_, i) => {
                 // Simple pagination logic: show up to 5 pages
                 let pageNum = i + 1;
-                const lastPage = notificationsData?.last_page || 1;
+                const lastPage = notificationsData?.meta.last_page || 1;
                 if (lastPage > 5 && page > 3) {
                   pageNum = page - 2 + i;
                   if (pageNum > lastPage) pageNum = lastPage - (4 - i);
@@ -223,8 +223,8 @@ export function NavbarNotifications({
                   </li>
                 )
               })}
-              <li className={clsx("page-item", page === (notificationsData?.last_page || 1) && "disabled")}>
-                <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); setPage(p => Math.min(notificationsData?.last_page || 1, p + 1)); }}>
+              <li className={clsx("page-item", page === (notificationsData?.meta.last_page || 1) && "disabled")}>
+                <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); setPage(p => Math.min(notificationsData?.meta.last_page || 1, p + 1)); }}>
                   next
                   <Icon icon="chevron-right" />
                 </a>

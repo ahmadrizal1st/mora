@@ -18,13 +18,14 @@ class NotificationService
         if (!empty($filters['filter'])) {
             $filter = strtolower($filters['filter']);
             
-            match ($filter) {
+            $query = match ($filter) {
+                'all' => $query,
                 'unread' => $query->whereNull('read_at'),
                 'starred' => $query->where('is_starred', true),
                 'archive' => $query->whereNotNull('read_at'),
                 default => in_array($filter, ['budgeting', 'saving', 'credit', 'expense', 'income']) 
                     ? $query->where('label', $filter) 
-                    : null,
+                    : $query,
             };
         }
 

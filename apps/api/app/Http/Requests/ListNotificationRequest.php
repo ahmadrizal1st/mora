@@ -14,7 +14,7 @@ class ListNotificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'filter' => 'nullable|string|in:unread,starred,archive,budgeting,saving,credit,expense,income',
+            'filter' => 'nullable|string|in:all,unread,starred,archive,budgeting,saving,credit,expense,income',
             'per_page' => 'nullable|integer|min:1|max:100',
         ];
     }
