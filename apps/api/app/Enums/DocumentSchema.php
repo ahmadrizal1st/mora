@@ -20,31 +20,30 @@ enum DocumentSchema: string
     {
         return match ($this) {
             self::EXPENSE, self::RECEIPT, self::INVOICE, self::AUDIO_NOTE, self::AUTO => [
-                'tx'   => [
+                'tx' => [
                     [
-                        'm'    => 'merchant',
-                        'd'    => 'YYYY-MM-DD',
-                        'a'    => 'number',
-                        'c'    => 'category',
-                        'desc' => 'string',
-                        'pm'   => 'payment',
-                        'cur'  => 'default IDR',
-                        't'    => 'expense',
+                        'merchant'    => 'string',
+                        'date'        => 'YYYY-MM-DD',
+                        'amount'      => 'number',
+                        'category'    => 'string',
+                        'description' => 'string',
+                        'items'       => [
+                            ['name' => 'string', 'price' => 'number']
+                        ],
+                        'type'        => 'expense',
                     ]
                 ],
             ],
 
             self::INCOME => [
-                'tx'   => [
+                'tx' => [
                     [
-                        's'    => 'source',
-                        'd'    => 'YYYY-MM-DD',
-                        'a'    => 'number',
-                        'c'    => 'category',
-                        'desc' => 'string',
-                        'pm'   => 'payment',
-                        'cur'  => 'default IDR',
-                        't'    => 'income',
+                        'source'      => 'string',
+                        'date'        => 'YYYY-MM-DD',
+                        'amount'      => 'number',
+                        'category'    => 'string',
+                        'description' => 'string',
+                        'type'        => 'income',
                     ]
                 ],
             ],

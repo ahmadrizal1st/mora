@@ -287,11 +287,11 @@ class ProcessAIResult implements ShouldQueue
      */
     protected function processTransaction(array $data, DocumentExtraction $document): ?Transaction
     {
-        $merchant = $data['m'] ?? $data['merchant_name'] ?? $data['s'] ?? $data['source_name'] ?? $data['vendor_name'] ?? $data['speaker_name'] ?? $data['payer'] ?? $data['recipient'] ?? 'Unknown';
-        $amount   = $data['a'] ?? $data['amount'] ?? $data['total_amount'] ?? 0;
-        $txType   = $data['t'] ?? $data['type'] ?? Transaction::TYPE_EXPENSE;
-        $notes    = $data['desc'] ?? $data['description'] ?? null;
-        $extractedCategory = $data['c'] ?? $data['category'] ?? '';
+        $merchant = $data['merchant'] ?? $data['m'] ?? $data['merchant_name'] ?? $data['source'] ?? $data['s'] ?? $data['source_name'] ?? $data['vendor_name'] ?? $data['speaker_name'] ?? $data['payer'] ?? $data['recipient'] ?? 'Unknown';
+        $amount   = $data['amount'] ?? $data['a'] ?? $data['total_amount'] ?? 0;
+        $txType   = $data['type'] ?? $data['t'] ?? Transaction::TYPE_EXPENSE;
+        $notes    = $data['description'] ?? $data['desc'] ?? null;
+        $extractedCategory = $data['category'] ?? $data['c'] ?? '';
 
         // NEW: Jika ada data items, kita hitung ulang total amount di sisi server
         if (!empty($data['items']) && is_array($data['items'])) {

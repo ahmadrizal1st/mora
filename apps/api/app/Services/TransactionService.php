@@ -245,46 +245,18 @@ class TransactionService
             default => [$currentFrom->startOfDay(), $currentTo->endOfDay()],
         };
 
-        if ($groupBy === 'month') {
-            $n = $currentFrom->diffInMonths($currentTo) + 1;
-            $prevTo = $currentFrom->copy()->subDay()->endOfMonth();
-            $prevFrom = $prevTo->copy()->subMonths($n - 1)->startOfMonth();
-        } elseif ($groupBy === 'week') {
-            $n = $currentFrom->diffInWeeks($currentTo) + 1;
-            $prevTo = $currentFrom->copy()->subDay()->endOfWeek();
-            $prevFrom = $prevTo->copy()->subWeeks($n - 1)->startOfWeek();
-        } elseif ($groupBy === 'year') {
-            $n = $currentFrom->diffInYears($currentTo) + 1;
-            $prevTo = $currentFrom->copy()->subDay()->endOfYear();
-            $prevFrom = $prevTo->copy()->subYears($n - 1)->startOfYear();
-        } else {
-            $n = $currentFrom->diffInDays($currentTo) + 1;
-            $prevTo = $currentFrom->copy()->subDay()->endOfDay();
-            $prevFrom = $prevTo->copy()->subDays($n - 1)->startOfDay();
-        }
-
         $currentFilters = array_merge($baseFilters, [
             'date_from' => $currentFrom->toDateTimeString(),
             'date_to'   => $currentTo->toDateTimeString(),
         ]);
         $rawResults = TransactionRepository::fetchHistoryRows($user, $pgFormat, $currentFilters)->keyBy('label');
 
-        $prevFilters = array_merge($baseFilters, [
-            'date_from' => $prevFrom->toDateTimeString(),
-            'date_to'   => $prevTo->toDateTimeString(),
-        ]);
-        $prevResults = TransactionRepository::fetchHistoryRows($user, $pgFormat, $prevFilters)->keyBy('label');
-
         $income = [];
         $expense = [];
         $count = [];
         $labels = [];
-        $p_income = [];
-        $p_expense = [];
-        $p_count = [];
 
         $curr = $currentFrom->copy();
-        $prev = $prevFrom->copy();
 
         $phpFormat = match ($groupBy) {
             'week'  => 'o-\WW',
@@ -297,24 +269,18 @@ class TransactionService
         while ($curr->lte($currentTo) && $safety < 1000) {
             $safety++;
             $dbLabel = $curr->format($phpFormat);
-            $pDbLabel = $prev->format($phpFormat);
 
             $item = $rawResults->get($dbLabel);
-            $income[]  = (int) ($item->income ?? 0);
-            $expense[] = (int) ($item->expense ?? 0);
+            $income[]  = (float) ($item->income ?? 0);
+            $expense[] = (float) ($item->expense ?? 0);
             $count[]   = (int) ($item->count ?? 0);
             $labels[]  = $dbLabel;
 
-            $pItem = $prevResults->get($pDbLabel);
-            $p_income[]  = (int) ($pItem->income ?? 0);
-            $p_expense[] = (int) ($pItem->expense ?? 0);
-            $p_count[]   = (int) ($pItem->count ?? 0);
-
             match ($groupBy) {
-                'month' => [$curr->addMonth(), $prev->addMonth()],
-                'week'  => [$curr->addWeek(),  $prev->addWeek()],
-                'year'  => [$curr->addYear(),  $prev->addYear()],
-                default => [$curr->addDay(),   $prev->addDay()],
+                'month' => $curr->addMonth(),
+                'week'  => $curr->addWeek(),
+                'year'  => $curr->addYear(),
+                default => $curr->addDay(),
             };
         }
 
@@ -325,9 +291,6 @@ class TransactionService
             'expense_labels' => $labels,
             'count'          => $count,
             'count_labels'   => $labels,
-            'prev_income'    => $p_income,
-            'prev_expense'   => $p_expense,
-            'prev_count'     => $p_count,
         ];
     }
 

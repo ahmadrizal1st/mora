@@ -24,12 +24,13 @@ Input:
 {$rawText}
 
 Rules:
-1. Output ONLY valid JSON.
-2. DATE: YYYY-MM-DD.
-3. AMOUNT: Number only, use dot (.) as decimal separator, NO thousand separators (e.g., 12500.50).
-4. COMPACT: Omit fields that are null, empty, or unknown to save tokens.
-5. MULTIPLE: Extract every row/item found in the input. Do not omit any.
-6. TABLES: Columns are separated by ' | '.
+1. Output ONLY valid JSON. No conversational filler.
+2. DATE: Must use YYYY-MM-DD.
+3. AMOUNT: Number only. If currency is IDR and value looks like '10.000', treat it as 10000. Use dot (.) for decimal.
+4. ITEMS: Extract each item name and its price into the 'items' array.
+5. COMPACT: Omit fields that are null or unknown.
+6. LANGUAGE: Input may be in Indonesian or English. Extract merchant names accurately.
+7. MULTIPLE: If multiple receipts/transactions exist in one text, extract all of them into the 'tx' array.
 PROMPT;
     }
 }

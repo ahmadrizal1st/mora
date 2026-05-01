@@ -257,6 +257,8 @@ php artisan serve
 ```bash
 cd apps/api
 php artisan queue:work --tries=3
+# Restart queue
+php artisan queue:restart
 # Memproses job LLM (AI result → transaksi)
 # Tanpa ini, hasil tracker TIDAK akan tersimpan ke database
 ```
