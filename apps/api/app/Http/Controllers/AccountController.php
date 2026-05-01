@@ -19,15 +19,7 @@ class AccountController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $groupBy = $request->query('group_by', 'day');
-        if (!in_array($groupBy, ['day', 'week', 'month'])) {
-            $groupBy = 'day';
-        }
-
-        $filters = array_filter([
-            'date_from' => $request->query('date_from'),
-            'date_to' => $request->query('date_to'),
-        ]);
+        [$groupBy, $filters] = $this->resolveRequestParams($request);
 
         $accounts = AccountService::listWithHistory($request->user(), $groupBy, $filters);
 
@@ -58,15 +50,7 @@ class AccountController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        $groupBy = $request->query('group_by', 'day');
-        if (!in_array($groupBy, ['day', 'week', 'month'])) {
-            $groupBy = 'day';
-        }
-
-        $filters = array_filter([
-            'date_from' => $request->query('date_from'),
-            'date_to' => $request->query('date_to'),
-        ]);
+        [$groupBy, $filters] = $this->resolveRequestParams($request);
 
         $account = AccountService::showWithHistory($request->user(), $id, $groupBy, $filters);
 
@@ -102,5 +86,22 @@ class AccountController extends Controller
         return response()->json([
             'message' => 'Akun berhasil dihapus.',
         ]);
+    }
+    /**
+     * Resolve common query parameters for account listings.
+     */
+    private function resolveRequestParams(Request $request): array
+    {
+        $groupBy = $request->query('group_by', 'day');
+        if (!in_array($groupBy, ['day', 'week', 'month'])) {
+            $groupBy = 'day';
+        }
+
+        $filters = array_filter([
+            'date_from' => $request->query('date_from'),
+            'date_to' => $request->query('date_to'),
+        ]);
+
+        return [$groupBy, $filters];
     }
 }

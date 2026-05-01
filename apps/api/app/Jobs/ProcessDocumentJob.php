@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\DocumentStatus;
 use App\Models\Document;
 use App\Models\User;
 use App\Notifications\TrackerProcessedNotification;
@@ -93,7 +94,7 @@ class ProcessDocumentJob implements ShouldQueue
     protected function handleFailure(Document $document, User $user, string $message): void
     {
         $document->update([
-            'status' => 'failed',
+            'status' => DocumentStatus::FAILED->value,
             'error_message' => $message
         ]);
 

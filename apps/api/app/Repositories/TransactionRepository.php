@@ -105,27 +105,48 @@ class TransactionRepository
         $dateFrom  = $filters['date_from']  ?? null;
         $dateTo    = $filters['date_to']    ?? null;
 
+        $params = [$pgFormat, $user->id];
         $dateWhere = '';
-        if ($dateFrom) $dateWhere .= ' AND tx_date >= ' . DB::getPdo()->quote($dateFrom);
-        if ($dateTo)   $dateWhere .= ' AND tx_date <= ' . DB::getPdo()->quote($dateTo);
-
-        $pgFormat_q = DB::getPdo()->quote($pgFormat);
-        $uid = (int) $user->id;
+        
+        if ($dateFrom) {
+            $dateWhere .= ' AND tx_date >= ?';
+            $params[] = $dateFrom;
+        }
+        if ($dateTo) {
+            $dateWhere .= ' AND tx_date <= ?';
+            $params[] = $dateTo;
+        }
 
         $tIncome = Transaction::TYPE_INCOME;
         $tExpense = Transaction::TYPE_EXPENSE;
         $tTransfer = Transaction::TYPE_TRANSFER;
 
         if ($accountId) {
-            $aid = (int) $accountId;
-            $outSql = "SELECT to_char(tx_date, {$pgFormat_q}) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount_raw ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id={$uid} AND account_id={$aid} AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') {$dateWhere} GROUP BY label";
-            $inSql  = "SELECT to_char(tx_date, {$pgFormat_q}) AS label, SUM(amount_raw) AS income, 0 AS expense, COUNT(*) AS count FROM transactions WHERE user_id={$uid} AND to_account_id={$aid} AND type='{$tTransfer}' {$dateWhere} GROUP BY label";
+            $outParams = array_merge($params, [$accountId]);
+            $inParams  = array_merge($params, [$accountId]);
+            
+            $outSql = "SELECT to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount_raw ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND account_id=? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') {$dateWhere} GROUP BY label";
+            $inSql  = "SELECT to_char(tx_date, ?) AS label, SUM(amount_raw) AS income, 0 AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND to_account_id=? AND type='{$tTransfer}' {$dateWhere} GROUP BY label";
+            
             $sql = "SELECT label, SUM(income) AS income, SUM(expense) AS expense, SUM(count) AS count FROM (({$outSql}) UNION ALL ({$inSql})) AS combined GROUP BY label ORDER BY label ASC";
-            return collect(DB::select($sql));
+            
+            // Re-order params for union: [pg, user, account, ...dates, pg, user, account, ...dates]
+            // We need to re-build params carefully for the specific order in SQL
+            $finalParams = array_merge(
+                [$pgFormat, $user->id, $accountId],
+                $dateFrom ? [$dateFrom] : [],
+                $dateTo ? [$dateTo] : [],
+                [$pgFormat, $user->id, $accountId],
+                $dateFrom ? [$dateFrom] : [],
+                $dateTo ? [$dateTo] : []
+            );
+
+            return collect(DB::select($sql, $finalParams));
         }
 
-        $sql = "SELECT to_char(tx_date, {$pgFormat_q}) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type='{$tExpense}' THEN amount_raw ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id={$uid} AND type IN ('{$tIncome}','{$tExpense}') {$dateWhere} GROUP BY label ORDER BY label ASC";
-        return collect(DB::select($sql));
+        $sql = "SELECT to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type='{$tExpense}' THEN amount_raw ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND type IN ('{$tIncome}','{$tExpense}') {$dateWhere} GROUP BY label ORDER BY label ASC";
+        
+        return collect(DB::select($sql, $params));
     }
 
     /**

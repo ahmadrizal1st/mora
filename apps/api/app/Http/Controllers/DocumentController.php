@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\DocumentSchema;
+use App\Enums\DocumentStatus;
 use App\Jobs\ProcessAIResult;
 use App\Models\Document;
 use Illuminate\Http\Request;
@@ -42,7 +43,7 @@ class DocumentController extends Controller
                 'file_path' => $storedPath,
                 'mime_type' => $mime,
                 'original_filename' => $file->getClientOriginalName(),
-                'status' => 'pending',
+                'status' => DocumentStatus::PENDING->value,
             ]);
 
             // Jalankan seluruh pemrosesan (FastAPI + LLM) secara async
@@ -84,7 +85,7 @@ class DocumentController extends Controller
                 'doc_type' => $request->doc_type,
                 'raw_text' => $rawText,
                 'mime_type' => 'text/plain',
-                'status' => 'pending',
+                'status' => DocumentStatus::PENDING->value,
             ]);
 
             // Jalankan pemrosesan via Job agar konsisten dengan notifikasi
