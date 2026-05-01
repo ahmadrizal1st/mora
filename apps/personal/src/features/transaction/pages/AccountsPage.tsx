@@ -65,7 +65,7 @@ export const AccountsPage: React.FC = () => {
     () =>
       accounts
         .filter((acc: Account) => effectiveSelected.has(acc.id))
-        .reduce((sum: number, acc: Account) => sum + (acc.balance_raw ?? 0), 0),
+        .reduce((sum: number, acc: Account) => sum + (acc.balance ?? 0), 0),
     [accounts, effectiveSelected]
   );
 

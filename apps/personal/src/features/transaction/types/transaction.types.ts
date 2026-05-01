@@ -30,7 +30,7 @@ export interface Account {
   id: string;
   user_id: string;
   name: string;
-  balance_raw?: number;
+  balance?: number;
   currency_id: string;
   currency?: Currency;
   color: string;
@@ -167,7 +167,7 @@ export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created
 
 export type UpdateTransactionDTO = Partial<CreateTransactionDTO>;
 
-export type CreateAccountDTO = Omit<Account, 'id' | 'user_id' | 'created_at' | 'currency' | 'balance_raw' | 'transactions_count' | 'incoming_transfers_count' | 'history'>;
+export type CreateAccountDTO = Omit<Account, 'id' | 'user_id' | 'created_at' | 'currency' | 'balance' | 'transactions_count' | 'incoming_transfers_count' | 'history'>;
 export type UpdateAccountDTO = Partial<CreateAccountDTO>;
 
 export type CreateTagDTO = Omit<Tag, 'id' | 'user_id'>;

@@ -38,8 +38,8 @@ class AccountService
             $history['labels'] = $labels;
             $account->history = $history;
             
-            // balance_raw is the actual current balance from all time
-            $account->balance_raw = $currentBalances[$aid] ?? 0;
+            // balance is the actual current balance from all time
+            $account->balance = $currentBalances[$aid] ?? 0;
         });
 
         return $accounts;
@@ -72,7 +72,7 @@ class AccountService
         );
         $history['labels'] = $labels;
         $account->history = $history;
-        $account->balance_raw = $currentBalances[$aid] ?? 0;
+        $account->balance = $currentBalances[$aid] ?? 0;
 
         return $account;
     }

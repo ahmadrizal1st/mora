@@ -18,10 +18,13 @@ class InsurancePolicy extends Model
         'currency_id',
         'premium_period',
         'expiry_date',
-        'coverage_amount_raw',
+        'coverage_amount',
+        'premium_amount',
     ];
 
     protected $casts = [
+        'coverage_amount' => 'decimal:2',
+        'premium_amount' => 'decimal:2',
         'expiry_date' => 'date',
     ];
 

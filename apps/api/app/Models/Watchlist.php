@@ -13,13 +13,15 @@ class Watchlist extends Model
     protected $fillable = [
         'user_id',
         'asset_id',
-        'alert_price_low_raw',
-        'alert_price_high_raw',
+        'alert_price_low',
+        'alert_price_high',
         'alert_enabled',
     ];
 
     protected $casts = [
         'alert_enabled' => 'boolean',
+        'alert_price_low' => 'decimal:2',
+        'alert_price_high' => 'decimal:2',
     ];
 
     public function user(): BelongsTo

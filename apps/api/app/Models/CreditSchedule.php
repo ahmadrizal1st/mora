@@ -13,9 +13,9 @@ class CreditSchedule extends Model
     protected $fillable = [
         'credit_id',
         'due_date',
-        'amount_due_raw',
-        'principal_portion_raw',
-        'interest_portion_raw',
+        'amount_due',
+        'principal_portion',
+        'interest_portion',
         'is_paid',
         'paid_date',
         'transaction_id',
@@ -25,6 +25,9 @@ class CreditSchedule extends Model
         'due_date' => 'date',
         'paid_date' => 'date',
         'is_paid' => 'boolean',
+        'amount_due' => 'decimal:2',
+        'principal_portion' => 'decimal:2',
+        'interest_portion' => 'decimal:2',
     ];
 
     public function creditAccount(): BelongsTo

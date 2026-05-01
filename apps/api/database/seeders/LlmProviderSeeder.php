@@ -31,6 +31,10 @@ class LlmProviderSeeder extends Seeder
                                 ['text' => '{prompt}']
                             ]
                         ]
+                    ],
+                    'generationConfig' => [
+                        'maxOutputTokens' => 4096,
+                        'temperature' => 0.1,
                     ]
                 ],
                 'response_path' => 'candidates.0.content.parts.0.text',
@@ -53,6 +57,7 @@ class LlmProviderSeeder extends Seeder
                         ['role' => 'user', 'content' => '{prompt}']
                     ],
                     'temperature' => 0.1,
+                    'max_tokens' => 4096,
                 ],
                 'response_path' => 'choices.0.message.content',
                 'default_model' => 'llama-3.1-8b-instant',

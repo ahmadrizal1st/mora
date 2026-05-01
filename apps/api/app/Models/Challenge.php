@@ -13,16 +13,19 @@ class Challenge extends Model
 
     protected $fillable = [
         'title',
+        'description',
         'type',
-        'target_amount_raw',
-        'currency_id',
+        'target_amount',
         'start_date',
         'end_date',
-        'xp_reward',
-        'coin_reward',
+        'reward_points',
+        'is_active',
     ];
 
     protected $casts = [
+        'target_amount' => 'decimal:2',
+        'reward_points' => 'integer',
+        'is_active' => 'boolean',
         'start_date' => 'date',
         'end_date' => 'date',
     ];

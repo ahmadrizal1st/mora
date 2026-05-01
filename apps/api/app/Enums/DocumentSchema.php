@@ -20,33 +20,31 @@ enum DocumentSchema: string
     {
         return match ($this) {
             self::EXPENSE, self::RECEIPT, self::INVOICE, self::AUDIO_NOTE, self::AUTO => [
-                'transactions'   => [
+                'tx'   => [
                     [
-                        'merchant_name'  => 'string | Clean name',
-                        'date'           => 'string (YYYY-MM-DD)',
-                        'amount'         => 'number | Total',
-                        'category'       => 'string | ONE OF: Makanan & Minuman, Transportasi, Belanja, Hiburan, Kesehatan, Pendidikan, Tagihan & Utilitas, Rumah Tangga, Perawatan Diri, Asuransi, Langganan, Cicilan, Lainnya.',
-                        'description'    => 'string | nullable',
-                        'items'          => [['name' => 'string', 'price' => 'number']],
-                        'payment_method' => 'string | nullable',
-                        'currency'       => 'string | default IDR',
-                        'type'           => 'string | "expense"',
+                        'm'    => 'merchant',
+                        'd'    => 'YYYY-MM-DD',
+                        'a'    => 'number',
+                        'c'    => 'category',
+                        'desc' => 'string',
+                        'pm'   => 'payment',
+                        'cur'  => 'default IDR',
+                        't'    => 'expense',
                     ]
                 ],
             ],
 
             self::INCOME => [
-                'transactions'   => [
+                'tx'   => [
                     [
-                        'source_name'    => 'string | Clean name',
-                        'date'           => 'string (YYYY-MM-DD)',
-                        'amount'         => 'number | Total',
-                        'category'       => 'string | ONE OF: Gaji, Bonus, Freelance, Investasi, Hadiah, Penjualan, Pendapatan Lainnya.',
-                        'description'    => 'string | nullable',
-                        'items'          => [['name' => 'string', 'price' => 'number']],
-                        'payment_method' => 'string | nullable',
-                        'currency'       => 'string | default IDR',
-                        'type'           => 'string | "income"',
+                        's'    => 'source',
+                        'd'    => 'YYYY-MM-DD',
+                        'a'    => 'number',
+                        'c'    => 'category',
+                        'desc' => 'string',
+                        'pm'   => 'payment',
+                        'cur'  => 'default IDR',
+                        't'    => 'income',
                     ]
                 ],
             ],

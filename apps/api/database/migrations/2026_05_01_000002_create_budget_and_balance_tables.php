@@ -15,8 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('account_id')->constrained()->cascadeOnDelete();
             $table->date('period_month');
-            $table->bigInteger('balance_raw')->default(0);
-            $table->float('balance_in_default')->default(0);
+            $table->decimal('balance', 15, 2)->default(0);
             $table->timestamp('updated_at')->nullable();
         });
 

@@ -15,8 +15,13 @@ class Portfolio extends Model
         'asset_id',
         'account_id',
         'quantity',
-        'average_buy_price_raw',
+        'average_buy_price',
         'currency_id',
+    ];
+
+    protected $casts = [
+        'average_buy_price' => 'decimal:2',
+        'quantity' => 'float',
     ];
 
     public function user(): BelongsTo

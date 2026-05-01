@@ -14,13 +14,14 @@ class DividendEvent extends Model
         'asset_id',
         'ex_date',
         'pay_date',
-        'amount_per_share_raw',
+        'amount_per_share',
         'currency_id',
     ];
 
     protected $casts = [
         'ex_date' => 'date',
         'pay_date' => 'date',
+        'amount_per_share' => 'decimal:2',
     ];
 
     public function asset(): BelongsTo

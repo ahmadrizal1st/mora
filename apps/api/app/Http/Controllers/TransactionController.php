@@ -69,7 +69,7 @@ class TransactionController extends Controller
      *
      * GET /api/transactions/{id}
      */
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, string $id): JsonResponse
     {
         $transaction = TransactionService::show($request->user(), $id);
 
@@ -83,7 +83,7 @@ class TransactionController extends Controller
      *
      * PUT /api/transactions/{id}
      */
-    public function update(UpdateTransactionRequest $request, int $id): JsonResponse
+    public function update(UpdateTransactionRequest $request, string $id): JsonResponse
     {
         $transaction = TransactionService::update(
             $request->user(),
@@ -102,7 +102,7 @@ class TransactionController extends Controller
      *
      * DELETE /api/transactions/{id}
      */
-    public function destroy(Request $request, int $id): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
         TransactionService::destroy($request->user(), $id);
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            $table->string('type'); // income/expense/transfer
+            $table->string('type');
             $table->decimal('amount', 15, 2);
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->float('exchange_rate')->default(1.0);
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->uuid('document_extraction_id')->nullable();
             $table->uuid('split_bill_id')->nullable();
             $table->date('tx_date');
-            $table->string('input_method')->default('manual'); // manual/voice/receipt/autopilot
+            $table->string('input_method')->default('manual');
             $table->string('merchant')->nullable();
             $table->text('notes')->nullable();
             $table->json('dynamic_fields')->nullable();

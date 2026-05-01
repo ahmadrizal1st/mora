@@ -80,7 +80,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
         <div className="mt-2 mb-2">
           <div style={{ color: secondaryTextColor, fontSize: '12px', fontWeight: 500 }}>Saldo Saat Ini</div>
           <div className="h1 fw-bold mb-0 mt-1" style={{ fontSize: '1.85rem', letterSpacing: '-0.5px', color: textColor }}>
-            {formatCurrency(account.balance_raw ?? 0, account.currency?.code)}
+            {formatCurrency(account.balance ?? 0, account.currency?.code)}
           </div>
         </div>
 

@@ -26,8 +26,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->date('week_start_date');
-            $table->bigInteger('total_income_raw');
-            $table->bigInteger('total_expense_raw');
+            $table->decimal('total_income', 15, 2);
+            $table->decimal('total_expense', 15, 2);
             $table->json('top_categories')->nullable();
             $table->string('financial_health_score')->nullable();
             $table->text('ai_insight')->nullable();

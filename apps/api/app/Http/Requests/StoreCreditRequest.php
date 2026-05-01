@@ -23,7 +23,7 @@ class StoreCreditRequest extends FormRequest
             'account_id' => 'nullable|uuid|exists:accounts,id',
             'type' => 'required|string|in:mortgage,personal,paylater,credit_card',
             'provider_name' => 'required|string|max:255',
-            'principal_amount_raw' => 'required|integer|min:0',
+            'principal_amount' => 'required|numeric|min:0',
             'interest_rate' => 'required|numeric|min:0|max:100',
             'tenor_months' => 'required|integer|min:1',
             'start_date' => 'required|date',

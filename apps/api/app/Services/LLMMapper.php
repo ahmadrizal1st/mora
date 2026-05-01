@@ -66,7 +66,7 @@ class LLMMapper
         });
 
         $url = str_replace('{model}', $model, $provider->base_url);
-        $request = Http::asJson();
+        $request = Http::asJson()->timeout(120);
 
         if ($provider->headers) {
             $request->withHeaders($provider->headers);
@@ -97,18 +97,50 @@ class LLMMapper
         throw new Exception("Provider {$provider->name} failed with status {$response->status()}: " . substr($errorBody, 0, 200));
     }
 
-    /**
-     * Parse string response ke array, bersihkan markdown jika ada.
-     */
     protected function parseJson(string $text): array
     {
-        // Membersihkan markdown code blocks (```json ... ```) jika LLM menyertakannya
-        $clean = preg_replace('/^```json\s*|\s*```$/i', '', trim($text));
-        
+        $clean = trim($text);
+
+        // Jika LLM menggunakan markdown code blocks (```json ... ```) 
+        if (preg_match('/```(?:json)?\s*(.*?)\s*```/is', $clean, $matches)) {
+            $clean = trim($matches[1]);
+        } else {
+            // Mencoba mengekstrak dari kurung kurawal/siku pertama hingga terakhir
+            $startObject = strpos($clean, '{');
+            $startArray  = strpos($clean, '[');
+            
+            $startPos = false;
+            if ($startObject !== false && $startArray !== false) {
+                $startPos = min($startObject, $startArray);
+            } elseif ($startObject !== false) {
+                $startPos = $startObject;
+            } elseif ($startArray !== false) {
+                $startPos = $startArray;
+            }
+
+            if ($startPos !== false) {
+                $endObject = strrpos($clean, '}');
+                $endArray  = strrpos($clean, ']');
+                
+                $endPos = false;
+                if ($endObject !== false && $endArray !== false) {
+                    $endPos = max($endObject, $endArray);
+                } elseif ($endObject !== false) {
+                    $endPos = $endObject;
+                } elseif ($endArray !== false) {
+                    $endPos = $endArray;
+                }
+
+                if ($endPos !== false && $endPos > $startPos) {
+                    $clean = trim(substr($clean, $startPos, $endPos - $startPos + 1));
+                }
+            }
+        }
+
         $data = json_decode($clean, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Gagal parse JSON dari LLM: " . json_last_error_msg() . ". Raw content: " . substr($clean, 0, 100));
+            throw new Exception("Gagal parse JSON dari LLM: " . json_last_error_msg() . ". Raw content: " . substr($text, 0, 100));
         }
 
         return $data;

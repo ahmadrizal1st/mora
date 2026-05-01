@@ -13,9 +13,9 @@ class ZakatCalculation extends Model
     protected $fillable = [
         'user_id',
         'zakat_type',
-        'asset_value_raw',
-        'nisab_value_raw',
-        'zakat_due_raw',
+        'asset_value',
+        'nisab_value',
+        'zakat_due',
         'currency_id',
         'calculation_date',
         'is_paid',
@@ -25,6 +25,9 @@ class ZakatCalculation extends Model
     protected $casts = [
         'calculation_date' => 'date',
         'is_paid' => 'boolean',
+        'asset_value' => 'decimal:2',
+        'nisab_value' => 'decimal:2',
+        'zakat_due' => 'decimal:2',
     ];
 
     public function user(): BelongsTo

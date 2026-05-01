@@ -24,10 +24,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('asset_id')->constrained()->cascadeOnDelete();
             $table->date('price_date');
-            $table->bigInteger('close_price_raw');
-            $table->bigInteger('open_price_raw')->nullable();
-            $table->bigInteger('high_price_raw')->nullable();
-            $table->bigInteger('low_price_raw')->nullable();
+            $table->decimal('close_price', 15, 2);
+            $table->decimal('open_price', 15, 2)->nullable();
+            $table->decimal('high_price', 15, 2)->nullable();
+            $table->decimal('low_price', 15, 2)->nullable();
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->timestamp('created_at')->nullable();
         });
@@ -38,7 +38,7 @@ return new class extends Migration
             $table->foreignUuid('asset_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('account_id')->nullable()->constrained()->nullOnDelete();
             $table->float('quantity');
-            $table->bigInteger('average_buy_price_raw');
+            $table->decimal('average_buy_price', 15, 2);
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->timestamps();
         });
@@ -47,8 +47,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('asset_id')->constrained()->cascadeOnDelete();
-            $table->bigInteger('alert_price_low_raw')->nullable();
-            $table->bigInteger('alert_price_high_raw')->nullable();
+            $table->decimal('alert_price_low', 15, 2)->nullable();
+            $table->decimal('alert_price_high', 15, 2)->nullable();
             $table->boolean('alert_enabled')->default(true);
             $table->timestamps();
         });
@@ -58,7 +58,7 @@ return new class extends Migration
             $table->foreignUuid('asset_id')->constrained()->cascadeOnDelete();
             $table->date('ex_date');
             $table->date('pay_date')->nullable();
-            $table->bigInteger('amount_per_share_raw');
+            $table->decimal('amount_per_share', 15, 2);
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->timestamps();
         });

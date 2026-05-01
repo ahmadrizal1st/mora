@@ -15,10 +15,10 @@ class AssetPriceHistory extends Model
     protected $fillable = [
         'asset_id',
         'price_date',
-        'close_price_raw',
-        'open_price_raw',
-        'high_price_raw',
-        'low_price_raw',
+        'close_price',
+        'open_price',
+        'high_price',
+        'low_price',
         'currency_id',
         'created_at',
     ];
@@ -26,6 +26,10 @@ class AssetPriceHistory extends Model
     protected $casts = [
         'price_date' => 'date',
         'created_at' => 'datetime',
+        'close_price' => 'decimal:2',
+        'open_price' => 'decimal:2',
+        'high_price' => 'decimal:2',
+        'low_price' => 'decimal:2',
     ];
 
     public function asset(): BelongsTo

@@ -26,8 +26,9 @@ class ProcessAIResult implements ShouldQueue
 {
     use Queueable;
 
-    public int $tries = 3;
-    public int $backoff = 10;
+    public int $tries = 5;
+    public array $backoff = [10, 30, 60, 120];
+    public int $timeout = 180;
 
     /**
      * Map dari kata kunci yang mungkin dikembalikan LLM (bahasa Inggris / Indonesia)
@@ -241,28 +242,22 @@ class ProcessAIResult implements ShouldQueue
 
         $document->update([
             'parsed_data' => $structuredData,
-            'status'         => DocumentStatus::COMPLETED->value,
+        'status'         => DocumentStatus::COMPLETED->value,
         ]);
 
         // Support for multiple transactions in one document
-        $transactionsData = [];
-        if (isset($structuredData['transactions']) && is_array($structuredData['transactions'])) {
-            $transactionsData = $structuredData['transactions'];
-        } else {
-            // Fallback for single transaction structure
-            $transactionsData = [$structuredData];
-        }
-
         $createdTransactionIds = [];
-
-        foreach ($transactionsData as $txData) {
-            try {
-                $transaction = $this->processTransaction($txData, $document);
-                if ($transaction) {
-                    $createdTransactionIds[] = $transaction->id;
+        $txArray = $structuredData['tx'] ?? $structuredData['transactions'] ?? [];
+        if (is_array($txArray)) {
+            foreach ($txArray as $data) {
+                try {
+                    $transaction = $this->processTransaction($data, $document);
+                    if ($transaction) {
+                        $createdTransactionIds[] = $transaction->id;
+                    }
+                } catch (Exception $e) {
+                    Log::error("Failed to process individual transaction in Document #{$this->document_id}: " . $e->getMessage());
                 }
-            } catch (Exception $e) {
-                Log::error("Failed to process individual transaction in Document #{$this->document_id}: " . $e->getMessage());
             }
         }
 
@@ -292,10 +287,11 @@ class ProcessAIResult implements ShouldQueue
      */
     protected function processTransaction(array $data, DocumentExtraction $document): ?Transaction
     {
-        // Resolve amount (EXPENSE = 'amount', INVOICE/RECEIPT = 'total_amount', AUDIO = 0)
-        $amount = $data['amount']
-            ?? $data['total_amount']
-            ?? 0;
+        $merchant = $data['m'] ?? $data['merchant_name'] ?? $data['s'] ?? $data['source_name'] ?? $data['vendor_name'] ?? $data['speaker_name'] ?? $data['payer'] ?? $data['recipient'] ?? 'Unknown';
+        $amount   = $data['a'] ?? $data['amount'] ?? $data['total_amount'] ?? 0;
+        $txType   = $data['t'] ?? $data['type'] ?? Transaction::TYPE_EXPENSE;
+        $notes    = $data['desc'] ?? $data['description'] ?? null;
+        $extractedCategory = $data['c'] ?? $data['category'] ?? '';
 
         // NEW: Jika ada data items, kita hitung ulang total amount di sisi server
         if (!empty($data['items']) && is_array($data['items'])) {
@@ -320,16 +316,6 @@ class ProcessAIResult implements ShouldQueue
         // Notes berformat JSON standar, key menyesuaikan sumber tracker
         $notes = $this->buildTrackerNotes($document, $data);
 
-        // Resolve merchant name
-        $merchant = $data['merchant_name']
-            ?? $data['source_name']
-            ?? $data['vendor_name']
-            ?? $data['speaker_name']
-            ?? $data['payer']
-            ?? $data['recipient']
-            ?? (isset($data['summary']) ? mb_strimwidth($data['summary'], 0, 50, '...') : null)
-            ?? 'Unknown';
-
         $merchantLower = strtolower($merchant);
         if (($merchantLower === 'unknown' || $merchantLower === 'unspecified') && !empty($data['items'][0]['name'])) {
             $merchant = ucwords(strtolower($data['items'][0]['name']));
@@ -338,9 +324,6 @@ class ProcessAIResult implements ShouldQueue
         }
 
         // Resolve transaction type
-        $txType = $data['type'] ?? null;
-        $extractedCategory = $data['category'] ?? '';
-
         if (!in_array($txType, [Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE])) {
             $incomeKeywords = [
                 'Salary', 'Bonus', 'Freelance', 'Investment', 'Gift', 'Sales', 'Other Income',

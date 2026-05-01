@@ -11,16 +11,17 @@ class ChallengeParticipant extends Model
     use HasUuids;
 
     protected $fillable = [
-        'challenge_id',
         'user_id',
-        'progress_amount_raw',
-        'is_winner',
-        'joined_at',
+        'challenge_id',
+        'progress_amount',
+        'is_completed',
+        'completed_at',
     ];
 
     protected $casts = [
-        'is_winner' => 'boolean',
-        'joined_at' => 'datetime',
+        'progress_amount' => 'decimal:2',
+        'is_completed' => 'boolean',
+        'completed_at' => 'datetime',
     ];
 
     public function challenge(): BelongsTo

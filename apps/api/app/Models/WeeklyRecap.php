@@ -13,8 +13,8 @@ class WeeklyRecap extends Model
     protected $fillable = [
         'user_id',
         'week_start_date',
-        'total_income_raw',
-        'total_expense_raw',
+        'total_income',
+        'total_expense',
         'top_categories',
         'financial_health_score',
         'ai_insight',
@@ -22,6 +22,8 @@ class WeeklyRecap extends Model
 
     protected $casts = [
         'week_start_date' => 'date',
+        'total_income' => 'decimal:2',
+        'total_expense' => 'decimal:2',
         'top_categories' => 'array',
     ];
 

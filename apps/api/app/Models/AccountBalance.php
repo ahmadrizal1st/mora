@@ -15,15 +15,13 @@ class AccountBalance extends Model
     protected $fillable = [
         'account_id',
         'period_month',
-        'balance_raw',
-        'balance_in_default',
+        'balance',
         'updated_at',
     ];
 
     protected $casts = [
         'period_month' => 'date',
-        'balance_raw' => 'integer',
-        'balance_in_default' => 'float',
+        'balance' => 'decimal:2',
         'updated_at' => 'datetime',
     ];
 
