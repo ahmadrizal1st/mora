@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\DocumentStatus;
-use App\Models\Document;
+use App\Models\DocumentExtraction;
 use App\Models\User;
 use App\Notifications\TrackerProcessedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,13 +19,13 @@ class ProcessDocumentJob implements ShouldQueue
     use Queueable;
 
     public int $tries = 1; // Jangan terlalu banyak retry untuk OCR jika timeout
-    public int $timeout = 60; // Timeout job keseluruhan
+    public int $timeout = 120; // Timeout job keseluruhan
 
     /**
      * Create a new job instance.
      */
     public function __construct(
-        protected int $documentId,
+        protected string $documentId,
         protected string $language = 'en'
     ) {}
 
@@ -34,7 +34,7 @@ class ProcessDocumentJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $document = Document::findOrFail($this->documentId);
+        $document = DocumentExtraction::findOrFail($this->documentId);
         $user = User::findOrFail($document->user_id);
         
         $aiUrl = config('services.ai.url', 'http://localhost:8000/api/extract');
@@ -44,17 +44,17 @@ class ProcessDocumentJob implements ShouldQueue
             if ($document->mime_type === 'text/plain') {
                 ProcessAIResult::dispatch(
                     $document->raw_text,
-                    $document->doc_type,
+                    $document->document_type,
                     $document->id,
                     $user->id
                 );
                 return;
             }
 
-            // Kirim ke FastAPI dengan timeout 20 detik sesuai permintaan user
+            // Kirim ke FastAPI dengan timeout 60 detik (karena OCR butuh waktu cukup lama)
             $response = Http::withHeaders([
                 'X-API-KEY' => config('services.ai.key')
-            ])->timeout(20)->attach(
+            ])->timeout(60)->attach(
                 'file',
                 Storage::get($document->file_path),
                 $document->original_filename
@@ -77,7 +77,7 @@ class ProcessDocumentJob implements ShouldQueue
             // Lanjut ke tahap mapping LLM
             ProcessAIResult::dispatch(
                 $rawText,
-                $document->doc_type,
+                $document->document_type,
                 $document->id,
                 $user->id
             );
@@ -91,7 +91,7 @@ class ProcessDocumentJob implements ShouldQueue
         }
     }
 
-    protected function handleFailure(Document $document, User $user, string $message): void
+    protected function handleFailure(DocumentExtraction $document, User $user, string $message): void
     {
         $document->update([
             'status' => DocumentStatus::FAILED->value,
@@ -114,7 +114,7 @@ class ProcessDocumentJob implements ShouldQueue
     public function failed(Throwable $exception): void
     {
         // Jika job benar-benar gagal (bukan karena logic internal yang di-catch)
-        $document = Document::find($this->documentId);
+        $document = DocumentExtraction::find($this->documentId);
         if ($document) {
             $user = User::find($document->user_id);
             if ($user) {

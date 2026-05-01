@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
             'password'=> bcrypt('password'),
         ]);
 
-        $this->call(TransactionSeeder::class);
+        $this->call([
+            TransactionSeeder::class,
+            LlmProviderSeeder::class,
+        ]);
     }
 }

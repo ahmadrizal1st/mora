@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUuid('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignUuid('transaction_id')->nullable()->constrained()->nullOnDelete();
             $table->string('document_type'); // receipt/policy/salary_slip/npwp/certificate
-            $table->string('file_path');
+            $table->string('file_path')->nullable();
             $table->string('mime_type')->nullable();
             $table->string('original_filename')->nullable();
             $table->text('raw_text')->nullable();

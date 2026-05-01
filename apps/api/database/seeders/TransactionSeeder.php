@@ -99,6 +99,16 @@ class TransactionSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
+            // Create a default account for the user
+            $defaultAccount = \App\Models\Account::firstOrCreate(
+                ['user_id' => $user->id, 'name' => 'Dompet'],
+                [
+                    'currency_id' => Currency::where('code', 'IDR')->first()->id ?? Currency::first()->id,
+                    'account_type' => 'cash',
+                    'color' => '#3498db'
+                ]
+            );
+
             foreach ($sampleTags as $t) {
                 Tag::updateOrCreate(
                     ['user_id' => $user->id, 'name' => $t['name']],

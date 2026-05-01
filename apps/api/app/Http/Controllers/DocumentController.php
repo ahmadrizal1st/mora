@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Enums\DocumentSchema;
 use App\Enums\DocumentStatus;
-use App\Jobs\ProcessAIResult;
-use App\Models\Document;
+use App\Models\DocumentExtraction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Enum;
 use Exception;
@@ -37,9 +35,9 @@ class DocumentController extends Controller
             $storedPath = $file->store('documents');
 
             // Simpan ke database dengan status pending
-            $document = Document::create([
+            $document = DocumentExtraction::create([
                 'user_id' => $request->user()->id,
-                'doc_type' => $request->doc_type,
+                'document_type' => $request->doc_type,
                 'file_path' => $storedPath,
                 'mime_type' => $mime,
                 'original_filename' => $file->getClientOriginalName(),
@@ -48,7 +46,7 @@ class DocumentController extends Controller
 
             // Jalankan seluruh pemrosesan (FastAPI + LLM) secara async
             \App\Jobs\ProcessDocumentJob::dispatch(
-                $document->id,
+                (string)$document->id,
                 $language
             );
 
@@ -61,7 +59,7 @@ class DocumentController extends Controller
             Log::error("Document Upload Error: " . $e->getMessage());
             
             return response()->json([
-                'message' => 'Failed to start document processing.',
+                'message' => 'Failed to start document processing. ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -80,16 +78,16 @@ class DocumentController extends Controller
             $rawText = $request->input('text');
 
             // Simpan ke database dengan detail text
-            $document = Document::create([
+            $document = DocumentExtraction::create([
                 'user_id' => auth()->id(),
-                'doc_type' => $request->doc_type,
+                'document_type' => $request->doc_type,
                 'raw_text' => $rawText,
                 'mime_type' => 'text/plain',
                 'status' => DocumentStatus::PENDING->value,
             ]);
 
             // Jalankan pemrosesan via Job agar konsisten dengan notifikasi
-            \App\Jobs\ProcessDocumentJob::dispatch($document->id);
+            \App\Jobs\ProcessDocumentJob::dispatch((string)$document->id);
 
             return response()->json([
                 'message' => 'Text received and processing started.',
@@ -100,7 +98,7 @@ class DocumentController extends Controller
             Log::error("Text Processing Error: " . $e->getMessage());
             
             return response()->json([
-                'message' => 'Failed to process text.',
+                'message' => 'Failed to process text. ' . $e->getMessage(),
             ], 500);
         }
     }

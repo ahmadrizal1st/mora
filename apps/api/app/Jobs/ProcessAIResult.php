@@ -6,7 +6,9 @@ use App\Enums\DocumentSchema;
 use App\Enums\DocumentStatus;
 use App\Models\Account;
 use App\Models\Category;
-use App\Models\Document;
+use App\Models\DocumentExtraction;
+use App\Models\Status;
+use App\Models\Currency;
 use App\Models\Tag;
 use App\Models\Transaction;
 use App\Models\User;
@@ -45,6 +47,7 @@ class ProcessAIResult implements ShouldQueue
         'restaurant'        => 'Makanan & Minuman',
         'cafe'              => 'Makanan & Minuman',
         'kafe'              => 'Makanan & Minuman',
+        'kaffe'             => 'Makanan & Minuman',
 
         // Transport
         'transport'         => 'Transportasi',
@@ -204,11 +207,11 @@ class ProcessAIResult implements ShouldQueue
     public function __construct(
         protected string $raw_text,
         protected string $doc_type,
-        protected int $document_id,
-        protected ?int $userId = null
+        protected string $document_id,
+        protected ?string $userId = null
     ) {}
 
-    public function getDocumentId(): int
+    public function getDocumentId(): string
     {
         return $this->document_id;
     }
@@ -218,7 +221,7 @@ class ProcessAIResult implements ShouldQueue
      */
     public function handle(LLMMapper $mapper, PromptBuilder $builder): void
     {
-        $document = Document::findOrFail($this->document_id);
+        $document = DocumentExtraction::findOrFail($this->document_id);
 
         $schema      = DocumentSchema::from($this->doc_type);
         $isTextInput = $document->mime_type === 'text/plain';
@@ -237,7 +240,7 @@ class ProcessAIResult implements ShouldQueue
         $structuredData = $mapper->map($prompt, $this->userId);
 
         $document->update([
-            'extracted_data' => $structuredData,
+            'parsed_data' => $structuredData,
             'status'         => DocumentStatus::COMPLETED->value,
         ]);
 
@@ -287,7 +290,7 @@ class ProcessAIResult implements ShouldQueue
     /**
      * Process and save a single transaction from extracted data.
      */
-    protected function processTransaction(array $data, Document $document): ?Transaction
+    protected function processTransaction(array $data, DocumentExtraction $document): ?Transaction
     {
         // Resolve amount (EXPENSE = 'amount', INVOICE/RECEIPT = 'total_amount', AUDIO = 0)
         $amount = $data['amount']
@@ -358,29 +361,41 @@ class ProcessAIResult implements ShouldQueue
         // Resolve tracker source type
         $trackerSource = $this->resolveTrackerSource($document);
 
-        // Resolve account_id: Priority 1. User default, 2. Account named 'BCA' or 'Dompet', 3. First account
-        $accountId = Account::where('user_id', $this->userId)
-            ->where(function($q) {
-                $q->where('name', 'LIKE', '%BCA%')
-                  ->orWhere('name', 'LIKE', '%Dompet%');
-            })->first()?->id 
-            ?? Account::where('user_id', $this->userId)->first()?->id
-            ?? 4; // Absolute fallback
+        // Resolve account_id (Ambil akun pertama, jika kosong otomatis buat "Dompet")
+        $account = Account::where('user_id', $this->userId)->first();
+
+        // Auto-create default account if user has none
+        if (!$account) {
+            $currencyId = Currency::where('code', 'IDR')->first()?->id ?? Currency::first()?->id;
+            $account = Account::create([
+                'user_id'      => $this->userId,
+                'name'         => 'Dompet',
+                'account_type' => 'cash',
+                'currency_id'  => $currencyId,
+                'color'        => '#3498db',
+            ]);
+            Log::info("Auto-created default account 'Dompet' for User #{$this->userId}");
+        }
+        
+        $accountId = $account->id;
+
+        $currencyId = Currency::where('code', 'IDR')->first()?->id ?? Currency::first()?->id;
+        $statusId = Status::where('name', 'Completed')->first()?->id ?? Status::first()?->id;
 
         $transaction = Transaction::create([
-            'user_id'        => $this->userId,
-            'type'           => $txType,
-            'amount_raw'     => (int) str_replace(['.', ','], '', (string)$amount),
-            'tx_date'        => $data['date'] ?? now()->format('Y-m-d'),
-            'tracker'        => $trackerSource,
-            'merchant'       => $merchant,
-            'notes'          => $notes,
-            'currency_id'    => 1,
-            'account_id'     => $accountId,
-            'status_id'      => 1,
-            'category_id'    => $categoryId,
-            'dynamic_fields' => [
-                'document_id' => $this->document_id,
+            'user_id'                => $this->userId,
+            'type'                   => $txType,
+            'amount_raw'             => (int) str_replace(['.', ','], '', (string)$amount),
+            'tx_date'                => $data['date'] ?? now()->format('Y-m-d'),
+            'input_method'           => $trackerSource,
+            'merchant'               => $merchant,
+            'notes'                  => $notes,
+            'currency_id'            => $currencyId,
+            'account_id'             => $accountId,
+            'status_id'              => $statusId,
+            'category_id'            => $categoryId,
+            'document_extraction_id' => $document->id,
+            'dynamic_fields'         => [
                 'items'       => $data['items'] ?? [],
             ],
         ]);
@@ -396,7 +411,7 @@ class ProcessAIResult implements ShouldQueue
      * Resolve category_id dari nama kategori (bahasa Inggris/Indonesia) yang dikirim LLM.
      * Jika LLM tidak memberikan kategori, fallback ke scan raw_text via CATEGORY_MAP.
      */
-    protected function resolveCategoryId(?string $llmCategory, ?int $userId, string $txType, string $rawText = ''): ?int
+    protected function resolveCategoryId(?string $llmCategory, ?string $userId, string $txType, string $rawText = ''): ?string
     {
         $normalized = strtolower(trim($llmCategory ?? ''));
 
@@ -416,7 +431,7 @@ class ProcessAIResult implements ShouldQueue
 
         // 2. Jika tidak ada di map, coba exact/partial match llmCategory langsung ke DB
         if (!$mappedName && !empty($normalized)) {
-            $direct = Category::where('tx_type', $txType)
+            $direct = Category::where('type', $txType)
                 ->where(function ($q) use ($normalized) {
                     $q->whereRaw('LOWER(name) = ?', [$normalized])
                       ->orWhereRaw('LOWER(name) LIKE ?', ["%{$normalized}%"]);
@@ -424,40 +439,40 @@ class ProcessAIResult implements ShouldQueue
                 ->first();
 
             if ($direct) {
-                return $direct->id;
+                return (string)$direct->id;
             }
         }
 
         // 3. Cari berdasarkan mappedName di DB
         if ($mappedName) {
-            $cat = Category::where('tx_type', $txType)
+            $cat = Category::where('type', $txType)
                 ->whereRaw('LOWER(name) = ?', [strtolower($mappedName)])
                 ->first();
 
             if ($cat) {
-                return $cat->id;
+                return (string)$cat->id;
             }
         }
 
         // 4. Fallback ke 'Lainnya' / 'Pendapatan Lainnya' berdasarkan tipe transaksi
         $fallbackName = $txType === Transaction::TYPE_INCOME ? 'pendapatan lainnya' : 'lainnya';
-        $fallback = Category::where('tx_type', $txType)
+        $fallback = Category::where('type', $txType)
             ->whereRaw('LOWER(name) = ?', [$fallbackName])
             ->first();
 
         // Second fallback: just get the first one from this type if even fallback doesn't exist
         if (!$fallback) {
-            $fallback = Category::where('tx_type', $txType)->first();
+            $fallback = Category::where('type', $txType)->first();
         }
 
-        return $fallback?->id;
+        return $fallback ? (string)$fallback->id : null;
     }
 
     /**
      * Attach tags ke transaksi berdasarkan kategori yang terdeteksi.
      * Hanya attach tag milik user yang sudah ada di DB.
      */
-    protected function attachTags(Transaction $transaction, ?int $categoryId, ?int $userId): void
+    protected function attachTags(Transaction $transaction, ?string $categoryId, ?string $userId): void
     {
         if (!$categoryId || !$userId) {
             return;
@@ -488,7 +503,7 @@ class ProcessAIResult implements ShouldQueue
     /**
      * Bangun string notes berformat list rapi (Mie Ayam = 10000).
      */
-    protected function buildTrackerNotes(Document $document, array $data): string
+    protected function buildTrackerNotes(DocumentExtraction $document, array $data): string
     {
         $items = $data['items'] ?? [];
         $noteLines = [];
@@ -518,7 +533,7 @@ class ProcessAIResult implements ShouldQueue
     /**
      * Tentukan sumber tracker (manual, image, file, audio) berdasarkan dokumen.
      */
-    protected function resolveTrackerSource(Document $document): string
+    protected function resolveTrackerSource(DocumentExtraction $document): string
     {
         $mime = $document->mime_type ?? '';
         $filename = $document->original_filename ?? '';
@@ -527,7 +542,7 @@ class ProcessAIResult implements ShouldQueue
 
         return match (true) {
             $mime === 'text/plain'                                    => 'manual',
-            str_starts_with($filename, 'scan-')                      => 'scan',
+            str_starts_with($filename, 'scan-')                      => 'image', // changed scan to image for input_method
             str_starts_with($mime, 'audio/')                         => 'audio',
             in_array($mime, ['video/webm', 'video/mp4'], true)       => 'audio',
             in_array($fileExt, $audioExtensions, true)               => 'audio',
@@ -541,7 +556,7 @@ class ProcessAIResult implements ShouldQueue
      */
     public function failed(Throwable $exception): void
     {
-        $document = Document::find($this->document_id);
+        $document = DocumentExtraction::find($this->document_id);
         if ($document) {
             $document->update([
                 'status'        => DocumentStatus::FAILED->value,
