@@ -25,10 +25,9 @@ class UpdateTransactionRequest extends FormRequest
 
         return [
             'type' => ['sometimes', "in:{$types}"],
-            'amount_raw' => ['sometimes', 'integer', 'min:1'],
+            'amount' => ['sometimes', 'numeric', 'min:0.01'],
             'currency_id' => ['nullable', 'uuid', 'exists:currencies,id'],
             'exchange_rate' => ['nullable', 'numeric', 'min:0'],
-            'amount_in_default' => ['nullable', 'numeric', 'min:0'],
             'account_id' => ['sometimes', 'uuid', 'exists:accounts,id'],
             'to_account_id' => ['nullable', 'uuid', 'exists:accounts,id', 'different:account_id'],
             'category_id' => ['nullable', 'uuid', 'exists:categories,id'],

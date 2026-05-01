@@ -388,7 +388,7 @@ class ProcessAIResult implements ShouldQueue
         $transaction = Transaction::create([
             'user_id'                => $this->userId,
             'type'                   => $txType,
-            'amount_raw'             => (int) str_replace(['.', ','], '', (string)$amount),
+            'amount'                 => (float) preg_replace('/[^0-9.]/', '', str_replace(',', '.', (string)$amount)),
             'tx_date'                => $data['date'] ?? now()->format('Y-m-d'),
             'input_method'           => $trackerSource,
             'merchant'               => $merchant,

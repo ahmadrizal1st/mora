@@ -41,7 +41,7 @@ class TransactionRepository
                     });
                 })
             )
-            ->allowedSorts('tx_date', 'amount_raw', 'merchant', 'created_at', 'type')
+            ->allowedSorts('tx_date', 'amount', 'merchant', 'created_at', 'type')
             ->defaultSort('-created_at', '-tx_date')
             ->with(['account', 'toAccount', 'category', 'budgetItem', 'status', 'currency', 'recurringType', 'tags']);
     }
@@ -77,8 +77,8 @@ class TransactionRepository
             $base->where('tx_date', '<=', $dateTo);
         }
 
-        $income  = (int) (clone $base)->where('type', Transaction::TYPE_INCOME)->sum('amount_raw');
-        $expense = (int) (clone $base)->where('type', Transaction::TYPE_EXPENSE)->sum('amount_raw');
+        $income  = (float) (clone $base)->where('type', Transaction::TYPE_INCOME)->sum('amount');
+        $expense = (float) (clone $base)->where('type', Transaction::TYPE_EXPENSE)->sum('amount');
         $count   = (clone $base)->count();
 
         if ($accountId) {
@@ -91,7 +91,7 @@ class TransactionRepository
             if ($dateTo) {
                 $transferOutQ->where('tx_date', '<=', $dateTo);
             }
-            $expense += (int) $transferOutQ->sum('amount_raw');
+            $expense += (float) $transferOutQ->sum('amount');
             $count   += $transferOutQ->count();
 
             $transferInQ = $user->transactions()
@@ -103,7 +103,7 @@ class TransactionRepository
             if ($dateTo) {
                 $transferInQ->where('tx_date', '<=', $dateTo);
             }
-            $income += (int) $transferInQ->sum('amount_raw');
+            $income += (float) $transferInQ->sum('amount');
             $count  += $transferInQ->count();
         }
 
@@ -136,8 +136,8 @@ class TransactionRepository
         $tTransfer = Transaction::TYPE_TRANSFER;
 
         if ($accountId) {
-            $outSql = "SELECT to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount_raw ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND account_id=? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') {$dateWhere} GROUP BY label";
-            $inSql  = "SELECT to_char(tx_date, ?) AS label, SUM(amount_raw) AS income, 0 AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND to_account_id=? AND type='{$tTransfer}' {$dateWhere} GROUP BY label";
+            $outSql = "SELECT to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND account_id=? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') {$dateWhere} GROUP BY label";
+            $inSql  = "SELECT to_char(tx_date, ?) AS label, SUM(amount) AS income, 0 AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND to_account_id=? AND type='{$tTransfer}' {$dateWhere} GROUP BY label";
             
             $sql = "SELECT label, SUM(income) AS income, SUM(expense) AS expense, SUM(count) AS count FROM (({$outSql}) UNION ALL ({$inSql})) AS combined GROUP BY label ORDER BY label ASC";
             
@@ -153,7 +153,7 @@ class TransactionRepository
             return collect(DB::select($sql, $finalParams));
         }
 
-        $sql = "SELECT to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type='{$tExpense}' THEN amount_raw ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND type IN ('{$tIncome}','{$tExpense}') {$dateWhere} GROUP BY label ORDER BY label ASC";
+        $sql = "SELECT to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS income, SUM(CASE WHEN type='{$tExpense}' THEN amount ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND type IN ('{$tIncome}','{$tExpense}') {$dateWhere} GROUP BY label ORDER BY label ASC";
         
         return collect(DB::select($sql, $params));
     }
@@ -167,9 +167,9 @@ class TransactionRepository
         $tExpense = Transaction::TYPE_EXPENSE;
         $tTransfer = Transaction::TYPE_TRANSFER;
 
-        $txOut = DB::select("SELECT account_id, to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount_raw ELSE 0 END) AS expense FROM transactions WHERE user_id=? AND tx_date>=? AND tx_date<=? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') GROUP BY account_id, label ORDER BY account_id, label", [$pgFormat, $user->id, $startStr, $endStr]);
+        $txOut = DB::select("SELECT account_id, to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount ELSE 0 END) AS expense FROM transactions WHERE user_id=? AND tx_date>=? AND tx_date<=? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') GROUP BY account_id, label ORDER BY account_id, label", [$pgFormat, $user->id, $startStr, $endStr]);
         
-        $txIn = DB::select("SELECT to_account_id AS account_id, to_char(tx_date, ?) AS label, SUM(amount_raw) AS income, 0 AS expense FROM transactions WHERE user_id=? AND tx_date>=? AND tx_date<=? AND type='{$tTransfer}' AND to_account_id IS NOT NULL GROUP BY to_account_id, label ORDER BY to_account_id, label", [$pgFormat, $user->id, $startStr, $endStr]);
+        $txIn = DB::select("SELECT to_account_id AS account_id, to_char(tx_date, ?) AS label, SUM(amount) AS income, 0 AS expense FROM transactions WHERE user_id=? AND tx_date>=? AND tx_date<=? AND type='{$tTransfer}' AND to_account_id IS NOT NULL GROUP BY to_account_id, label ORDER BY to_account_id, label", [$pgFormat, $user->id, $startStr, $endStr]);
 
         return [$txOut, $txIn];
     }
@@ -184,17 +184,17 @@ class TransactionRepository
         $tExpense = Transaction::TYPE_EXPENSE;
         $tTransfer = Transaction::TYPE_TRANSFER;
         
-        $balanceOut = DB::select("SELECT account_id, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS inc, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount_raw ELSE 0 END) AS exp FROM transactions WHERE user_id=? AND tx_date<? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') GROUP BY account_id", [$user->id, $startStr]);
+        $balanceOut = DB::select("SELECT account_id, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS inc, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount ELSE 0 END) AS exp FROM transactions WHERE user_id=? AND tx_date<? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') GROUP BY account_id", [$user->id, $startStr]);
         
         foreach ($balanceOut as $row) {
-            $initialBalances[(string)$row->account_id] = (int)$row->inc - (int)$row->exp;
+            $initialBalances[(string)$row->account_id] = (float)$row->inc - (float)$row->exp;
         }
         
-        $balanceIn = DB::select("SELECT to_account_id AS account_id, SUM(amount_raw) AS inc FROM transactions WHERE user_id=? AND tx_date<? AND type='{$tTransfer}' AND to_account_id IS NOT NULL GROUP BY to_account_id", [$user->id, $startStr]);
+        $balanceIn = DB::select("SELECT to_account_id AS account_id, SUM(amount) AS inc FROM transactions WHERE user_id=? AND tx_date<? AND type='{$tTransfer}' AND to_account_id IS NOT NULL GROUP BY to_account_id", [$user->id, $startStr]);
         
         foreach ($balanceIn as $row) {
             $aid = (string)$row->account_id;
-            $initialBalances[$aid] = ($initialBalances[$aid] ?? 0) + (int)$row->inc;
+            $initialBalances[$aid] = ($initialBalances[$aid] ?? 0) + (float)$row->inc;
         }
 
         return $initialBalances;

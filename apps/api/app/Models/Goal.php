@@ -15,14 +15,16 @@ class Goal extends Model
         'linked_account_id',
         'name',
         'type',
-        'target_amount_raw',
-        'current_amount_raw',
+        'target_amount',
+        'current_amount',
         'currency_id',
         'deadline_date',
     ];
 
     protected $casts = [
         'deadline_date' => 'date',
+        'target_amount' => 'decimal:2',
+        'current_amount' => 'decimal:2',
     ];
 
     public function user(): BelongsTo

@@ -26,7 +26,7 @@ Input:
 Rules:
 1. Output ONLY valid JSON.
 2. DATE: YYYY-MM-DD.
-3. AMOUNT: Number only.
+3. AMOUNT: Number only, use dot (.) as decimal separator, NO thousand separators (e.g., 12500.50).
 4. MULTIPLE: Extract every row/item found in the input. Do not omit any.
 5. TABLES: Columns are separated by ' | '.
 PROMPT;

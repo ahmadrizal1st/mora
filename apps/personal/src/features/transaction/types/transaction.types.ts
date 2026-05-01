@@ -95,11 +95,10 @@ export interface Transaction {
   id: string;
   user_id: string;
   type: TransactionType;
-  amount_raw: number;
+  amount: number;
   currency_id: string;
   currency?: Currency;
   exchange_rate: number;
-  amount_in_default: number;
   account_id: string;
   account?: Account;
   to_account_id?: string | null;
@@ -161,7 +160,7 @@ export interface TransactionFilters {
   group_by?: 'day' | 'week' | 'month' | 'year';
 }
 
-export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'account' | 'to_account' | 'category' | 'status' | 'currency' | 'recurring_type' | 'tags' | 'exchange_rate' | 'amount_in_default' | 'currency_id'> & {
+export type CreateTransactionDTO = Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'account' | 'to_account' | 'category' | 'status' | 'currency' | 'recurring_type' | 'tags' | 'exchange_rate' | 'currency_id'> & {
   tag_ids?: string[];
   currency_id?: string;
 };

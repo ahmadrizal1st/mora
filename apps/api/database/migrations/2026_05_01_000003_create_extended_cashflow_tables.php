@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('transaction_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title');
-            $table->bigInteger('total_amount_raw');
+            $table->decimal('total_amount', 15, 2);
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->string('status')->default('open'); // open/settled
             $table->timestamps();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreignUuid('split_bill_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('participant_name')->nullable();
-            $table->bigInteger('share_amount_raw');
+            $table->decimal('share_amount', 15, 2);
             $table->boolean('is_settled')->default(false);
             $table->timestamp('settled_at')->nullable();
             $table->timestamps();
@@ -39,7 +39,7 @@ return new class extends Migration
             $table->foreignUuid('account_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('last_transaction_id')->nullable()->constrained('transactions')->nullOnDelete();
             $table->string('name');
-            $table->bigInteger('amount_raw');
+            $table->decimal('amount', 15, 2);
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->date('next_billing_date')->nullable();
             $table->boolean('auto_renew')->default(true);

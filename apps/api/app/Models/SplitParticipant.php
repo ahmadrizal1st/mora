@@ -14,7 +14,7 @@ class SplitParticipant extends Model
         'split_bill_id',
         'user_id',
         'participant_name',
-        'share_amount_raw',
+        'share_amount',
         'is_settled',
         'settled_at',
     ];
@@ -22,6 +22,7 @@ class SplitParticipant extends Model
     protected $casts = [
         'is_settled' => 'boolean',
         'settled_at' => 'datetime',
+        'share_amount' => 'decimal:2',
     ];
 
     public function splitBill(): BelongsTo

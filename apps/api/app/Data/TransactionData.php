@@ -12,10 +12,9 @@ class TransactionData extends Data
     public function __construct(
         public ?string $id,
         public string $type,
-        public float $amount_raw,
+        public float $amount,
         public string $currency_id,
         public float $exchange_rate,
-        public float $amount_in_default,
         public string $account_id,
         public ?string $to_account_id,
         public ?string $category_id,
@@ -46,10 +45,9 @@ class TransactionData extends Data
         return new self(
             id: $transaction->id,
             type: $transaction->type,
-            amount_raw: (float) $transaction->amount_raw,
+            amount: (float) $transaction->amount,
             currency_id: $transaction->currency_id,
             exchange_rate: (float) $transaction->exchange_rate,
-            amount_in_default: (float) $transaction->amount_in_default,
             account_id: $transaction->account_id,
             to_account_id: $transaction->to_account_id,
             category_id: $transaction->category_id,

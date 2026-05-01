@@ -25,10 +25,9 @@ class StoreTransactionRequest extends FormRequest
 
         return [
             'type' => ['required', "in:{$types}"],
-            'amount_raw' => ['required', 'integer', 'min:1'],
+            'amount' => ['required', 'numeric', 'min:0.01'],
             'currency_id' => ['nullable', 'uuid', 'exists:currencies,id'],
             'exchange_rate' => ['nullable', 'numeric', 'min:0'],
-            'amount_in_default' => ['nullable', 'numeric', 'min:0'],
             'account_id' => ['required', 'uuid', 'exists:accounts,id'],
             'to_account_id' => ['nullable', 'required_if:type,transfer', 'uuid', 'exists:accounts,id', 'different:account_id'],
             'category_id' => ['nullable', 'uuid', 'exists:categories,id'],
@@ -55,8 +54,8 @@ class StoreTransactionRequest extends FormRequest
         return [
             'type.required' => 'Tipe transaksi wajib diisi.',
             'type.in' => 'Tipe transaksi harus income, expense, atau transfer.',
-            'amount_raw.required' => 'Nominal transaksi wajib diisi.',
-            'amount_raw.min' => 'Nominal transaksi minimal 1.',
+            'amount.required' => 'Nominal transaksi wajib diisi.',
+            'amount.min' => 'Nominal transaksi minimal 0.01.',
             'account_id.required' => 'Akun wajib dipilih.',
             'to_account_id.required_if' => 'Akun tujuan wajib diisi untuk transfer.',
             'to_account_id.different' => 'Akun tujuan tidak boleh sama dengan akun asal.',

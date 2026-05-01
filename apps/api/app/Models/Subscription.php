@@ -15,7 +15,7 @@ class Subscription extends Model
         'account_id',
         'last_transaction_id',
         'name',
-        'amount_raw',
+        'amount',
         'currency_id',
         'next_billing_date',
         'auto_renew',
@@ -25,6 +25,7 @@ class Subscription extends Model
     protected $casts = [
         'next_billing_date' => 'date',
         'auto_renew' => 'boolean',
+        'amount' => 'decimal:2',
     ];
 
     public function user(): BelongsTo

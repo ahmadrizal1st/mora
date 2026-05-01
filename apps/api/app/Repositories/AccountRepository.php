@@ -67,21 +67,21 @@ class AccountRepository
         // Outgoing/Direct
         $out = \Illuminate\Support\Facades\DB::select("
             SELECT account_id, 
-                   SUM(CASE WHEN type = '{$tIncome}' THEN amount_raw ELSE 0 END) - 
-                   SUM(CASE WHEN type IN ('{$tExpense}', '{$tTransfer}') THEN amount_raw ELSE 0 END) as net
+                   SUM(CASE WHEN type = '{$tIncome}' THEN amount ELSE 0 END) - 
+                   SUM(CASE WHEN type IN ('{$tExpense}', '{$tTransfer}') THEN amount ELSE 0 END) as net
             FROM transactions 
             WHERE user_id = ? 
             GROUP BY account_id
         ", [$user->id]);
 
         foreach ($out as $row) {
-            $balances[(string)$row->account_id] = (int) $row->net;
+            $balances[(string)$row->account_id] = (float) $row->net;
         }
 
         // Incoming Transfers
         $in = \Illuminate\Support\Facades\DB::select("
             SELECT to_account_id as account_id, 
-                   SUM(amount_raw) as net
+                   SUM(amount) as net
             FROM transactions 
             WHERE user_id = ? AND type = '{$tTransfer}' AND to_account_id IS NOT NULL
             GROUP BY to_account_id
@@ -89,7 +89,7 @@ class AccountRepository
 
         foreach ($in as $row) {
             $aid = (string)$row->account_id;
-            $balances[$aid] = ($balances[$aid] ?? 0) + (int) $row->net;
+            $balances[$aid] = ($balances[$aid] ?? 0) + (float) $row->net;
         }
 
         return $balances;

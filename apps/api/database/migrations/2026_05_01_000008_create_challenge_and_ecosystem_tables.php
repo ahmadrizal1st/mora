@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('title');
             $table->string('type'); // saving/spending/investment
-            $table->bigInteger('target_amount_raw')->nullable();
+            $table->decimal('target_amount', 15, 2)->nullable();
             $table->foreignUuid('currency_id')->nullable()->constrained('currencies')->nullOnDelete();
             $table->date('start_date');
             $table->date('end_date');
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('challenge_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            $table->bigInteger('progress_amount_raw')->default(0);
+            $table->decimal('progress_amount', 15, 2)->default(0);
             $table->boolean('is_winner')->default(false);
             $table->timestamp('joined_at')->useCurrent();
             $table->timestamps();

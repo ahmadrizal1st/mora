@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignUuid('account_id')->nullable()->constrained()->nullOnDelete();
             $table->string('type'); // mortgage/personal/paylater/credit_card
             $table->string('provider_name');
-            $table->bigInteger('principal_amount_raw');
+            $table->decimal('principal_amount', 15, 2);
             $table->decimal('interest_rate', 5, 2);
             $table->integer('tenor_months');
             $table->date('start_date');
@@ -30,9 +30,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('credit_id')->constrained('credit_accounts')->cascadeOnDelete();
             $table->date('due_date');
-            $table->bigInteger('amount_due_raw');
-            $table->bigInteger('principal_portion_raw')->nullable();
-            $table->bigInteger('interest_portion_raw')->nullable();
+            $table->decimal('amount_due', 15, 2);
+            $table->decimal('principal_portion', 15, 2)->nullable();
+            $table->decimal('interest_portion', 15, 2)->nullable();
             $table->boolean('is_paid')->default(false);
             $table->date('paid_date')->nullable();
             $table->foreignUuid('transaction_id')->nullable()->constrained()->nullOnDelete();
@@ -45,8 +45,8 @@ return new class extends Migration
             $table->uuid('linked_account_id')->nullable();
             $table->string('name');
             $table->string('type'); // emergency/hajj/retirement/custom
-            $table->bigInteger('target_amount_raw');
-            $table->bigInteger('current_amount_raw')->default(0);
+            $table->decimal('target_amount', 15, 2);
+            $table->decimal('current_amount', 15, 2)->default(0);
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->date('deadline_date')->nullable();
             $table->timestamps();
@@ -61,7 +61,7 @@ return new class extends Migration
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->string('premium_period')->default('monthly');
             $table->date('expiry_date')->nullable();
-            $table->bigInteger('coverage_amount_raw')->nullable();
+            $table->decimal('coverage_amount', 15, 2)->nullable();
             $table->timestamps();
         });
 
@@ -69,9 +69,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->string('zakat_type'); // mal/income/gold
-            $table->bigInteger('asset_value_raw');
-            $table->bigInteger('nisab_value_raw');
-            $table->bigInteger('zakat_due_raw');
+            $table->decimal('asset_value', 15, 2);
+            $table->decimal('nisab_value', 15, 2);
+            $table->decimal('zakat_due', 15, 2);
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->date('calculation_date');
             $table->boolean('is_paid')->default(false);

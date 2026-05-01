@@ -20,7 +20,7 @@ class LlmProviderSeeder extends Seeder
                 'priority' => 1,
                 'base_url' => 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
                 'api_key' => env('GEMINI_API_KEY'),
-                'auth_type' => 'query_param', // Gemini supports ?key=... which is cleaner
+                'auth_type' => 'query_param',
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],

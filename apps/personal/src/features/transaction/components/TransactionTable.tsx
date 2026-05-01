@@ -172,7 +172,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
               <td className={`text-end fw-bold align-middle ${tx.type === 'income' ? 'text-success' : tx.type === 'expense' ? 'text-danger' : 'text-primary'}`}>
                 <span className="text-nowrap">
                   {tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : ''}
-                  {formatCurrency(tx.amount_raw)}
+                  {formatCurrency(tx.amount)}
                 </span>
               </td>
               <td className="align-middle text-center" style={{ width: '90px' }}>

@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[Fillable([
-    'user_id', 'type', 'amount_raw', 'currency_id', 'exchange_rate',
-    'amount_in_default', 'account_id', 'to_account_id', 'category_id',
+    'user_id', 'type', 'amount', 'currency_id', 'exchange_rate',
+    'account_id', 'to_account_id', 'category_id',
     'status_id', 'recurring_type_id', 'budget_item_id', 'document_extraction_id',
     'split_bill_id', 'tx_date', 'input_method', 'merchant', 'notes',
     'dynamic_fields',
@@ -37,9 +37,8 @@ class Transaction extends Model
     protected function casts(): array
     {
         return [
-            'amount_raw' => 'integer',
+            'amount' => 'decimal:2',
             'exchange_rate' => 'float',
-            'amount_in_default' => 'float',
             'tx_date' => 'date',
             'dynamic_fields' => 'array',
         ];

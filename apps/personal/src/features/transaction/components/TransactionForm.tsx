@@ -23,7 +23,7 @@ import { ErrorAlert } from '@/shared/components/ui/ErrorAlert';
 
 const transactionSchema = z.object({
   type: z.enum(['income', 'expense']),
-  amount_raw: z.number().min(1, 'Nominal harus lebih dari 0'),
+  amount: z.number().min(1, 'Nominal harus lebih dari 0'),
   account_id: z.string({ message: 'Pilih akun' }),
   category_id: z.string().optional().nullable(),
   budget_item_id: z.string().optional().nullable(),
@@ -59,7 +59,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: (initialData?.type === 'income' ? 'income' : 'expense') as 'income' | 'expense',
-      amount_raw: initialData?.amount_raw || 0,
+      amount: initialData?.amount || 0,
       account_id: initialData?.account_id,
       category_id: initialData?.category_id,
       budget_item_id: initialData?.budget_item_id,
@@ -76,7 +76,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     if (initialData) {
       reset({
         type: (initialData.type === 'income' ? 'income' : 'expense') as 'income' | 'expense',
-        amount_raw: initialData.amount_raw || 0,
+        amount: initialData.amount || 0,
         account_id: initialData.account_id,
         category_id: initialData.category_id,
         budget_item_id: initialData.budget_item_id,
@@ -89,7 +89,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     } else {
       reset({
         type: 'expense',
-        amount_raw: 0,
+        amount: 0,
         account_id: undefined,
         category_id: undefined,
         budget_item_id: undefined,
@@ -177,7 +177,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       <div className="row">
         <div className="col-md-6 mb-3">
           <label className="form-label">Nominal</label>
-          <div className={`input-group ${errors.amount_raw ? 'has-validation' : ''}`}>
+          <div className={`input-group ${errors.amount ? 'has-validation' : ''}`}>
             <div style={{ width: '100px' }} className="flex-shrink-0">
               <Controller
                 name="currency_id"
@@ -196,11 +196,11 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             </div>
             <input
               type="number"
-              {...register('amount_raw', { valueAsNumber: true })}
-              className={`form-control rounded-start-0 ${errors.amount_raw ? 'is-invalid' : ''}`}
+              {...register('amount', { valueAsNumber: true })}
+              className={`form-control rounded-start-0 ${errors.amount ? 'is-invalid' : ''}`}
               placeholder="0"
             />
-            {errors.amount_raw && <div className="invalid-feedback">{errors.amount_raw.message}</div>}
+            {errors.amount && <div className="invalid-feedback">{errors.amount.message}</div>}
           </div>
         </div>
 

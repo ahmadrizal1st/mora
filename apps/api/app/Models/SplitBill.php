@@ -15,9 +15,13 @@ class SplitBill extends Model
         'user_id',
         'transaction_id',
         'title',
-        'total_amount_raw',
+        'total_amount',
         'currency_id',
         'status',
+    ];
+
+    protected $casts = [
+        'total_amount' => 'decimal:2',
     ];
 
     public function user(): BelongsTo

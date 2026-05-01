@@ -15,10 +15,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->string('type'); // income/expense/transfer
-            $table->bigInteger('amount_raw');
+            $table->decimal('amount', 15, 2);
             $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
             $table->float('exchange_rate')->default(1.0);
-            $table->float('amount_in_default')->default(0);
             $table->foreignUuid('account_id')->constrained('accounts')->cascadeOnDelete();
             $table->uuid('to_account_id')->nullable();
             $table->uuid('category_id')->nullable();

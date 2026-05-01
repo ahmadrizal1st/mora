@@ -32,10 +32,9 @@ class TransactionService
             $txData = [
                 'user_id' => $user->id,
                 'type' => $data['type'],
-                'amount_raw' => $data['amount_raw'],
+                'amount' => $data['amount'],
                 'currency_id' => $data['currency_id'] ?? $account->currency_id,
                 'exchange_rate' => $data['exchange_rate'] ?? 1,
-                'amount_in_default' => $data['amount_in_default'] ?? $data['amount_raw'],
                 'account_id' => $data['account_id'],
                 'to_account_id' => $data['to_account_id'] ?? null,
                 'category_id' => $data['category_id'] ?? null,
@@ -199,9 +198,9 @@ class TransactionService
         };
 
         return [
-            'total_income'      => (int) $income,
-            'total_expense'     => (int) $expense,
-            'net_balance'       => (int) ($income - $expense),
+            'total_income'      => (float) $income,
+            'total_expense'     => (float) $expense,
+            'net_balance'       => (float) ($income - $expense),
             'transaction_count' => $count,
             'income_trend'      => (float) $calcTrend($income, $prevIncome),
             'expense_trend'     => (float) $calcTrend($expense, $prevExpense),
@@ -386,12 +385,12 @@ class TransactionService
         $income = $expense = [];
         foreach ($txOut as $row) {
             $aid = (string)$row->account_id;
-            $income[$aid][$row->label] = ($income[$aid][$row->label] ?? 0) + (int)$row->income;
-            $expense[$aid][$row->label] = ($expense[$aid][$row->label] ?? 0) + (int)$row->expense;
+            $income[$aid][$row->label] = ($income[$aid][$row->label] ?? 0) + (float)$row->income;
+            $expense[$aid][$row->label] = ($expense[$aid][$row->label] ?? 0) + (float)$row->expense;
         }
         foreach ($txIn as $row) {
             $aid = (string)$row->account_id;
-            $income[$aid][$row->label] = ($income[$aid][$row->label] ?? 0) + (int)$row->income;
+            $income[$aid][$row->label] = ($income[$aid][$row->label] ?? 0) + (float)$row->income;
         }
 
         return ['labels' => $labels, 'income' => $income, 'expense' => $expense, 'initial_balances' => $initialBalances];

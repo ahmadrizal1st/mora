@@ -21,7 +21,7 @@ export default function TrackerInputPage() {
   // Create pre-filled data if coming from a tracker
   const preFilledData = !id ? {
     merchant: search.merchant || '',
-    amount_raw: search.amount || 0,
+    amount: search.amount || 0,
     notes: search.text || '',
     type: 'expense' as const,
     tx_date: new Date().toISOString().split('T')[0],

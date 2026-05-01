@@ -168,7 +168,7 @@ class BudgetService
             $spent = DB::table('transactions')
                 ->where('budget_item_id', $item->id)
                 ->whereBetween('tx_date', [$dateFrom, $dateTo])
-                ->sum('amount_in_default');
+                ->sum('amount');
 
             $limit = $item->amount_limit;
             if ($item->percentage && $plan->income_baseline > 0) {
