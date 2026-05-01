@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBudgetRequest;
+use App\Http\Requests\UpdateBudgetRequest;
 use App\Data\BudgetPlanData;
 use App\Services\BudgetService;
 use Illuminate\Http\Request;
@@ -17,47 +19,17 @@ class BudgetController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreBudgetRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'method' => 'string|in:50_30_20,custom,zero_based',
-            'income_baseline' => 'numeric',
-            'duration' => 'string|in:monthly,weekly,yearly',
-            'is_active' => 'boolean',
-            'items' => 'array',
-            'items.*.name' => 'required|string',
-            'items.*.percentage' => 'nullable|numeric',
-            'items.*.amount_limit' => 'nullable|numeric',
-            'items.*.color' => 'nullable|string',
-            'items.*.icon' => 'nullable|string',
-            'items.*.category_ids' => 'array',
-        ]);
-
-        $plan = BudgetService::store($request->user(), $data);
+        $plan = BudgetService::store($request->user(), $request->validated());
         return response()->json([
             'data' => BudgetPlanData::from($plan)
         ]);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateBudgetRequest $request, int $id): JsonResponse
     {
-        $data = $request->validate([
-            'name' => 'string',
-            'method' => 'string|in:50_30_20,custom,zero_based',
-            'income_baseline' => 'numeric',
-            'duration' => 'string|in:monthly,weekly,yearly',
-            'is_active' => 'boolean',
-            'items' => 'array',
-            'items.*.name' => 'required|string',
-            'items.*.percentage' => 'nullable|numeric',
-            'items.*.amount_limit' => 'nullable|numeric',
-            'items.*.color' => 'nullable|string',
-            'items.*.icon' => 'nullable|string',
-            'items.*.category_ids' => 'array',
-        ]);
-
-        $plan = BudgetService::update($request->user(), $id, $data);
+        $plan = BudgetService::update($request->user(), $id, $request->validated());
         return response()->json([
             'data' => BudgetPlanData::from($plan)
         ]);
