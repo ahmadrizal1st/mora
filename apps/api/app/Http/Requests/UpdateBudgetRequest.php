@@ -20,18 +20,23 @@ class UpdateBudgetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string',
-            'method' => 'string|in:50_30_20,custom,zero_based',
-            'income_baseline' => 'numeric',
-            'duration' => 'string|in:monthly,weekly,yearly',
+            'name' => 'sometimes|string|max:255',
+            'budget_method' => 'sometimes|string|in:50_30_20,custom,zero_based,envelope',
+            'income_baseline' => 'sometimes|numeric|min:0',
+            'period' => 'sometimes|string|in:monthly,weekly,yearly',
             'is_active' => 'boolean',
+            'rollover_enabled' => 'boolean',
+            'start_date' => 'sometimes|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
             'items' => 'array',
-            'items.*.name' => 'required|string',
-            'items.*.percentage' => 'nullable|numeric',
-            'items.*.amount_limit' => 'nullable|numeric',
-            'items.*.color' => 'nullable|string',
-            'items.*.icon' => 'nullable|string',
+            'items.*.id' => 'sometimes|uuid|exists:budget_items,id',
+            'items.*.name' => 'required|string|max:255',
+            'items.*.percentage' => 'nullable|numeric|min:0|max:100',
+            'items.*.amount_limit' => 'nullable|numeric|min:0',
+            'items.*.color' => 'nullable|string|max:20',
+            'items.*.icon' => 'nullable|string|max:50',
             'items.*.category_ids' => 'array',
+            'items.*.category_ids.*' => 'uuid|exists:categories,id',
         ];
     }
 }

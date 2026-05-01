@@ -18,10 +18,10 @@ class AccountRepository
             ->where('user_id', $user->id)
             ->allowedFilters(
                 AllowedFilter::partial('name'),
-                'type',
+                'account_type',
                 'currency_id'
             )
-            ->allowedSorts('name', 'type', 'created_at')
+            ->allowedSorts('name', 'account_type', 'created_at')
             ->with(['currency'])
             ->withCount(['transactions', 'incomingTransfers']);
     }
@@ -39,7 +39,7 @@ class AccountRepository
     /**
      * Find a specific account for a user.
      */
-    public static function findForUser(User $user, int $id): Account
+    public static function findForUser(User $user, string $id): Account
     {
         return self::queryForUser($user)
             ->findOrFail($id);
@@ -75,7 +75,7 @@ class AccountRepository
         ", [$user->id]);
 
         foreach ($out as $row) {
-            $balances[$row->account_id] = (int) $row->net;
+            $balances[(string)$row->account_id] = (int) $row->net;
         }
 
         // Incoming Transfers
@@ -88,7 +88,8 @@ class AccountRepository
         ", [$user->id]);
 
         foreach ($in as $row) {
-            $balances[$row->account_id] = ($balances[$row->account_id] ?? 0) + (int) $row->net;
+            $aid = (string)$row->account_id;
+            $balances[$aid] = ($balances[$aid] ?? 0) + (int) $row->net;
         }
 
         return $balances;

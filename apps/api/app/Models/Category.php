@@ -2,21 +2,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 
-#[Fillable(['name', 'tx_type', 'icon', 'color', 'is_default'])]
+#[Fillable(['user_id', 'parent_id', 'name', 'type', 'icon', 'color'])]
 class Category extends Model
 {
-    public $timestamps = false;
+    use HasUuids;
 
-    protected function casts(): array
+    public function user(): BelongsTo
     {
-        return [
-            'is_default' => 'boolean',
-        ];
+        return $this->belongsTo(User::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(Category::class, 'parent_id');
     }
 
     public function transactions(): HasMany
@@ -29,6 +39,6 @@ class Category extends Model
      */
     public function scopeByType(Builder $query, string $type): Builder
     {
-        return $query->where('tx_type', $type);
+        return $query->where('type', $type);
     }
 }

@@ -10,13 +10,11 @@ use Illuminate\Database\Eloquent\Collection;
 class LookupRepository
 {
     /**
-     * Get all active currencies.
+     * Get all currencies.
      */
     public static function activeCurrencies(): Collection
     {
-        return Currency::where('is_active', true)
-            ->orderByDesc('is_default')
-            ->orderBy('code')
+        return Currency::orderBy('code')
             ->get();
     }
 

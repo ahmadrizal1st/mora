@@ -2,29 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'default_currency_id', 'locale', 'date_format', 'number_format'])]
+#[Fillable(['user_id', 'base_currency', 'is_family_mode', 'theme', 'notification_preferences'])]
 class UserSetting extends Model
 {
-    public $timestamps = false;
+    use HasUuids;
 
     protected function casts(): array
     {
         return [
-            'updated_at' => 'datetime',
+            'is_family_mode' => 'boolean',
+            'notification_preferences' => 'array',
         ];
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function defaultCurrency(): BelongsTo
-    {
-        return $this->belongsTo(Currency::class, 'default_currency_id');
     }
 }

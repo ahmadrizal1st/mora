@@ -15,11 +15,11 @@ class TransactionSeeder extends Seeder
     public function run(): void
     {
         $currencies = [
-            ['code' => 'IDR', 'symbol' => 'Rp', 'name' => 'Rupiah Indonesia', 'rate_to_idr' => 1, 'is_default' => true, 'is_active' => true],
-            ['code' => 'USD', 'symbol' => '$', 'name' => 'US Dollar', 'rate_to_idr' => 16500, 'is_default' => false, 'is_active' => true],
-            ['code' => 'EUR', 'symbol' => '€', 'name' => 'Euro', 'rate_to_idr' => 18000, 'is_default' => false, 'is_active' => true],
-            ['code' => 'SGD', 'symbol' => 'S$', 'name' => 'Singapore Dollar', 'rate_to_idr' => 12300, 'is_default' => false, 'is_active' => true],
-            ['code' => 'MYR', 'symbol' => 'RM', 'name' => 'Malaysian Ringgit', 'rate_to_idr' => 3700, 'is_default' => false, 'is_active' => true],
+            ['code' => 'IDR', 'symbol' => 'Rp', 'name' => 'Rupiah Indonesia'],
+            ['code' => 'USD', 'symbol' => '$', 'name' => 'US Dollar'],
+            ['code' => 'EUR', 'symbol' => '€', 'name' => 'Euro'],
+            ['code' => 'SGD', 'symbol' => 'S$', 'name' => 'Singapore Dollar'],
+            ['code' => 'MYR', 'symbol' => 'RM', 'name' => 'Malaysian Ringgit'],
         ];
 
         foreach ($currencies as $c) {
@@ -28,36 +28,36 @@ class TransactionSeeder extends Seeder
 
         $categories = [
             // Expense
-            ['name' => 'Makanan & Minuman', 'tx_type' => 'expense', 'icon' => 'tools-kitchen-2', 'color' => '#e74c3c', 'is_default' => true],
-            ['name' => 'Transportasi', 'tx_type' => 'expense', 'icon' => 'car', 'color' => '#3498db', 'is_default' => true],
-            ['name' => 'Belanja', 'tx_type' => 'expense', 'icon' => 'shopping-cart', 'color' => '#9b59b6', 'is_default' => true],
-            ['name' => 'Hiburan', 'tx_type' => 'expense', 'icon' => 'movie', 'color' => '#f39c12', 'is_default' => true],
-            ['name' => 'Kesehatan', 'tx_type' => 'expense', 'icon' => 'heartbeat', 'color' => '#e91e63', 'is_default' => true],
-            ['name' => 'Pendidikan', 'tx_type' => 'expense', 'icon' => 'school', 'color' => '#00bcd4', 'is_default' => true],
-            ['name' => 'Tagihan & Utilitas', 'tx_type' => 'expense', 'icon' => 'receipt', 'color' => '#795548', 'is_default' => true],
-            ['name' => 'Rumah Tangga', 'tx_type' => 'expense', 'icon' => 'home', 'color' => '#607d8b', 'is_default' => true],
-            ['name' => 'Perawatan Diri', 'tx_type' => 'expense', 'icon' => 'user', 'color' => '#fd7e14', 'is_default' => true],
-            ['name' => 'Asuransi', 'tx_type' => 'expense', 'icon' => 'shield-check', 'color' => '#20c997', 'is_default' => true],
-            ['name' => 'Langganan', 'tx_type' => 'expense', 'icon' => 'refresh', 'color' => '#6610f2', 'is_default' => true],
-            ['name' => 'Cicilan', 'tx_type' => 'expense', 'icon' => 'calendar-repeat', 'color' => '#d63384', 'is_default' => true],
-            ['name' => 'Lainnya', 'tx_type' => 'expense', 'icon' => 'dots', 'color' => '#95a5a6', 'is_default' => true],
+            ['name' => 'Makanan & Minuman', 'type' => 'expense', 'icon' => 'tools-kitchen-2', 'color' => '#e74c3c'],
+            ['name' => 'Transportasi', 'type' => 'expense', 'icon' => 'car', 'color' => '#3498db'],
+            ['name' => 'Belanja', 'type' => 'expense', 'icon' => 'shopping-cart', 'color' => '#9b59b6'],
+            ['name' => 'Hiburan', 'type' => 'expense', 'icon' => 'movie', 'color' => '#f39c12'],
+            ['name' => 'Kesehatan', 'type' => 'expense', 'icon' => 'heartbeat', 'color' => '#e91e63'],
+            ['name' => 'Pendidikan', 'type' => 'expense', 'icon' => 'school', 'color' => '#00bcd4'],
+            ['name' => 'Tagihan & Utilitas', 'type' => 'expense', 'icon' => 'receipt', 'color' => '#795548'],
+            ['name' => 'Rumah Tangga', 'type' => 'expense', 'icon' => 'home', 'color' => '#607d8b'],
+            ['name' => 'Perawatan Diri', 'type' => 'expense', 'icon' => 'user', 'color' => '#fd7e14'],
+            ['name' => 'Asuransi', 'type' => 'expense', 'icon' => 'shield-check', 'color' => '#20c997'],
+            ['name' => 'Langganan', 'type' => 'expense', 'icon' => 'refresh', 'color' => '#6610f2'],
+            ['name' => 'Cicilan', 'type' => 'expense', 'icon' => 'calendar-repeat', 'color' => '#d63384'],
+            ['name' => 'Lainnya', 'type' => 'expense', 'icon' => 'dots', 'color' => '#95a5a6'],
 
             // Income
-            ['name' => 'Gaji', 'tx_type' => 'income', 'icon' => 'briefcase', 'color' => '#27ae60', 'is_default' => true],
-            ['name' => 'Freelance', 'tx_type' => 'income', 'icon' => 'code', 'color' => '#2ecc71', 'is_default' => true],
-            ['name' => 'Investasi', 'tx_type' => 'income', 'icon' => 'chart-line', 'color' => '#1abc9c', 'is_default' => true],
-            ['name' => 'Hadiah', 'tx_type' => 'income', 'icon' => 'gift', 'color' => '#e67e22', 'is_default' => true],
-            ['name' => 'Bonus', 'tx_type' => 'income', 'icon' => 'star', 'color' => '#f1c40f', 'is_default' => true],
-            ['name' => 'Penjualan', 'tx_type' => 'income', 'icon' => 'tag', 'color' => '#d35400', 'is_default' => true],
-            ['name' => 'Pendapatan Lainnya', 'tx_type' => 'income', 'icon' => 'cash', 'color' => '#16a085', 'is_default' => true],
+            ['name' => 'Gaji', 'type' => 'income', 'icon' => 'briefcase', 'color' => '#27ae60'],
+            ['name' => 'Freelance', 'type' => 'income', 'icon' => 'code', 'color' => '#2ecc71'],
+            ['name' => 'Investasi', 'type' => 'income', 'icon' => 'chart-line', 'color' => '#1abc9c'],
+            ['name' => 'Hadiah', 'type' => 'income', 'icon' => 'gift', 'color' => '#e67e22'],
+            ['name' => 'Bonus', 'type' => 'income', 'icon' => 'star', 'color' => '#f1c40f'],
+            ['name' => 'Penjualan', 'type' => 'income', 'icon' => 'tag', 'color' => '#d35400'],
+            ['name' => 'Pendapatan Lainnya', 'type' => 'income', 'icon' => 'cash', 'color' => '#16a085'],
 
             // Transfer
-            ['name' => 'Transfer Antar Akun', 'tx_type' => 'transfer', 'icon' => 'arrows-right-left', 'color' => '#206bc4', 'is_default' => true],
+            ['name' => 'Transfer Antar Akun', 'type' => 'transfer', 'icon' => 'arrows-right-left', 'color' => '#206bc4'],
         ];
 
         foreach ($categories as $c) {
             Category::updateOrCreate(
-                ['name' => $c['name'], 'tx_type' => $c['tx_type']],
+                ['name' => $c['name'], 'type' => $c['type']],
                 $c
             );
         }
@@ -73,10 +73,10 @@ class TransactionSeeder extends Seeder
         }
 
         $recurringTypes = [
-            ['name' => 'Harian', 'interval_days' => 1],
-            ['name' => 'Mingguan', 'interval_days' => 7],
-            ['name' => 'Bulanan', 'interval_days' => 30],
-            ['name' => 'Tahunan', 'interval_days' => 365],
+            ['name' => 'Harian'],
+            ['name' => 'Mingguan'],
+            ['name' => 'Bulanan'],
+            ['name' => 'Tahunan'],
         ];
 
         foreach ($recurringTypes as $r) {
@@ -110,8 +110,11 @@ class TransactionSeeder extends Seeder
             $userTags = Tag::where('user_id', $user->id)->get();
             $user->transactions()->each(function ($tx) use ($userTags) {
                 // Randomly attach 0-3 tags to each transaction
-                $randomTags = $userTags->random(rand(0, 3))->pluck('id');
-                $tx->tags()->sync($randomTags);
+                $count = $userTags->count();
+                if ($count > 0) {
+                    $randomTags = $userTags->random(min(rand(0, 3), $count))->pluck('id');
+                    $tx->tags()->sync($randomTags);
+                }
             });
         }
     }

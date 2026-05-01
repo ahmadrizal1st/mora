@@ -10,22 +10,24 @@ use Spatie\LaravelData\Optional;
 class TransactionData extends Data
 {
     public function __construct(
-        public ?int $id,
+        public ?string $id,
         public string $type,
         public float $amount_raw,
-        public int $currency_id,
-        public float $rate_snapshot,
+        public string $currency_id,
+        public float $exchange_rate,
         public float $amount_in_default,
-        public int $account_id,
-        public ?int $to_account_id,
-        public ?int $category_id,
-        public ?int $budget_item_id,
-        public ?int $status_id,
-        public ?int $recurring_type_id,
+        public string $account_id,
+        public ?string $to_account_id,
+        public ?string $category_id,
+        public ?string $budget_item_id,
+        public ?string $status_id,
+        public ?string $recurring_type_id,
+        public ?string $document_extraction_id,
+        public ?string $split_bill_id,
         public string $tx_date,
         public ?string $merchant,
         public ?string $notes,
-        public ?string $tracker,
+        public ?string $input_method,
         public ?array $dynamic_fields,
         
         // Relations
@@ -46,7 +48,7 @@ class TransactionData extends Data
             type: $transaction->type,
             amount_raw: (float) $transaction->amount_raw,
             currency_id: $transaction->currency_id,
-            rate_snapshot: (float) $transaction->rate_snapshot,
+            exchange_rate: (float) $transaction->exchange_rate,
             amount_in_default: (float) $transaction->amount_in_default,
             account_id: $transaction->account_id,
             to_account_id: $transaction->to_account_id,
@@ -54,12 +56,14 @@ class TransactionData extends Data
             budget_item_id: $transaction->budget_item_id,
             status_id: $transaction->status_id,
             recurring_type_id: $transaction->recurring_type_id,
+            document_extraction_id: $transaction->document_extraction_id,
+            split_bill_id: $transaction->split_bill_id,
             tx_date: $transaction->tx_date instanceof \DateTimeInterface 
                 ? $transaction->tx_date->format('Y-m-d') 
                 : (string) $transaction->tx_date,
             merchant: $transaction->merchant,
             notes: $transaction->notes,
-            tracker: $transaction->tracker,
+            input_method: $transaction->input_method,
             dynamic_fields: $transaction->dynamic_fields,
             
             currency: $transaction->relationLoaded('currency') 
@@ -74,8 +78,8 @@ class TransactionData extends Data
             category: $transaction->relationLoaded('category') && $transaction->category
                 ? CategoryData::from($transaction->category) 
                 : Optional::create(),
-            budget_item: $transaction->relationLoaded('budget_item') && $transaction->budget_item
-                ? BudgetItemData::from($transaction->budget_item) 
+            budget_item: $transaction->relationLoaded('budgetItem') && $transaction->budgetItem
+                ? BudgetItemData::from($transaction->budgetItem) 
                 : Optional::create(),
             tags: $transaction->relationLoaded('tags')
                 ? TagData::collect($transaction->tags, DataCollection::class)

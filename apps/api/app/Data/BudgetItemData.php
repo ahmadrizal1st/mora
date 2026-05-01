@@ -10,8 +10,8 @@ use Spatie\LaravelData\DataCollection;
 class BudgetItemData extends Data
 {
     public function __construct(
-        public ?int $id,
-        public int $budget_plan_id,
+        public ?string $id,
+        public string $budget_plan_id,
         public string $name,
         public ?float $percentage,
         public ?float $amount_limit,

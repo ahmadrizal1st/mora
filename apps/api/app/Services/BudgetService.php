@@ -49,12 +49,13 @@ class BudgetService
             $plan = BudgetPlan::create([
                 'user_id' => $user->id,
                 'name' => $data['name'],
-                'method' => $data['method'] ?? '50_30_20',
+                'budget_method' => $data['budget_method'] ?? '50_30_20',
                 'income_baseline' => $data['income_baseline'] ?? 0,
-                'duration' => $data['duration'] ?? 'monthly',
+                'period' => $data['period'] ?? 'monthly',
                 'start_date' => $startDate,
                 'end_date' => $endDate,
                 'is_active' => $data['is_active'] ?? true,
+                'rollover_enabled' => $data['rollover_enabled'] ?? false,
             ]);
 
             if (!empty($data['items'])) {
@@ -77,7 +78,7 @@ class BudgetService
         });
     }
 
-    public static function update(User $user, int $id, array $data): BudgetPlan
+    public static function update(User $user, string $id, array $data): BudgetPlan
     {
         return DB::transaction(function () use ($user, $id, $data) {
             $plan = BudgetRepository::findById($id);
@@ -137,7 +138,7 @@ class BudgetService
     /**
      * Delete a budget plan.
      */
-    public static function destroy(User $user, int $id): void
+    public static function destroy(User $user, string $id): void
     {
         $plan = BudgetRepository::findById($id);
         if (!$plan || $plan->user_id !== $user->id) {
@@ -149,7 +150,7 @@ class BudgetService
     /**
      * Get utilization data for a plan.
      */
-    public static function getUtilization(User $user, ?int $planId = null): ?array
+    public static function getUtilization(User $user, ?string $planId = null): ?array
     {
         $plan = $planId 
             ? BudgetRepository::findById($planId)
@@ -188,8 +189,8 @@ class BudgetService
         return [
             'id' => $plan->id,
             'plan' => $plan->name,
-            'method' => $plan->method,
-            'duration' => $plan->duration,
+            'budget_method' => $plan->budget_method,
+            'period' => $plan->period,
             'period_start' => $dateFrom->toDateString(),
             'period_end' => $dateTo->toDateString(),
             'income_baseline' => (float) $plan->income_baseline,

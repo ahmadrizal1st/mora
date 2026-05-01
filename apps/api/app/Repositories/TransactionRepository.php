@@ -136,16 +136,11 @@ class TransactionRepository
         $tTransfer = Transaction::TYPE_TRANSFER;
 
         if ($accountId) {
-            $outParams = array_merge($params, [$accountId]);
-            $inParams  = array_merge($params, [$accountId]);
-            
             $outSql = "SELECT to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount_raw ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND account_id=? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') {$dateWhere} GROUP BY label";
             $inSql  = "SELECT to_char(tx_date, ?) AS label, SUM(amount_raw) AS income, 0 AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND to_account_id=? AND type='{$tTransfer}' {$dateWhere} GROUP BY label";
             
             $sql = "SELECT label, SUM(income) AS income, SUM(expense) AS expense, SUM(count) AS count FROM (({$outSql}) UNION ALL ({$inSql})) AS combined GROUP BY label ORDER BY label ASC";
             
-            // Re-order params for union: [pg, user, account, ...dates, pg, user, account, ...dates]
-            // We need to re-build params carefully for the specific order in SQL
             $finalParams = array_merge(
                 [$pgFormat, $user->id, $accountId],
                 $dateFrom ? [$dateFrom] : [],
@@ -192,13 +187,14 @@ class TransactionRepository
         $balanceOut = DB::select("SELECT account_id, SUM(CASE WHEN type='{$tIncome}' THEN amount_raw ELSE 0 END) AS inc, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount_raw ELSE 0 END) AS exp FROM transactions WHERE user_id=? AND tx_date<? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') GROUP BY account_id", [$user->id, $startStr]);
         
         foreach ($balanceOut as $row) {
-            $initialBalances[$row->account_id] = (int)$row->inc - (int)$row->exp;
+            $initialBalances[(string)$row->account_id] = (int)$row->inc - (int)$row->exp;
         }
         
         $balanceIn = DB::select("SELECT to_account_id AS account_id, SUM(amount_raw) AS inc FROM transactions WHERE user_id=? AND tx_date<? AND type='{$tTransfer}' AND to_account_id IS NOT NULL GROUP BY to_account_id", [$user->id, $startStr]);
         
         foreach ($balanceIn as $row) {
-            $initialBalances[$row->account_id] = ($initialBalances[$row->account_id] ?? 0) + (int)$row->inc;
+            $aid = (string)$row->account_id;
+            $initialBalances[$aid] = ($initialBalances[$aid] ?? 0) + (int)$row->inc;
         }
 
         return $initialBalances;
@@ -207,7 +203,7 @@ class TransactionRepository
     /**
      * Get the earliest transaction date for a user.
      */
-    public static function getEarliestTransactionDate(User $user, ?int $accountId = null): ?string
+    public static function getEarliestTransactionDate(User $user, ?string $accountId = null): ?string
     {
         $query = $user->transactions();
         

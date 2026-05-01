@@ -28,7 +28,7 @@ class TagService
     /**
      * Update a tag.
      */
-    public static function update(User $user, int $id, array $data): Tag
+    public static function update(User $user, string $id, array $data): Tag
     {
         $tag = $user->tags()->findOrFail($id);
         $tag->update($data);
@@ -38,7 +38,7 @@ class TagService
     /**
      * Delete a tag.
      */
-    public static function destroy(User $user, int $id): void
+    public static function destroy(User $user, string $id): void
     {
         $tag = $user->tags()->findOrFail($id);
         $tag->transactions()->detach();

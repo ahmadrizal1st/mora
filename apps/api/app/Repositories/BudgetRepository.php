@@ -23,7 +23,7 @@ class BudgetRepository
             ->first();
     }
 
-    public static function findById(int $id): ?BudgetPlan
+    public static function findById(string $id): ?BudgetPlan
     {
         return BudgetPlan::with(['items.categories'])->find($id);
     }

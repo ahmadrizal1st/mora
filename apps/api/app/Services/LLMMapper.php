@@ -13,11 +13,11 @@ class LLMMapper
      * Mencoba memproses prompt ke berbagai provider LLM secara berurutan (fallback).
      *
      * @param string $prompt
-     * @param int|null $userId
+     * @param string|null $userId
      * @return array
      * @throws Exception
      */
-    public function map(string $prompt, ?int $userId = null): array
+    public function map(string $prompt, ?string $userId = null): array
     {
         $providers = LlmProvider::where('is_active', true)
             ->where(function($q) use ($userId) {
@@ -35,7 +35,7 @@ class LLMMapper
             throw new Exception("Tidak ada LLM provider yang aktif.");
         }
 
-        $lastException = null;
+        $lastError = null;
 
         foreach ($providers as $provider) {
             try {
@@ -89,7 +89,7 @@ class LLMMapper
             $responseBody = $response->json();
             $extractedData = data_get($responseBody, $provider->response_path);
             Log::debug("Provider {$provider->name} Response: " . json_encode($extractedData));
-            return $extractedData;
+            return (string) $extractedData;
         }
 
         $errorBody = $response->body();

@@ -8,23 +8,25 @@ use App\Models\Category;
 class CategoryData extends Data
 {
     public function __construct(
-        public ?int $id,
+        public ?string $id,
+        public ?string $user_id,
+        public ?string $parent_id,
         public string $name,
-        public string $tx_type,
+        public string $type,
         public ?string $icon,
-        public string $color,
-        public bool $is_default,
+        public ?string $color,
     ) {}
 
     public static function fromModel(Category $category): self
     {
         return new self(
             id: $category->id,
+            user_id: $category->user_id,
+            parent_id: $category->parent_id,
             name: $category->name,
-            tx_type: $category->tx_type,
+            type: $category->type,
             icon: $category->icon,
             color: $category->color,
-            is_default: (bool) $category->is_default,
         );
     }
 }

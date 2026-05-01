@@ -26,9 +26,9 @@ class UpdateAccountRequest extends FormRequest
 
         return [
             'name' => ['sometimes', 'string', 'max:255'],
-            'currency_id' => ['sometimes', 'integer', 'exists:currencies,id'],
+            'currency_id' => ['sometimes', 'uuid', 'exists:currencies,id'],
             'color' => ['nullable', 'string', 'max:20'],
-            'type' => ['sometimes', "in:{$types}"],
+            'account_type' => ['sometimes', "in:{$types}"],
         ];
     }
 }

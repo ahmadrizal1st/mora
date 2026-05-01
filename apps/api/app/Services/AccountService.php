@@ -25,12 +25,13 @@ class AccountService
         $initialBalances = $historyData['initial_balances'];
 
         $accounts->each(function ($account) use ($income, $expense, $labels, $initialBalances, $currentBalances) {
+            $aid = (string)$account->id;
             $accountData = [
-                'income' => $income[$account->id] ?? [],
-                'expense' => $expense[$account->id] ?? [],
+                'income' => $income[$aid] ?? [],
+                'expense' => $expense[$aid] ?? [],
             ];
             $history = TransactionService::buildAccountHistory(
-                $initialBalances[$account->id] ?? 0,
+                $initialBalances[$aid] ?? 0,
                 $accountData,
                 $labels
             );
@@ -38,7 +39,7 @@ class AccountService
             $account->history = $history;
             
             // balance_raw is the actual current balance from all time
-            $account->balance_raw = $currentBalances[$account->id] ?? 0;
+            $account->balance_raw = $currentBalances[$aid] ?? 0;
         });
 
         return $accounts;
@@ -47,7 +48,7 @@ class AccountService
     /**
      * Show a single account with history and balance.
      */
-    public static function showWithHistory(User $user, int $id, string $groupBy = 'day', array $filters = []): Account
+    public static function showWithHistory(User $user, string $id, string $groupBy = 'day', array $filters = []): Account
     {
         $account = AccountRepository::findForUser($user, $id);
         $currentBalances = AccountRepository::getBalances($user);
@@ -58,19 +59,20 @@ class AccountService
         $expense = $historyData['expense'];
         $initialBalances = $historyData['initial_balances'];
 
+        $aid = (string)$account->id;
         $accountData = [
-            'income' => $income[$account->id] ?? [],
-            'expense' => $expense[$account->id] ?? [],
+            'income' => $income[$aid] ?? [],
+            'expense' => $expense[$aid] ?? [],
         ];
 
         $history = TransactionService::buildAccountHistory(
-            $initialBalances[$account->id] ?? 0,
+            $initialBalances[$aid] ?? 0,
             $accountData,
             $labels
         );
         $history['labels'] = $labels;
         $account->history = $history;
-        $account->balance_raw = $currentBalances[$account->id] ?? 0;
+        $account->balance_raw = $currentBalances[$aid] ?? 0;
 
         return $account;
     }
@@ -86,7 +88,7 @@ class AccountService
     /**
      * Update an account.
      */
-    public static function update(User $user, int $id, array $data): Account
+    public static function update(User $user, string $id, array $data): Account
     {
         $account = $user->accounts()->findOrFail($id);
         $account->update($data);
@@ -96,7 +98,7 @@ class AccountService
     /**
      * Delete an account.
      */
-    public static function destroy(User $user, int $id): void
+    public static function destroy(User $user, string $id): void
     {
         $account = $user->accounts()->findOrFail($id);
 

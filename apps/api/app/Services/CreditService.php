@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Credit;
+use App\Models\CreditAccount;
 use App\Models\User;
 use App\Repositories\CreditRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -20,12 +20,12 @@ class CreditService
     /**
      * Upsert credit info for a specific account.
      */
-    public static function upsert(User $user, int $accountId, array $data): Credit
+    public static function upsert(User $user, string $accountId, array $data): CreditAccount
     {
         $account = $user->accounts()->findOrFail($accountId);
 
-        return $account->credit()->updateOrCreate(
-            ['account_id' => $account->id],
+        return CreditAccount::updateOrCreate(
+            ['account_id' => $account->id, 'user_id' => $user->id],
             $data
         );
     }
@@ -33,7 +33,7 @@ class CreditService
     /**
      * Remove credit profile from an account.
      */
-    public static function destroy(User $user, int $accountId): void
+    public static function destroy(User $user, string $accountId): void
     {
         $account = $user->accounts()->findOrFail($accountId);
         $account->credit()->delete();

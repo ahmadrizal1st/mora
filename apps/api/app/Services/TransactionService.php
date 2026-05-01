@@ -34,7 +34,7 @@ class TransactionService
                 'type' => $data['type'],
                 'amount_raw' => $data['amount_raw'],
                 'currency_id' => $data['currency_id'] ?? $account->currency_id,
-                'rate_snapshot' => $data['rate_snapshot'] ?? 1,
+                'exchange_rate' => $data['exchange_rate'] ?? 1,
                 'amount_in_default' => $data['amount_in_default'] ?? $data['amount_raw'],
                 'account_id' => $data['account_id'],
                 'to_account_id' => $data['to_account_id'] ?? null,
@@ -42,7 +42,10 @@ class TransactionService
                 'budget_item_id' => $data['budget_item_id'] ?? null,
                 'status_id' => $data['status_id'] ?? null,
                 'recurring_type_id' => $data['recurring_type_id'] ?? null,
+                'document_extraction_id' => $data['document_extraction_id'] ?? null,
+                'split_bill_id' => $data['split_bill_id'] ?? null,
                 'tx_date' => $data['tx_date'],
+                'input_method' => $data['input_method'] ?? Transaction::METHOD_MANUAL,
                 'merchant' => $data['merchant'] ?? null,
                 'notes' => $data['notes'] ?? null,
                 'dynamic_fields' => $data['dynamic_fields'] ?? null,
@@ -97,7 +100,7 @@ class TransactionService
     /**
      * Get a single transaction with all relationships.
      */
-    public static function show(User $user, int $id): Transaction
+    public static function show(User $user, string $id): Transaction
     {
         return $user->transactions()
             ->with(['account', 'toAccount', 'category', 'budgetItem', 'status', 'currency', 'recurringType', 'tags'])
@@ -107,7 +110,7 @@ class TransactionService
     /**
      * Update a transaction and re-calculate account balances.
      */
-    public static function update(User $user, int $id, array $data): Transaction
+    public static function update(User $user, string $id, array $data): Transaction
     {
         return DB::transaction(function () use ($user, $id, $data) {
             $transaction = $user->transactions()->findOrFail($id);
@@ -142,7 +145,7 @@ class TransactionService
     /**
      * Delete a transaction and revert its balance effect.
      */
-    public static function destroy(User $user, int $id): void
+    public static function destroy(User $user, string $id): void
     {
         DB::transaction(function () use ($user, $id) {
             $transaction = $user->transactions()->findOrFail($id);
@@ -382,12 +385,12 @@ class TransactionService
 
         $income = $expense = [];
         foreach ($txOut as $row) {
-            $aid = (int)$row->account_id;
+            $aid = (string)$row->account_id;
             $income[$aid][$row->label] = ($income[$aid][$row->label] ?? 0) + (int)$row->income;
             $expense[$aid][$row->label] = ($expense[$aid][$row->label] ?? 0) + (int)$row->expense;
         }
         foreach ($txIn as $row) {
-            $aid = (int)$row->account_id;
+            $aid = (string)$row->account_id;
             $income[$aid][$row->label] = ($income[$aid][$row->label] ?? 0) + (int)$row->income;
         }
 

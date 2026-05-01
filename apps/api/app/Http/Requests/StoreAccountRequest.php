@@ -26,9 +26,9 @@ class StoreAccountRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'currency_id' => ['required', 'integer', 'exists:currencies,id'],
+            'currency_id' => ['required', 'uuid', 'exists:currencies,id'],
             'color' => ['nullable', 'string', 'max:20'],
-            'type' => ['required', "in:{$types}"],
+            'account_type' => ['required', "in:{$types}"],
         ];
     }
 
@@ -40,8 +40,8 @@ class StoreAccountRequest extends FormRequest
         return [
             'name.required' => 'Nama akun wajib diisi.',
             'currency_id.required' => 'Mata uang wajib dipilih.',
-            'type.required' => 'Tipe akun wajib dipilih.',
-            'type.in' => 'Tipe akun harus cash, bank, e-wallet, atau investment.',
+            'account_type.required' => 'Tipe akun wajib dipilih.',
+            'account_type.in' => 'Tipe akun harus cash, bank, e-wallet, atau investment.',
         ];
     }
 }

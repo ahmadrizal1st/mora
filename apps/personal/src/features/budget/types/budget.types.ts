@@ -13,11 +13,11 @@ export type BudgetMethod =
   | 'cash_flow'
   | 'custom';
 
-export type BudgetDuration = 'monthly' | 'weekly' | 'yearly';
+export type BudgetPeriod = 'monthly' | 'weekly' | 'yearly';
 
 export interface BudgetItem {
-  id: number;
-  budget_plan_id: number;
+  id: string;
+  budget_plan_id: string;
   name: string;
   percentage?: number;
   amount_limit?: number;
@@ -27,20 +27,21 @@ export interface BudgetItem {
 }
 
 export interface BudgetPlan {
-  id: number;
-  user_id: number;
+  id: string;
+  user_id: string;
   name: string;
-  method: BudgetMethod;
+  budget_method: BudgetMethod;
   income_baseline: number;
-  duration: BudgetDuration;
+  period: BudgetPeriod;
   start_date: string;
   end_date: string;
   is_active: boolean;
+  rollover_enabled: boolean;
   items?: BudgetItem[];
 }
 
 export interface BudgetUtilizationItem {
-  id: number;
+  id: string;
   name: string;
   spent: number;
   limit: number;
@@ -50,10 +51,10 @@ export interface BudgetUtilizationItem {
 }
 
 export interface BudgetUtilization {
-  id: number;
+  id: string;
   plan: string;
-  method: BudgetMethod;
-  duration: BudgetDuration;
+  budget_method: BudgetMethod;
+  period: BudgetPeriod;
   period_start: string;
   period_end: string;
   income_baseline: number;
@@ -62,19 +63,20 @@ export interface BudgetUtilization {
 
 export interface CreateBudgetPlanDTO {
   name: string;
-  method: BudgetMethod;
+  budget_method: BudgetMethod;
   income_baseline: number;
-  duration: BudgetDuration;
+  period: BudgetPeriod;
   start_date: string;
   end_date: string;
   is_active: boolean;
+  rollover_enabled: boolean;
   items: Array<{
     name: string;
     percentage?: number;
     amount_limit?: number;
     color?: string;
     icon?: string;
-    category_ids: number[];
+    category_ids: string[];
   }>;
 }
 

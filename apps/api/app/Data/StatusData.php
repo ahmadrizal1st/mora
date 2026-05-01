@@ -8,9 +8,9 @@ use App\Models\Status;
 class StatusData extends Data
 {
     public function __construct(
-        public ?int $id,
+        public ?string $id,
         public string $name,
-        public string $color,
+        public ?string $color,
     ) {}
 
     public static function fromModel(Status $status): self

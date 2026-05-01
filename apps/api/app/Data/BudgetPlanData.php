@@ -10,13 +10,14 @@ use Spatie\LaravelData\Optional;
 class BudgetPlanData extends Data
 {
     public function __construct(
-        public ?int $id,
-        public int $user_id,
+        public ?string $id,
+        public string $user_id,
         public string $name,
-        public string $method,
+        public string $budget_method,
         public float $income_baseline,
-        public string $duration,
+        public string $period,
         public bool $is_active,
+        public bool $rollover_enabled,
 
         /** @var DataCollection<BudgetItemData>|Optional */
         public DataCollection|Optional $items,
@@ -28,10 +29,11 @@ class BudgetPlanData extends Data
             id: $plan->id,
             user_id: $plan->user_id,
             name: $plan->name,
-            method: $plan->method,
+            budget_method: $plan->budget_method,
             income_baseline: (float) $plan->income_baseline,
-            duration: $plan->duration,
+            period: $plan->period,
             is_active: $plan->is_active,
+            rollover_enabled: $plan->rollover_enabled,
             items: $plan->relationLoaded('items')
                 ? BudgetItemData::collect($plan->items, DataCollection::class)
                 : Optional::create(),

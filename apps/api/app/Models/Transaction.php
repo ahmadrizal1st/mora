@@ -2,20 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[Fillable([
-    'user_id', 'type', 'amount_raw', 'currency_id', 'rate_snapshot',
+    'user_id', 'type', 'amount_raw', 'currency_id', 'exchange_rate',
     'amount_in_default', 'account_id', 'to_account_id', 'category_id',
-    'budget_item_id', 'status_id', 'recurring_type_id', 'tx_date', 'tracker', 'merchant', 'notes',
+    'status_id', 'recurring_type_id', 'budget_item_id', 'document_extraction_id',
+    'split_bill_id', 'tx_date', 'input_method', 'merchant', 'notes',
     'dynamic_fields',
 ])]
 class Transaction extends Model
 {
-    public $timestamps = false;
+    use HasUuids;
 
     /**
      * Transaction type constants.
@@ -24,15 +26,22 @@ class Transaction extends Model
     public const TYPE_EXPENSE = 'expense';
     public const TYPE_TRANSFER = 'transfer';
 
+    /**
+     * Input method constants.
+     */
+    public const METHOD_MANUAL = 'manual';
+    public const METHOD_VOICE = 'voice';
+    public const METHOD_RECEIPT = 'receipt';
+    public const METHOD_AUTOPILOT = 'autopilot';
+
     protected function casts(): array
     {
         return [
             'amount_raw' => 'integer',
-            'rate_snapshot' => 'float',
+            'exchange_rate' => 'float',
             'amount_in_default' => 'float',
             'tx_date' => 'date',
             'dynamic_fields' => 'array',
-            'created_at' => 'datetime',
         ];
     }
 
@@ -61,11 +70,6 @@ class Transaction extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function budgetItem(): BelongsTo
-    {
-        return $this->belongsTo(BudgetItem::class);
-    }
-
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);
@@ -74,6 +78,21 @@ class Transaction extends Model
     public function recurringType(): BelongsTo
     {
         return $this->belongsTo(RecurringType::class);
+    }
+
+    public function budgetItem(): BelongsTo
+    {
+        return $this->belongsTo(BudgetItem::class);
+    }
+
+    public function documentExtraction(): BelongsTo
+    {
+        return $this->belongsTo(DocumentExtraction::class);
+    }
+
+    public function splitBill(): BelongsTo
+    {
+        return $this->belongsTo(SplitBill::class);
     }
 
     public function tags(): BelongsToMany

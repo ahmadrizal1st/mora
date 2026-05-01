@@ -2,24 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['code', 'symbol', 'name', 'rate_to_idr', 'is_default', 'is_active'])]
+#[Fillable(['code', 'name', 'symbol'])]
 class Currency extends Model
 {
-    public $timestamps = false;
-
-    protected function casts(): array
-    {
-        return [
-            'rate_to_idr' => 'float',
-            'is_default' => 'boolean',
-            'is_active' => 'boolean',
-            'updated_at' => 'datetime',
-        ];
-    }
+    use HasUuids;
 
     public function accounts(): HasMany
     {

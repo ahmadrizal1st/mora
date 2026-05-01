@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['user_id', 'name', 'currency_id', 'color', 'type'])]
+#[Fillable(['user_id', 'name', 'currency_id', 'color', 'account_type'])]
 class Account extends Model
 {
-    public $timestamps = false;
+    use HasUuids;
 
     /**
      * Account type constants.
@@ -19,13 +21,6 @@ class Account extends Model
     public const TYPE_BANK = 'bank';
     public const TYPE_EWALLET = 'e-wallet';
     public const TYPE_INVESTMENT = 'investment';
-
-    protected function casts(): array
-    {
-        return [
-            'created_at' => 'datetime',
-        ];
-    }
 
     public function user(): BelongsTo
     {
@@ -47,8 +42,13 @@ class Account extends Model
         return $this->hasMany(Transaction::class, 'to_account_id');
     }
 
-    public function credit(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function credit(): HasOne
     {
-        return $this->hasOne(Credit::class);
+        return $this->hasOne(CreditAccount::class);
+    }
+
+    public function balances(): HasMany
+    {
+        return $this->hasMany(AccountBalance::class);
     }
 }
