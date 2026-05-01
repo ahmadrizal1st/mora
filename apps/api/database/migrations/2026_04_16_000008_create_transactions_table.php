@@ -6,44 +6,44 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('type', ['income', 'expense', 'transfer']);
+            $table->uuid('id')->primary();
+            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
+            $table->string('type'); // income/expense/transfer
             $table->bigInteger('amount_raw');
-            $table->foreignId('currency_id')->constrained('currencies')->restrictOnDelete();
-            $table->float('rate_snapshot')->default(1);
+            $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
+            $table->float('exchange_rate')->default(1.0);
             $table->float('amount_in_default')->default(0);
-            $table->foreignId('account_id')->constrained('accounts')->cascadeOnDelete();
-            $table->foreignId('to_account_id')->nullable()->constrained('accounts')->nullOnDelete();
-            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
-            $table->foreignId('status_id')->nullable()->constrained('statuses')->nullOnDelete();
-            $table->foreignId('recurring_type_id')->nullable()->constrained('recurring_types')->nullOnDelete();
+            $table->foreignUuid('account_id')->constrained('accounts')->cascadeOnDelete();
+            $table->uuid('to_account_id')->nullable();
+            $table->uuid('category_id')->nullable();
+            $table->uuid('status_id')->nullable();
+            $table->uuid('recurring_type_id')->nullable();
+            $table->uuid('budget_item_id')->nullable();
+            $table->uuid('document_extraction_id')->nullable();
+            $table->uuid('split_bill_id')->nullable();
             $table->date('tx_date');
+            $table->string('input_method')->default('manual'); // manual/voice/receipt/autopilot
             $table->string('merchant')->nullable();
             $table->text('notes')->nullable();
             $table->json('dynamic_fields')->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
 
-            // Indexes for common queries
+            // Indexes
             $table->index(['user_id', 'tx_date']);
-            $table->index(['user_id', 'type']);
-            $table->index(['user_id', 'account_id']);
-            $table->index(['user_id', 'category_id']);
-        });
-
-        Schema::create('transaction_tags', function (Blueprint $table) {
-            $table->foreignId('transaction_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('tag_id')->constrained()->cascadeOnDelete();
-            $table->primary(['transaction_id', 'tag_id']);
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_tags');
         Schema::dropIfExists('transactions');
     }
 };

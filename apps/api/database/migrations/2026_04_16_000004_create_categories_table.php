@@ -6,18 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->uuid('parent_id')->nullable();
             $table->string('name');
-            $table->enum('tx_type', ['income', 'expense', 'transfer'])->default('expense');
-            $table->string('icon', 50)->nullable();
-            $table->string('color', 20)->default('#206bc4');
-            $table->boolean('is_default')->default(false);
+            $table->string('type')->default('expense'); // income/expense
+            $table->string('icon')->nullable();
+            $table->string('color')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::table('categories', function (Blueprint $table) {
+            $table->foreign('parent_id')->references('id')->on('categories')->nullOnDelete();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('categories');

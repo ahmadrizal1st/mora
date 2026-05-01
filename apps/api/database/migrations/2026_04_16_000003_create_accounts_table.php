@@ -6,22 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('accounts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->bigInteger('balance_raw')->default(0);
-            $table->foreignId('currency_id')->constrained('currencies')->restrictOnDelete();
-            $table->string('color', 20)->default('#206bc4');
-            $table->enum('type', ['cash', 'bank', 'e-wallet', 'investment'])->default('cash');
-            $table->boolean('is_credit')->default(false);
-            $table->bigInteger('credit_limit')->default(0);
-            $table->timestamp('created_at')->useCurrent();
+            $table->foreignUuid('currency_id')->constrained('currencies')->restrictOnDelete();
+            $table->string('color')->nullable();
+            $table->string('account_type')->default('cash'); // cash/bank/e-wallet/investment
+            $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('accounts');

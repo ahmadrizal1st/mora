@@ -12,15 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('otp_codes', function (Blueprint $table) {
-            $table->id();
-            $table->string('email')->index();
+            $table->uuid('id')->primary();
+            $table->string('email');
             $table->string('code');
-            $table->string('type'); // register, reset_password
             $table->timestamp('expires_at');
-            $table->timestamp('verified_at')->nullable();
             $table->timestamps();
-
-            $table->index(['email', 'type']);
         });
     }
 

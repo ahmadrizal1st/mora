@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('budget_plans', function (Blueprint $table) {
-            $table->string('method')->default('50_30_20')->change();
+        Schema::create('transaction_tags', function (Blueprint $table) {
+            $table->foreignUuid('transaction_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('tag_id')->constrained()->cascadeOnDelete();
+            $table->primary(['transaction_id', 'tag_id']);
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('budget_plans', function (Blueprint $table) {
-            $table->enum('method', ['50_30_20', 'custom', 'zero_based'])->default('50_30_20')->change();
-        });
+        Schema::dropIfExists('transaction_tags');
     }
 };
