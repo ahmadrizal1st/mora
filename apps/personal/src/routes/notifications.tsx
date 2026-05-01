@@ -4,13 +4,14 @@ import BaseLayout from '@/shared/layouts/BaseLayout'
 import { NavbarNotifications } from '@/shared/components/cards/NavbarNotifications'
 import { Icon } from '@/shared/components/ui/Icon'
 import { clsx } from 'clsx'
+import { type NotificationFilter } from '@/features/notifications'
 
 export const Route = createFileRoute('/notifications')({
   component: NotificationsPage,
 })
 
 function NotificationsPage() {
-  const [filter, setFilter] = useState<string>('all')
+  const [filter, setFilter] = useState<NotificationFilter>('all')
 
   const navItems = [
     { id: 'all', label: 'All Notifications', icon: 'bell' },
@@ -91,7 +92,7 @@ function NotificationsPage() {
                           key={item.label} 
                           href="#" 
                           className={clsx("dropdown-item", filter === item.label.toLowerCase() && "active")}
-                          onClick={(e) => { e.preventDefault(); setFilter(item.label.toLowerCase()); }}
+                          onClick={(e) => { e.preventDefault(); setFilter(item.label.toLowerCase() as NotificationFilter); }}
                         >
                           <span className={`status-dot bg-${item.color} me-2`}></span>
                           {item.label}
@@ -119,7 +120,7 @@ function NotificationsPage() {
                       style={{ outline: 'none' }}
                       onClick={(e) => {
                         e.preventDefault()
-                        setFilter(item.id)
+                        setFilter(item.id as NotificationFilter)
                       }}
                     >
                       <span className="nav-link-icon d-md-none d-lg-inline-block me-2">
@@ -143,7 +144,7 @@ function NotificationsPage() {
                       style={{ outline: 'none' }}
                       onClick={(e) => {
                         e.preventDefault()
-                        setFilter(item.label.toLowerCase())
+                        setFilter(item.label.toLowerCase() as NotificationFilter)
                       }}
                     >
                       <span className={`status-dot bg-${item.color} me-2`}></span>
