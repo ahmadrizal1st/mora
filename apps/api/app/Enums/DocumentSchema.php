@@ -24,13 +24,14 @@ enum DocumentSchema: string
                     [
                         'merchant'    => 'string',
                         'date'        => 'YYYY-MM-DD',
-                        'amount'      => 'number',
+                        'amount'      => 'number (MUTASI column only, NOT SALDO)',
+                        'type'        => 'income | expense',
+                        'raw_type'    => 'DB | CR (original indicator from document)',
                         'category'    => 'string',
                         'description' => 'string',
                         'items'       => [
                             ['name' => 'string', 'price' => 'number', 'qty' => 'number']
                         ],
-                        'type'        => 'income | expense',
                     ]
                 ],
             ],
@@ -40,10 +41,11 @@ enum DocumentSchema: string
                     [
                         'source'      => 'string',
                         'date'        => 'YYYY-MM-DD',
-                        'amount'      => 'number',
+                        'amount'      => 'number (MUTASI column only, NOT SALDO)',
+                        'type'        => 'income',
+                        'raw_type'    => 'CR (original indicator from document)',
                         'category'    => 'string',
                         'description' => 'string',
-                        'type'        => 'income',
                     ]
                 ],
             ],

@@ -263,7 +263,7 @@ php artisan queue:restart
 # Tanpa ini, hasil tracker TIDAK akan tersimpan ke database
 ```
 
-**Terminal 3 — AI FastAPI ML Service**
+**Terminal 3 — AI FastAPI ML Service** 
 ```bash
 cd apps/ai
 source venv/bin/activate

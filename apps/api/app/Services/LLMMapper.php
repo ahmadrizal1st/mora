@@ -9,14 +9,6 @@ use Exception;
 
 class LLMMapper
 {
-    /**
-     * Mencoba memproses prompt ke berbagai provider LLM secara berurutan (fallback).
-     *
-     * @param string $prompt
-     * @param string|null $userId
-     * @return array
-     * @throws Exception
-     */
     public function map(string $prompt, ?string $userId = null): array
     {
         $providers = LlmProvider::where('is_active', true)
@@ -80,69 +72,85 @@ class LLMMapper
             $request->withHeaders(['Authorization' => $provider->api_key]);
         }
 
-        Log::info("Executing LLM Request to: " . $url);
-        Log::debug("Payload: " . json_encode($payload));
-
         $response = $request->post($url, $payload);
 
         if ($response->successful()) {
             $responseBody = $response->json();
             $extractedData = data_get($responseBody, $provider->response_path);
-            Log::debug("Provider {$provider->name} Response: " . json_encode($extractedData));
             return (string) $extractedData;
         }
 
         $errorBody = $response->body();
-        Log::error("Provider {$provider->name} Error: " . $errorBody);
         throw new Exception("Provider {$provider->name} failed with status {$response->status()}: " . substr($errorBody, 0, 200));
     }
 
     protected function parseJson(string $text): array
     {
-        $clean = trim($text);
+        $debugFile = storage_path('logs/llm_raw_last_response.json');
+        file_put_contents($debugFile, $text);
 
-        // Jika LLM menggunakan markdown code blocks (```json ... ```) 
+        // 1. Pastikan Encoding UTF-8
+        $clean = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+        $clean = trim($clean);
+
+        // 2. Unescape jika teks dibungkus kutipan (ciri khas beberapa model Llama)
+        if (str_starts_with($clean, '"') && str_ends_with($clean, '"')) {
+            $clean = json_decode($clean) ?: stripslashes(substr($clean, 1, -1));
+        }
+
+        // 3. Ekstrak JSON dari Markdown atau Teks Biasa
         if (preg_match('/```(?:json)?\s*(.*?)\s*```/is', $clean, $matches)) {
             $clean = trim($matches[1]);
         } else {
-            // Mencoba mengekstrak dari kurung kurawal/siku pertama hingga terakhir
-            $startObject = strpos($clean, '{');
-            $startArray  = strpos($clean, '[');
+            $startPos = strpos($clean, '{');
+            if ($startPos === false) $startPos = strpos($clean, '[');
             
-            $startPos = false;
-            if ($startObject !== false && $startArray !== false) {
-                $startPos = min($startObject, $startArray);
-            } elseif ($startObject !== false) {
-                $startPos = $startObject;
-            } elseif ($startArray !== false) {
-                $startPos = $startArray;
-            }
+            $endObject = strrpos($clean, '}');
+            $endArray  = strrpos($clean, ']');
+            $endPos    = ($endObject !== false && $endArray !== false) ? max($endObject, $endArray) : ($endObject ?: $endArray);
 
-            if ($startPos !== false) {
-                $endObject = strrpos($clean, '}');
-                $endArray  = strrpos($clean, ']');
-                
-                $endPos = false;
-                if ($endObject !== false && $endArray !== false) {
-                    $endPos = max($endObject, $endArray);
-                } elseif ($endObject !== false) {
-                    $endPos = $endObject;
-                } elseif ($endArray !== false) {
-                    $endPos = $endArray;
-                }
-
-                if ($endPos !== false && $endPos > $startPos) {
-                    $clean = trim(substr($clean, $startPos, $endPos - $startPos + 1));
-                }
+            if ($startPos !== false && $endPos !== false && $endPos > $startPos) {
+                $clean = substr($clean, $startPos, $endPos - $startPos + 1);
             }
         }
 
+        // 4. Bersihkan karakter kontrol dan backslash liar yang merusak JSON
+        $clean = preg_replace('/[\x00-\x1F\x7F]/', '', $clean);
+        // Jika masih ada escaped quotes tapi di luar blok kutipan, bersihkan
+        if (!json_decode($clean)) {
+            $clean = str_replace(['\"', '\n', '\r'], ['"', "\n", "\r"], $clean);
+        }
+
+        // 5. Decode JSON
         $data = json_decode($clean, true);
 
+        // 6. Fallback: Auto-Close Truncated JSON & Remove Comments
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Gagal parse JSON dari LLM: " . json_last_error_msg() . ". Raw content: " . substr($text, 0, 100));
+            // Hapus komentar dulu
+            $cleanFallback = preg_replace('#(?<!:)\/\/\s.*$#m', '', $clean);
+            $data = json_decode($cleanFallback, true);
+
+            // Jika masih gagal, coba auto-close bracket yang hilang akibat terpotong (truncated)
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $closings = ['}', ']}', '}]}', ']}]}'];
+                foreach ($closings as $closing) {
+                    $testData = json_decode($cleanFallback . $closing, true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $data = $testData;
+                        $clean = $cleanFallback . $closing; // update for logging
+                        break;
+                    }
+                }
+            }
         }
 
-        return $data;
+        // 7. Final Validation
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $errorMsg = json_last_error_msg();
+            Log::error("JSON Parse Error: {$errorMsg}. Raw snippet: " . substr($clean, 0, 100));
+            throw new Exception("Gagal parse JSON: {$errorMsg}");
+        }
+
+        return $data ?: [];
     }
 }

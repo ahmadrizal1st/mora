@@ -227,14 +227,17 @@ class ProcessAIResult implements ShouldQueue
         $schema      = DocumentSchema::from($this->doc_type);
         $isTextInput = $document->mime_type === 'text/plain';
 
-        // SMART CHUNKING: Pecah teks menjadi beberapa bagian jika terlalu panjang
-        // Ini memastikan akurasi tetap terjaga untuk dokumen multi-halaman (Mutasi Bank).
+        // Gunakan teks dari database agar selalu mendapatkan versi terbaru
+        $rawText = $document->raw_text;
+
+        // SMART CHUNKING: Hanya pecah jika teks sangat panjang (di atas 15.000 karakter)
+        // Struk belanja biasanya < 2000 karakter, jadi pasti masuk dalam 1 chunk.
         $chunks = [];
-        if (str_contains($this->raw_text, '--- Page')) {
-            $chunks = preg_split('/--- Page \d+ ---/', $this->raw_text, -1, PREG_SPLIT_NO_EMPTY);
+        if (str_contains($rawText, '--- Page')) {
+            $chunks = preg_split('/--- Page \d+ ---/', $rawText, -1, PREG_SPLIT_NO_EMPTY);
         } else {
-            // Split setiap 4000 karakter agar aman dari limit 6000 TPM Groq
-            $chunks = str_split($this->raw_text, 4000);
+            // Gunakan chunk sangat besar (15000 karakter) agar context tidak terpotong
+            $chunks = str_split($rawText, 15000);
         }
 
         $allTx = [];
@@ -248,9 +251,8 @@ class ProcessAIResult implements ShouldQueue
 
             $prompt = $builder->build(
                 $chunkText,
-                $schema->schema(),
-                $schema->value,
-                $isTextInput
+                json_encode($schema->schema()),
+                $schema->value
             );
 
             $maxRetries = 3;
@@ -262,20 +264,34 @@ class ProcessAIResult implements ShouldQueue
                     $structuredData = $mapper->map($prompt, $this->userId);
                     $lastStructuredData = $structuredData;
                     
-                    $txArray = $structuredData['tx'] ?? $structuredData['transactions'] ?? [];
-                    if (is_array($txArray)) {
-                        $allTx = array_merge($allTx, $txArray);
+                    // Fleksibel menangkap data transaksi
+                    $txArray = [];
+                    if (isset($structuredData['tx'])) {
+                        $txArray = $structuredData['tx'];
+                    } elseif (isset($structuredData['transactions'])) {
+                        $txArray = $structuredData['transactions'];
+                    } elseif (is_array($structuredData) && !isset($structuredData['tx']) && (isset($structuredData[0]['merchant']) || isset($structuredData[0]['amount']))) {
+                        // Jika AI mengembalikan array langsung
+                        $txArray = $structuredData;
                     }
+
+                    if (is_array($txArray) && !empty($txArray)) {
+                        Log::info("Chunk #{$index}: Terdeteksi " . count($txArray) . " transaksi.");
+                        $allTx = array_merge($allTx, $txArray);
+                    } else {
+                        Log::warning("Chunk #{$index}: Tidak ada transaksi yang terdeteksi dalam format yang dikenali.");
+                    }
+                    
                     $chunkSuccess = true;
                 } catch (Exception $e) {
                     $errorMsg = $e->getMessage();
                     if (str_contains($errorMsg, '429') || str_contains($errorMsg, 'rate limit')) {
                         $retryCount++;
                         Log::warning("Chunk #{$index} terkena Rate Limit (429). Retry #{$retryCount} dalam 15 detik...");
-                        sleep(15); // Tunggu window TPM sedikit longgar
+                        sleep(15);
                     } else {
                         Log::error("Gagal memproses chunk #{$index}: " . $errorMsg);
-                        break; // Jangan retry jika error bukan rate limit
+                        break;
                     }
                 }
             }
@@ -335,9 +351,10 @@ class ProcessAIResult implements ShouldQueue
     {
         $merchant = $data['merchant'] ?? $data['m'] ?? $data['merchant_name'] ?? $data['source'] ?? $data['s'] ?? $data['source_name'] ?? $data['vendor_name'] ?? $data['speaker_name'] ?? $data['payer'] ?? $data['recipient'] ?? 'Unknown';
         $amount   = $data['amount'] ?? $data['a'] ?? $data['total_amount'] ?? 0;
-        $txType   = $data['type'] ?? $data['t'] ?? Transaction::TYPE_EXPENSE;
+        $txType   = strtolower(trim($data['type'] ?? $data['t'] ?? ''));
         $notes    = $data['description'] ?? $data['desc'] ?? null;
         $extractedCategory = $data['category'] ?? $data['c'] ?? '';
+        $rawType  = strtolower(trim($data['raw_type'] ?? $data['flow'] ?? ''));
 
         // NEW: Jika ada data items, kita hitung ulang total amount jika diperlukan
         if (!empty($data['items']) && is_array($data['items'])) {
@@ -368,24 +385,61 @@ class ProcessAIResult implements ShouldQueue
         // Notes berformat JSON standar, key menyesuaikan sumber tracker
         $notes = $this->buildTrackerNotes($document, $data);
 
-        $merchantLower = strtolower($merchant);
-        if (($merchantLower === 'unknown' || $merchantLower === 'unspecified') && !empty($data['items'][0]['name'])) {
-            $merchant = ucwords(strtolower($data['items'][0]['name']));
-        } else if ($merchantLower === 'unspecified') {
-            $merchant = 'Lain-lain';
+        // Filter out stubborn AI watermark recognitions
+        $merchantLower = strtolower(trim($merchant));
+        $watermarks = ['lemon8', 'camscanner', 'photogrid', '@maisaspb', 'adinata', 'unknown', 'unspecified', 'null'];
+        
+        $isWatermark = false;
+        foreach ($watermarks as $wm) {
+            if (str_contains($merchantLower, $wm)) {
+                $isWatermark = true;
+                break;
+            }
         }
 
-        // Resolve transaction type
-        if (!in_array($txType, [Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE])) {
-            $incomeKeywords = [
-                'Salary', 'Bonus', 'Freelance', 'Investment', 'Gift', 'Sales', 'Other Income',
-                'Gaji', 'Bonus', 'Proyek', 'Investasi', 'Hadiah', 'Penjualan', 'Pendapatan', 'THR'
-            ];
-            
-            $isIncomeDetected = in_array(Str::title($extractedCategory), $incomeKeywords) 
-                || preg_match('/\b(gaji|salary|income|thr|bonus|investasi|profit)\b/i', $this->raw_text);
+        if ($isWatermark) {
+            // Jika AI memberikan watermark, kita ambil alih
+            if (!empty($data['items'][0]['name'])) {
+                // Gunakan 'Daftar Belanja' atau nama barang pertama
+                $merchant = count($data['items']) > 2 ? 'Daftar Belanja' : ucwords(strtolower($data['items'][0]['name']));
+            } else {
+                $merchant = 'Lain-lain';
+            }
+        }
 
-            $txType = $isIncomeDetected ? Transaction::TYPE_INCOME : Transaction::TYPE_EXPENSE;
+        // Resolve transaction type — per-transaksi, BUKAN scan seluruh dokumen
+        // Prioritas 1: pakai type eksplisit dari LLM jika valid
+        if (!in_array($txType, [Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE])) {
+            // Prioritas 2: deteksi dari raw_type / flow yang dikirim LLM (DB/CR/debit/kredit)
+            $isIncomeByRawType = in_array($rawType, ['cr', 'kredit', 'credit', 'c', 'k', 'income', 'masuk', 'top-up', 'topup']);
+            $isExpenseByRawType = in_array($rawType, ['db', 'dr', 'debit', 'd', 'expense', 'keluar', 'withdrawal', 'payment']);
+
+            if ($isIncomeByRawType) {
+                $txType = Transaction::TYPE_INCOME;
+            } elseif ($isExpenseByRawType) {
+                $txType = Transaction::TYPE_EXPENSE;
+            } else {
+                // Prioritas 3: deteksi dari kategori yang dikirim LLM (HANYA kategori, bukan seluruh dokumen)
+                $incomeCategoryKeywords = [
+                    'salary', 'bonus', 'freelance', 'investment', 'gift', 'sales', 'other income',
+                    'gaji', 'proyek', 'investasi', 'hadiah', 'penjualan', 'pendapatan', 'thr', 'income',
+                ];
+                $categoryLower = strtolower($extractedCategory);
+                $merchantLowerForType = strtolower($merchant);
+
+                $isIncomeDetected = !empty($categoryLower) && (
+                    in_array($categoryLower, $incomeCategoryKeywords) ||
+                    Str::contains($categoryLower, $incomeCategoryKeywords)
+                );
+
+                // Fallback: cek merchant/description string milik transaksi INI saja
+                $txDescription = strtolower($data['description'] ?? $data['desc'] ?? '');
+                if (!$isIncomeDetected) {
+                    $isIncomeDetected = preg_match('/\b(transfer masuk|top.?up|setor tunai|setoran|refund|kredit|cr\b)\b/i', $merchantLowerForType . ' ' . $txDescription);
+                }
+
+                $txType = $isIncomeDetected ? Transaction::TYPE_INCOME : Transaction::TYPE_EXPENSE;
+            }
         }
 
         // Resolve category_id
@@ -423,7 +477,7 @@ class ProcessAIResult implements ShouldQueue
         $transaction = Transaction::create([
             'user_id'                => $this->userId,
             'type'                   => $txType,
-            'amount'                 => (float) preg_replace('/[^0-9.]/', '', str_replace(',', '.', (string)$amount)),
+            'amount'                 => $this->parseAmount($amount),
             'tx_date'                => $data['date'] ?? now()->format('Y-m-d'),
             'input_method'           => $trackerSource,
             'merchant'               => $merchant,
@@ -572,6 +626,50 @@ class ProcessAIResult implements ShouldQueue
         }
 
         return implode("\n", $noteLines);
+    }
+
+    /**
+     * Parse amount string/number dari berbagai format:
+     * - Format Indonesia: "170.065,00" → 170065.00
+     * - Format Inggris:   "170,065.00" → 170065.00
+     * - Sudah angka:      170065       → 170065.00
+     */
+    protected function parseAmount(mixed $raw): float
+    {
+        if (is_numeric($raw)) {
+            return abs((float) $raw);
+        }
+
+        $str = trim((string) $raw);
+        // Hapus simbol mata uang dan spasi
+        $str = preg_replace('/[Rp$€£\s]/i', '', $str);
+
+        // Deteksi format: jika ada koma sebelum titik → format Inggris (1,234.56)
+        // Jika ada titik sebelum koma → format Indonesia (1.234,56)
+        $hasDotThenComma = preg_match('/\d\.\d{3},/', $str);   // 170.065,00
+        $hasCommaThenDot = preg_match('/\d,\d{3}\./', $str);   // 170,065.00
+
+        if ($hasDotThenComma) {
+            // Format Indonesia: hapus titik ribuan, ganti koma desimal → titik
+            $str = str_replace('.', '', $str);
+            $str = str_replace(',', '.', $str);
+        } elseif ($hasCommaThenDot) {
+            // Format Inggris: hapus koma ribuan saja
+            $str = str_replace(',', '', $str);
+        } else {
+            // Ambiguous / tanpa separator: hapus semua kecuali angka dan titik/koma terakhir
+            // Jika ada koma saja (tanpa titik) → anggap desimal Indonesia
+            if (substr_count($str, ',') === 1 && substr_count($str, '.') === 0) {
+                $str = str_replace(',', '.', $str);
+            } elseif (substr_count($str, '.') === 1 && substr_count($str, ',') === 0) {
+                // Sudah benar (titik desimal)
+            } else {
+                // Hapus semua non-digit (termasuk minus) kecuali titik terakhir
+                $str = preg_replace('/[^0-9.]/', '', $str);
+            }
+        }
+
+        return abs((float) $str);
     }
 
 
