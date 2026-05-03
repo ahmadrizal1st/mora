@@ -8,7 +8,7 @@ export function QuickActions() {
     { label: 'Transfer', icon: 'coin' },
     { label: 'Request', icon: 'arrow-down-left' },
     { label: 'History', icon: 'clock' },
-    { label: 'Budget', icon: 'wallet', href: '/budget' },
+    { label: 'Assets', icon: 'building-bank', href: '/assets' },
   ];
 
   return (

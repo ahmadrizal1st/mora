@@ -20,6 +20,7 @@ interface AccountsSummaryChartProps {
   totalWealth: number;
   chartSeries: ChartSeriesItem[];
   chartLabels: string[];
+  isBalanceHidden?: boolean;
 }
 
 export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
@@ -31,6 +32,7 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
   totalWealth,
   chartSeries,
   chartLabels,
+  isBalanceHidden = false,
 }) => {
   if (accountsWithHistory.length === 0) return null;
 
@@ -50,7 +52,7 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
                 <div className="text-end border-start ps-3 d-none d-sm-block">
                   <div className="text-secondary small fw-bold text-uppercase" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>Total Kekayaan</div>
                   <div className="h2 fw-bold mb-0 text-primary" style={{ letterSpacing: '-0.5px' }}>
-                    {formatCurrency(totalWealth)}
+                    {isBalanceHidden ? 'Rp ••••••••' : formatCurrency(totalWealth)}
                   </div>
                 </div>
               </div>
@@ -194,7 +196,7 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
                           }
                         },
                         y: {
-                          formatter: (val: number) => formatCurrency(val),
+                          formatter: (val: number) => isBalanceHidden ? '••••' : formatCurrency(val),
                         },
                       },
                     },

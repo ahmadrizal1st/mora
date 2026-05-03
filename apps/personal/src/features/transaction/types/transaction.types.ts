@@ -26,6 +26,16 @@ export interface CreditAccount {
   updated_at: string;
 }
 
+export interface Provider {
+  id: string;
+  name: string;
+  type: 'bank' | 'ewallet' | 'investment' | 'other';
+  logo_url?: string;
+  color?: string;
+  is_global: boolean;
+  user_id?: string;
+}
+
 export interface Account {
   id: string;
   user_id: string;
@@ -33,8 +43,11 @@ export interface Account {
   balance?: number;
   currency_id: string;
   currency?: Currency;
+  provider_id?: string;
+  provider?: Provider;
   color: string;
   account_type: 'cash' | 'bank' | 'e-wallet' | 'investment' | 'credit' | 'saving' | 'loan';
+  is_archived: boolean;
   credit?: CreditAccount;
   transactions_count?: number;
   incoming_transfers_count?: number;
@@ -105,7 +118,6 @@ export interface Transaction {
   to_account?: Account;
   category_id?: string | null;
   category?: Category;
-  budget_item_id?: string | null;
   status_id?: string | null;
   status?: Status;
   recurring_type_id?: string | null;

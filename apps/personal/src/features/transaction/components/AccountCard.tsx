@@ -2,14 +2,22 @@ import React from 'react';
 import { Icon } from '@/shared/components/ui/Icon';
 import { Chart } from '@/shared/components/ui/Chart';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
+import { useNavigate } from '@tanstack/react-router';
 import type { Account } from '../types/transaction.types';
 
 interface AccountCardProps {
   account: Account;
   onEdit: (account: Account) => void;
+  isBalanceHidden?: boolean;
 }
 
-export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => {
+export const AccountCard: React.FC<AccountCardProps> = ({ 
+  account, 
+  onEdit, 
+  isBalanceHidden = false 
+}) => {
+  const navigate = useNavigate();
+
   // Determine if background is light or dark to set text color
   const getContrastColor = (hexColor: string) => {
     if (!hexColor) return '#ffffff';
@@ -27,15 +35,25 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
 
   const accountIcon = account.account_type === 'bank' ? 'building-bank' : account.account_type === 'cash' ? 'wallet' : account.account_type === 'e-wallet' ? 'device-mobile' : 'credit-card';
 
+  const handleCardClick = () => {
+    navigate({ to: '/accounts/$accountId', params: { accountId: account.id } });
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit(account);
+  };
+
   return (
     <div 
       className="card h-100 shadow-sm border-0 position-relative group cursor-pointer overflow-hidden transition-all hover-shadow-lg"
-      onClick={() => onEdit(account)}
+      onClick={handleCardClick}
       style={{ 
         backgroundColor: account.color,
         color: textColor,
         borderRadius: '1.25rem',
-        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        filter: account.is_archived ? 'grayscale(0.6) opacity(0.8)' : 'none'
       }}
     >
       {/* Background Decoration - Circular shape and Large Icon */}
@@ -61,7 +79,15 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
           transform: 'rotate(-10deg)'
         }}
       >
-        <Icon icon={accountIcon} size={90} stroke={1.5} />
+        {account.provider?.logo_url ? (
+          <img 
+            src={account.provider.logo_url} 
+            alt={account.provider.name} 
+            style={{ width: '90px', height: '90px', objectFit: 'contain', filter: isDarkText ? 'none' : 'brightness(0) invert(1)' }}
+          />
+        ) : (
+          <Icon icon={accountIcon} size={90} stroke={1.5} />
+        )}
       </div>
 
       <div className="card-body p-4 d-flex flex-column position-relative" style={{ minHeight: '220px', zIndex: 2 }}>
@@ -75,12 +101,35 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit }) => 
             </div>
             <h3 className="card-title h3 mb-0 fw-bold" style={{ color: textColor }}>{account.name}</h3>
           </div>
+          <div className="d-flex gap-2">
+            <button 
+              className="btn btn-icon btn-sm border-0 shadow-none text-reset opacity-50 hover-opacity-100"
+              style={{ backgroundColor: iconBgColor, borderRadius: '8px' }}
+              onClick={handleEditClick}
+              title="Edit Akun"
+            >
+              <Icon icon="edit" size={16} />
+            </button>
+            {account.provider?.logo_url && (
+              <div className="bg-white p-1 rounded-circle d-flex shadow-sm" style={{ width: '32px', height: '32px' }}>
+                <img src={account.provider.logo_url} alt="" className="img-fluid rounded-circle" style={{ objectFit: 'contain' }} />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="mt-2 mb-2">
           <div style={{ color: secondaryTextColor, fontSize: '12px', fontWeight: 500 }}>Saldo Saat Ini</div>
-          <div className="h1 fw-bold mb-0 mt-1" style={{ fontSize: '1.85rem', letterSpacing: '-0.5px', color: textColor }}>
-            {formatCurrency(account.balance ?? 0, account.currency?.code)}
+          <div className="h1 fw-bold mb-0 mt-1 d-flex align-items-center" style={{ fontSize: '1.85rem', letterSpacing: '-0.5px', color: textColor }}>
+            {isBalanceHidden ? 'Rp ••••••••' : formatCurrency(account.balance ?? 0, account.currency?.code)}
+            {account.is_archived && (
+              <span 
+                className="badge bg-dark-lt ms-2 border-0" 
+                style={{ fontSize: '10px', padding: '4px 8px', borderRadius: '4px' }}
+              >
+                TERARSIP
+              </span>
+            )}
           </div>
         </div>
 

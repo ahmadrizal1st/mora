@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { Icon } from '../ui/Icon';
-import { Chart } from '../ui/Chart';
+import { Icon } from '@/shared/components/ui/Icon';
+import { Chart } from '@/shared/components/ui/Chart';
 
 interface VisualStatCardProps {
   title: string;

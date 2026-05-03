@@ -9,10 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['user_id', 'name', 'currency_id', 'color', 'account_type'])]
+#[Fillable(['user_id', 'name', 'currency_id', 'provider_id', 'color', 'account_type', 'is_archived'])]
 class Account extends Model
 {
     use HasUuids;
+
+    protected $casts = [
+        'is_archived' => 'boolean',
+    ];
 
     /**
      * Account type constants.
@@ -50,5 +54,10 @@ class Account extends Model
     public function balances(): HasMany
     {
         return $this->hasMany(AccountBalance::class);
+    }
+
+    public function provider(): BelongsTo
+    {
+        return $this->belongsTo(Provider::class);
     }
 }

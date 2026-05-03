@@ -26,20 +26,24 @@ import { Route as Error404RouteImport } from './routes/error-404'
 import { Route as Error403RouteImport } from './routes/error-403'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreditsRouteImport } from './routes/credits'
-import { Route as BudgetRouteImport } from './routes/budget'
 import { Route as AuthLockRouteImport } from './routes/auth-lock'
+import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as AccountsRouteImport } from './routes/accounts'
+import { Route as AccountExpRouteImport } from './routes/account-exp'
 import { Route as R2StepVerificationCodeRouteImport } from './routes/2-step-verification-code'
 import { Route as R2StepVerificationRouteImport } from './routes/2-step-verification'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions.index'
 import { Route as TrackerIndexRouteImport } from './routes/tracker.index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as TrackerTextRouteImport } from './routes/tracker.text'
 import { Route as TrackerPhotoRouteImport } from './routes/tracker.photo'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
 import { Route as TrackerImageRouteImport } from './routes/tracker.image'
 import { Route as TrackerFileRouteImport } from './routes/tracker.file'
 import { Route as TrackerAudioRouteImport } from './routes/tracker.audio'
+import { Route as DashboardAssetsRouteImport } from './routes/dashboard.assets'
+import { Route as AccountsAccountIdRouteImport } from './routes/accounts.$accountId'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -126,19 +130,24 @@ const CreditsRoute = CreditsRouteImport.update({
   path: '/credits',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BudgetRoute = BudgetRouteImport.update({
-  id: '/budget',
-  path: '/budget',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthLockRoute = AuthLockRouteImport.update({
   id: '/auth-lock',
   path: '/auth-lock',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AssetsRoute = AssetsRouteImport.update({
+  id: '/assets',
+  path: '/assets',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountsRoute = AccountsRouteImport.update({
   id: '/accounts',
   path: '/accounts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountExpRoute = AccountExpRouteImport.update({
+  id: '/account-exp',
+  path: '/account-exp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const R2StepVerificationCodeRoute = R2StepVerificationCodeRouteImport.update({
@@ -165,6 +174,11 @@ const TrackerIndexRoute = TrackerIndexRouteImport.update({
   id: '/tracker/',
   path: '/tracker/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const TrackerTextRoute = TrackerTextRouteImport.update({
   id: '/tracker/text',
@@ -196,16 +210,27 @@ const TrackerAudioRoute = TrackerAudioRouteImport.update({
   path: '/tracker/audio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardAssetsRoute = DashboardAssetsRouteImport.update({
+  id: '/assets',
+  path: '/assets',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const AccountsAccountIdRoute = AccountsAccountIdRouteImport.update({
+  id: '/$accountId',
+  path: '/$accountId',
+  getParentRoute: () => AccountsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
-  '/accounts': typeof AccountsRoute
+  '/account-exp': typeof AccountExpRoute
+  '/accounts': typeof AccountsRouteWithChildren
+  '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
-  '/budget': typeof BudgetRoute
   '/credits': typeof CreditsRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
   '/error-429': typeof Error429Route
@@ -221,12 +246,15 @@ export interface FileRoutesByFullPath {
   '/sign-in-illustration': typeof SignInIllustrationRoute
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
+  '/accounts/$accountId': typeof AccountsAccountIdRoute
+  '/dashboard/assets': typeof DashboardAssetsRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
 }
@@ -234,11 +262,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
-  '/accounts': typeof AccountsRoute
+  '/account-exp': typeof AccountExpRoute
+  '/accounts': typeof AccountsRouteWithChildren
+  '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
-  '/budget': typeof BudgetRoute
   '/credits': typeof CreditsRoute
-  '/dashboard': typeof DashboardRoute
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
   '/error-429': typeof Error429Route
@@ -254,12 +282,15 @@ export interface FileRoutesByTo {
   '/sign-in-illustration': typeof SignInIllustrationRoute
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
+  '/accounts/$accountId': typeof AccountsAccountIdRoute
+  '/dashboard/assets': typeof DashboardAssetsRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/tracker': typeof TrackerIndexRoute
   '/transactions': typeof TransactionsIndexRoute
 }
@@ -268,11 +299,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
-  '/accounts': typeof AccountsRoute
+  '/account-exp': typeof AccountExpRoute
+  '/accounts': typeof AccountsRouteWithChildren
+  '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
-  '/budget': typeof BudgetRoute
   '/credits': typeof CreditsRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
   '/error-429': typeof Error429Route
@@ -288,12 +320,15 @@ export interface FileRoutesById {
   '/sign-in-illustration': typeof SignInIllustrationRoute
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
+  '/accounts/$accountId': typeof AccountsAccountIdRoute
+  '/dashboard/assets': typeof DashboardAssetsRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
 }
@@ -303,9 +338,10 @@ export interface FileRouteTypes {
     | '/'
     | '/2-step-verification'
     | '/2-step-verification-code'
+    | '/account-exp'
     | '/accounts'
+    | '/assets'
     | '/auth-lock'
-    | '/budget'
     | '/credits'
     | '/dashboard'
     | '/error-403'
@@ -323,12 +359,15 @@ export interface FileRouteTypes {
     | '/sign-in-illustration'
     | '/sign-in-link'
     | '/sign-up'
+    | '/accounts/$accountId'
+    | '/dashboard/assets'
     | '/tracker/audio'
     | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/text'
+    | '/dashboard/'
     | '/tracker/'
     | '/transactions/'
   fileRoutesByTo: FileRoutesByTo
@@ -336,11 +375,11 @@ export interface FileRouteTypes {
     | '/'
     | '/2-step-verification'
     | '/2-step-verification-code'
+    | '/account-exp'
     | '/accounts'
+    | '/assets'
     | '/auth-lock'
-    | '/budget'
     | '/credits'
-    | '/dashboard'
     | '/error-403'
     | '/error-404'
     | '/error-429'
@@ -356,12 +395,15 @@ export interface FileRouteTypes {
     | '/sign-in-illustration'
     | '/sign-in-link'
     | '/sign-up'
+    | '/accounts/$accountId'
+    | '/dashboard/assets'
     | '/tracker/audio'
     | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/text'
+    | '/dashboard'
     | '/tracker'
     | '/transactions'
   id:
@@ -369,9 +411,10 @@ export interface FileRouteTypes {
     | '/'
     | '/2-step-verification'
     | '/2-step-verification-code'
+    | '/account-exp'
     | '/accounts'
+    | '/assets'
     | '/auth-lock'
-    | '/budget'
     | '/credits'
     | '/dashboard'
     | '/error-403'
@@ -389,12 +432,15 @@ export interface FileRouteTypes {
     | '/sign-in-illustration'
     | '/sign-in-link'
     | '/sign-up'
+    | '/accounts/$accountId'
+    | '/dashboard/assets'
     | '/tracker/audio'
     | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/text'
+    | '/dashboard/'
     | '/tracker/'
     | '/transactions/'
   fileRoutesById: FileRoutesById
@@ -403,11 +449,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R2StepVerificationRoute: typeof R2StepVerificationRoute
   R2StepVerificationCodeRoute: typeof R2StepVerificationCodeRoute
-  AccountsRoute: typeof AccountsRoute
+  AccountExpRoute: typeof AccountExpRoute
+  AccountsRoute: typeof AccountsRouteWithChildren
+  AssetsRoute: typeof AssetsRoute
   AuthLockRoute: typeof AuthLockRoute
-  BudgetRoute: typeof BudgetRoute
   CreditsRoute: typeof CreditsRoute
-  DashboardRoute: typeof DashboardRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   Error403Route: typeof Error403Route
   Error404Route: typeof Error404Route
   Error429Route: typeof Error429Route
@@ -554,13 +601,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreditsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/budget': {
-      id: '/budget'
-      path: '/budget'
-      fullPath: '/budget'
-      preLoaderRoute: typeof BudgetRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth-lock': {
       id: '/auth-lock'
       path: '/auth-lock'
@@ -568,11 +608,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLockRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/assets': {
+      id: '/assets'
+      path: '/assets'
+      fullPath: '/assets'
+      preLoaderRoute: typeof AssetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/accounts': {
       id: '/accounts'
       path: '/accounts'
       fullPath: '/accounts'
       preLoaderRoute: typeof AccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account-exp': {
+      id: '/account-exp'
+      path: '/account-exp'
+      fullPath: '/account-exp'
+      preLoaderRoute: typeof AccountExpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/2-step-verification-code': {
@@ -609,6 +663,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tracker/'
       preLoaderRoute: typeof TrackerIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/tracker/text': {
       id: '/tracker/text'
@@ -652,18 +713,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackerAudioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/assets': {
+      id: '/dashboard/assets'
+      path: '/assets'
+      fullPath: '/dashboard/assets'
+      preLoaderRoute: typeof DashboardAssetsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/accounts/$accountId': {
+      id: '/accounts/$accountId'
+      path: '/$accountId'
+      fullPath: '/accounts/$accountId'
+      preLoaderRoute: typeof AccountsAccountIdRouteImport
+      parentRoute: typeof AccountsRoute
+    }
   }
 }
+
+interface AccountsRouteChildren {
+  AccountsAccountIdRoute: typeof AccountsAccountIdRoute
+}
+
+const AccountsRouteChildren: AccountsRouteChildren = {
+  AccountsAccountIdRoute: AccountsAccountIdRoute,
+}
+
+const AccountsRouteWithChildren = AccountsRoute._addFileChildren(
+  AccountsRouteChildren,
+)
+
+interface DashboardRouteChildren {
+  DashboardAssetsRoute: typeof DashboardAssetsRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAssetsRoute: DashboardAssetsRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R2StepVerificationRoute: R2StepVerificationRoute,
   R2StepVerificationCodeRoute: R2StepVerificationCodeRoute,
-  AccountsRoute: AccountsRoute,
+  AccountExpRoute: AccountExpRoute,
+  AccountsRoute: AccountsRouteWithChildren,
+  AssetsRoute: AssetsRoute,
   AuthLockRoute: AuthLockRoute,
-  BudgetRoute: BudgetRoute,
   CreditsRoute: CreditsRoute,
-  DashboardRoute: DashboardRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   Error403Route: Error403Route,
   Error404Route: Error404Route,
   Error429Route: Error429Route,

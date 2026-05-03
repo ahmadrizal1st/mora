@@ -27,6 +27,7 @@ class StoreAccountRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'currency_id' => ['required', 'uuid', 'exists:currencies,id'],
+            'provider_id' => ['nullable', 'uuid', 'exists:providers,id'],
             'color' => ['nullable', 'string', 'max:20'],
             'account_type' => ['required', "in:{$types}"],
         ];

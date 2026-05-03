@@ -19,10 +19,11 @@ class AccountRepository
             ->allowedFilters(
                 AllowedFilter::partial('name'),
                 'account_type',
-                'currency_id'
+                'currency_id',
+                AllowedFilter::exact('is_archived')->default(false)
             )
             ->allowedSorts('name', 'account_type', 'created_at')
-            ->with(['currency'])
+            ->with(['currency', 'provider'])
             ->withCount(['transactions', 'incomingTransfers']);
     }
 

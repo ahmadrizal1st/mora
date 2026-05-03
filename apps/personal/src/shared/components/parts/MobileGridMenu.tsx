@@ -45,14 +45,12 @@ function FeatureIcon({ type }: { type: string }) {
           <path d="m9 15 2 2 4-4" stroke={Primary} strokeWidth="2.5" />
         </svg>
       )
-    case 'Budget':
+    case 'Assets':
       return (
         <svg {...iconProps}>
-          <rect x="2" y="5" width="20" height="14" rx="2" stroke={Indigo} strokeWidth="1.5" />
-          <path d="M2 10h20" stroke={Indigo} strokeWidth="1.5" />
-          <path d="M6 15h3" stroke={Primary} strokeWidth="1.5" strokeLinecap="round" />
-          <rect x="14" y="13" width="5" height="3" rx="1"
-            stroke={Primary} strokeWidth="1.5" fill={Primary} fillOpacity="0.15" />
+          <path d="M3 21h18" stroke={Indigo} strokeWidth="1.5" />
+          <path d="M5 21V7l7-4 7 4v14" stroke={Indigo} strokeWidth="1.5" />
+          <path d="M9 21v-8h6v8" stroke={Primary} strokeWidth="1.5" />
         </svg>
       )
     case 'Subs':
@@ -136,7 +134,7 @@ export function MobileGridMenu() {
     { label: 'Analytics', href: '/analytics' },
     { label: 'AI Advisor', href: '/ai' },
     { label: 'Tracker', href: '/tracker' },
-    { label: 'Budget', href: '/tracker/budget' },
+    { label: 'Assets', href: '/assets' },
     { label: 'Subs', href: '/tracker/subscriptions' },
     { label: 'Portfolio', href: '/portfolio' },
     { label: 'Market', href: '/market' },

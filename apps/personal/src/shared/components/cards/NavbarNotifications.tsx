@@ -22,7 +22,6 @@ dayjs.locale('id')
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const LABEL_COLORS: Record<string, string> = {
-  budgeting: 'green',
   saving: 'blue',
   credit: 'orange',
   expense: 'red',
@@ -30,7 +29,6 @@ const LABEL_COLORS: Record<string, string> = {
 }
 
 const TITLE_LABEL_MAP: Array<{ keywords: string[]; label: string }> = [
-  { keywords: ['budget'], label: 'budgeting' },
   { keywords: ['saving'], label: 'saving' },
   { keywords: ['kredit', 'credit'], label: 'credit' },
   { keywords: ['pengeluaran', 'expense'], label: 'expense' },

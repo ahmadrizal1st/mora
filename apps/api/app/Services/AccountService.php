@@ -82,7 +82,7 @@ class AccountService
      */
     public static function store(User $user, array $data): Account
     {
-        return $user->accounts()->create($data)->load('currency');
+        return $user->accounts()->create($data)->load(['currency', 'provider']);
     }
 
     /**
@@ -92,7 +92,7 @@ class AccountService
     {
         $account = $user->accounts()->findOrFail($id);
         $account->update($data);
-        return $account->fresh()->load('currency');
+        return $account->fresh()->load(['currency', 'provider']);
     }
 
     /**

@@ -11,6 +11,7 @@ export interface SelectOption {
   label: string
   selected?: boolean
   avatar?: string
+  image?: string
   flag?: string
   badge?: string
   icon?: string
@@ -208,7 +209,8 @@ export function Select({
 
   const renderOptionContent = (opt: SelectOption) => (
     <div className="d-flex align-items-center w-100">
-      {(indicator === 'avatar' || opt.avatar) && opt.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-2" />}
+      {(indicator === 'avatar' || opt.avatar) && opt.avatar && <Avatar src={opt.avatar} size="xs" className="me-2" />}
+      {opt.image && <img src={opt.image} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} className="me-2" />}
       {(indicator === 'flag' || opt.flag) && opt.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>}
       {(indicator === 'label' || opt.badge) && opt.badge && <span className="badge bg-blue-lt me-1">{opt.badge}</span>}
       {opt.color && <span className="status-dot ms-1 me-2" style={{ backgroundColor: opt.color }}></span>}
@@ -226,7 +228,8 @@ export function Select({
             const opt = allOptions.find(o => o.value.toString() === val.toString())
             return (
               <span key={val} className={clsx("badge", "bg-white", "text-dark", "border", "p-1", "rounded-1", "fw-normal", "d-flex", "align-items-center")} style={{ fontSize: '0.75rem', lineHeight: '1' }}>
-                {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-1" />}
+                {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={opt.avatar} size="xs" className="me-1" />}
+                {opt?.image && <img src={opt.image} alt="" style={{ width: '16px', height: '16px', objectFit: 'contain' }} className="me-1" />}
                 {(indicator === 'flag' || opt?.flag) && opt?.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-1')}></span>}
                 {(indicator === 'label' || opt?.badge) && opt?.badge && <span className="badge bg-blue-lt me-1">{opt.badge}</span>}
                 {opt?.color && <span className="status-dot me-1" style={{ backgroundColor: opt.color, width: '8px', height: '8px' }}></span>}
@@ -274,7 +277,8 @@ export function Select({
     if (!opt && search) return null
     return (
       <div className="d-flex align-items-center overflow-hidden">
-        {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={`/${opt.avatar}`} size="xs" className="me-2" />}
+        {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={opt.avatar} size="xs" className="me-2" />}
+        {opt?.image && <img src={opt.image} alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} className="me-2" />}
         {(indicator === 'flag' || opt?.flag) && opt?.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>}
         {(indicator === 'label' || opt?.badge) && opt?.badge && <span className="badge bg-blue-lt me-2">{opt.badge}</span>}
         {opt?.color && <span className="status-dot ms-1 me-2" style={{ backgroundColor: opt.color }}></span>}

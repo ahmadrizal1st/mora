@@ -1,4 +1,4 @@
-import { Icon } from '../ui/Icon';
+import { Icon } from '@/shared/components/ui/Icon';
 
 export function VisualTransactionsCard() {
   return (

@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+.account-exp-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.account-exp-carousel-track {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Fix for ColorPicker appearing behind modal */
+#clr-picker, .clr-picker {
+  z-index: 1060 !important;
+}

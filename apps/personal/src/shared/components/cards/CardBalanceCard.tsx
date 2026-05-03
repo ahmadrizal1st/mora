@@ -1,4 +1,4 @@
-import { Icon } from '../ui/Icon';
+import { Icon } from '@/shared/components/ui/Icon';
 
 const holdings = [
   { name: 'Apple Inc.', ticker: 'AAPL', value: '$44,200', pct: '+5.2%', positive: true, icon: 'brand-apple', bg: '#111827' },

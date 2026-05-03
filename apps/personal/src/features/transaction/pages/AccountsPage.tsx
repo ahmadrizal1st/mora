@@ -9,8 +9,36 @@ import { AccountsSummaryChart } from '../components/AccountsSummaryChart';
 import { getApiErrorMessage } from '@/shared/utils/errorUtils';
 
 export const AccountsPage: React.FC = () => {
+  const [isBalanceHidden, setIsBalanceHidden] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day');
-  const { data: response, isLoading } = useAccounts({ group_by: groupBy });
+  const { data: response, isLoading } = useAccounts({ 
+    group_by: groupBy,
+    'filter[is_archived]': showArchived ? '1' : '0'
+  });
+
+  // Group accounts by type
+  const groupedAccounts = useMemo(() => {
+    const groups: Record<string, Account[]> = {};
+    const accs = response?.data ?? [];
+    accs.forEach(acc => {
+      const type = acc.account_type || 'other';
+      if (!groups[type]) groups[type] = [];
+      groups[type].push(acc);
+    });
+    return groups;
+  }, [response?.data]);
+
+  const typeLabels: Record<string, string> = {
+    'bank': 'Rekening Bank',
+    'e-wallet': 'E-Wallet & Digital',
+    'cash': 'Tunai / Dompet',
+    'investment': 'Investasi',
+    'credit': 'Kartu Kredit',
+    'saving': 'Tabungan',
+    'loan': 'Pinjaman',
+    'other': 'Lainnya'
+  };
 
   // Stabilize accounts reference for other hooks
   const accounts: Account[] = useMemo(() => response?.data ?? [], [response?.data]);
@@ -115,19 +143,39 @@ export const AccountsPage: React.FC = () => {
 
   return (
     <BaseLayout
-      pageTitle="Kelola Akun & Saldo"
+      pageTitle={showArchived ? "Arsip Akun" : "Kelola Akun & Saldo"}
       pageActions={
-        <Button
-          color="primary"
-          onClick={() => {
-            setEditingAccount(undefined);
-            setIsModalOpen(true);
-          }}
-          className="px-4 fw-bold"
-        >
-          <Icon icon="plus" size={18} className="me-1" />
-          Tambah Akun
-        </Button>
+        <div className="d-flex gap-2">
+          <Button
+            color={showArchived ? "warning" : "ghost-secondary"}
+            onClick={() => setShowArchived(!showArchived)}
+            className="px-3"
+            title={showArchived ? 'Lihat Akun Aktif' : 'Lihat Arsip'}
+          >
+            <Icon icon={showArchived ? 'archive-off' : 'archive'} size={18} />
+          </Button>
+          <Button
+            color="ghost-secondary"
+            onClick={() => setIsBalanceHidden(!isBalanceHidden)}
+            className="px-3"
+            title={isBalanceHidden ? 'Tampilkan Saldo' : 'Sembunyikan Saldo'}
+          >
+            <Icon icon={isBalanceHidden ? 'eye-off' : 'eye'} size={18} />
+          </Button>
+          {!showArchived && (
+            <Button
+              color="primary"
+              onClick={() => {
+                setEditingAccount(undefined);
+                setIsModalOpen(true);
+              }}
+              className="px-4 fw-bold"
+            >
+              <Icon icon="plus" size={18} className="me-1" />
+              Tambah Akun
+            </Button>
+          )}
+        </div>
       }
     >
       <div className="container-xl">
@@ -136,31 +184,52 @@ export const AccountsPage: React.FC = () => {
             <Spinner /> Memuat daftar akun...
           </div>
         ) : (
-          <div className="row g-4 mb-4">
+          <div className="mb-5">
             {accounts.length === 0 ? (
-              <div className="col-12 text-center py-5 text-muted">
-                Belum ada akun. Klik "Tambah Akun" untuk memulai.
+              <div className="text-center py-5 text-muted">
+                <Icon icon="wallet" size={48} className="mb-3 opacity-20" />
+                <p>Belum ada akun. Klik "Tambah Akun" untuk memulai.</p>
               </div>
             ) : (
-              accounts.map((account) => (
-                <div key={account.id} className="col-sm-6 col-lg-4">
-                  <AccountCard account={account} onEdit={(acc) => openEdit(acc)} />
+              Object.entries(groupedAccounts).map(([type, typeAccounts]) => (
+                <div key={type} className="mb-4">
+                  <div className="d-flex align-items-center mb-3">
+                    <h2 className="h4 mb-0 fw-bold">{typeLabels[type] || type}</h2>
+                    <div className="ms-2 badge bg-blue-lt">{typeAccounts.length}</div>
+                    <hr className="flex-fill ms-3 opacity-10" />
+                  </div>
+                  <div className="row g-4">
+                    {typeAccounts.map((account) => (
+                      <div key={account.id} className="col-sm-6 col-lg-4">
+                        <AccountCard 
+                          account={account} 
+                          onEdit={(acc) => openEdit(acc)} 
+                          isBalanceHidden={isBalanceHidden}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))
             )}
           </div>
         )}
 
-        <AccountsSummaryChart
-          accountsWithHistory={accountsWithHistory}
-          effectiveSelected={effectiveSelected}
-          toggleAccount={toggleAccount}
-          groupBy={groupBy}
-          setGroupBy={setGroupBy}
-          totalWealth={totalWealth}
-          chartSeries={chartSeries}
-          chartLabels={chartLabels}
-        />
+        <div className="card shadow-sm border-0 mb-4 overflow-hidden" style={{ borderRadius: '1rem' }}>
+          <div className="card-body p-0">
+            <AccountsSummaryChart
+              accountsWithHistory={accountsWithHistory}
+              effectiveSelected={effectiveSelected}
+              toggleAccount={toggleAccount}
+              groupBy={groupBy}
+              setGroupBy={setGroupBy}
+              totalWealth={totalWealth}
+              chartSeries={chartSeries}
+              chartLabels={chartLabels}
+              isBalanceHidden={isBalanceHidden}
+            />
+          </div>
+        </div>
 
         <Modal show={isModalOpen} size={modalView === 'delete-confirm' ? 'sm' : undefined}>
           <ModalHeader

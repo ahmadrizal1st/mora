@@ -46,4 +46,12 @@ class BudgetController extends Controller
         $data = BudgetService::getUtilization($request->user(), $request->query('plan_id'));
         return response()->json(['data' => $data]);
     }
+
+    public function duplicate(Request $request, string $id): JsonResponse
+    {
+        $plan = BudgetService::duplicate($request->user(), $id, $request->all());
+        return response()->json([
+            'data' => BudgetPlanData::from($plan)
+        ]);
+    }
 }

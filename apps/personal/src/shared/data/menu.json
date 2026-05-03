@@ -13,7 +13,7 @@
       "transactions":  { "url": "transactions", "title": "Riwayat Transaksi" },
       "tracker":       { "url": "tracker",     "title": "Catat Transaksi" },
       "accounts":      { "url": "accounts",    "title": "Kelola Akun" },
-      "budget":        { "url": "budget",      "title": "Budgeting Control" },
+      "assets":        { "url": "assets",      "title": "Asset Management" },
       "subscriptions": { "url": "subscription","title": "Subscription Hub" },
       "split":         { "url": "split",       "title": "Split Bill" },
       "forecast":      { "url": "ai/forecast", "title": "Cash Flow Forecast" }
@@ -78,7 +78,6 @@
       "behavior":      { "url": "behavior",           "title": "Spending Behavior" },
       "health_score":  { "url": "behavior/score",     "title": "Financial Health Score" },
       "benchmark":     { "url": "benchmark",          "title": "Spending Benchmark" },
-      "budget_report": { "url": "budget/report",      "title": "Budget Report" },
       "forecast":      { "url": "ai/forecast",        "title": "Cash Flow Forecast" }
     }
   },

@@ -152,6 +152,63 @@ class BudgetService
     }
 
     /**
+     * Duplicate an existing plan.
+     */
+    public static function duplicate(User $user, string $id, array $newData = []): BudgetPlan
+    {
+        return DB::transaction(function () use ($user, $id, $newData) {
+            $sourcePlan = BudgetRepository::findById($id);
+            if (!$sourcePlan || $sourcePlan->user_id !== $user->id) {
+                throw new Exception('Budget plan tidak ditemukan');
+            }
+
+            $startDate = $newData['start_date'] ?? now()->startOfMonth()->toDateString();
+            $endDate = $newData['end_date'] ?? now()->endOfMonth()->toDateString();
+
+            // Validate overlap
+            $overlap = BudgetPlan::where('user_id', $user->id)
+                ->where(function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('start_date', [$startDate, $endDate])
+                        ->orWhereBetween('end_date', [$startDate, $endDate])
+                        ->orWhere(function ($q) use ($startDate, $endDate) {
+                            $q->where('start_date', '<=', $startDate)
+                                ->where('end_date', '>=', $endDate);
+                        });
+                })->exists();
+
+            if ($overlap) {
+                throw new Exception("Budget plan overlaps with an existing plan's period.");
+            }
+
+            $newPlan = BudgetPlan::create([
+                'user_id' => $user->id,
+                'name' => $newData['name'] ?? "Copy of " . $sourcePlan->name,
+                'budget_method' => $sourcePlan->budget_method,
+                'income_baseline' => $newData['income_baseline'] ?? $sourcePlan->income_baseline,
+                'period' => $sourcePlan->period,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'is_active' => $newData['is_active'] ?? false,
+                'rollover_enabled' => $sourcePlan->rollover_enabled,
+            ]);
+
+            foreach ($sourcePlan->items as $item) {
+                $newItem = $newPlan->items()->create([
+                    'name' => $item->name,
+                    'percentage' => $item->percentage,
+                    'amount_limit' => $item->amount_limit,
+                    'color' => $item->color,
+                    'icon' => $item->icon,
+                ]);
+
+                $newItem->categories()->sync($item->categories->pluck('id'));
+            }
+
+            return $newPlan->load('items.categories');
+        });
+    }
+
+    /**
      * Delete a budget plan.
      */
     public static function destroy(User $user, string $id): void
