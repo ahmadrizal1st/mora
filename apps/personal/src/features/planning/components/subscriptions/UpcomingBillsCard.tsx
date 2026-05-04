@@ -58,7 +58,7 @@ export function UpcomingBillsCard({ totalMonthly, paidThisMonth }: UpcomingBills
           <div className="text-secondary small fw-bold text-uppercase mb-3" style={{ fontSize: '9px', letterSpacing: '0.05em' }}>Pembayaran Terdekat</div>
           <div className="vstack gap-2">
             {nextPayments.map((p, i) => (
-              <div key={i} className="d-flex align-items-center justify-content-between p-2 bg-light rounded-2 transition-all hover-bg-white shadow-hover-sm">
+              <div key={i} className="d-flex align-items-center justify-content-between p-2 bg-light rounded-2 transition-all hover-bg-white">
                 <div className="d-flex align-items-center gap-3">
                   <div className="bg-white p-1 rounded-2 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', overflow: 'hidden' }}>
                     {getLogo(p.name) && !imageErrors[p.name] ? (

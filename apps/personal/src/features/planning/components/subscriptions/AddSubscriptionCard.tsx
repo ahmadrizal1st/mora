@@ -13,7 +13,7 @@ export function AddSubscriptionCard() {
       <div className="card-body p-3 d-flex align-items-center justify-content-center text-center">
         <div>
           <div className="mb-2">
-            <Icon icon="plus" size="sm" className="text-orange" />
+            <Icon icon="plus" size="sm" className="text-primary" />
           </div>
           <div className="fw-bold text-secondary" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Tambah Langganan

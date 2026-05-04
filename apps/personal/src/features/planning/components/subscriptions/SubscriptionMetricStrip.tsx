@@ -2,10 +2,10 @@ import { Icon } from '@/shared/components/ui/Icon';
 
 export function SubscriptionMetricStrip() {
   const metrics = [
-    { label: 'Layanan Aktif', value: '12', icon: 'apps', color: 'orange' },
-    { label: 'Sisa Bulan Ini', value: 'Rp 800rb', icon: 'calendar-due', color: 'orange' },
+    { label: 'Layanan Aktif', value: '12', icon: 'apps', color: 'primary' },
+    { label: 'Sisa Bulan Ini', value: 'Rp 800rb', icon: 'calendar-due', color: 'primary' },
     { label: 'Potensi Hemat', value: 'Rp 100rb', icon: 'trending-down', color: 'success' },
-    { label: 'Trial Berakhir', value: '2', icon: 'hourglass', color: 'orange' }
+    { label: 'Trial Berakhir', value: '2', icon: 'hourglass', color: 'primary' }
   ];
 
   return (

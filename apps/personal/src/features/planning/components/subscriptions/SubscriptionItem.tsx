@@ -37,7 +37,7 @@ export function SubscriptionItem({ subscription }: { subscription: Subscription 
   const logoUrl = getLogo(subscription.name);
 
   return (
-    <div className="card border-0 shadow-sm h-100 transition-all hover-shadow-md" style={{ borderRadius: '12px', border: '1px solid #f1f4f9' }}>
+    <div className="card border-0 shadow-sm h-100 transition-all" style={{ borderRadius: '12px', border: '1px solid #f1f4f9' }}>
       <div className="card-body p-3">
         <div className="d-flex align-items-center gap-3">
           <div className="bg-white p-2 rounded-3 border border-light shadow-sm d-flex align-items-center justify-content-center" style={{ width: '42px', height: '42px', overflow: 'hidden' }}>

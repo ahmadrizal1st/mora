@@ -53,7 +53,7 @@ export function SubscriptionCalendar() {
             return (
               <div 
                 key={day} 
-                className={`bg-white p-2 position-relative transition-all hover-shadow-sm`} 
+                className={`bg-white p-2 position-relative transition-all`} 
                 style={{ 
                   minHeight: '100px',
                   border: isToday ? '2px solid var(--tblr-primary)' : 'none',

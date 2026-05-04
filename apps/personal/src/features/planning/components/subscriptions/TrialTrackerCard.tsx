@@ -33,7 +33,7 @@ export function TrialTrackerCard() {
       <div className="card-body p-4 d-flex flex-column h-100">
         <div className="vstack gap-3 flex-grow-1">
           {trials.map(trial => (
-            <div key={trial.id} className="p-3 bg-light rounded-3 transition-all hover-shadow-sm border border-transparent hover-border-primary-lt">
+            <div key={trial.id} className="p-3 bg-light rounded-3 transition-all border border-transparent hover-border-primary-lt">
               <div className="d-flex align-items-start gap-3">
                 <div className="bg-white p-2 rounded-3 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '42px', height: '42px', overflow: 'hidden' }}>
                   <img 
@@ -59,7 +59,7 @@ export function TrialTrackerCard() {
                     </div>
                   </div>
                   <div className="mt-2 d-flex justify-content-end">
-                    <button className="btn btn-ghost-danger btn-sm p-0 fw-bold border-0" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    <button className="btn btn-ghost-danger btn-sm rounded-pill fw-bold border-0 px-3" style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em', height: '24px', display: 'flex', alignItems: 'center' }}>
                       Batalkan Trial
                     </button>
                   </div>
