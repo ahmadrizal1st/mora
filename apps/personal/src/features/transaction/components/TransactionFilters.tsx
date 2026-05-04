@@ -59,9 +59,20 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   ];
 
   return (
-    <div className="card mb-3 border-0 shadow-sm">
-      <div className="card-body">
+    <div className="transaction-filters-container card mb-3 border-0 shadow-sm">
+      <div className="card-body p-3 p-md-4">
         <div className="row g-3">
+          <style>{`
+            @media (max-width: 768px) {
+              .transaction-filters-container {
+                box-shadow: none !important;
+                margin-bottom: 0 !important;
+              }
+              .transaction-filters-container .card-body {
+                padding: 8px !important;
+              }
+            }
+          `}</style>
           <div className="col-md-12 col-lg-3">
             <label className="form-label">Cari Transaksi</label>
             <div className="input-icon">

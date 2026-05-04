@@ -1,12 +1,13 @@
-import { useState, useEffect, useMemo, type FC, type MouseEvent } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, type FC, type MouseEvent } from 'react';
 import { Link } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Icon, Pagination, DropdownGrouping, Modal } from '@/shared/components/ui';
+import { Icon, Pagination, DropdownGrouping, Modal, Button } from '@/shared/components/ui';
 import {
   useTransactions,
   useTransactionSummary,
   useDeleteTransaction,
   useTransactionHistory,
+  useInfiniteTransactions,
   useCreateTransaction,
   useUpdateTransaction
 } from '../hooks/useTransactions';
@@ -34,6 +35,9 @@ export const TransactionListPage: FC = () => {
   // Invoice state
   const [invoiceTransaction, setInvoiceTransaction] = useState<Transaction | undefined>(undefined);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  
+  // Filter Modal state
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -46,6 +50,43 @@ export const TransactionListPage: FC = () => {
   const [viewMode, setViewMode] = useState<'table' | 'list'>('list');
 
   const { data: response, isLoading: isLoadingTx } = useTransactions(filters);
+  const { 
+    data: infiniteData, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage,
+    isLoading: isLoadingInfinite
+  } = useInfiniteTransactions({ ...filters, per_page: 10 });
+
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastElementRef = useCallback((node: HTMLDivElement) => {
+    if (isLoadingInfinite || isFetchingNextPage) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [isLoadingInfinite, isFetchingNextPage, hasNextPage, fetchNextPage]);
+
+  const allTransactions = useMemo(() => {
+    let list: Transaction[] = [];
+    if (isMobile) {
+      list = infiniteData?.pages.flatMap(page => page.data) || [];
+    } else {
+      list = response?.data || [];
+    }
+
+    // Ensure unique transactions by ID to prevent duplicate key errors
+    const seen = new Set();
+    return list.filter(tx => {
+      if (seen.has(tx.id)) return false;
+      seen.add(tx.id);
+      return true;
+    });
+  }, [isMobile, infiniteData, response]);
+
   const { data: summary, isLoading: isLoadingSummary } = useTransactionSummary({
     date_from: filters.date_from,
     date_to: filters.date_to,
@@ -183,57 +224,82 @@ export const TransactionListPage: FC = () => {
   return (
     <BaseLayout
       pageTitle="Daftar Transaksi"
-      pageActions={<DropdownGrouping defaultValue={groupBy} onChange={setGroupBy} />}
+      containerFlushMobile={true}
+      flush={true}
+      bodyClass="px-0"
+      pageActions={
+        <div className="d-flex align-items-center gap-2">
+          {isMobile && (
+            <button 
+              className="border-0 p-0 bg-transparent ms-auto" 
+              onClick={() => setIsFilterModalOpen(true)}
+              style={{ 
+                color: '#1e293b',
+                cursor: 'pointer',
+                outline: 'none',
+                boxShadow: 'none',
+                transition: 'none'
+              }}
+            >
+              <Icon icon="filter" size={24} stroke={1.5} />
+            </button>
+          )}
+          {!isMobile && <DropdownGrouping defaultValue={groupBy} onChange={setGroupBy} />}
+        </div>
+      }
     >
       <div className="container-xl">
-        <TransactionSummaryCards
-          summary={summary}
-          isLoading={isLoadingSummary}
-          chartData={chartData}
-          formatCurrency={formatCurrency}
-        />
+        {!isMobile && (
+          <>
+            <TransactionSummaryCards
+              summary={summary}
+              isLoading={isLoadingSummary}
+              chartData={chartData}
+              formatCurrency={formatCurrency}
+            />
 
-        <TransactionFiltersComponent
-          filters={filters}
-          onChange={setFilters}
-          onClear={handleClearFilters}
-        />
+            <TransactionFiltersComponent
+              filters={filters}
+              onChange={setFilters}
+              onClear={handleClearFilters}
+            />
+          </>
+        )}
 
-        <div className="card border-0 shadow-sm overflow-hidden">
-          <div className="card-header border-0 bg-transparent py-3">
-            <h3 className="card-title fw-bold">Semua Transaksi</h3>
-            <div className="card-actions d-flex align-items-center gap-2">
-              <div className="btn-group shadow-sm rounded-2 overflow-hidden me-2">
-                <button 
-                  className={`btn btn-icon border-0 ${viewMode === 'list' ? 'btn-primary' : 'btn-light'}`}
-                  onClick={() => setViewMode('list')}
-                  title="Tampilan Daftar"
-                >
-                  <Icon icon="list" size={18} />
-                </button>
-                <button 
-                  className={`btn btn-icon border-0 ${viewMode === 'table' ? 'btn-primary' : 'btn-light'}`}
-                  onClick={() => setViewMode('table')}
-                  title="Tampilan Tabel"
-                >
-                  <Icon icon="table" size={18} />
-                </button>
+        <div className={`card border-0 ${isMobile ? 'shadow-none rounded-0 mx-n3' : 'shadow-sm'}`}>
+          {!isMobile && (
+            <div className="card-header border-0 bg-transparent py-3">
+              <h3 className="card-title fw-bold">Semua Transaksi</h3>
+              <div className="card-actions d-flex align-items-center gap-2">
+                <div className="btn-group shadow-sm rounded-2 overflow-hidden me-2">
+                  <button 
+                    className={`btn btn-icon border-0 ${viewMode === 'list' ? 'btn-primary' : 'btn-light'}`}
+                    onClick={() => setViewMode('list')}
+                    title="Tampilan Daftar"
+                  >
+                    <Icon icon="list" size={18} />
+                  </button>
+                  <button 
+                    className={`btn btn-icon border-0 ${viewMode === 'table' ? 'btn-primary' : 'btn-light'}`}
+                    onClick={() => setViewMode('table')}
+                    title="Tampilan Tabel"
+                  >
+                    <Icon icon="table" size={18} />
+                  </button>
+                </div>
+                <Link to="/tracker/input" className="btn btn-primary shadow-sm" onClick={handleAdd}>
+                  <Icon icon="plus" size={18} className="me-1" />
+                  Tambah Transaksi
+                </Link>
               </div>
-              <Link to="/tracker/input" className="btn btn-primary d-none d-sm-inline-block shadow-sm" onClick={handleAdd}>
-                <Icon icon="plus" size={18} className="me-1" />
-                Tambah Transaksi
-              </Link>
-              <Link to="/tracker/input" className="btn btn-primary btn-icon d-sm-none" aria-label="Tambah Transaksi">
-                <Icon icon="plus" size={18} />
-              </Link>
             </div>
-          </div>
+          )}
 
           <div className="card-body p-0">
             {viewMode === 'table' ? (
               <TransactionTable
-                transactions={response?.data}
-                isLoading={isLoadingTx}
+                transactions={allTransactions}
+                isLoading={isMobile ? isLoadingInfinite : isLoadingTx}
                 onEdit={handleEdit}
                 onDelete={(id) => setTxToDelete(id)}
                 onSort={handleSort}
@@ -244,18 +310,21 @@ export const TransactionListPage: FC = () => {
               />
             ) : (
               <TransactionList
-                transactions={response?.data}
-                isLoading={isLoadingTx}
+                transactions={allTransactions}
+                isLoading={isMobile ? isLoadingInfinite : isLoadingTx}
                 onEdit={handleEdit}
                 onDelete={(id) => setTxToDelete(id)}
                 formatCurrency={formatCurrency}
                 formatDate={formatDate}
                 deletePendingId={deleteMutation.isPending ? deleteMutation.variables : null}
+                hasNextPage={isMobile ? hasNextPage : false}
+                isFetchingNextPage={isMobile ? isFetchingNextPage : false}
+                lastElementRef={isMobile ? lastElementRef : undefined}
               />
             )}
           </div>
 
-          {response && response.total > 0 && (
+          {!isMobile && response && response.total > 0 && (
             <div className="card-footer d-flex flex-column flex-md-row align-items-center justify-content-between bg-transparent border-top-0 py-3 gap-3">
               <div className="text-secondary small d-flex align-items-center">
                 Menampilkan&nbsp;<strong>{response.from || 0}</strong>&nbsp;–&nbsp;<strong>{response.to || 0}</strong>&nbsp;dari&nbsp;<strong>{response.total}</strong>&nbsp;transaksi
@@ -305,6 +374,66 @@ export const TransactionListPage: FC = () => {
           />
         )}
       </Modal>
+
+      {/* Full Page Filter Modal for Mobile */}
+      <Modal
+        show={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        size="fullscreen"
+        className="p-0"
+      >
+        <div className="d-flex flex-column h-100 bg-white">
+          <header className="px-3 py-3 border-bottom d-flex align-items-center justify-content-between">
+            <div className="d-flex align-items-center gap-3">
+              <button 
+                className="border-0 p-0 shadow-none bg-transparent d-flex align-items-center" 
+                onClick={() => setIsFilterModalOpen(false)}
+                style={{ boxShadow: 'none', outline: 'none', width: 'auto', height: 'auto' }}
+              >
+                <Icon icon="arrow-left" size={24} />
+              </button>
+              <h2 className="h3 mb-0 fw-bold">Filter Transaksi</h2>
+            </div>
+            <button 
+              className="btn btn-link text-primary p-0 fw-bold shadow-none border-0" 
+              onClick={() => {
+                handleClearFilters();
+                setIsFilterModalOpen(false);
+              }}
+              style={{ boxShadow: 'none', outline: 'none' }}
+            >
+              Reset
+            </button>
+          </header>
+          <div className="flex-grow-1 overflow-auto p-2">
+            <TransactionFiltersComponent
+              filters={filters}
+              onChange={(newFilters) => {
+                setFilters(newFilters);
+                // Optionally auto-close or add an "Apply" button
+              }}
+              onClear={handleClearFilters}
+            />
+          </div>
+          <footer className="p-4 border-top">
+            <Button 
+              element="button"
+              color="primary"
+              block
+              size='md'
+              onClick={() => setIsFilterModalOpen(false)}
+            >
+              Terapkan Filter
+            </Button>
+          </footer>
+        </div>
+      </Modal>
+
+      <style>{`
+        .modal-fullscreen .modal-content {
+          border-radius: 0 !important;
+        }
+      `}</style>
     </BaseLayout>
   );
 };

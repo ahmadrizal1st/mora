@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { transactionService } from '../services/transaction.service';
 import { type TransactionFilters, type CreateTransactionDTO, type UpdateTransactionDTO } from '../types/transaction.types';
 
@@ -6,6 +6,17 @@ export const useTransactions = (filters?: TransactionFilters) => {
   return useQuery({
     queryKey: ['transactions', filters],
     queryFn: () => transactionService.getTransactions(filters),
+  });
+};
+
+export const useInfiniteTransactions = (filters?: TransactionFilters) => {
+  return useInfiniteQuery({
+    queryKey: ['transactions-infinite', filters],
+    queryFn: ({ pageParam = 1 }) => 
+      transactionService.getTransactions({ ...filters, page: pageParam as number }),
+    getNextPageParam: (lastPage) => 
+      lastPage.current_page < lastPage.last_page ? lastPage.current_page + 1 : undefined,
+    initialPageParam: 1,
   });
 };
 

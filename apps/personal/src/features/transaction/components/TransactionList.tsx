@@ -10,43 +10,33 @@ interface TransactionListProps {
   formatCurrency: (amount: number) => string;
   formatDate: (dateString: string, type?: 'date' | 'time') => string;
   deletePendingId?: string | null;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  lastElementRef?: (node: HTMLDivElement) => void;
 }
 
 export const TransactionList: FC<TransactionListProps> = ({
   transactions,
   isLoading,
   onEdit,
-  onDelete,
   formatCurrency,
-  formatDate,
-  deletePendingId,
+  hasNextPage,
+  isFetchingNextPage,
+  lastElementRef,
 }) => {
-  const groupedTransactions = useMemo(() => {
+  const groupedByMonth = useMemo(() => {
     if (!transactions) return {};
     const groups: Record<string, Transaction[]> = {};
     transactions.forEach((tx) => {
-      // Standardize date to YYYY-MM-DD for grouping
-      const dateKey = tx.tx_date.split('T')[0]; 
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(tx);
+      const date = new Date(tx.tx_date);
+      const monthYear = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(date);
+      if (!groups[monthYear]) groups[monthYear] = [];
+      groups[monthYear].push(tx);
     });
     return groups;
   }, [transactions]);
 
-  const sortedDates = useMemo(() => 
-    Object.keys(groupedTransactions).sort((a, b) => b.localeCompare(a)),
-    [groupedTransactions]
-  );
-
-  const getRelativeDateLabel = (dateStr: string) => {
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    
-    if (dateStr === today) return 'Hari Ini';
-    if (dateStr === yesterday) return 'Kemarin';
-    
-    return formatDate(dateStr, 'date');
-  };
+  const monthKeys = useMemo(() => Object.keys(groupedByMonth), [groupedByMonth]);
 
   if (isLoading) {
     return (
@@ -70,153 +60,165 @@ export const TransactionList: FC<TransactionListProps> = ({
   }
 
   return (
-    <div className="transaction-list-container px-3 px-md-4 py-2">
-      {sortedDates.map((date) => (
-        <div key={date} className="transaction-group mb-4">
-          <div 
-            className="group-header d-flex justify-content-between align-items-center mb-3 py-1"
-            style={{ borderBottom: '1px solid rgba(0,0,0,0.05)' }}
-          >
-            <span className="fw-bold text-dark fs-4">{getRelativeDateLabel(date)}</span>
-            <div className="text-secondary small d-flex align-items-center gap-2">
-              <span className="badge bg-light text-dark rounded-pill px-2">
-                {groupedTransactions[date].length} Transaksi
-              </span>
-            </div>
+    <div className="transaction-history-list bg-white">
+      {monthKeys.map((month, monthIndex) => (
+        <div key={month} className="month-group mb-4">
+          <div className="month-header px-3 px-md-4 py-3 bg-light-subtle d-flex align-items-center gap-2">
+            <div className="month-indicator" />
+            <span className="fw-black text-dark text-uppercase tracking-wider" style={{ fontSize: '0.85rem', opacity: 0.8 }}>
+              {month}
+            </span>
           </div>
           
-          <div className="transaction-items d-flex flex-column gap-2">
-            {groupedTransactions[date].map((tx) => (
-              <div 
-                key={tx.id} 
-                className="transaction-item card border-0 mb-1"
-                onClick={(e) => onEdit(tx, e as unknown as MouseEvent)}
-                style={{ 
-                  cursor: 'pointer', 
-                  borderRadius: '12px',
-                  backgroundColor: 'white'
-                }}
-              >
-                <div className="card-body p-3">
-                  <div className="row align-items-center g-3">
-                    <div className="col-auto">
-                      <div 
-                        className="category-icon-wrapper rounded-3 d-flex align-items-center justify-content-center shadow-sm"
-                        style={{ 
-                          width: '48px', 
-                          height: '48px', 
-                          backgroundColor: `${tx.category?.color || '#6c757d'}15`,
-                          color: tx.category?.color || '#6c757d',
-                          border: `1px solid ${tx.category?.color || '#6c757d'}20`
-                        }}
-                      >
-                        <Icon icon={tx.category?.icon || 'category'} size={28} stroke={1.5} />
-                      </div>
-                    </div>
-                    
-                    <div className="col text-truncate">
-                      <div className="d-flex align-items-center gap-2 mb-1">
-                        <span className="fw-bold text-dark fs-3 text-truncate">
-                          {tx.merchant || (tx.type === 'transfer' ? 'Transfer Dana' : 'Umum')}
-                        </span>
-                        {tx.input_method !== 'manual' && (
-                          <span className="text-muted" title={`Input via ${tx.input_method}`}>
-                            <Icon 
-                              icon={
-                                tx.input_method === 'image' ? 'photo' : 
-                                tx.input_method === 'audio' ? 'microphone' : 
-                                tx.input_method === 'file' ? 'file-text' : 
-                                'pencil'
-                              } 
-                              size={12} 
-                            />
-                          </span>
-                        )}
-                      </div>
-                      <div className="d-flex align-items-center flex-wrap gap-2 text-secondary small">
-                        <div className="d-flex align-items-center gap-1">
-                          <span 
-                            className="status-dot rounded-circle" 
-                            style={{ 
-                              backgroundColor: tx.account?.color || '#eee', 
-                              width: '8px', 
-                              height: '8px',
-                              display: 'inline-block'
-                            }}
-                          ></span>
-                          {tx.account?.name}
+          <div className="transaction-rows">
+            {groupedByMonth[month].map((tx, txIndex) => {
+              const txDate = new Date(tx.tx_date);
+              const day = txDate.getDate();
+              const monthShort = new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(txDate);
+              const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'short' }).format(txDate);
+
+              return (
+                <div 
+                  key={tx.id} 
+                  ref={
+                    monthIndex === monthKeys.length - 1 && txIndex === groupedByMonth[month].length - 1
+                      ? lastElementRef
+                      : undefined
+                  }
+                  className="transaction-row d-flex align-items-center py-3 px-3 px-md-4 border-bottom position-relative"
+                  onClick={(e) => onEdit(tx, e as unknown as MouseEvent)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {/* Unique Date Leaf Column */}
+                  <div className="date-leaf me-2 me-md-4 text-center">
+                    <div className="day-name">{dayName}</div>
+                    <div className="day-num">{day < 10 ? `0${day}` : day}</div>
+                    <div className="month-label">{monthShort}</div>
+                  </div>
+
+                  {/* Info Column */}
+                  <div className="flex-grow-1 min-width-0">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div>
+                        <h4 className="merchant-name fw-bold mb-0 text-truncate">
+                          {tx.merchant || 'Transaksi Mora'}
+                        </h4>
+                        <div className="category-tag small opacity-60">
+                          {tx.category?.name || 'Umum'}
                         </div>
-                        <span className="opacity-50">•</span>
-                        <span>{formatDate(tx.tx_date, 'time')}</span>
-                        {tx.tags && tx.tags.length > 0 && (
-                          <>
-                            <span className="opacity-50">•</span>
-                            <div className="d-flex gap-1 overflow-hidden">
-                              {tx.tags.slice(0, 2).map(tag => (
-                                <span key={tag.id} className="badge bg-light text-muted border-0 fw-normal" style={{ fontSize: '10px' }}>
-                                  #{tag.name}
-                                </span>
-                              ))}
-                              {tx.tags.length > 2 && <span className="text-muted" style={{ fontSize: '10px' }}>+{tx.tags.length - 2}</span>}
-                            </div>
-                          </>
-                        )}
                       </div>
-                    </div>
-                    
-                    <div className="col-auto text-end">
-                      <div 
-                        className={`fw-bold fs-3 ${
-                          tx.type === 'income' ? 'text-success' : 
+                      <div className="text-end">
+                        <div className={`amount-display fw-black ${
                           tx.type === 'expense' ? 'text-danger' : 
-                          'text-primary'
-                        }`}
-                      >
-                        {tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : ''}
-                        {formatCurrency(tx.amount)}
+                          tx.type === 'income' ? 'text-success' : 
+                          'text-dark'
+                        }`}>
+                          {tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : ''}{formatCurrency(tx.amount)}
+                        </div>
+                        <div className="tx-status-pill">
+                          <Icon icon="circle-check-filled" size={12} className="me-1" />
+                          <span>Selesai</span>
+                        </div>
                       </div>
-                      {tx.status && (
-                        <span 
-                          className="badge border-0 rounded-pill mt-1" 
-                          style={{ 
-                            backgroundColor: `${tx.status.color}15`, 
-                            color: tx.status.color,
-                            fontSize: '10px',
-                            fontWeight: 600
-                          }}
-                        >
-                          {tx.status.name}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="col-auto d-none d-md-block ms-2">
-                      <button 
-                        className="btn btn-ghost-danger btn-icon border-0" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(tx.id);
-                        }}
-                        disabled={deletePendingId === tx.id}
-                      >
-                        {deletePendingId === tx.id ? (
-                          <Spinner size="sm" />
-                        ) : (
-                          <Icon icon="trash" size={18} stroke={1.5} />
-                        )}
-                      </button>
                     </div>
                   </div>
+
+                  {/* Action Column */}
+                  <div className="ms-3 opacity-20">
+                    <Icon icon="chevron-right" size={18} />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ))}
 
+      {isFetchingNextPage && (
+        <div className="py-4 text-center border-top">
+          <Spinner size="sm" />
+          <span className="ms-2 text-secondary small">Memuat lebih banyak...</span>
+        </div>
+      )}
+
+      {!hasNextPage && transactions && transactions.length > 0 && (
+        <div className="py-4 text-center text-muted small opacity-50">
+          Semua transaksi telah dimuat
+        </div>
+      )}
+
       <style>{`
-        .transaction-group:last-child {
-          margin-bottom: 0;
+        .transaction-history-list {
+          border-radius: 0;
+          overflow: hidden;
+        }
+        
+        .month-indicator {
+          width: 4px;
+          height: 16px;
+          background: var(--mora-primary);
+          border-radius: 4px;
+        }
+
+        .transaction-row {
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Unique Date Leaf */
+        .date-leaf {
+          min-width: 54px;
+          background: #f8fafc;
+          border-radius: 0;
+          padding: 6px 4px;
+          border: 1px solid #f1f5f9;
+        }
+        .date-leaf .day-name {
+          font-size: 0.65rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          color: var(--mora-text-muted);
+          letter-spacing: 0.5px;
+        }
+        .date-leaf .day-num {
+          font-size: 1.4rem;
+          font-weight: 900;
+          color: var(--mora-primary);
+          line-height: 1.1;
+        }
+        .date-leaf .month-label {
+          font-size: 0.65rem;
+          font-weight: 700;
+          color: var(--mora-text-muted);
+          opacity: 0.7;
+        }
+
+        .merchant-name {
+          color: #1e293b;
+          font-size: 1rem;
+          letter-spacing: -0.2px;
+        }
+        
+        .amount-display {
+          font-size: 1.1rem;
+          letter-spacing: -0.5px;
+        }
+
+        .tx-status-pill {
+          display: inline-flex;
+          align-items: center;
+          font-size: 0.65rem;
+          font-weight: 800;
+          color: #22c55e;
+          background: #f0fdf4;
+          padding: 2px 8px;
+          border-radius: 6px;
+          text-transform: uppercase;
+          margin-top: 4px;
+        }
+
+        .category-tag {
+          font-weight: 500;
+          color: #64748b;
         }
       `}</style>
     </div>
