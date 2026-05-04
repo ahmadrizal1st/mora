@@ -29,7 +29,6 @@ import { Route as CreditsRouteImport } from './routes/credits'
 import { Route as AuthLockRouteImport } from './routes/auth-lock'
 import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as AccountsRouteImport } from './routes/accounts'
-import { Route as AccountExpRouteImport } from './routes/account-exp'
 import { Route as R2StepVerificationCodeRouteImport } from './routes/2-step-verification-code'
 import { Route as R2StepVerificationRouteImport } from './routes/2-step-verification'
 import { Route as IndexRouteImport } from './routes/index'
@@ -145,11 +144,6 @@ const AccountsRoute = AccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AccountExpRoute = AccountExpRouteImport.update({
-  id: '/account-exp',
-  path: '/account-exp',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const R2StepVerificationCodeRoute = R2StepVerificationCodeRouteImport.update({
   id: '/2-step-verification-code',
   path: '/2-step-verification-code',
@@ -225,7 +219,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
-  '/account-exp': typeof AccountExpRoute
   '/accounts': typeof AccountsRouteWithChildren
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -262,7 +255,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
-  '/account-exp': typeof AccountExpRoute
   '/accounts': typeof AccountsRouteWithChildren
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -299,7 +291,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
-  '/account-exp': typeof AccountExpRoute
   '/accounts': typeof AccountsRouteWithChildren
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -338,7 +329,6 @@ export interface FileRouteTypes {
     | '/'
     | '/2-step-verification'
     | '/2-step-verification-code'
-    | '/account-exp'
     | '/accounts'
     | '/assets'
     | '/auth-lock'
@@ -375,7 +365,6 @@ export interface FileRouteTypes {
     | '/'
     | '/2-step-verification'
     | '/2-step-verification-code'
-    | '/account-exp'
     | '/accounts'
     | '/assets'
     | '/auth-lock'
@@ -411,7 +400,6 @@ export interface FileRouteTypes {
     | '/'
     | '/2-step-verification'
     | '/2-step-verification-code'
-    | '/account-exp'
     | '/accounts'
     | '/assets'
     | '/auth-lock'
@@ -449,7 +437,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R2StepVerificationRoute: typeof R2StepVerificationRoute
   R2StepVerificationCodeRoute: typeof R2StepVerificationCodeRoute
-  AccountExpRoute: typeof AccountExpRoute
   AccountsRoute: typeof AccountsRouteWithChildren
   AssetsRoute: typeof AssetsRoute
   AuthLockRoute: typeof AuthLockRoute
@@ -622,13 +609,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/account-exp': {
-      id: '/account-exp'
-      path: '/account-exp'
-      fullPath: '/account-exp'
-      preLoaderRoute: typeof AccountExpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/2-step-verification-code': {
       id: '/2-step-verification-code'
       path: '/2-step-verification-code'
@@ -760,7 +740,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R2StepVerificationRoute: R2StepVerificationRoute,
   R2StepVerificationCodeRoute: R2StepVerificationCodeRoute,
-  AccountExpRoute: AccountExpRoute,
   AccountsRoute: AccountsRouteWithChildren,
   AssetsRoute: AssetsRoute,
   AuthLockRoute: AuthLockRoute,

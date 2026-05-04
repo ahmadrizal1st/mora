@@ -15,6 +15,7 @@ import { TransactionFiltersComponent } from '../components/TransactionFilters';
 import { type TransactionFormValues } from '../components/TransactionForm';
 import { TransactionSummaryCards } from '../components/TransactionSummaryCards';
 import { TransactionTable } from '../components/TransactionTable';
+import { TransactionList } from '../components/TransactionList';
 import { TransactionModals } from '../components/TransactionModals';
 
 export const TransactionListPage: FC = () => {
@@ -36,6 +37,8 @@ export const TransactionListPage: FC = () => {
   }, []);
 
   const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day');
+
+  const [viewMode, setViewMode] = useState<'table' | 'list'>('list');
 
   const { data: response, isLoading: isLoadingTx } = useTransactions(filters);
   const { data: summary, isLoading: isLoadingSummary } = useTransactionSummary({
@@ -184,11 +187,27 @@ export const TransactionListPage: FC = () => {
           onClear={handleClearFilters}
         />
 
-        <div className="card border-0 shadow-sm">
-          <div className="card-header">
-            <h3 className="card-title">Semua Transaksi</h3>
-            <div className="card-actions">
-              <Link to="/tracker/input" className="btn btn-primary d-none d-sm-inline-block" onClick={handleAdd}>
+        <div className="card border-0 shadow-sm overflow-hidden">
+          <div className="card-header border-0 bg-transparent py-3">
+            <h3 className="card-title fw-bold">Semua Transaksi</h3>
+            <div className="card-actions d-flex align-items-center gap-2">
+              <div className="btn-group shadow-sm rounded-2 overflow-hidden me-2">
+                <button 
+                  className={`btn btn-icon border-0 ${viewMode === 'list' ? 'btn-primary' : 'btn-light'}`}
+                  onClick={() => setViewMode('list')}
+                  title="Tampilan Daftar"
+                >
+                  <Icon icon="list" size={18} />
+                </button>
+                <button 
+                  className={`btn btn-icon border-0 ${viewMode === 'table' ? 'btn-primary' : 'btn-light'}`}
+                  onClick={() => setViewMode('table')}
+                  title="Tampilan Tabel"
+                >
+                  <Icon icon="table" size={18} />
+                </button>
+              </div>
+              <Link to="/tracker/input" className="btn btn-primary d-none d-sm-inline-block shadow-sm" onClick={handleAdd}>
                 <Icon icon="plus" size={18} className="me-1" />
                 Tambah Transaksi
               </Link>
@@ -198,17 +217,31 @@ export const TransactionListPage: FC = () => {
             </div>
           </div>
 
-          <TransactionTable
-            transactions={response?.data}
-            isLoading={isLoadingTx}
-            onEdit={handleEdit}
-            onDelete={(id) => setTxToDelete(id)}
-            onSort={handleSort}
-            getSortIcon={getSortIcon}
-            formatCurrency={formatCurrency}
-            formatDate={formatDate}
-            deletePendingId={deleteMutation.isPending ? deleteMutation.variables : null}
-          />
+          <div className="card-body p-0">
+            {viewMode === 'table' ? (
+              <TransactionTable
+                transactions={response?.data}
+                isLoading={isLoadingTx}
+                onEdit={handleEdit}
+                onDelete={(id) => setTxToDelete(id)}
+                onSort={handleSort}
+                getSortIcon={getSortIcon}
+                formatCurrency={formatCurrency}
+                formatDate={formatDate}
+                deletePendingId={deleteMutation.isPending ? deleteMutation.variables : null}
+              />
+            ) : (
+              <TransactionList
+                transactions={response?.data}
+                isLoading={isLoadingTx}
+                onEdit={handleEdit}
+                onDelete={(id) => setTxToDelete(id)}
+                formatCurrency={formatCurrency}
+                formatDate={formatDate}
+                deletePendingId={deleteMutation.isPending ? deleteMutation.variables : null}
+              />
+            )}
+          </div>
 
           {response && response.total > 0 && (
             <div className="card-footer d-flex flex-column flex-md-row align-items-center justify-content-between bg-transparent border-top-0 py-3 gap-3">

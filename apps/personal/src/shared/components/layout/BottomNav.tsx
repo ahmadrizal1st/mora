@@ -12,10 +12,10 @@ export function BottomNav() {
 
   const navItems = [
     { label: 'Home', icon: 'home', href: '/dashboard' },
-    { label: 'Insight', icon: 'presentation-analytics', href: '/activity' },
-    { label: 'Add', icon: 'plus', href: '/tracker', isAction: true },
-    { label: 'Reports', icon: 'chart-pie', href: '/dashboard-assets' },
-    { label: 'Profile', icon: 'user', href: '/profile' },
+    { label: 'Info', icon: 'library', href: '/info' },
+    { label: 'Tracker', icon: 'scan', href: '/tracker', isAction: true },
+    { label: 'Activity', icon: 'file-invoice', href: '/activity' },
+    { label: 'Chat', icon: 'message-circle', href: '/chat' },
   ]
 
   const isActive = (href: string) => {
@@ -26,38 +26,46 @@ export function BottomNav() {
   }
 
   return (
-    <nav className="bottom-navbar d-md-none">
-      {navItems.map((item) => {
-        const active = isActive(item.href)
-        const isAction = item.isAction
-        
-        return (
-          <Link
-            key={item.label}
-            to={item.href}
-            className={clsx('bottom-navbar-item', active && 'active')}
-            style={{
-              width: isAction ? '74px' : '64px', // Slightly wider for action button if needed
-              height: '46px',
-              borderRadius: '1.25rem',
-            }}
-          >
-            {isAction && !active ? (
-              <div className="bottom-navbar-add">
-                <Icon icon={item.icon} stroke={3} size={24} />
+    <nav className="bottom-navbar d-md-none px-3">
+      <div className="bottom-navbar-container">
+        {navItems.map((item) => {
+          const active = isActive(item.href)
+          const isAction = item.isAction
+          
+          if (isAction) {
+            return (
+              <div key={item.label} className="bottom-navbar-action-wrapper">
+                <Link
+                  to={item.href}
+                  className="bottom-navbar-action-btn"
+                >
+                  <div className="btn-glass-glow"></div>
+                  <Icon icon={item.icon} stroke={2} size={26} />
+                </Link>
+                <span className="bottom-navbar-label">{item.label}</span>
               </div>
-            ) : (
-              <Icon 
-                icon={item.icon} 
-                filled={active}
-                stroke={active ? 0.5 : 2}
-                size={22}
-                style={{ transition: 'all 0.2s ease' }}
-              />
-            )}
-          </Link>
-        )
-      })}
+            )
+          }
+
+          return (
+            <Link
+              key={item.label}
+              to={item.href}
+              className={clsx('bottom-navbar-item', active && 'active')}
+            >
+              <div className="bottom-navbar-icon-wrapper">
+                <Icon 
+                  icon={item.icon} 
+                  filled={active}
+                  stroke={active ? 1.5 : 2}
+                  size={24}
+                />
+              </div>
+              <span className="bottom-navbar-label">{item.label}</span>
+            </Link>
+          )
+        })}
+      </div>
     </nav>
   )
 }

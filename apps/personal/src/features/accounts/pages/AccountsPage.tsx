@@ -12,9 +12,9 @@ import { AccountStatsCard } from '../components/AccountStatsCard';
 import { Icon } from '@/shared/components/ui/Icon';
 import { AddAccountModal } from '../components/AddAccountModal';
 import { BUDGET_DATA } from '../data/mockData';
-import './AccountExpPage.css';
+import './AccountsPage.css';
 
-export default function AccountExpPage() {
+export function AccountsPage() {
   const [cur, setCur] = useState(0);
   const [range, setRange] = useState('W');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -37,7 +37,7 @@ export default function AccountExpPage() {
   return (
     <BaseLayout pageTitle="Detail Akun & Mutasi">
       {/* ACCOUNT SELECTION CAROUSEL */}
-      <div className="d-flex align-items-stretch overflow-auto gap-3 pb-3 mb-4 account-exp-carousel-track">
+      <div className="d-flex align-items-stretch overflow-auto gap-3 pb-3 mb-4 accounts-carousel-track">
         {BUDGET_DATA.map((acc, idx) => (
           <AccountCard
             key={idx}
