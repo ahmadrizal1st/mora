@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, type FC, type MouseEvent } from 'react';
 import { Link } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Icon, Pagination, DropdownGrouping } from '@/shared/components/ui';
+import { Icon, Pagination, DropdownGrouping, Modal } from '@/shared/components/ui';
 import {
   useTransactions,
   useTransactionSummary,
@@ -17,6 +17,7 @@ import { TransactionSummaryCards } from '../components/TransactionSummaryCards';
 import { TransactionTable } from '../components/TransactionTable';
 import { TransactionList } from '../components/TransactionList';
 import { TransactionModals } from '../components/TransactionModals';
+import { TransactionInvoice } from '../components/TransactionInvoice';
 
 export const TransactionListPage: FC = () => {
   const [filters, setFilters] = useState<TransactionFilters>({
@@ -29,6 +30,10 @@ export const TransactionListPage: FC = () => {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>(undefined);
   const [txToDelete, setTxToDelete] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  
+  // Invoice state
+  const [invoiceTransaction, setInvoiceTransaction] = useState<Transaction | undefined>(undefined);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -68,11 +73,15 @@ export const TransactionListPage: FC = () => {
   };
 
   const handleEdit = (tx: Transaction, e: MouseEvent) => {
-    if (!isMobile) {
-      e.preventDefault();
-      setEditingTransaction(tx);
-      setIsModalOpen(true);
-    }
+    e.preventDefault();
+    setInvoiceTransaction(tx);
+    setIsInvoiceOpen(true);
+  };
+
+  const handleStartEdit = (tx: Transaction) => {
+    setIsInvoiceOpen(false);
+    setEditingTransaction(tx);
+    setIsModalOpen(true);
   };
 
   const handleFormSubmit = async (data: TransactionFormValues) => {
@@ -154,15 +163,18 @@ export const TransactionListPage: FC = () => {
     }).format(amount || 0);
   };
 
-  const formatDate = (dateString: string, type: 'date' | 'time' = 'date') => {
+  const formatDate = (dateString: string, type: 'date' | 'time' | 'full' = 'date') => {
     try {
       if (!dateString) return '-';
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return '-';
-      if (type === 'time') {
-        return new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
-      }
-      return new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
+      
+      const datePart = new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
+      const timePart = new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(date);
+
+      if (type === 'time') return timePart;
+      if (type === 'full') return `${datePart} ${timePart}`;
+      return datePart;
     } catch {
       return '-';
     }
@@ -274,6 +286,25 @@ export const TransactionListPage: FC = () => {
         onDeleteConfirm={confirmDelete}
         isDeleteLoading={deleteMutation.isPending}
       />
+
+      {/* Transaction Invoice Modal */}
+      <Modal
+        show={isInvoiceOpen}
+        onClose={() => setIsInvoiceOpen(false)}
+        size={isMobile ? 'fullscreen' : 'lg'}
+        top={!isMobile}
+        className={isMobile ? 'p-0' : ''}
+      >
+        {invoiceTransaction && (
+          <TransactionInvoice
+            transaction={invoiceTransaction}
+            onClose={() => setIsInvoiceOpen(false)}
+            onEdit={handleStartEdit}
+            formatCurrency={formatCurrency}
+            formatDate={formatDate}
+          />
+        )}
+      </Modal>
     </BaseLayout>
   );
 };
