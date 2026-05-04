@@ -3,17 +3,17 @@ import { Chart } from '@/shared/components/ui/Chart';
 export function SubscriptionDistributionChart() {
   const chartData = {
     type: 'donut' as const,
-    height: 15,
+    height: 16, // Synced height
     series: [
-      { name: 'Streaming', data: [450000], color: 'primary' },
-      { name: 'Utilities', data: [350000], color: 'warning' },
+      { name: 'Streaming', data: [450000], color: 'warning' },
+      { name: 'Utilities', data: [350000], color: 'primary' },
       { name: 'Music', data: [55000], color: 'success' },
       { name: 'Cloud', data: [150000], color: 'info' }
     ],
     donutLabel: 'Total',
     donutValue: 'Rp 1jt',
     extend: {
-      legend: { position: 'bottom' }
+      legend: { position: 'bottom', fontSize: '10px', fontWeight: 600 }
     }
   };
 

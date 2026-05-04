@@ -37,7 +37,7 @@ export function GoalsTab() {
             </div>
             
             <div className="flex-grow-1 d-flex flex-column justify-content-center text-center position-relative" style={{ zIndex: 1 }}>
-              <div className="p-3 bg-white text-warning rounded-circle d-inline-flex mb-3 mx-auto shadow-sm">
+              <div className="p-3 bg-white rounded-circle d-inline-flex mb-3 mx-auto shadow-sm" style={{ color: '#f59f00' }}>
                 <Icon icon="flame" size="md" />
               </div>
               <h3 className="fw-bold mb-1 text-white">Savings Streak</h3>
@@ -49,17 +49,17 @@ export function GoalsTab() {
               <div className="d-flex justify-content-center gap-2 mb-3">
                 {[1, 2, 3, 4, 5, 6].map(i => (
                   <div key={i} className="p-1 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style={{ width: '24px', height: '24px' }}>
-                    <Icon icon="check" size="xs" className="text-warning" stroke={3} />
+                    <Icon icon="check" size="xs" style={{ color: '#f59f00' }} stroke={3} />
                   </div>
                 ))}
                 <div className="p-1 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border border-white-subtle opacity-50" style={{ width: '24px', height: '24px' }}>
-                  <span className="text-warning fw-bold" style={{ fontSize: '10px' }}>+1</span>
+                  <span className="fw-bold" style={{ fontSize: '10px', color: '#f59f00' }}>+1</span>
                 </div>
               </div>
               <div className="small fw-bold text-white text-uppercase" style={{ fontSize: '10px', letterSpacing: '0.05em', opacity: '0.8' }}>1 month to next milestone</div>
             </div>
             <div className="mt-3 pt-3 border-top border-white-subtle text-center">
-              <button className="btn btn-white btn-sm w-100 rounded-pill fw-bold text-warning">Lihat Pencapaian</button>
+              <button className="btn btn-white btn-sm w-100 rounded-pill fw-bold" style={{ color: '#f59f00' }}>Lihat Pencapaian</button>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@ export function GoalsTab() {
         <div className="card border-0 h-100" style={{ borderRadius: '16px' }}>
           <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
             <h3 className="card-title fw-bold d-flex align-items-center gap-2 m-0">
-              <Icon icon="star" size="sm" className="text-warning" />
+              <Icon icon="star" size="sm" style={{ color: '#f59f00' }} />
               My Dreams & Wishes
               <span className="badge bg-light text-secondary border ms-2" style={{ fontSize: '11px' }}>{goals.length}</span>
             </h3>
@@ -95,7 +95,7 @@ export function GoalsTab() {
                 {/* Add Button is always part of the grid flow */}
                 <div className="col-12 col-md-6">
                   <div 
-                    className="card shadow-none cursor-pointer d-flex align-items-center justify-content-center py-5 border-dashed h-100 transition-all hover-bg-light hover-border-primary" 
+                    className="card shadow-none cursor-pointer d-flex align-items-center justify-content-center py-5 h-100 transition-all hover-bg-light hover-border-primary" 
                     style={{ 
                       borderRadius: '16px', 
                       border: '2px dashed #cbd5e1', 
@@ -105,7 +105,7 @@ export function GoalsTab() {
                     }}
                   >
                     <div className="text-center">
-                      <div className="p-3 bg-white rounded-circle d-inline-flex mb-3 border border-light transition-all scale-up-hover">
+                      <div className="mb-3">
                         <Icon icon="plus" size="md" className="text-orange" stroke={3} />
                       </div>
                       <div className="fw-bold text-secondary text-uppercase" style={{ fontSize: '11px', letterSpacing: '0.1em' }}>Tambah Impian Baru</div>

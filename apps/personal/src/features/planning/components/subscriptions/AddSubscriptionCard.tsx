@@ -1,0 +1,25 @@
+import React from 'react';
+import { Icon } from '@/shared/components/ui/Icon';
+
+export function AddSubscriptionCard() {
+  return (
+    <div className="card h-100 shadow-none transition-all hover-bg-light" style={{ 
+      borderRadius: '12px', 
+      border: '1.5px dashed #dce1e7',
+      cursor: 'pointer',
+      background: 'transparent',
+      minHeight: '50px'
+    }}>
+      <div className="card-body p-3 d-flex align-items-center justify-content-center text-center">
+        <div>
+          <div className="mb-2">
+            <Icon icon="plus" size="sm" className="text-orange" />
+          </div>
+          <div className="fw-bold text-secondary" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Tambah Langganan
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
