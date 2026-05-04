@@ -17,13 +17,15 @@ export function GoalTrajectoryChart() {
   };
 
   return (
-    <div className="card shadow-sm border-0">
-      <div className="card-body p-4">
+    <div className="card shadow-sm border-0 h-100">
+      <div className="card-body p-4 d-flex flex-column h-100">
         <h4 className="fw-bold text-secondary small text-uppercase mb-4">Savings Trajectory</h4>
-        <div className="mx-n2">
-          <Chart chartId="goalTrajectory" chartData={chartData as any} />
+        <div className="mx-n2 flex-grow-1 d-flex align-items-center">
+          <div className="w-100">
+            <Chart chartId="goalTrajectory" chartData={{ ...chartData, height: 15 } as any} />
+          </div>
         </div>
-        <div className="mt-3 text-center small text-secondary">
+        <div className="mt-3 text-center small text-secondary pt-3 border-top">
           Estimasi selesai: <span className="fw-bold text-dark">September 2026</span>
         </div>
       </div>
