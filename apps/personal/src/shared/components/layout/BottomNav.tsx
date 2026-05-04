@@ -12,9 +12,9 @@ export function BottomNav() {
 
   const navItems = [
     { label: 'Home', icon: 'home', href: '/dashboard' },
-    { label: 'Info', icon: 'library', href: '/info' },
-    { label: 'Tracker', icon: 'scan', href: '/tracker', isAction: true },
     { label: 'Activity', icon: 'file-invoice', href: '/activity' },
+    { label: 'Tracker', icon: 'scan', href: '/tracker', isAction: true },
+    { label: 'Planning', icon: 'target', href: '/planning' },
     { label: 'Chat', icon: 'message-circle', href: '/chat' },
   ]
 

@@ -17,6 +17,7 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PlanningRouteImport } from './routes/planning'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ErrorMaintenanceRouteImport } from './routes/error-maintenance'
@@ -82,6 +83,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanningRoute = PlanningRouteImport.update({
+  id: '/planning',
+  path: '/planning',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotificationsRoute = NotificationsRouteImport.update({
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/notifications': typeof NotificationsRoute
+  '/planning': typeof PlanningRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
@@ -266,6 +273,7 @@ export interface FileRoutesByTo {
   '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/notifications': typeof NotificationsRoute
+  '/planning': typeof PlanningRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
@@ -303,6 +311,7 @@ export interface FileRoutesById {
   '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/notifications': typeof NotificationsRoute
+  '/planning': typeof PlanningRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
@@ -341,6 +350,7 @@ export interface FileRouteTypes {
     | '/error-maintenance'
     | '/forgot-password'
     | '/notifications'
+    | '/planning'
     | '/profile'
     | '/reset-password'
     | '/settings'
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/error-maintenance'
     | '/forgot-password'
     | '/notifications'
+    | '/planning'
     | '/profile'
     | '/reset-password'
     | '/settings'
@@ -412,6 +423,7 @@ export interface FileRouteTypes {
     | '/error-maintenance'
     | '/forgot-password'
     | '/notifications'
+    | '/planning'
     | '/profile'
     | '/reset-password'
     | '/settings'
@@ -449,6 +461,7 @@ export interface RootRouteChildren {
   ErrorMaintenanceRoute: typeof ErrorMaintenanceRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   NotificationsRoute: typeof NotificationsRoute
+  PlanningRoute: typeof PlanningRoute
   ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SettingsRoute: typeof SettingsRoute
@@ -523,6 +536,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planning': {
+      id: '/planning'
+      path: '/planning'
+      fullPath: '/planning'
+      preLoaderRoute: typeof PlanningRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notifications': {
@@ -752,6 +772,7 @@ const rootRouteChildren: RootRouteChildren = {
   ErrorMaintenanceRoute: ErrorMaintenanceRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   NotificationsRoute: NotificationsRoute,
+  PlanningRoute: PlanningRoute,
   ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SettingsRoute: SettingsRoute,

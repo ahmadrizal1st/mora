@@ -57,6 +57,7 @@
     "icon": "target",
     "columns": 2,
     "children": {
+      "dashboard":  { "url": "planning",              "title": "Planning Dashboard" },
       "goals":      { "url": "goals",                "title": "Financial Goals" },
       "emergency":  { "url": "goals/emergency-fund", "title": "Emergency Fund" },
       "retirement": { "url": "goals/retirement",     "title": "Retirement Simulation" },
