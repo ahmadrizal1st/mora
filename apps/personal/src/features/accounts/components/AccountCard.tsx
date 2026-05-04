@@ -26,8 +26,8 @@ export function AccountCard({ isActive, type, name, balance, delta, chgPos, logo
   return (
     <div 
       className={clsx(
-        'card cursor-pointer transition-all border-0 h-100',
-        isActive ? 'shadow ring-1 ring-primary ring-inset' : 'shadow-sm'
+        'card cursor-pointer transition-all h-100',
+        isActive ? 'border-primary shadow-sm' : 'border-transparent shadow-sm'
       )}
       style={{ 
         minWidth: '220px',

@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { clsx } from 'clsx';
 import BaseLayout from '@/shared/layouts/BaseLayout';
 import { SummaryMetricCard } from '../components/SummaryMetricCard';
 import { AccountCard } from '../components/AccountCard';
@@ -15,6 +16,14 @@ import { BUDGET_DATA } from '../data/mockData';
 import './AccountsPage.css';
 
 export function AccountsPage() {
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [cur, setCur] = useState(0);
   const [range, setRange] = useState('W');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -73,18 +82,23 @@ export function AccountsPage() {
         </div>
       </div>
 
+      {/* ACCOUNT VISUAL (HERO ON MOBILE) */}
+      <div className="d-block d-lg-none mb-3">
+        <AccountVisualCard name={a.name} num={a.num} type={a.type} balance={a.bal} logo={a.logo} color={a.color} />
+      </div>
+
       {/* ACCOUNT TOP KPI */}
-      <div className="row g-3 mb-4">
-        <div className="col-sm-6 col-lg-3">
+      <div className="row g-2 g-md-3 mb-4">
+        <div className="col-6 col-lg-3">
           <SummaryMetricCard title="Saldo Terkini" value={a.bal} subtext={a.name} icon="wallet" iconColor="primary" />
         </div>
-        <div className="col-sm-6 col-lg-3">
+        <div className="col-6 col-lg-3">
           <SummaryMetricCard title="Total Pemasukan" value={a.inc} subtext="Mei 2025" icon="trending-up" valueColor="success" />
         </div>
-        <div className="col-sm-6 col-lg-3">
+        <div className="col-6 col-lg-3">
           <SummaryMetricCard title="Total Pengeluaran" value={a.exp} subtext="12 Transaksi" icon="trending-down" valueColor="danger" />
         </div>
-        <div className="col-sm-6 col-lg-3">
+        <div className="col-6 col-lg-3">
           <SummaryMetricCard 
             title="Net Mutasi" 
             value={a.chgPos ? `+${a.chg}` : `-${a.chg}`} 
@@ -100,7 +114,7 @@ export function AccountsPage() {
         {/* LEFT COLUMN: VISUALS & MONITORING (3/12) */}
         <div className="col-lg-3">
           <div className="row row-cards g-3">
-            <div className="col-12">
+            <div className="col-12 d-none d-lg-block">
               <AccountVisualCard name={a.name} num={a.num} type={a.type} balance={a.bal} logo={a.logo} color={a.color} />
             </div>
             <div className="col-12">
