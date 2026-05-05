@@ -1,4 +1,3 @@
-import React from 'react';
 import { MOCK_SUBSCRIPTIONS_DATA } from '../../data/mockPlanningData';
 import { UpcomingBillsCard } from './UpcomingBillsCard';
 import { SubscriptionItem } from './SubscriptionItem';

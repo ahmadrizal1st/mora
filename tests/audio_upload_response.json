@@ -1,7 +1,0 @@
-{
-    "message": "Maximum execution time of 30 seconds exceeded",
-    "exception": "Symfony\\Component\\ErrorHandler\\Error\\FatalError",
-    "file": "/Users/macbook/Documents/visatamora/apps/api/vendor/guzzlehttp/guzzle/src/Handler/CurlHandler.php",
-    "line": 45,
-    "trace": []
-}
