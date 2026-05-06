@@ -480,7 +480,10 @@ export const TransactionListPage: FC = () => {
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
         onContextMenu={handleContextMenu}
-        style={{ touchAction: 'none' }}
+        style={{ 
+          touchAction: 'none',
+          display: isMethodModalOpen ? 'none' : 'flex'
+        }}
         aria-label="Tambah Transaksi"
       >
         <Icon icon="plus" size={32} stroke={3} />

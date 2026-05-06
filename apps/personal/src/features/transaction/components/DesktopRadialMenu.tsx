@@ -61,8 +61,7 @@ export const DesktopRadialMenu: FC = () => {
     const detectIdAtPoint = (x: number, y: number) => {
       if (closeButtonRef.current) {
         const rect = closeButtonRef.current.getBoundingClientRect();
-        const buffer = 40;
-        if (x >= rect.left - buffer && x <= rect.right + buffer && y >= rect.top - buffer && y <= rect.bottom + buffer) {
+        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
           return 'close';
         }
       }
@@ -197,7 +196,9 @@ export const DesktopRadialMenu: FC = () => {
             bottom: '32px', 
             right: '32px',
             borderRadius: '50%',
-            boxShadow: '0 12px 24px -6px rgba(247, 103, 7, 0.5)',
+            boxShadow: 'none',
+            outline: 'none',
+            border: 'none',
             display: 'grid',
             placeItems: 'center',
             backgroundColor: activeId === 'close' ? '#d9480f' : '#f76707',
