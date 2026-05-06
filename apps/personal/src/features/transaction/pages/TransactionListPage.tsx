@@ -17,8 +17,8 @@ import { type TransactionFormValues } from '../components/TransactionForm';
 import { TransactionSummaryCards } from '../components/TransactionSummaryCards';
 import { TransactionTable } from '../components/TransactionTable';
 import { TransactionList } from '../components/TransactionList';
-import { TransactionModals } from '../components/TransactionModals';
 import { TransactionInvoice } from '../components/TransactionInvoice';
+import { useTransactionModalStore } from '../store/useTransactionModalStore';
 
 export const TransactionListPage: FC = () => {
   const [filters, setFilters] = useState<TransactionFilters>({
@@ -27,9 +27,13 @@ export const TransactionListPage: FC = () => {
   });
 
   // Modal & Responsive State
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>(undefined);
-  const [txToDelete, setTxToDelete] = useState<string | null>(null);
+  const { 
+    openMethodModal, 
+    openForm, 
+    setTxToDelete, 
+    txToDelete 
+  } = useTransactionModalStore();
+  
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
   
   // Invoice state
@@ -40,7 +44,17 @@ export const TransactionListPage: FC = () => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setViewMode('list');
+      }
+    };
+    
+    // Initial check
+    handleResize();
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -105,12 +119,32 @@ export const TransactionListPage: FC = () => {
   const updateMutation = useUpdateTransaction();
   const deleteMutation = useDeleteTransaction();
 
+  const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleAdd = (e: MouseEvent) => {
-    if (!isMobile) {
-      e.preventDefault();
-      setEditingTransaction(undefined);
-      setIsModalOpen(true);
+    e.preventDefault();
+    openMethodModal();
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    holdTimerRef.current = setTimeout(() => {
+      openMethodModal();
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(50);
+      }
+    }, 150);
+  };
+
+  const handlePointerUp = () => {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
     }
+  };
+
+  const handleContextMenu = (e: React.MouseEvent | React.PointerEvent) => {
+    e.preventDefault();
   };
 
   const handleEdit = (tx: Transaction, e: MouseEvent) => {
@@ -121,23 +155,7 @@ export const TransactionListPage: FC = () => {
 
   const handleStartEdit = (tx: Transaction) => {
     setIsInvoiceOpen(false);
-    setEditingTransaction(tx);
-    setIsModalOpen(true);
-  };
-
-  const handleFormSubmit = async (data: TransactionFormValues) => {
-    try {
-      if (editingTransaction) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await updateMutation.mutateAsync({ id: editingTransaction.id, data: data as any });
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await createMutation.mutateAsync({ ...data, input_method: 'manual' } as any);
-      }
-      setIsModalOpen(false);
-    } catch (err) {
-      console.error('Failed to save transaction:', err);
-    }
+    openForm(tx);
   };
 
   const chartData = useMemo(() => {
@@ -186,15 +204,6 @@ export const TransactionListPage: FC = () => {
       : <Icon icon="chevron-down" size={12} className="ms-1 text-primary" />;
   };
 
-  const confirmDelete = async () => {
-    if (!txToDelete) return;
-    try {
-      await deleteMutation.mutateAsync(txToDelete);
-      setTxToDelete(null);
-    } catch (err) {
-      console.error('Failed to delete transaction:', err);
-    }
-  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -287,10 +296,6 @@ export const TransactionListPage: FC = () => {
                     <Icon icon="table" size={18} />
                   </button>
                 </div>
-                <Link to="/tracker/input" className="btn btn-primary shadow-sm" onClick={handleAdd}>
-                  <Icon icon="plus" size={18} className="me-1" />
-                  Tambah Transaksi
-                </Link>
               </div>
             </div>
           )}
@@ -344,17 +349,6 @@ export const TransactionListPage: FC = () => {
         </div>
       </div>
 
-      <TransactionModals
-        isFormOpen={isModalOpen}
-        onFormClose={() => setIsModalOpen(false)}
-        editingTransaction={editingTransaction}
-        onFormSubmit={handleFormSubmit}
-        isFormLoading={createMutation.isPending || updateMutation.isPending}
-        txToDelete={txToDelete}
-        onDeleteClose={() => setTxToDelete(null)}
-        onDeleteConfirm={confirmDelete}
-        isDeleteLoading={deleteMutation.isPending}
-      />
 
       {/* Transaction Invoice Modal */}
       <Modal
@@ -433,7 +427,74 @@ export const TransactionListPage: FC = () => {
         .modal-fullscreen .modal-content {
           border-radius: 0 !important;
         }
+
+        .fab-button {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          width: 72px;
+          height: 72px;
+          border-radius: 22px;
+          background: #f76707;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 12px 24px -6px rgba(247, 103, 7, 0.5);
+          border: none;
+          z-index: 1020;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          cursor: pointer;
+        }
+
+        .fab-button:hover {
+          transform: translateY(-4px) scale(1.05);
+          box-shadow: 0 16px 32px -8px rgba(247, 103, 7, 0.6);
+          background: #ff7b1a;
+        }
+
+        .fab-button:active {
+          transform: scale(0.92);
+        }
+
+        .fab-glow {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border-radius: 22px;
+          background: radial-gradient(circle at top left, rgba(255,255,255,0.4), transparent 70%);
+          pointer-events: none;
+        }
+
+        @media (max-width: 767.98px) {
+          .fab-button {
+            bottom: calc(var(--mora-bottom-nav-height, 70px) + 1.5rem);
+            right: 1.5rem;
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+          }
+          .fab-glow {
+            border-radius: 18px;
+          }
+        }
       `}</style>
+
+      <button 
+        className="fab-button" 
+        onClick={handleAdd}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+        onContextMenu={handleContextMenu}
+        style={{ touchAction: 'none' }}
+        aria-label="Tambah Transaksi"
+      >
+        <div className="fab-glow"></div>
+        <Icon icon="plus" size={32} stroke={3} />
+      </button>
     </BaseLayout>
   );
 };

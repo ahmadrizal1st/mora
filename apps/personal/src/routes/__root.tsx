@@ -10,6 +10,7 @@ import { QueryProvider } from '@/app/providers/QueryProvider'
 import { ThemeProvider } from '@/app/providers/ThemeProvider'
 import { ThemeSettings } from '@/shared/components/layout/ThemeSettings'
 import { BottomNav } from '@/shared/components/layout/BottomNav'
+import { GlobalTransactionModals } from '@/features/transaction/components/GlobalTransactionModals'
 import type { AuthState } from '@/features/auth/store/authStore'
 import Error404 from '@/pages/Error404'
 import Error500 from '@/pages/Error500'
@@ -94,6 +95,7 @@ function RootComponent() {
           </div>
         )}
         <Outlet />
+        <GlobalTransactionModals />
         <BottomNav />
         <ThemeSettings />
         {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}
