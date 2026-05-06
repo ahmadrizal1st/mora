@@ -35,6 +35,13 @@ export function BottomNav() {
     
     holdTimerRef.current = setTimeout(() => {
       openMethodModal();
+      // Release capture so the global listeners can take over
+      try {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch (err) {
+        // Fallback for older browsers
+      }
+      
       if (window.navigator && window.navigator.vibrate) {
         window.navigator.vibrate(50); // Sharper haptic
       }

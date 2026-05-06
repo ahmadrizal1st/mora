@@ -130,6 +130,10 @@ export const TransactionListPage: FC = () => {
     e.currentTarget.setPointerCapture(e.pointerId);
     holdTimerRef.current = setTimeout(() => {
       openMethodModal();
+      try {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch (err) {}
+      
       if (window.navigator && window.navigator.vibrate) {
         window.navigator.vibrate(50);
       }
