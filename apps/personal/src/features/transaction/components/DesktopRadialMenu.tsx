@@ -6,7 +6,7 @@ import { useTransactionModalStore } from '../store/useTransactionModalStore';
 
 const TRACKER_METHODS = [
   { id: 'manual', label: 'Manual', icon: 'pencil', bgColor: '#f76707' },
-  { id: 'text', label: 'Text', icon: 'message-2', bgColor: '#206bc4', path: '/tracker/text' },
+  { id: 'text', label: 'Text', icon: 'message-2', bgColor: '#4299e1', path: '/tracker/text' },
   { id: 'scan', label: 'Scan', icon: 'scan', bgColor: '#206bc4', path: '/tracker/photo' },
   { id: 'image', label: 'Photo', icon: 'photo', bgColor: '#2fb344', path: '/tracker/image' },
   { id: 'file', label: 'File', icon: 'file-description', bgColor: '#d63939', path: '/tracker/file' },
@@ -115,7 +115,7 @@ export const DesktopRadialMenu: FC = () => {
   return (
     <div 
       className={clsx(
-        "fixed-top w-100 h-100 d-flex align-items-center justify-content-center radial-menu-backdrop d-none d-md-flex",
+        "fixed-top w-100 h-100 align-items-center justify-content-center radial-menu-backdrop d-none d-md-flex",
         isAnimating ? "active" : ""
       )}
       style={{ 
@@ -159,7 +159,17 @@ export const DesktopRadialMenu: FC = () => {
                   transitionDelay: `${delay}ms`,
                   zIndex: isActive ? 10 : 1,
                   width: '60px',
-                  height: '60px'
+                  height: '60px',
+                  cursor: 'pointer'
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  setActiveId(method.id);
+                  activeIdRef.current = method.id;
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAction(method.id);
                 }}
               >
                 <div

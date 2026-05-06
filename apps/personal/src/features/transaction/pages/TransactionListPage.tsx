@@ -482,7 +482,7 @@ export const TransactionListPage: FC = () => {
         onContextMenu={handleContextMenu}
         style={{ 
           touchAction: 'none',
-          display: isMethodModalOpen ? 'none' : 'flex'
+          display: isMethodModalOpen ? 'none' : undefined
         }}
         aria-label="Tambah Transaksi"
       >
