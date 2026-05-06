@@ -13,7 +13,7 @@ const TRACKER_METHODS = [
   { id: 'audio', label: 'Voice', icon: 'microphone', bgColor: '#f59f00', path: '/tracker/audio' },
 ];
 
-export const RadialTransactionMenu: FC = () => {
+export const DesktopRadialMenu: FC = () => {
   const { isMethodModalOpen, closeMethodModal, openForm } = useTransactionModalStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -116,13 +116,13 @@ export const RadialTransactionMenu: FC = () => {
   return (
     <div 
       className={clsx(
-        "fixed-top w-100 h-100 d-flex align-items-center justify-content-center radial-menu-backdrop",
+        "fixed-top w-100 h-100 d-flex align-items-center justify-content-center radial-menu-backdrop d-none d-md-flex",
         isAnimating ? "active" : ""
       )}
       style={{ 
         zIndex: 2000, 
         pointerEvents: isMethodModalOpen ? 'auto' : 'none',
-        display: shouldDisplay ? 'flex' : 'none'
+        display: shouldDisplay ? undefined : 'none'
       }}
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) closeMethodModal();
@@ -130,15 +130,19 @@ export const RadialTransactionMenu: FC = () => {
     >
       <div 
         ref={containerRef}
-        className="position-relative w-100 h-100 d-flex align-items-end justify-content-center pb-5 mb-5"
+        className="position-absolute w-100 h-100"
+        style={{ bottom: 0, right: 0 }}
       >
-        <div className="radial-menu-container position-relative" style={{ width: '280px', height: '280px' }}>
+        <div className="radial-menu-container position-absolute" style={{ width: '400px', height: '400px', bottom: 0, right: 0 }}>
           {TRACKER_METHODS.map((method, index) => {
             const total = TRACKER_METHODS.length;
-            const angle = (Math.PI / (total - 1)) * index;
-            const radius = 120;
-            const x = -Math.cos(angle) * radius;
-            const y = -Math.sin(angle) * radius;
+            // All items horizontal to the left
+            const step = 80; 
+            const offset = 85; 
+            
+            const x = -(offset + index * step);
+            const y = 0; 
+
             const isActive = activeId === method.id;
             const delay = isAnimating ? index * 15 : (total - index) * 5;
 
@@ -151,8 +155,8 @@ export const RadialTransactionMenu: FC = () => {
                   isAnimating ? "active" : ""
                 )}
                 style={{
-                  left: `calc(50% + ${x}px - 30px)`,
-                  bottom: `calc(15px - ${y}px)`,
+                  right: `calc(38px - ${x}px)`,
+                  bottom: `calc(38px + ${y}px)`, // Centered with button (32px + 36px - 30px = 38px)
                   transitionDelay: `${delay}ms`,
                   zIndex: isActive ? 10 : 1,
                   width: '60px',
@@ -184,13 +188,16 @@ export const RadialTransactionMenu: FC = () => {
         <div 
           ref={closeButtonRef}
           className={clsx(
-            "rounded-circle shadow-lg position-absolute p-0 radial-menu-close",
+            "position-absolute p-0 radial-menu-close",
             isAnimating ? "active" : ""
           )}
           style={{ 
-            width: '60px', 
-            height: '60px', 
-            bottom: '24px', 
+            width: '72px', 
+            height: '72px', 
+            bottom: '32px', 
+            right: '32px',
+            borderRadius: '50%',
+            boxShadow: '0 12px 24px -6px rgba(247, 103, 7, 0.5)',
             display: 'grid',
             placeItems: 'center',
             backgroundColor: activeId === 'close' ? '#d9480f' : '#f76707',
@@ -210,26 +217,24 @@ export const RadialTransactionMenu: FC = () => {
       <style>{`
         .radial-menu-backdrop {
           background-color: rgba(0, 0, 0, 0);
-          backdrop-filter: blur(0px) saturate(100%);
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
           opacity: 0;
         }
         .radial-menu-backdrop.active {
-          background-color: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(20px) saturate(180%);
+          background-color: rgba(0, 0, 0, 0.6);
           opacity: 1;
         }
         .radial-menu-item {
-          transform: scale(0) translateY(40px);
+          transform: scale(0);
           opacity: 0;
           transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .radial-menu-item.active {
-          transform: scale(1) translateY(0);
+          transform: scale(1);
           opacity: 1;
         }
         .radial-menu-close {
-          transform: scale(0) rotate(0deg);
+          transform: scale(0.5) rotate(0deg);
           opacity: 0;
           transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -240,8 +245,6 @@ export const RadialTransactionMenu: FC = () => {
         .transition-all {
           transition: all 0.2s ease-in-out;
         }
-        
-        /* Disable browser focus outlines (the "blue bug") and tap highlights */
         .radial-menu-item, .radial-menu-close, .radial-menu-item *, .radial-menu-close * {
           outline: none !important;
           -webkit-tap-highlight-color: transparent !important;

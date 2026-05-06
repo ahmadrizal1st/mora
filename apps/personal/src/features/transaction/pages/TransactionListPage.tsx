@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useRef, useCallback, type FC, type MouseEvent } from 'react';
-import { Link } from '@tanstack/react-router';
 import BaseLayout from '@/shared/layouts/BaseLayout';
 import { Icon, Pagination, DropdownGrouping, Modal, Button } from '@/shared/components/ui';
 import {
@@ -13,7 +12,6 @@ import {
 } from '../hooks/useTransactions';
 import type { TransactionFilters, Transaction } from '../types/transaction.types';
 import { TransactionFiltersComponent } from '../components/TransactionFilters';
-import { type TransactionFormValues } from '../components/TransactionForm';
 import { TransactionSummaryCards } from '../components/TransactionSummaryCards';
 import { TransactionTable } from '../components/TransactionTable';
 import { TransactionList } from '../components/TransactionList';
@@ -26,12 +24,12 @@ export const TransactionListPage: FC = () => {
     per_page: 15,
   });
 
-  // Modal & Responsive State
   const { 
     openMethodModal, 
     openForm, 
     setTxToDelete, 
-    txToDelete 
+    txToDelete,
+    isMethodModalOpen
   } = useTransactionModalStore();
   
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
@@ -446,7 +444,7 @@ export const TransactionListPage: FC = () => {
           right: 2rem;
           width: 72px;
           height: 72px;
-          border-radius: 22px;
+          border-radius: 50%;
           background: #f76707;
           color: white;
           display: flex;

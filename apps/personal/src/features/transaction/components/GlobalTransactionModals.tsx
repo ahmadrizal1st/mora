@@ -1,7 +1,8 @@
 import { type FC } from 'react';
 import { useTransactionModalStore } from '../store/useTransactionModalStore';
 import { useCreateTransaction, useUpdateTransaction, useDeleteTransaction } from '../hooks/useTransactions';
-import { RadialTransactionMenu } from './RadialTransactionMenu';
+import { DesktopRadialMenu } from './DesktopRadialMenu';
+import { MobileRadialMenu } from './MobileRadialMenu';
 import { TransactionModals } from './TransactionModals';
 import type { TransactionFormValues } from './TransactionForm';
 import { getApiErrorMessage } from '@/shared/utils/errorUtils';
@@ -46,7 +47,8 @@ export const GlobalTransactionModals: FC = () => {
 
   return (
     <>
-      <RadialTransactionMenu />
+      <DesktopRadialMenu />
+      <MobileRadialMenu />
 
       <TransactionModals
         isFormOpen={useTransactionModalStore.getState().isFormOpen}
