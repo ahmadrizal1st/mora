@@ -126,17 +126,13 @@ export const TransactionListPage: FC = () => {
     openMethodModal();
   };
 
-  const cooldownRef = useRef(false);
-
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (cooldownRef.current) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     
     holdTimerRef.current = setTimeout(() => {
       openMethodModal();
-      cooldownRef.current = true;
-      setTimeout(() => { cooldownRef.current = false; }, 300);
-
+      holdTimerRef.current = null;
+      
       try {
         (e.target as HTMLElement).releasePointerCapture(e.pointerId);
       } catch (err) {}
@@ -151,6 +147,11 @@ export const TransactionListPage: FC = () => {
     if (holdTimerRef.current) {
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
+      openMethodModal();
+      
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(20);
+      }
     }
   };
 
@@ -459,43 +460,24 @@ export const TransactionListPage: FC = () => {
         }
 
         .fab-button:hover {
-          transform: translateY(-4px) scale(1.05);
           box-shadow: 0 16px 32px -8px rgba(247, 103, 7, 0.6);
           background: #ff7b1a;
         }
 
         .fab-button:active {
-          transform: scale(0.92);
+          opacity: 0.8;
         }
 
-        .fab-glow {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          border-radius: 22px;
-          background: radial-gradient(circle at top left, rgba(255,255,255,0.4), transparent 70%);
-          pointer-events: none;
-        }
 
         @media (max-width: 767.98px) {
           .fab-button {
-            bottom: calc(var(--mora-bottom-nav-height, 70px) + 1.5rem);
-            right: 1.5rem;
-            width: 64px;
-            height: 64px;
-            border-radius: 18px;
-          }
-          .fab-glow {
-            border-radius: 18px;
+            display: none;
           }
         }
       `}</style>
 
       <button 
         className="fab-button" 
-        onClick={handleAdd}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
@@ -503,7 +485,6 @@ export const TransactionListPage: FC = () => {
         style={{ touchAction: 'none' }}
         aria-label="Tambah Transaksi"
       >
-        <div className="fab-glow"></div>
         <Icon icon="plus" size={32} stroke={3} />
       </button>
     </BaseLayout>

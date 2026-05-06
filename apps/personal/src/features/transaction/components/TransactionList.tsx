@@ -142,7 +142,7 @@ export const TransactionList: FC<TransactionListProps> = ({
       )}
 
       {!hasNextPage && transactions && transactions.length > 0 && (
-        <div className="py-4 text-center text-muted small opacity-50">
+        <div className="py-4 text-center text-muted small opacity-50 d-md-none">
           Semua transaksi telah dimuat
         </div>
       )}

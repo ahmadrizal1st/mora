@@ -29,37 +29,35 @@ export function BottomNav() {
     return currentPath === href || currentPath.startsWith(href + '/')
   }
 
-  const cooldownRef = useRef(false);
-
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (cooldownRef.current) return;
-    
     // Capture pointer to ensure events continue even if thumb moves
     e.currentTarget.setPointerCapture(e.pointerId);
     
     holdTimerRef.current = setTimeout(() => {
       openMethodModal();
-      // Set cooldown to prevent the subsequent click event from re-opening
-      cooldownRef.current = true;
-      setTimeout(() => { cooldownRef.current = false; }, 300);
+      holdTimerRef.current = null; // Clear so PointerUp knows it was a HOLD
 
       // Release capture so the global listeners can take over
       try {
         (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-      } catch (err) {
-        // Fallback for older browsers
-      }
+      } catch (err) {}
       
       if (window.navigator && window.navigator.vibrate) {
-        window.navigator.vibrate(50); // Sharper haptic
+        window.navigator.vibrate(50);
       }
-    }, 150); // Near instant response
+    }, 150);
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e: React.PointerEvent) => {
     if (holdTimerRef.current) {
+      // It was a TAP (timer was still running)
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
+      openMethodModal();
+      
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(20); // Light tap haptic
+      }
     }
   };
 
@@ -79,10 +77,6 @@ export function BottomNav() {
               <div key={item.label} className="bottom-navbar-action-wrapper">
                 <button
                   className="bottom-navbar-action-btn border-0 p-0"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openMethodModal();
-                  }}
                   onPointerDown={handlePointerDown}
                   onPointerUp={handlePointerUp}
                   onPointerLeave={handlePointerUp}
