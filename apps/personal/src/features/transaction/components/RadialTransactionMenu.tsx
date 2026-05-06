@@ -59,16 +59,14 @@ export const RadialTransactionMenu: FC = () => {
 
   useEffect(() => {
     const detectIdAtPoint = (x: number, y: number) => {
-      // 1. Check Close Button first (High Priority)
       if (closeButtonRef.current) {
         const rect = closeButtonRef.current.getBoundingClientRect();
-        const buffer = 40; // Very generous buffer for the cancel action
+        const buffer = 40;
         if (x >= rect.left - buffer && x <= rect.right + buffer && y >= rect.top - buffer && y <= rect.bottom + buffer) {
           return 'close';
         }
       }
 
-      // 2. Check Method Buttons
       for (const id in buttonRefs.current) {
         const ref = buttonRefs.current[id];
         if (ref) {
@@ -94,14 +92,17 @@ export const RadialTransactionMenu: FC = () => {
     };
 
     const onPointerUp = (e: PointerEvent) => {
-      const finalId = detectIdAtPoint(e.clientX, e.clientY);
-      handleAction(finalId || activeIdRef.current || 'close');
+      if (isMethodModalOpen) {
+        const x = e.clientX;
+        const y = e.clientY;
+        const finalId = detectIdAtPoint(x, y);
+        handleAction(finalId || activeIdRef.current || 'close');
+      }
     };
 
     if (isMethodModalOpen) {
-      // Attach to window to catch all movements after releasePointerCapture
       window.addEventListener('pointermove', onPointerMove, { passive: true });
-      window.addEventListener('pointerup', onPointerUp, { once: true, capture: true });
+      window.addEventListener('pointerup', onPointerUp, { capture: true });
     }
 
     return () => {
@@ -123,7 +124,6 @@ export const RadialTransactionMenu: FC = () => {
         pointerEvents: isMethodModalOpen ? 'auto' : 'none',
         display: shouldDisplay ? 'flex' : 'none'
       }}
-      // Tapping backdrop also closes
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) closeMethodModal();
       }}
@@ -240,8 +240,14 @@ export const RadialTransactionMenu: FC = () => {
         .transition-all {
           transition: all 0.2s ease-in-out;
         }
+        
+        /* Disable browser focus outlines (the "blue bug") and tap highlights */
+        .radial-menu-item, .radial-menu-close, .radial-menu-item *, .radial-menu-close * {
+          outline: none !important;
+          -webkit-tap-highlight-color: transparent !important;
+          user-select: none !important;
+        }
       `}</style>
     </div>
   );
 };
-

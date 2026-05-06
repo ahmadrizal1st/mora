@@ -126,10 +126,17 @@ export const TransactionListPage: FC = () => {
     openMethodModal();
   };
 
+  const cooldownRef = useRef(false);
+
   const handlePointerDown = (e: React.PointerEvent) => {
+    if (cooldownRef.current) return;
     e.currentTarget.setPointerCapture(e.pointerId);
+    
     holdTimerRef.current = setTimeout(() => {
       openMethodModal();
+      cooldownRef.current = true;
+      setTimeout(() => { cooldownRef.current = false; }, 300);
+
       try {
         (e.target as HTMLElement).releasePointerCapture(e.pointerId);
       } catch (err) {}

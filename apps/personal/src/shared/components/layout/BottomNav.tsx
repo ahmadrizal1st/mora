@@ -29,12 +29,20 @@ export function BottomNav() {
     return currentPath === href || currentPath.startsWith(href + '/')
   }
 
+  const cooldownRef = useRef(false);
+
   const handlePointerDown = (e: React.PointerEvent) => {
+    if (cooldownRef.current) return;
+    
     // Capture pointer to ensure events continue even if thumb moves
     e.currentTarget.setPointerCapture(e.pointerId);
     
     holdTimerRef.current = setTimeout(() => {
       openMethodModal();
+      // Set cooldown to prevent the subsequent click event from re-opening
+      cooldownRef.current = true;
+      setTimeout(() => { cooldownRef.current = false; }, 300);
+
       // Release capture so the global listeners can take over
       try {
         (e.target as HTMLElement).releasePointerCapture(e.pointerId);
