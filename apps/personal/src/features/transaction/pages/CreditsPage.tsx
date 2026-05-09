@@ -121,33 +121,43 @@ export default function CreditsPage() {
 
         {/* Tab Navigation */}
         <div className="card border-0 shadow-sm mb-4">
-          <div className="card-body p-0">
-            <div className="overflow-auto">
-              <ul
-                className="nav nav-tabs nav-fill border-0 px-3 flex-nowrap"
-                style={{ minWidth: 'max-content' }}
-                role="tablist"
-              >
-                {TABS.map(tab => (
-                  <li key={tab.id} className="nav-item" role="presentation">
-                    <button
-                      className={`nav-link border-0 px-3 py-3 d-flex align-items-center gap-2 fw-medium ${activeTab === tab.id ? 'active' : ''}`}
-                      style={{ whiteSpace: 'nowrap', fontSize: '13px' }}
-                      onClick={() => setActiveTab(tab.id)}
-                      role="tab"
-                      aria-selected={activeTab === tab.id}
+          <div className="overflow-x-auto hide-scrollbar">
+            <div
+              className="d-flex flex-nowrap"
+              style={{ minWidth: 'max-content', borderBottom: '1px solid var(--tblr-border-color-light)' }}
+              role="tablist"
+            >
+              {TABS.map(tab => (
+                <button
+                  key={tab.id}
+                  className="border-0 bg-transparent d-flex align-items-center gap-2 px-4 py-3 fw-medium"
+                  style={{
+                    whiteSpace: 'nowrap',
+                    fontSize: '13px',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    color: activeTab === tab.id ? 'var(--tblr-primary)' : 'var(--tblr-muted)',
+                    borderBottom: activeTab === tab.id ? '2px solid var(--tblr-primary)' : '2px solid transparent',
+                    transition: 'color 0.15s ease, border-color 0.15s ease',
+                    marginBottom: '-1px',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setActiveTab(tab.id)}
+                  role="tab"
+                  aria-selected={activeTab === tab.id}
+                >
+                  <Icon icon={tab.icon} size={15} />
+                  {tab.label}
+                  {tab.badge && (
+                    <span
+                      className={`badge bg-${tab.badgeColor}-lt text-${tab.badgeColor} border-0 rounded-pill`}
+                      style={{ fontSize: '10px' }}
                     >
-                      <Icon icon={tab.icon} size={15} />
-                      {tab.label}
-                      {tab.badge && (
-                        <span className={`badge bg-${tab.badgeColor}-lt text-${tab.badgeColor} border-0 rounded-pill`}>
-                          {tab.badge}
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         </div>

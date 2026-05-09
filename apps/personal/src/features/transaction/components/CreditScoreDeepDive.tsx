@@ -1,103 +1,168 @@
 import React from 'react';
 import { Icon, Chart } from '@/shared/components/ui';
 
+const scoreFactors = [
+  { label: 'Riwayat Pembayaran', status: 'Excellent',   color: 'success', icon: 'check', weight: 35, progress: 95 },
+  { label: 'Utilisasi Kredit',   status: '28% (Baik)',  color: 'success', icon: 'check', weight: 30, progress: 80 },
+  { label: 'Usia Kredit',        status: '3.5 tahun',   color: 'warning', icon: 'minus', weight: 15, progress: 55 },
+  { label: 'Variasi Kredit',     status: 'Beragam',     color: 'primary', icon: 'minus', weight: 10, progress: 70 },
+  { label: 'Permintaan Baru',    status: '0 bulan ini', color: 'success', icon: 'check', weight: 10, progress: 100 },
+];
+
+const scoreRanges = [
+  { label: 'Sangat Buruk', range: '300–579', color: '#d63939', active: false },
+  { label: 'Cukup',        range: '580–669', color: '#f59f00', active: false },
+  { label: 'Baik',         range: '670–739', color: '#2fb344', active: false },
+  { label: 'Sangat Baik',  range: '740–799', color: '#0054a6', active: true  },
+  { label: 'Istimewa',     range: '800–850', color: '#4299e1', active: false },
+];
+
+const SCORE = 742;
+const SCORE_PCT = (SCORE - 300) / (850 - 300);
+const R = 52;
+const CIRCUMFERENCE = 2 * Math.PI * R;
+
 export function CreditScoreDeepDive() {
   return (
-    <div className="mb-4">
-      <div className="row g-2 g-lg-3 mb-3">
-        {/* Left Column - Score */}
+    <div className="d-flex flex-column gap-3">
+
+      {/* ── Row 1: Gauge │ Factors │ History insight ── */}
+      <div className="row g-3">
+
+        {/* Gauge */}
+        <div className="col-12 col-md-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-header">
+              <h3 className="card-title">SLIK / BI Checking</h3>
+            </div>
+            <div className="card-body d-flex flex-column align-items-center text-center py-4">
+              {/* SVG Gauge */}
+              <div
+                className="position-relative d-inline-flex align-items-center justify-content-center mb-3"
+                style={{ width: 120, height: 120 }}
+              >
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r={R} fill="none"
+                    stroke="var(--tblr-border-color)" strokeWidth="10" />
+                  <circle cx="60" cy="60" r={R} fill="none"
+                    stroke="var(--tblr-success)"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={`${CIRCUMFERENCE * SCORE_PCT} ${CIRCUMFERENCE}`}
+                    strokeDashoffset={CIRCUMFERENCE * 0.25}
+                  />
+                </svg>
+                <div className="position-absolute text-center">
+                  <div className="h2 fw-bold text-success m-0 lh-1">{SCORE}</div>
+                  <div className="text-muted" style={{ fontSize: '11px' }}>/ 850</div>
+                </div>
+              </div>
+
+              <span className="badge bg-success-lt text-success border-0 px-3 py-2 rounded-pill fw-bold mb-3">
+                Sangat Baik
+              </span>
+
+              <ul className="list-group list-group-flush w-100">
+                {scoreRanges.map((r, i) => (
+                  <li key={i}
+                    className={`list-group-item d-flex justify-content-between align-items-center px-0 py-1 ${r.active ? 'fw-semibold' : ''}`}
+                  >
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="rounded-circle flex-shrink-0"
+                        style={{ width: 7, height: 7, backgroundColor: r.color, display: 'inline-block' }} />
+                      <span className={`small ${r.active ? 'text-body' : 'text-muted'}`}>{r.label}</span>
+                    </div>
+                    <span className="text-muted" style={{ fontSize: '11px' }}>{r.range}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Scoring Factors */}
+        <div className="col-12 col-md-5">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-header">
+              <h3 className="card-title">Faktor Penilaian Skor</h3>
+            </div>
+            <div className="card-body d-flex flex-column justify-content-between">
+              {scoreFactors.map((f, i) => (
+                <div key={i}>
+                  <div className="d-flex align-items-center justify-content-between mb-1">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className={`avatar avatar-xs bg-${f.color}-lt text-${f.color} rounded-circle`}>
+                        <Icon icon={f.icon} size={11} />
+                      </span>
+                      <span className="fw-bold small">{f.label}</span>
+                      <span className="text-muted" style={{ fontSize: '10px' }}>({f.weight}%)</span>
+                    </div>
+                    <span className={`badge bg-${f.color}-lt text-${f.color} border-0 rounded-1`}
+                      style={{ fontSize: '10px' }}>
+                      {f.status}
+                    </span>
+                  </div>
+                  <div className="progress progress-sm">
+                    <div className={`progress-bar bg-${f.color}`} style={{ width: `${f.progress}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* History Chart + Insights (combined) */}
         <div className="col-12 col-md-4">
           <div className="card border-0 shadow-sm h-100">
-            <div className="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center">
-              <div className="subheader mb-3">SLIK / BI Checking</div>
-              <div className="display-4 fw-bold mb-2 text-success">742</div>
-              <span className="badge bg-success-lt text-success border-0 px-3 py-1 rounded-pill mb-4">Very Good</span>
-              
-              <div className="w-100 mt-2 px-3">
-                <div className="d-flex justify-content-center mb-1">
-                  <span className="fw-bold small">Range: 300 - 850</span>
-                </div>
-                <div className="progress mb-2 progress-sm">
-                  <div className="progress-bar bg-danger" style={{ width: '20%' }}></div>
-                  <div className="progress-bar bg-warning" style={{ width: '40%' }}></div>
-                  <div className="progress-bar bg-success" style={{ width: '25%' }}></div>
-                </div>
-                <div className="text-secondary small">Your score position</div>
+            <div className="card-header">
+              <h3 className="card-title">Riwayat 6 Bulan</h3>
+              <div className="card-actions">
+                <span className="badge bg-success-lt text-success border-0">+32 pts ↑</span>
               </div>
             </div>
-          </div>
-        </div>
+            <div className="card-body d-flex flex-column gap-3">
+              <Chart
+                chartId="credit-score-history"
+                height={14}
+                chartData={{
+                  type: 'bar',
+                  stacked: false,
+                  series: [{ name: 'Skor', color: 'var(--tblr-primary)', data: [710, 718, 725, 729, 734, 742] }],
+                  categories: ['Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
+                  datalabels: false,
+                  legend: false,
+                  grid: {
+                    strokeDashArray: 4,
+                    borderColor: 'var(--tblr-border-color)',
+                    padding: { top: 0, right: 0, bottom: 0, left: 0 },
+                  },
+                  xaxis: {
+                    tooltip: { enabled: false },
+                    axisBorder: { show: false },
+                    labels: { style: { colors: 'var(--tblr-secondary)', fontWeight: 500, fontSize: '11px' } },
+                  },
+                  yaxis: { show: false, min: 700, max: 750 },
+                  extend: {
+                    plotOptions: { bar: { borderRadius: 4, columnWidth: '45%' } },
+                    colors: [({ value }: any) => value >= 740 ? 'var(--tblr-success)' : 'var(--tblr-primary)'],
+                    tooltip: { theme: 'dark', y: { formatter: (v: number) => v.toString() } },
+                  },
+                }}
+              />
 
-        {/* Right Column - Factors */}
-        <div className="col-12 col-md-8">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-body p-4">
-              <h3 className="card-title fw-bold mb-4">Scoring Factors</h3>
-              
-              <div className="d-flex flex-column gap-3">
-                <div className="d-flex align-items-center justify-content-between border-bottom pb-3" style={{ borderStyle: 'dashed !important' }}>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="avatar avatar-sm bg-success-lt rounded-circle text-success border border-success">
-                      <Icon icon="check" size={14} />
-                    </div>
-                    <span className="fw-bold small">Payment History</span>
-                  </div>
-                  <div className="text-end">
-                    <div className="text-success small fw-bold mb-1">Excellent</div>
-                    <div className="text-secondary" style={{ fontSize: '11px' }}>35% weight</div>
-                  </div>
+              <div className="alert alert-success d-flex align-items-start gap-2 mb-0 py-2">
+                <Icon icon="trending-up" size={15} className="mt-1 flex-shrink-0" />
+                <div>
+                  <div className="fw-bold small">Tren Positif</div>
+                  <div className="small">Naik <strong>+32 pts</strong>. Utilisasi 42% → 28%.</div>
                 </div>
-                
-                <div className="d-flex align-items-center justify-content-between border-bottom pb-3" style={{ borderStyle: 'dashed !important' }}>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="avatar avatar-sm bg-success-lt rounded-circle text-success border border-success">
-                      <Icon icon="check" size={14} />
-                    </div>
-                    <span className="fw-bold small">Credit Utilization</span>
-                  </div>
-                  <div className="text-end">
-                    <div className="text-success small fw-bold mb-1">28% (Good)</div>
-                    <div className="text-secondary" style={{ fontSize: '11px' }}>30% weight</div>
-                  </div>
-                </div>
+              </div>
 
-                <div className="d-flex align-items-center justify-content-between border-bottom pb-3" style={{ borderStyle: 'dashed !important' }}>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="avatar avatar-sm bg-warning-lt rounded-circle text-warning border border-warning">
-                      <Icon icon="minus" size={14} />
-                    </div>
-                    <span className="fw-bold small">Credit Age</span>
-                  </div>
-                  <div className="text-end">
-                    <div className="text-warning small fw-bold mb-1">3.5 years</div>
-                    <div className="text-secondary" style={{ fontSize: '11px' }}>15% weight</div>
-                  </div>
-                </div>
-
-                <div className="d-flex align-items-center justify-content-between border-bottom pb-3" style={{ borderStyle: 'dashed !important' }}>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="avatar avatar-sm bg-blue-lt rounded-circle text-primary border border-primary">
-                      <Icon icon="minus" size={14} />
-                    </div>
-                    <span className="fw-bold small">Credit Mix</span>
-                  </div>
-                  <div className="text-end">
-                    <div className="text-primary small fw-bold mb-1">Diverse</div>
-                    <div className="text-secondary" style={{ fontSize: '11px' }}>10% weight</div>
-                  </div>
-                </div>
-
-                <div className="d-flex align-items-center justify-content-between">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="avatar avatar-sm bg-success-lt rounded-circle text-success border border-success">
-                      <Icon icon="check" size={14} />
-                    </div>
-                    <span className="fw-bold small">New Inquiry</span>
-                  </div>
-                  <div className="text-end">
-                    <div className="text-success small fw-bold mb-1">0 this month</div>
-                    <div className="text-secondary" style={{ fontSize: '11px' }}>10% weight</div>
-                  </div>
+              <div className="alert alert-warning d-flex align-items-start gap-2 mb-0 py-2">
+                <Icon icon="bulb" size={15} className="mt-1 flex-shrink-0" />
+                <div>
+                  <div className="fw-bold small">Rekomendasi</div>
+                  <div className="small">Jaga utilisasi &lt; 30% untuk capai 800+.</div>
                 </div>
               </div>
             </div>
@@ -105,80 +170,29 @@ export function CreditScoreDeepDive() {
         </div>
       </div>
 
-      {/* History Section */}
-      <div className="card border-0 shadow-sm">
-        <div className="card-body p-4">
-          <h3 className="card-title fw-bold mb-4">6 Month History</h3>
-          
-          <div className="row align-items-end">
-            <div className="col-12 col-md-8">
-                <Chart
-                  chartId="credit-score-history"
-                  height={15}
-                  chartData={{
-                    type: 'bar',
-                    stacked: false,
-                    series: [{
-                      name: 'Score',
-                      color: 'var(--tblr-primary)',
-                      data: [710, 718, 725, 729, 734, 742]
-                    }],
-                    categories: ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                    datalabels: false,
-                    legend: false,
-                    grid: {
-                      strokeDashArray: 4,
-                      borderColor: 'var(--tblr-border-color)',
-                      padding: { top: 20, right: 0, bottom: 0, left: 0 },
-                    },
-                    xaxis: {
-                      tooltip: { enabled: false },
-                      axisBorder: { show: false },
-                      labels: {
-                        style: { colors: 'var(--tblr-secondary)', fontWeight: 500 },
-                      },
-                    },
-                    yaxis: {
-                      show: false,
-                      min: 700,
-                      max: 750,
-                    },
-                    extend: {
-                      plotOptions: {
-                        bar: {
-                          borderRadius: 4,
-                          columnWidth: '40%',
-                        }
-                      },
-                      colors: [
-                        function({ value, seriesIndex, w }: any) {
-                          if (value >= 740) {
-                            return 'var(--tblr-success)';
-                          } else {
-                            return 'var(--tblr-primary)';
-                          }
-                        }
-                      ],
-                      tooltip: {
-                        theme: 'dark',
-                        y: {
-                          formatter: (val: number) => val.toString(),
-                        },
-                      },
-                    },
-                  }}
-                />
-            </div>
-            <div className="col-12 col-md-4 mt-4 mt-md-0">
-              <div className="bg-primary-lt p-3 rounded-2 border-start border-primary border-3">
-                <div className="small">
-                  Score increased <span className="fw-bold text-success">+32 pts</span> in 6 months. Key factor: utilization down from 42% &rarr; 28%.
+      {/* ── Row 2: Tips ── */}
+      <div className="row g-3">
+        {[
+          { icon: 'calendar-check', color: 'success', title: 'Bayar Tepat Waktu',    desc: 'Kontribusi 35% terhadap skor Anda.' },
+          { icon: 'chart-pie',      color: 'primary', title: 'Jaga Utilisasi < 30%', desc: 'Utilisasi tinggi turunkan skor signifikan.' },
+          { icon: 'clock',          color: 'warning', title: 'Pertahankan Akun Lama', desc: 'Usia kredit panjang meningkatkan rata-rata skor.' },
+        ].map((tip, i) => (
+          <div key={i} className="col-12 col-md-4">
+            <div className="card border-0 shadow-sm h-100">
+              <div className="card-body d-flex gap-3 align-items-start">
+                <span className={`avatar avatar-sm bg-${tip.color}-lt text-${tip.color} rounded-2 flex-shrink-0`}>
+                  <Icon icon={tip.icon} size={18} />
+                </span>
+                <div>
+                  <div className="fw-bold small mb-1">{tip.title}</div>
+                  <div className="text-muted small">{tip.desc}</div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ))}
       </div>
+
     </div>
   );
 }

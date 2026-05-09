@@ -64,6 +64,13 @@ body {
   /* Chrome, Safari and Opera */
 }
 
+/* Remove focus ring on custom tab buttons (role=tab) */
+button[role="tab"]:focus,
+button[role="tab"]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* --- Mobile Responsive Dashboard Optimization --- */
 @media (max-width: 767.98px) {
 

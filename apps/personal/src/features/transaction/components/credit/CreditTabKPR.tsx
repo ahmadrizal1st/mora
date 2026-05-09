@@ -4,10 +4,12 @@ import { Icon, Chart } from '@/shared/components/ui';
 const fmt = (n: number) =>
   'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
+const MONTHS = ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'];
+
 const kpr = {
   name: 'KPR BTN',
   bank: 'Bank BTN',
-  propertyName: 'Rumah Perumahan Grand Sentosa',
+  propertyName: 'Rumah Grand Sentosa',
   propertyAddress: 'Jl. Melati No. 12, Bekasi Utara',
   propertyValue: 1_200_000_000,
   purchasePrice: 900_000_000,
@@ -40,119 +42,115 @@ const kpr = {
 };
 
 export function CreditTabKPR() {
+  const urgentColor = kpr.daysLeft <= 7 ? 'danger' : 'warning';
+
   return (
     <div>
-      {/* Property Summary Header */}
+      {/* Property Hero */}
       <div className="card border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, var(--tblr-warning) 0%, #e67e00 100%)' }}>
         <div className="card-body p-4 text-white">
           <div className="row align-items-center">
             <div className="col-12 col-md-8">
               <div className="d-flex align-items-center gap-3 mb-3">
-                <div className="avatar avatar-sm bg-white text-warning rounded-2">
-                  <Icon icon="home" size="sm" />
-                </div>
+                <span className="avatar avatar-sm bg-white text-warning rounded-2">
+                  <Icon icon="home" size={16} />
+                </span>
                 <div>
                   <div className="fw-bold">{kpr.propertyName}</div>
                   <div className="small opacity-75">{kpr.propertyAddress}</div>
                 </div>
               </div>
               <div className="row g-3">
-                <div className="col-6 col-md-3">
-                  <div className="small opacity-75 mb-1">Nilai Properti</div>
-                  <div className="fw-bold">{fmt(kpr.propertyValue)}</div>
-                </div>
-                <div className="col-6 col-md-3">
-                  <div className="small opacity-75 mb-1">Nilai Appraisal</div>
-                  <div className="fw-bold">{fmt(kpr.appraisalValue)}</div>
-                </div>
-                <div className="col-6 col-md-3">
-                  <div className="small opacity-75 mb-1">Equity Gain</div>
-                  <div className="fw-bold text-success-lt">+{fmt(kpr.equityGain)}</div>
-                </div>
-                <div className="col-6 col-md-3">
-                  <div className="small opacity-75 mb-1">LTV</div>
-                  <div className="fw-bold">{kpr.ltv}%</div>
-                </div>
+                {[
+                  { label: 'Nilai Properti',  value: fmt(kpr.propertyValue) },
+                  { label: 'Nilai Appraisal', value: fmt(kpr.appraisalValue) },
+                  { label: 'Equity Gain',     value: `+${fmt(kpr.equityGain)}` },
+                  { label: 'LTV',             value: `${kpr.ltv}%` },
+                ].map((item, i) => (
+                  <div key={i} className="col-6 col-md-3">
+                    <div className="small opacity-75 mb-1">{item.label}</div>
+                    <div className="fw-bold small">{item.value}</div>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="col-12 col-md-4 mt-3 mt-md-0">
-              <div className="text-end">
-                <div className="small opacity-75 mb-1">Sisa Pokok Pinjaman</div>
-                <div className="display-6 fw-bold">{fmt(kpr.remaining)}</div>
-                <div className="small opacity-75 mt-1">dari {fmt(kpr.loanAmount)} plafon KPR</div>
-              </div>
+            <div className="col-12 col-md-4 mt-3 mt-md-0 text-md-end">
+              <div className="small opacity-75 mb-1">Sisa Pokok Pinjaman</div>
+              <div className="display-6 fw-bold">{fmt(kpr.remaining)}</div>
+              <div className="small opacity-75 mt-1">dari {fmt(kpr.loanAmount)} plafon</div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="row g-3">
-        {/* Loan Info Card */}
+        {/* Left: Detail */}
         <div className="col-12 col-lg-4">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-body p-4">
-              <h3 className="card-title fw-bold mb-4">Detail KPR</h3>
-              <div className="d-flex flex-column gap-3 mb-4">
-                <div className="d-flex justify-content-between">
-                  <span className="text-secondary small">Bank</span>
-                  <span className="fw-bold small">{kpr.bank}</span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span className="text-secondary small">Plafon</span>
-                  <span className="fw-bold small">{fmt(kpr.loanAmount)}</span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span className="text-secondary small">Sudah dilunasi</span>
-                  <span className="fw-bold small text-success">{fmt(kpr.paid)}</span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span className="text-secondary small">Cicilan/bln</span>
-                  <span className="fw-bold small">{fmt(kpr.monthlyInstallment)}</span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span className="text-secondary small">Suku bunga</span>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="fw-bold small">{kpr.interestRate}% p.a.</span>
-                    <span className="badge bg-warning-lt text-warning border-0 rounded-1">Floating</span>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span className="text-secondary small">Periode fixed</span>
-                  <span className="fw-bold small">{kpr.fixedPeriod}</span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span className="text-secondary small">Tenor</span>
-                  <span className="fw-bold small">{kpr.tenor} bulan (20 thn)</span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span className="text-secondary small">Sisa tenor</span>
-                  <span className="fw-bold small">{kpr.remainingMonths} bulan (12 thn)</span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span className="text-secondary small">Mulai — Lunas</span>
-                  <span className="fw-bold small">{kpr.startDate} — {kpr.endDate}</span>
-                </div>
-              </div>
-
-              <div className="progress mb-2" style={{ height: '8px' }}>
-                <div className="progress-bar bg-warning" style={{ width: `${kpr.paidPct}%` }} />
-              </div>
-              <div className="d-flex justify-content-between mb-4">
-                <span className="text-secondary small">{kpr.paidPct}% terlunasi</span>
-                <span className="text-secondary small">LTV {kpr.ltv}%</span>
-              </div>
-
-              <div className={`d-flex align-items-center gap-2 p-3 rounded-2 bg-${kpr.daysLeft <= 7 ? 'danger' : 'warning'}-lt mb-3`}>
-                <Icon icon="calendar-event" size={16} className={`text-${kpr.daysLeft <= 7 ? 'danger' : 'warning'}`} />
+          <div className="card border-0 shadow-sm">
+            <div className="card-header">
+              <div className="d-flex align-items-center gap-3">
+                <span className="avatar avatar-sm bg-warning text-white rounded-2">
+                  <Icon icon="home" size={16} />
+                </span>
                 <div>
-                  <div className={`fw-bold small text-${kpr.daysLeft <= 7 ? 'danger' : 'warning'}`}>Jatuh tempo: {kpr.dueDate}</div>
-                  <div className="text-secondary small">{kpr.daysLeft} hari lagi • {fmt(kpr.monthlyInstallment)}</div>
+                  <div className="card-title fw-bold mb-0">{kpr.name}</div>
+                  <div className="text-muted small">{kpr.bank}</div>
                 </div>
               </div>
-              <button className="btn btn-warning w-100 fw-bold text-white">
-                <Icon icon="credit-card" size={16} className="me-2" />
-                Bayar Angsuran
-              </button>
+              <div className="card-actions">
+                <span className={`badge bg-${urgentColor}-lt text-${urgentColor} border-0`}>
+                  {kpr.daysLeft} hari lagi
+                </span>
+              </div>
+            </div>
+
+            <div className="card-body">
+              <ul className="list-group list-group-flush">
+                {[
+                  { label: 'Plafon',         value: fmt(kpr.loanAmount) },
+                  { label: 'Sudah dilunasi', value: fmt(kpr.paid),               cls: 'text-success' },
+                  { label: 'Cicilan/bln',    value: fmt(kpr.monthlyInstallment) },
+                  { label: 'Suku bunga',     value: `${kpr.interestRate}% p.a.`,
+                    extra: <span className="badge bg-warning-lt text-warning border-0 rounded-1 ms-1" style={{ fontSize: '10px' }}>Floating</span> },
+                  { label: 'Periode fixed',  value: kpr.fixedPeriod },
+                  { label: 'Tenor',          value: `${kpr.tenor} bulan (20 thn)` },
+                  { label: 'Sisa tenor',     value: `${kpr.remainingMonths} bulan (12 thn)` },
+                  { label: 'Periode',        value: `${kpr.startDate} — ${kpr.endDate}` },
+                ].map((item, i) => (
+                  <li key={i} className="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <span className="text-muted small">{item.label}</span>
+                    <span className={`fw-bold small text-end ${item.cls ?? ''}`}>
+                      {item.value}{item.extra}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-3">
+                <div className="d-flex justify-content-between mb-1">
+                  <span className="text-muted small">{kpr.paidPct}% terlunasi</span>
+                  <span className="text-muted small">LTV {kpr.ltv}%</span>
+                </div>
+                <div className="progress progress-sm">
+                  <div className="progress-bar bg-warning" style={{ width: `${kpr.paidPct}%` }} />
+                </div>
+              </div>
+
+              <div className={`alert alert-${urgentColor} d-flex align-items-center gap-2 mt-3 mb-0`} role="alert">
+                <Icon icon="calendar-event" size={16} />
+                <div>
+                  <div className="fw-bold small">Jatuh tempo: {kpr.dueDate}</div>
+                  <div className="small opacity-75">{kpr.daysLeft} hari lagi • {fmt(kpr.monthlyInstallment)}</div>
+                </div>
+              </div>
+            </div>
+
+              <div className="mt-3">
+                <button className="btn btn-warning w-100 fw-bold text-white">
+                  <Icon icon="credit-card" size={16} className="me-2" />
+                  Bayar Angsuran
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -161,19 +159,20 @@ export function CreditTabKPR() {
         <div className="col-12 col-lg-8">
           {/* Payment History */}
           <div className="card border-0 shadow-sm mb-3">
-            <div className="card-body p-4">
-              <h3 className="card-title fw-bold mb-1">Riwayat Pembayaran</h3>
-              <div className="text-secondary small mb-3">12 bulan terakhir</div>
+            <div className="card-header">
+              <h3 className="card-title">Riwayat Pembayaran</h3>
+              <div className="card-actions">
+                <span className="text-muted small">12 bulan terakhir</span>
+              </div>
+            </div>
+            <div className="card-body">
               <div className="d-flex flex-wrap gap-2">
-                {['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'].map((m, i) => (
+                {MONTHS.map((m, i) => (
                   <div key={i} className="text-center">
-                    <div
-                      className={`rounded-circle mb-1 ${kpr.paymentHistory[i] ? 'bg-success' : 'bg-danger'}`}
-                      style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                      <Icon icon={kpr.paymentHistory[i] ? 'check' : 'x'} size={14} className="text-white" />
-                    </div>
-                    <div className="text-secondary" style={{ fontSize: '10px' }}>{m}</div>
+                    <span className={`avatar avatar-sm rounded-circle mb-1 ${kpr.paymentHistory[i] ? 'bg-success' : 'bg-danger'} text-white`}>
+                      <Icon icon={kpr.paymentHistory[i] ? 'check' : 'x'} size={14} />
+                    </span>
+                    <div className="text-muted" style={{ fontSize: '10px' }}>{m}</div>
                   </div>
                 ))}
               </div>
@@ -182,9 +181,13 @@ export function CreditTabKPR() {
 
           {/* Principal Reduction Chart */}
           <div className="card border-0 shadow-sm mb-3">
-            <div className="card-body p-4">
-              <h3 className="card-title fw-bold mb-1">Pengurangan Pokok</h3>
-              <div className="text-secondary small mb-3">Akumulasi pokok yang terlunasi (6 bln)</div>
+            <div className="card-header">
+              <h3 className="card-title">Pengurangan Pokok</h3>
+              <div className="card-actions">
+                <span className="text-muted small">6 bulan akumulasi</span>
+              </div>
+            </div>
+            <div className="card-body">
               <Chart
                 chartId="kpr-principal"
                 height={18}
@@ -223,36 +226,38 @@ export function CreditTabKPR() {
 
           {/* Amortization Schedule */}
           <div className="card border-0 shadow-sm">
-            <div className="card-body p-4">
-              <div className="d-flex align-items-center justify-content-between mb-3">
-                <h3 className="card-title fw-bold m-0">Jadwal Angsuran</h3>
-                <span className="badge bg-blue-lt">5 Bulan ke Depan</span>
+            <div className="card-header">
+              <h3 className="card-title">Jadwal Angsuran</h3>
+              <div className="card-actions">
+                <span className="badge bg-blue-lt text-blue border-0">5 Bulan ke Depan</span>
               </div>
-              <div className="table-responsive">
-                <table className="table table-vcenter card-table">
-                  <thead>
-                    <tr>
-                      <th className="subheader text-secondary">Bulan</th>
-                      <th className="subheader text-secondary text-end">Pokok</th>
-                      <th className="subheader text-secondary text-end">Bunga</th>
-                      <th className="subheader text-secondary text-end">Total</th>
+            </div>
+            <div className="table-responsive">
+              <table className="table table-vcenter card-table">
+                <thead>
+                  <tr>
+                    <th>Bulan</th>
+                    <th className="text-end">Pokok</th>
+                    <th className="text-end">Bunga</th>
+                    <th className="text-end">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {kpr.amortization.map((row, i) => (
+                    <tr key={i}>
+                      <td>
+                        <div className="fw-bold small">{row.bulan}</div>
+                        {i === 0 && <div className="text-warning small">Segera</div>}
+                      </td>
+                      <td className="text-end small">{fmt(row.pokok)}</td>
+                      <td className="text-end small text-warning">{fmt(row.bunga)}</td>
+                      <td className="text-end">
+                        <span className="fw-bold small">{fmt(row.total)}</span>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {kpr.amortization.map((row, i) => (
-                      <tr key={i}>
-                        <td>
-                          <div className="fw-bold small">{row.bulan}</div>
-                          {i === 0 && <div className="text-warning small opacity-75">Segera</div>}
-                        </td>
-                        <td className="text-end"><span className="small">{fmt(row.pokok)}</span></td>
-                        <td className="text-end"><span className="small text-warning">{fmt(row.bunga)}</span></td>
-                        <td className="text-end"><span className="fw-bold small">{fmt(row.total)}</span></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

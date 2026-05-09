@@ -1,119 +1,109 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Icon } from '@/shared/components/ui';
 
+type Strategy = 'avalanche' | 'snowball';
+
+const bills = [
+  { date: '14 Mei', daysLeft: 3, name: 'Personal Loan',  bank: 'Bank Mandiri', amount: 'Rp 1.400.000', urgent: true },
+  { date: '20 Mei', daysLeft: 9, name: 'Visa Platinum',  bank: 'Bank BCA',     amount: 'Rp 750.000',   urgent: false },
+  { date: '25 Mei', daysLeft: 14, name: 'KPR BTN',       bank: 'Bank BTN',     amount: 'Rp 4.800.000', urgent: false },
+];
+
 export function DebtPayoffPlannerPreview() {
+  const [strategy, setStrategy] = useState<Strategy>('avalanche');
+
   return (
-    <div className="mb-5">
+    <div className="mb-4">
       <div className="row g-2 g-lg-3">
         {/* Strategy Selection */}
         <div className="col-12 col-md-5">
           <div className="card border-0 shadow-sm h-100">
-            <div className="card-body p-4">
-              <h3 className="card-title fw-bold mb-3">Payoff Strategy</h3>
-              <p className="text-secondary small mb-4">
-                Choose the best method to clear your debts faster.
+            <div className="card-header">
+              <h3 className="card-title">Strategi Pelunasan</h3>
+            </div>
+            <div className="card-body">
+              <p className="text-muted small mb-3">
+                Pilih metode terbaik untuk melunasi hutang Anda lebih cepat.
               </p>
-              
-              <div className="d-flex flex-column gap-2 mb-4">
-                <button className="btn btn-outline-primary text-start p-3 border-2 shadow-sm d-flex justify-content-between align-items-center">
-                  <div>
-                    <div className="fw-bold">Avalanche Method</div>
-                    <div className="small opacity-75">Pay highest interest first</div>
-                  </div>
-                  <Icon icon="check" size={18} />
-                </button>
-                <button className="btn btn-ghost-secondary text-start p-3 border-0 d-flex justify-content-between align-items-center">
-                  <div>
-                    <div className="fw-bold">Snowball Method</div>
-                    <div className="small">Pay smallest balance first</div>
-                  </div>
-                </button>
+
+              <div className="d-flex flex-column gap-2 mb-3">
+                {([
+                  { key: 'avalanche', label: 'Metode Avalanche', sub: 'Bayar bunga tertinggi lebih dulu' },
+                  { key: 'snowball',  label: 'Metode Snowball',   sub: 'Bayar hutang terkecil lebih dulu' },
+                ] as { key: Strategy; label: string; sub: string }[]).map(s => (
+                  <button
+                    key={s.key}
+                    className={`btn text-start d-flex justify-content-between align-items-center ${strategy === s.key ? 'btn-primary' : 'btn-ghost-secondary'}`}
+                    onClick={() => setStrategy(s.key)}
+                  >
+                    <div>
+                      <div className="fw-bold">{s.label}</div>
+                      <div className={`small ${strategy === s.key ? 'opacity-75' : 'text-muted'}`}>{s.sub}</div>
+                    </div>
+                    {strategy === s.key && <Icon icon="check" size={18} />}
+                  </button>
+                ))}
               </div>
 
-              <div className="bg-primary-lt p-3 rounded-2 border border-primary-subtle">
-                <div className="d-flex align-items-center gap-2 text-primary fw-bold small mb-1">
-                  <Icon icon="info-circle" size={16} />
-                  <span>AI Recommendation</span>
-                </div>
-                <div className="text-secondary small">
-                  Based on your current debt mix, <strong>Avalanche</strong> will save you <strong>Rp 12,4 jt</strong> in interest.
+              <div className="alert alert-primary mb-0">
+                <div className="d-flex align-items-start gap-2">
+                  <Icon icon="info-circle" size={16} className="mt-1 flex-shrink-0" />
+                  <div>
+                    <div className="fw-bold small">Rekomendasi AI</div>
+                    <div className="small">
+                      Metode <strong>Avalanche</strong> hemat <strong>Rp 12,4 jt</strong> bunga vs Snowball.
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Upcoming Bills List */}
+        {/* Upcoming Bills */}
         <div className="col-12 col-md-7">
           <div className="card border-0 shadow-sm h-100">
-            <div className="card-body p-4">
-              <div className="d-flex align-items-center justify-content-between mb-4">
-                <h3 className="card-title fw-bold m-0">Upcoming Bills</h3>
-                <span className="badge bg-blue-lt">Next 30 days</span>
+            <div className="card-header">
+              <h3 className="card-title">Tagihan Mendatang</h3>
+              <div className="card-actions">
+                <span className="badge bg-blue-lt text-blue border-0">30 Hari ke Depan</span>
               </div>
-
-              <div className="table-responsive">
-                <table className="table table-vcenter card-table table-nowrap">
-                  <thead>
-                    <tr>
-                      <th className="subheader text-secondary">Due date</th>
-                      <th className="subheader text-secondary">Account</th>
-                      <th className="subheader text-secondary text-end">Amount</th>
-                      <th className="w-1"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
+            </div>
+            <div className="table-responsive">
+              <table className="table table-vcenter card-table table-nowrap">
+                <thead>
+                  <tr>
+                    <th>Jatuh Tempo</th>
+                    <th>Akun</th>
+                    <th className="text-end">Jumlah</th>
+                    <th className="w-1" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {bills.map((b, i) => (
+                    <tr key={i}>
                       <td>
-                        <div className="fw-bold small">14 Mei</div>
-                        <div className="text-danger small opacity-75">3 days left</div>
+                        <div className="fw-bold small">{b.date}</div>
+                        <div className={`small ${b.urgent ? 'text-danger' : 'text-muted'}`}>
+                          {b.daysLeft} hari lagi
+                        </div>
                       </td>
                       <td>
-                        <div className="fw-bold small">Personal Loan</div>
-                        <div className="text-secondary small opacity-75">Bank Mandiri</div>
+                        <div className="fw-bold small">{b.name}</div>
+                        <div className="text-muted small">{b.bank}</div>
                       </td>
                       <td className="text-end">
-                        <div className="fw-bold small">Rp 1.400.000</div>
+                        <div className="fw-bold small">{b.amount}</div>
                       </td>
                       <td>
-                        <button className="btn btn-sm btn-primary px-3">Pay Now</button>
+                        <button className={`btn btn-sm ${b.urgent ? 'btn-danger' : 'btn-ghost-secondary'}`}>
+                          {b.urgent ? 'Bayar' : 'Detail'}
+                        </button>
                       </td>
                     </tr>
-                    <tr>
-                      <td>
-                        <div className="fw-bold small">20 Mei</div>
-                        <div className="text-secondary small opacity-75">9 days left</div>
-                      </td>
-                      <td>
-                        <div className="fw-bold small">Visa Platinum</div>
-                        <div className="text-secondary small opacity-75">Bank BCA</div>
-                      </td>
-                      <td className="text-end">
-                        <div className="fw-bold small">Rp 750.000</div>
-                      </td>
-                      <td>
-                        <button className="btn btn-sm btn-white px-3">Details</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div className="fw-bold small">25 Mei</div>
-                        <div className="text-secondary small opacity-75">14 days left</div>
-                      </td>
-                      <td>
-                        <div className="fw-bold small">Mortgage / KPR</div>
-                        <div className="text-secondary small opacity-75">Bank BTN</div>
-                      </td>
-                      <td className="text-end">
-                        <div className="fw-bold small">Rp 4.800.000</div>
-                      </td>
-                      <td>
-                        <button className="btn btn-sm btn-white px-3">Details</button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
