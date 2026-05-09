@@ -35,7 +35,7 @@ export function UpcomingBillsCard({ totalMonthly, paidThisMonth }: UpcomingBills
           </div>
         </div>
         
-        <div className="progress progress-sm mb-3" style={{ height: '6px', backgroundColor: '#f1f4f9', borderRadius: '10px' }}>
+        <div className="progress progress-sm mb-3" style={{ height: '6px', backgroundColor: 'var(--tblr-border-color)', borderRadius: '10px' }}>
           <div 
             className="progress-bar" 
             style={{ width: `${percentage}%`, backgroundColor: 'var(--tblr-primary)', borderRadius: '10px' }}
@@ -49,7 +49,7 @@ export function UpcomingBillsCard({ totalMonthly, paidThisMonth }: UpcomingBills
           </div>
           <div className="text-end">
             <div className="text-secondary small fw-medium" style={{ fontSize: '10px' }}>Sisa</div>
-            <div className="fw-bold text-dark small">{formatCurrency(totalMonthly - paidThisMonth)}</div>
+            <div className="fw-bold text-body small">{formatCurrency(totalMonthly - paidThisMonth)}</div>
           </div>
         </div>
 
@@ -58,9 +58,9 @@ export function UpcomingBillsCard({ totalMonthly, paidThisMonth }: UpcomingBills
           <div className="text-secondary small fw-bold text-uppercase mb-3" style={{ fontSize: '9px', letterSpacing: '0.05em' }}>Pembayaran Terdekat</div>
           <div className="vstack gap-2">
             {nextPayments.map((p, i) => (
-              <div key={i} className="d-flex align-items-center justify-content-between p-2 bg-light rounded-2 transition-all hover-bg-white">
+              <div key={i} className="d-flex align-items-center justify-content-between p-2 bg-body-tertiary rounded-2 transition-all hover-bg-surface">
                 <div className="d-flex align-items-center gap-3">
-                  <div className="bg-white p-1 rounded-2 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', overflow: 'hidden' }}>
+                  <div className="bg-surface p-1 rounded-2 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', overflow: 'hidden' }}>
                     {getLogo(p.name) && !imageErrors[p.name] ? (
                       <img 
                         src={getLogo(p.name)} 
@@ -75,7 +75,7 @@ export function UpcomingBillsCard({ totalMonthly, paidThisMonth }: UpcomingBills
                   <span className="small fw-bold" style={{ fontSize: '11px' }}>{p.name}</span>
                 </div>
                 <div className="text-end">
-                  <div className="fw-bold text-dark" style={{ fontSize: '11px' }}>{p.amount}</div>
+                  <div className="fw-bold text-body" style={{ fontSize: '11px' }}>{p.amount}</div>
                   <div className="text-secondary" style={{ fontSize: '9px' }}>{p.date}</div>
                 </div>
               </div>

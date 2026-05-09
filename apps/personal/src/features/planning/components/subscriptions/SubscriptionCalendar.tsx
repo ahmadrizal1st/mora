@@ -9,7 +9,7 @@ export function SubscriptionCalendar() {
 
   return (
     <div className="card shadow-sm border-0 overflow-hidden h-100 d-flex flex-column" style={{ borderRadius: '16px' }}>
-      <div className="card-header border-0 py-4 px-4 bg-white d-flex justify-content-between align-items-center">
+      <div className="card-header border-0 py-4 px-4 bg-surface d-flex justify-content-between align-items-center">
         <h3 className="card-title fw-bold m-0 d-flex align-items-center gap-2">
           <div className="p-2 bg-primary-lt rounded-3 shadow-sm d-flex align-items-center justify-content-center">
             <Icon icon="calendar" size="sm" className="text-primary" />
@@ -29,16 +29,16 @@ export function SubscriptionCalendar() {
         <div className="d-grid shadow-none" style={{ 
           gridTemplateColumns: 'repeat(7, 1fr)', 
           gap: '1px', 
-          background: '#f1f4f9',
-          borderTop: '1px solid #f1f4f9'
+          background: 'var(--tblr-border-color)', 
+          borderTop: '1px solid var(--tblr-border-color)'
         }}>
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-            <div key={d} className="bg-white p-2 text-center text-secondary small fw-bold" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{d}</div>
+            <div key={d} className="bg-surface p-2 text-center text-secondary small fw-bold" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{d}</div>
           ))}
           
           {/* Fill empty days before May 1st (May 1 2026 is Friday) */}
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={`empty-${i}`} className="bg-light p-3" style={{ minHeight: '100px', opacity: 0.5 }}></div>
+            <div key={`empty-${i}`} className="bg-body-tertiary p-3" style={{ minHeight: '100px', opacity: 0.5 }}></div>
           ))}
           
           {days.map(day => {
@@ -53,7 +53,7 @@ export function SubscriptionCalendar() {
             return (
               <div 
                 key={day} 
-                className={`bg-white p-2 position-relative transition-all`} 
+                className={`bg-surface p-2 position-relative transition-all`} 
                 style={{ 
                   minHeight: '100px',
                   border: isToday ? '2px solid var(--tblr-primary)' : 'none',

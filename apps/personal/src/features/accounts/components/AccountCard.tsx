@@ -31,7 +31,7 @@ export function AccountCard({ isActive, type, name, balance, delta, chgPos, logo
       )}
       style={{ 
         minWidth: '220px',
-        backgroundColor: isActive ? 'var(--tblr-primary-lightest, rgba(32, 107, 196, 0.05))' : undefined
+        backgroundColor: isActive ? 'var(--tblr-primary-lt)' : undefined
       }}
       onClick={onClick}
     >
@@ -52,7 +52,7 @@ export function AccountCard({ isActive, type, name, balance, delta, chgPos, logo
             <Icon icon={typeIcon} size={14} />
           </span>
         </div>
-        <div className="fw-bold text-dark text-truncate mb-0">{name}</div>
+        <div className="fw-bold text-body text-truncate mb-0">{name}</div>
         <div className="text-secondary small mb-3">{type}</div>
         <div className="mt-auto">
           <div className="h2 fw-bold mb-1 font-monospace">{balance}</div>

@@ -59,11 +59,11 @@ export function SpendingCategoryCard({ categories }: SpendingCategoryCardProps) 
               <div className="d-flex align-items-center justify-content-between mb-1">
                 <div className="d-flex align-items-center gap-2">
                   <span className="fs-4">{c.ico}</span>
-                  <span className="text-dark fw-bold small">{c.n}</span>
+                  <span className="text-body fw-bold small">{c.n}</span>
                 </div>
-                <span className="text-dark fw-bold font-monospace small">{c.v}</span>
+                <span className="text-body fw-bold font-monospace small">{c.v}</span>
               </div>
-              <div className="progress progress-xs">
+              <div className="progress progress-xs" style={{ backgroundColor: 'var(--tblr-border-color)' }}>
                 <div className="progress-bar" style={{ width: `${c.pct}%`, backgroundColor: c.col }}></div>
               </div>
             </div>

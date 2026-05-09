@@ -62,18 +62,18 @@ export function PlanningPage() {
       </div>
 
       {/* 2. NAVIGATION TOOLBAR - Unified control center */}
-      <div className="card shadow-sm border-0 mb-4 bg-white" style={{ borderRadius: '12px' }}>
+      <div className="card shadow-sm border-0 mb-4 bg-surface" style={{ borderRadius: '12px' }}>
         <div className="card-body py-2 px-3">
           <div className="row align-items-center g-3">
             <div className="col-12 col-md-auto">
               <PlanningSegmentedNav activeTab={activeTab} onTabChange={setActiveTab} />
             </div>
             <div className="col-12 col-md-auto ms-md-auto d-flex align-items-center gap-3">
-              <div className="d-flex align-items-center bg-light rounded-2 p-1 border">
+              <div className="d-flex align-items-center bg-body-tertiary rounded-2 p-1 border">
                 <button className="btn btn-icon btn-sm border-0 bg-transparent text-secondary hover-primary">
                   <Icon icon="chevron-left" size="sm" />
                 </button>
-                <span className="px-3 small fw-bold text-dark text-center" style={{ minWidth: '90px' }}>
+                <span className="px-3 small fw-bold text-body text-center" style={{ minWidth: '90px' }}>
                   Mei 2026
                 </span>
                 <button className="btn btn-icon btn-sm border-0 bg-transparent text-secondary hover-primary">

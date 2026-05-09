@@ -2,7 +2,7 @@ import { Button } from '@/shared/components/ui/Button'
 
 export default function Welcome() {
   return (
-    <div className="page page-center bg-white d-flex flex-column" style={{ minHeight: '100dvh', position: 'relative', overflow: 'hidden' }}>
+    <div className="page page-center bg-surface d-flex flex-column" style={{ minHeight: '100dvh', position: 'relative', overflow: 'hidden' }}>
       <div className="welcome-bg-premium">
         <div className="welcome-blob blob-top"></div>
         <div className="welcome-blob blob-center"></div>
@@ -17,7 +17,8 @@ export default function Welcome() {
               style={{
                 height: '80px',
                 width: '120px',
-                backgroundColor: 'white',
+                backgroundColor: 'currentColor',
+                color: 'var(--tblr-bg-surface)',
                 WebkitMaskImage: 'url("/logo/logo-nobg-fill.png")',
                 maskImage: 'url("/logo/logo-nobg-fill.png")',
                 WebkitMaskSize: 'contain',
@@ -48,7 +49,7 @@ export default function Welcome() {
         </div>
 
         <div className="w-100 text-center mb-4">
-          <p className="text-dark fs-3 mb-5 fw-bold px-2" style={{ maxWidth: '340px', margin: '0 auto', opacity: 0.9 }}>
+          <p className="text-body fs-3 mb-5 fw-bold px-2" style={{ maxWidth: '340px', margin: '0 auto', opacity: 0.9 }}>
             Your Intelligent AI Assistant for Modern Financial Success.
           </p>
 
@@ -65,7 +66,7 @@ export default function Welcome() {
               text="Create Account"
               outline
               block
-              className="text-dark"
+              className="text-body"
               to="/sign-up"
             />
           </div>

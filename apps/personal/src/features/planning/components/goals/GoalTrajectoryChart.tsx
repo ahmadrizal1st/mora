@@ -26,7 +26,7 @@ export function GoalTrajectoryChart() {
           </div>
         </div>
         <div className="mt-3 text-center small text-secondary pt-3 border-top">
-          Estimasi selesai: <span className="fw-bold text-dark">September 2026</span>
+          Estimasi selesai: <span className="fw-bold text-body">September 2026</span>
         </div>
       </div>
     </div>

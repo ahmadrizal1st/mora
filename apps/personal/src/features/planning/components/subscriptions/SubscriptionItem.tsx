@@ -37,10 +37,10 @@ export function SubscriptionItem({ subscription }: { subscription: Subscription 
   const logoUrl = getLogo(subscription.name);
 
   return (
-    <div className="card border-0 shadow-sm h-100 transition-all" style={{ borderRadius: '12px', border: '1px solid #f1f4f9' }}>
+    <div className="card border-0 shadow-sm h-100 transition-all" style={{ borderRadius: '12px', border: '1px solid var(--tblr-border-color)' }}>
       <div className="card-body p-3">
         <div className="d-flex align-items-center gap-3">
-          <div className="bg-white p-2 rounded-3 border border-light shadow-sm d-flex align-items-center justify-content-center" style={{ width: '42px', height: '42px', overflow: 'hidden' }}>
+          <div className="bg-surface p-2 rounded-3 border border-secondary-subtle shadow-sm d-flex align-items-center justify-content-center" style={{ width: '42px', height: '42px', overflow: 'hidden' }}>
             {logoUrl && !imageError ? (
               <img 
                 src={logoUrl} 
@@ -55,12 +55,12 @@ export function SubscriptionItem({ subscription }: { subscription: Subscription 
           <div className="flex-grow-1">
             <div className="d-flex justify-content-between align-items-start">
               <div className="text-truncate" style={{ maxWidth: '140px' }}>
-                <div className="fw-bold text-dark text-truncate" style={{ fontSize: '13px' }}>{subscription.name}</div>
+                <div className="fw-bold text-body text-truncate" style={{ fontSize: '13px' }}>{subscription.name}</div>
                 <div className="text-secondary" style={{ fontSize: '10px' }}>{subscription.dueDate}</div>
               </div>
               <div className="text-end">
-                <div className="fw-bold text-dark" style={{ fontSize: '12px' }}>{`Rp ${subscription.amount.toLocaleString()}`}</div>
-                <span className={`badge border-0 rounded-pill mt-1`} style={{ fontSize: '8px', padding: '2px 8px', backgroundColor: `rgba(${statusColor === 'primary' ? '245, 159, 0' : statusColor === 'success' ? '47, 179, 68' : '214, 51, 108'}, 0.1)`, color: statusColor === 'primary' ? '#f59f00' : undefined }}>
+                <div className="fw-bold text-body" style={{ fontSize: '12px' }}>{`Rp ${subscription.amount.toLocaleString()}`}</div>
+                <span className={`badge bg-${statusColor}-lt text-${statusColor} border-0 rounded-pill mt-1`} style={{ fontSize: '8px', padding: '2px 8px' }}>
                   {subscription.status}
                 </span>
               </div>

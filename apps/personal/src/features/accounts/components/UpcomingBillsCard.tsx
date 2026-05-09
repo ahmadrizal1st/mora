@@ -26,16 +26,16 @@ export function UpcomingBillsCard({ bills }: UpcomingBillsCardProps) {
             <div key={i} className="list-group-item px-0 border-0 py-2">
               <div className="row align-items-center g-3">
                 <div className="col-auto">
-                  <div className="avatar avatar-sm rounded bg-light text-secondary">
+                  <div className="avatar avatar-sm rounded bg-body-tertiary text-secondary">
                     <span className="fs-3">{b.ico}</span>
                   </div>
                 </div>
                 <div className="col">
-                  <div className="text-dark fw-bold text-truncate" style={{ fontSize: '0.85rem' }}>{b.name}</div>
+                  <div className="text-body fw-bold text-truncate" style={{ fontSize: '0.85rem' }}>{b.name}</div>
                   <div className="text-secondary small" style={{ fontSize: '0.7rem' }}>{b.due}</div>
                 </div>
                 <div className="col-auto text-end">
-                  <div className="fw-bold font-monospace text-dark" style={{ fontSize: '0.85rem' }}>{b.amt}</div>
+                  <div className="fw-bold font-monospace text-body" style={{ fontSize: '0.85rem' }}>{b.amt}</div>
                 </div>
               </div>
             </div>

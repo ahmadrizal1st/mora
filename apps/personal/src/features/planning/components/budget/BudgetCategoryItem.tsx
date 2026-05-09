@@ -19,7 +19,7 @@ export function BudgetCategoryItem({ category }: BudgetCategoryItemProps) {
   const isOver = percentage > 100;
 
   return (
-    <div className="card shadow-none border bg-light-lt h-100 transition-all" style={{ borderRadius: '12px', background: 'rgba(248, 250, 252, 0.4)' }}>
+    <div className="card shadow-none border bg-body-tertiary h-100 transition-all" style={{ borderRadius: '12px' }}>
       <div className="card-body p-3">
         <div className="d-flex align-items-center justify-content-between mb-3">
           <div className="d-flex align-items-center gap-3">
@@ -27,7 +27,7 @@ export function BudgetCategoryItem({ category }: BudgetCategoryItemProps) {
               <Icon icon={category.icon as any} size="xs" />
             </div>
             <div>
-              <span className="fw-bold small text-dark d-block lh-1 mb-1">{category.name}</span>
+              <span className="fw-bold small text-body d-block lh-1 mb-1">{category.name}</span>
               <span className="text-secondary" style={{ fontSize: '10px' }}>Budget {formatCurrency(category.limit)}</span>
             </div>
           </div>
@@ -38,7 +38,7 @@ export function BudgetCategoryItem({ category }: BudgetCategoryItemProps) {
           </div>
         </div>
         
-        <div className="progress progress-xs mb-2" style={{ height: '6px', background: '#e2e8f0' }}>
+        <div className="progress progress-xs mb-2" style={{ height: '6px', background: 'var(--tblr-border-color)' }}>
           <div 
             className={clsx('progress-bar rounded-pill', isOver ? 'bg-danger' : `bg-${category.color}`)} 
             style={{ width: `${Math.min(percentage, 100)}%` }}
@@ -47,7 +47,7 @@ export function BudgetCategoryItem({ category }: BudgetCategoryItemProps) {
 
         <div className="d-flex justify-content-between align-items-center mt-1">
           <div>
-            <span className="text-dark fw-bold d-block lh-1" style={{ fontSize: '13px' }}>
+            <span className="text-body fw-bold d-block lh-1" style={{ fontSize: '13px' }}>
               {formatCurrency(category.spent)}
             </span>
             <span className="text-muted" style={{ fontSize: '9px' }}>Realisasi Bulan Ini</span>

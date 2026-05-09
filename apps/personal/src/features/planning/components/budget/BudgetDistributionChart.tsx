@@ -30,7 +30,7 @@ export function BudgetDistributionChart() {
       stroke: { 
         show: true, 
         width: 6, 
-        colors: ['#fff'] // Gaps between segments
+        colors: ['var(--tblr-bg-surface)'] // Gaps between segments
       },
       legend: { 
         show: true,
@@ -52,14 +52,14 @@ export function BudgetDistributionChart() {
                 show: true, 
                 fontSize: '11px', 
                 fontWeight: 600, 
-                color: '#888',
+                color: 'var(--tblr-secondary)',
                 offsetY: -5
               },
               value: { 
                 show: true, 
                 fontSize: '18px', 
                 fontWeight: 800, 
-                color: '#333',
+                color: 'var(--tblr-body-color)',
                 offsetY: 10,
                 formatter: (val: string) => `${Math.round(Number(val) / 1000).toLocaleString()}.000`
               },
@@ -68,7 +68,7 @@ export function BudgetDistributionChart() {
                 label: 'Total Budget',
                 fontSize: '11px',
                 fontWeight: 600,
-                color: '#888',
+                color: 'var(--tblr-secondary)',
                 formatter: () => {
                   return 'Rp ' + Math.round(totalBudget / 1000).toLocaleString() + '.000';
                 }

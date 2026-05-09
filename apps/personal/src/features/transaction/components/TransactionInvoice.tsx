@@ -127,8 +127,7 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
           <div className="serrated-bottom" />
         </div>
 
-        {/* Footer Actions */}
-        <footer className="invoice-footer p-4 border-top bg-white">
+        <footer className="invoice-footer p-4 border-top bg-surface">
           <div className="d-flex flex-column gap-3 w-100">
             <Button 
               block 
@@ -171,13 +170,21 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
           --mora-border: #f1f5f9;
         }
 
+        [data-bs-theme="dark"] {
+          --mora-primary-soft: rgba(255, 107, 0, 0.1);
+          --mora-success-soft: rgba(34, 197, 94, 0.1);
+          --mora-text-dark: #f1f5f9;
+          --mora-text-muted: #94a3b8;
+          --mora-border: rgba(255, 255, 255, 0.08);
+        }
+
         .invoice-container {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
+          background: rgba(0, 0, 0, 0.85);
           backdrop-filter: blur(12px);
           z-index: 9999;
           overflow-y: auto;
@@ -190,7 +197,7 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
         .invoice-wrapper {
           width: 100%;
           max-width: 480px;
-          background: #fff;
+          background: var(--tblr-bg-surface);
           display: flex;
           flex-direction: column;
           position: relative;
@@ -204,7 +211,7 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
         @media (max-width: 576px) {
           .invoice-container {
             padding: 0;
-            background: #fff; /* Solid white background on mobile for full-screen feel */
+            background: var(--tblr-bg-surface); /* Responsive background on mobile */
           }
           .invoice-wrapper {
             max-width: 100%;
@@ -223,7 +230,7 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
           align-items: center;
           justify-content: space-between;
           padding: 1rem 1.25rem;
-          background: #fff;
+          background: var(--tblr-bg-surface);
           border-bottom: 1px solid var(--mora-border);
         }
 
@@ -372,6 +379,7 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
           text-align: left;
           word-break: break-word;
           white-space: pre-wrap;
+          background: var(--tblr-bg-surface-secondary) !important;
         }
 
         .btn-view-toggle {
@@ -420,11 +428,11 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
         .serrated-bottom {
           height: 12px;
           width: 100%;
-          background: #fff;
+          background: var(--tblr-bg-surface);
           position: absolute;
           bottom: -12px;
           left: 0;
-          background-image: radial-gradient(circle, transparent 70%, #fff 70%);
+          background-image: radial-gradient(circle, transparent 70%, var(--tblr-bg-surface) 70%);
           background-size: 16px 16px;
           background-position: 0 -8px;
         }
@@ -433,8 +441,8 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
           width: 52px;
           height: 52px;
           border-radius: 14px;
-          border: 2px solid #e2e8f0;
-          background: #fff;
+          border: 2px solid var(--tblr-border-color);
+          background: var(--tblr-bg-surface);
           color: var(--mora-text-muted);
           display: flex;
           align-items: center;

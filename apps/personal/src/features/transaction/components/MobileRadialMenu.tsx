@@ -174,7 +174,7 @@ export const MobileRadialMenu: FC = () => {
                   style={{ 
                     width: '100%', 
                     height: '100%', 
-                    backgroundColor: isActive ? method.bgColor : '#ffffff',
+                    backgroundColor: isActive ? method.bgColor : 'var(--tblr-bg-surface)',
                     cursor: 'pointer',
                     boxShadow: isActive ? `0 8px 16px ${method.bgColor}44` : '0 4px 12px rgba(0,0,0,0.1)'
                   }}

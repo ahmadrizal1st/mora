@@ -27,7 +27,7 @@ export default function SignInCover() {
   }
 
   return (
-    <div className="page page-center bg-white" style={{ minHeight: '100vh' }}>
+    <div className="page page-center bg-surface" style={{ minHeight: '100vh' }}>
       <div className="row g-0 flex-fill">
         <div className="col-12 col-lg-6 col-xl-4 border-top-wide border-primary d-flex flex-column justify-content-center">
           <div className="container container-tight my-5 px-lg-5">

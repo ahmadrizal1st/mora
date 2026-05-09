@@ -60,12 +60,12 @@ export const TransactionList: FC<TransactionListProps> = ({
   }
 
   return (
-    <div className="transaction-history-list bg-white">
+    <div className="transaction-history-list bg-surface">
       {monthKeys.map((month, monthIndex) => (
         <div key={month} className="month-group mb-4">
-          <div className="month-header px-3 px-md-4 py-3 bg-light-subtle d-flex align-items-center gap-2">
+          <div className="month-header px-3 px-md-4 py-3 bg-body-tertiary d-flex align-items-center gap-2">
             <div className="month-indicator" />
-            <span className="fw-black text-dark text-uppercase tracking-wider" style={{ fontSize: '0.85rem', opacity: 0.8 }}>
+            <span className="fw-black text-body text-uppercase tracking-wider" style={{ fontSize: '0.85rem', opacity: 0.8 }}>
               {month}
             </span>
           </div>
@@ -111,7 +111,7 @@ export const TransactionList: FC<TransactionListProps> = ({
                         <div className={`amount-display fw-black ${
                           tx.type === 'expense' ? 'text-danger' : 
                           tx.type === 'income' ? 'text-success' : 
-                          'text-dark'
+                          'text-body'
                         }`}>
                           {tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : ''}{formatCurrency(tx.amount)}
                         </div>
@@ -161,22 +161,22 @@ export const TransactionList: FC<TransactionListProps> = ({
         }
 
         .transaction-row {
-          border-bottom: 1px solid #f1f5f9;
+          border-bottom: 1px solid var(--tblr-border-color);
         }
 
         /* Unique Date Leaf */
         .date-leaf {
           min-width: 54px;
-          background: #f8fafc;
+          background: var(--tblr-bg-surface-secondary);
           border-radius: 0;
           padding: 6px 4px;
-          border: 1px solid #f1f5f9;
+          border: 1px solid var(--tblr-border-color);
         }
         .date-leaf .day-name {
           font-size: 0.65rem;
           font-weight: 800;
           text-transform: uppercase;
-          color: var(--mora-text-muted);
+          color: var(--tblr-secondary);
           letter-spacing: 0.5px;
         }
         .date-leaf .day-num {
@@ -188,12 +188,12 @@ export const TransactionList: FC<TransactionListProps> = ({
         .date-leaf .month-label {
           font-size: 0.65rem;
           font-weight: 700;
-          color: var(--mora-text-muted);
+          color: var(--tblr-secondary);
           opacity: 0.7;
         }
 
         .merchant-name {
-          color: #1e293b;
+          color: var(--tblr-body-color);
           font-size: 1rem;
           letter-spacing: -0.2px;
         }
@@ -208,8 +208,8 @@ export const TransactionList: FC<TransactionListProps> = ({
           align-items: center;
           font-size: 0.65rem;
           font-weight: 800;
-          color: #22c55e;
-          background: #f0fdf4;
+          color: var(--tblr-success);
+          background: var(--tblr-success-lt);
           padding: 2px 8px;
           border-radius: 6px;
           text-transform: uppercase;
@@ -218,7 +218,7 @@ export const TransactionList: FC<TransactionListProps> = ({
 
         .category-tag {
           font-weight: 500;
-          color: #64748b;
+          color: var(--tblr-secondary);
         }
       `}</style>
     </div>

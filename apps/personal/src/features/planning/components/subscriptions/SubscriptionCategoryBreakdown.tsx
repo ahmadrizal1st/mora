@@ -33,10 +33,10 @@ export function SubscriptionCategoryBreakdown() {
               {categories.map((cat, i) => (
                 <div key={i} className="col-sm-6 col-lg-3">
                   <div className="d-flex justify-content-between align-items-end mb-2">
-                    <div className="fw-bold text-dark" style={{ fontSize: '11px', textTransform: 'uppercase' }}>{cat.name}</div>
+                    <div className="fw-bold text-body" style={{ fontSize: '11px', textTransform: 'uppercase' }}>{cat.name}</div>
                     <div className="fw-bold text-primary" style={{ fontSize: '11px' }}>{cat.amount}</div>
                   </div>
-                  <div className="progress mb-2" style={{ height: '8px', backgroundColor: '#f1f4f9', borderRadius: '10px' }}>
+                  <div className="progress mb-2" style={{ height: '8px', backgroundColor: 'var(--tblr-border-color)', borderRadius: '10px' }}>
                     <div 
                       className="progress-bar" 
                       style={{ 
@@ -49,7 +49,7 @@ export function SubscriptionCategoryBreakdown() {
                   </div>
                   <div className="d-flex justify-content-between align-items-center">
                     <span className="text-muted" style={{ fontSize: '9px' }}>Proporsi</span>
-                    <span className="badge bg-light text-secondary border-0 p-0" style={{ fontSize: '10px' }}>{cat.percentage}%</span>
+                    <span className="badge bg-body-tertiary text-secondary border-0 p-0" style={{ fontSize: '10px' }}>{cat.percentage}%</span>
                   </div>
                 </div>
               ))}

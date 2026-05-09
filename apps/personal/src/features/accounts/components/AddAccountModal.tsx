@@ -194,7 +194,7 @@ export function AddAccountModal({ show, onClose }: AddAccountModalProps) {
                       ) : (
                         <div className="avatar avatar-sm" style={{backgroundColor: item.color}}><Icon icon="wallet" className="text-white" size={16}/></div>
                       )}
-                      <span className="fw-bold text-dark" style={{fontSize: '1.05rem'}}>{item.label}</span>
+                      <span className="fw-bold text-body" style={{fontSize: '1.05rem'}}>{item.label}</span>
                     </div>
                   </div>
                 </label>
@@ -225,7 +225,7 @@ export function AddAccountModal({ show, onClose }: AddAccountModalProps) {
                   <div 
                     className="form-control d-flex align-items-center cursor-pointer" 
                     onClick={() => setStep('selection')}
-                    style={{ backgroundColor: '#f8f9fa' }}
+                    style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)' }}
                   >
                     {selectedPredefined?.logo ? (
                       <img src={selectedPredefined.logo} alt="" style={{width: '24px', height: '24px', objectFit: 'contain'}} className="me-2" />

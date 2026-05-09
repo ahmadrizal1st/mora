@@ -408,7 +408,7 @@ export function DashboardContent() {
                           width: '45px',
                           fontSize: '0.65rem',
                           background: statsColors[i],
-                          color: i === 0 ? '#ffffff' : 'var(--tblr-body-color)',
+                          color: i === 0 ? 'var(--tblr-primary-fg)' : 'var(--tblr-body-color)',
                         }}
                       >
                         {Math.round((s.data[0] / 3500) * 100)}%

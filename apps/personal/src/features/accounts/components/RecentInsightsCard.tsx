@@ -11,7 +11,7 @@ export function RecentInsightsCard() {
             <Icon icon="bulb" size="sm" />
           </div>
           <div>
-            <div className="fw-bold text-dark fs-4 mb-1">Potensi Tabungan</div>
+            <div className="fw-bold text-body fs-4 mb-1">Potensi Tabungan</div>
             <div className="text-secondary small lh-sm">
               Kurangi 15% pengeluaran 'Food' untuk hemat Rp 450rb bulan ini.
             </div>
@@ -23,7 +23,7 @@ export function RecentInsightsCard() {
             <Icon icon="alert-triangle" size="sm" />
           </div>
           <div>
-            <div className="fw-bold text-dark fs-4 mb-1">Langganan Terdeteksi</div>
+            <div className="fw-bold text-body fs-4 mb-1">Langganan Terdeteksi</div>
             <div className="text-secondary small lh-sm">
               Ada 3 tagihan langganan yang akan ditarik minggu depan.
             </div>
@@ -35,7 +35,7 @@ export function RecentInsightsCard() {
             <Icon icon="shield-check" size="sm" />
           </div>
           <div>
-            <div className="fw-bold text-dark fs-4 mb-1">Status Keamanan</div>
+            <div className="fw-bold text-body fs-4 mb-1">Status Keamanan</div>
             <div className="text-secondary small lh-sm">
               Tidak ada aktivitas mencurigakan pada akun ini.
             </div>

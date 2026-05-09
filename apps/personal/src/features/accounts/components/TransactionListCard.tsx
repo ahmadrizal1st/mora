@@ -34,11 +34,11 @@ export function TransactionListCard({ transactions }: TransactionListCardProps) 
                   </div>
                 </div>
                 <div className="col">
-                  <div className="text-dark fw-bold text-truncate" style={{ fontSize: '0.85rem' }}>{tx.n}</div>
+                  <div className="text-body fw-bold text-truncate" style={{ fontSize: '0.85rem' }}>{tx.n}</div>
                   <div className="text-secondary small">{tx.c}</div>
                 </div>
                 <div className="col-auto text-end">
-                  <div className={`fw-bold font-monospace ${tx.p ? 'text-success' : 'text-dark'}`} style={{ fontSize: '0.85rem' }}>
+                  <div className={`fw-bold font-monospace ${tx.p ? 'text-success' : 'text-body'}`} style={{ fontSize: '0.85rem' }}>
                     {tx.p ? '+' : ''}{tx.a}
                   </div>
                   <div className="text-secondary small" style={{ fontSize: '0.7rem' }}>{tx.d}</div>

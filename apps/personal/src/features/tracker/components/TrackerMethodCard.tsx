@@ -7,10 +7,9 @@ interface TrackerMethod {
   label: string;
   description: string;
   path: string;
-  bgColor: string;
-  iconColor: string;
+  colorName: string;
   icon: string;
-  textColor: string;
+  isSolid?: boolean;
 }
 
 interface TrackerMethodCardProps {
@@ -19,6 +18,10 @@ interface TrackerMethodCardProps {
 }
 
 export const TrackerMethodCard: FC<TrackerMethodCardProps> = ({ method, index }) => {
+  const cardBgClass = method.isSolid ? `bg-${method.colorName}` : `bg-${method.colorName}-lt`;
+  const textColorClass = method.isSolid ? 'text-white' : `text-${method.colorName}`;
+  const iconColor = method.isSolid ? '#ffffff' : `var(--tblr-${method.colorName})`;
+
   return (
     <div 
       className="col-6 col-md-4 tracker-animate-fade-in-up"
@@ -26,11 +29,13 @@ export const TrackerMethodCard: FC<TrackerMethodCardProps> = ({ method, index })
     >
       <Link
         to={method.path}
-        className="card border shadow-sm h-100 text-decoration-none overflow-hidden position-relative"
+        className={clsx(
+          "card border-0 shadow-sm h-100 text-decoration-none overflow-hidden position-relative transition-all",
+          cardBgClass
+        )}
         style={{ 
-          backgroundColor: method.bgColor,
-          borderRadius: '12px',
-          minHeight: '140px'
+          borderRadius: '16px',
+          minHeight: '150px'
         }}
       >
         {/* Background Decoration Icon */}
@@ -41,7 +46,7 @@ export const TrackerMethodCard: FC<TrackerMethodCardProps> = ({ method, index })
             right: '-15px', 
             width: '120px', 
             height: '120px', 
-            backgroundColor: method.textColor === 'white' ? 'rgba(255,255,255,0.15)' : `${method.iconColor}15`,
+            backgroundColor: 'rgba(255,255,255,0.1)',
             borderRadius: '50%',
             zIndex: 0
           }}
@@ -52,19 +57,19 @@ export const TrackerMethodCard: FC<TrackerMethodCardProps> = ({ method, index })
             top: '10px', 
             right: '10px', 
             zIndex: 1,
-            opacity: 0.2,
+            opacity: 0.15,
             transform: 'rotate(-15deg)',
-            color: method.textColor === 'white' ? '#ffffff' : method.iconColor
+            color: method.isSolid ? '#ffffff' : iconColor
           }}
         >
           <Icon icon={method.icon} size={80} stroke={1.5} />
         </div>
 
-        <div className="card-body p-4 position-relative" style={{ zIndex: 2 }}>
-          <h3 className={`fw-bold mb-2 text-${method.textColor}`} style={{ fontSize: '1.25rem' }}>
+        <div className="card-body p-4 position-relative d-flex flex-column" style={{ zIndex: 2 }}>
+          <h3 className={clsx("fw-bold mb-2", textColorClass)} style={{ fontSize: '1.25rem' }}>
             {method.label}
           </h3>
-          <p className={`text-${method.textColor} opacity-75 mb-0`} style={{ maxWidth: '80%' }}>
+          <p className={clsx("opacity-75 mb-0", textColorClass)} style={{ fontSize: '0.85rem', lineHeight: '1.4' }}>
             {method.description}
           </p>
         </div>

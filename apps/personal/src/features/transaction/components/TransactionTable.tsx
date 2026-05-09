@@ -30,7 +30,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
   return (
     <div className="table-responsive">
       <table className="table table-vcenter table-hover card-table" style={{ tableLayout: 'fixed', width: '100%', minWidth: '1100px' }}>
-        <thead className="bg-light">
+        <thead className="bg-body-tertiary">
           <tr>
             <th className="text-secondary opacity-7 fw-bold cursor-pointer" style={{ width: '100px' }} onClick={() => onSort('tx_date')}>
               <div className="d-flex align-items-center">Tanggal {getSortIcon('tx_date')}</div>
@@ -88,7 +88,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     {tx.input_method === 'file' && <span title="Dari File"><Icon icon="file-text" size={12} className="text-secondary" /></span>}
                     {tx.input_method === 'text' && <span title="Dari Teks"><Icon icon="align-left" size={12} className="text-secondary" /></span>}
                     {tx.input_method === 'manual' && <span title="Input Manual"><Icon icon="pencil" size={12} className="text-secondary" /></span>}
-                    <span className="fw-medium text-dark text-truncate" style={{ maxWidth: '120px' }}>
+                    <span className="fw-medium text-body text-truncate" style={{ maxWidth: '120px' }}>
                       {tx.merchant || (tx.type === 'transfer' ? 'Transfer Dana' : 'Umum')}
                     </span>
                   </div>
@@ -149,7 +149,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
               </td>
               <td className="align-middle">
                 <div className="d-flex align-items-center">
-                  <span className="status-dot me-2" style={{ backgroundColor: tx.account?.color || '#eee' }}></span>
+                  <span className="status-dot me-2" style={{ backgroundColor: tx.account?.color || 'var(--tblr-border-color)' }}></span>
                   <span className="text-truncate" style={{ maxWidth: '100px' }}>{tx.account?.name}</span>
                 </div>
               </td>
@@ -166,7 +166,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     {tx.status.name}
                   </span>
                 ) : (
-                  <span className="badge bg-light text-muted">Draft</span>
+                  <span className="badge bg-body-tertiary text-muted">Draft</span>
                 )}
               </td>
               <td className={`text-end fw-bold align-middle ${tx.type === 'income' ? 'text-success' : tx.type === 'expense' ? 'text-danger' : 'text-primary'}`}>
@@ -180,14 +180,14 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                   <Link
                     to="/tracker/input"
                     search={{ id: tx.id }}
-                    style={{ color: '#f76707', textDecoration: 'none', transition: 'none' }}
+                    style={{ color: 'var(--tblr-warning)', textDecoration: 'none', transition: 'none' }}
                     title="Edit"
                     onClick={(e) => onEdit(tx, e)}
                   >
                     <Icon icon="edit" size={20} />
                   </Link>
                   <span
-                    style={{ color: '#d63939', cursor: 'pointer', transition: 'none' }}
+                    style={{ color: 'var(--tblr-danger)', cursor: 'pointer', transition: 'none' }}
                     title="Hapus"
                     onClick={() => onDelete(tx.id)}
                   >

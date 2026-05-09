@@ -704,7 +704,7 @@ export default function TrackerPhotoPage() {
   };
 
   return (
-    <div className="page d-flex flex-column" style={{ position: 'fixed', inset: 0, width: '100vw', height: '100dvh', overflow: 'hidden', backgroundColor: '#fff' }}>
+    <div className="page d-flex flex-column" style={{ position: 'fixed', inset: 0, width: '100vw', height: '100dvh', overflow: 'hidden', backgroundColor: 'var(--tblr-bg-surface)' }}>
       <style dangerouslySetInnerHTML={{
         __html: `
         .btn-circular {
@@ -714,27 +714,27 @@ export default function TrackerPhotoPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(0,0,0,0.05);
-          border: 1px solid rgba(0,0,0,0.1);
-          color: var(--tblr-body-color, #333);
+          background: rgba(var(--tblr-body-color-rgb), 0.05);
+          border: 1px solid var(--tblr-border-color);
+          color: var(--tblr-body-color);
           padding: 0;
           transition: all 0.2s ease;
         }
       `}} />
 
       {/* TOP HEADER BAR */}
-      <div style={{ flexShrink: 0, background: '#fff', zIndex: 110, padding: '1rem', paddingTop: 'calc(1rem + env(safe-area-inset-top))', borderBottom: '1px solid #eee' }}>
+      <div style={{ flexShrink: 0, background: 'var(--tblr-bg-surface)', zIndex: 110, padding: '1rem', paddingTop: 'calc(1rem + env(safe-area-inset-top))', borderBottom: '1px solid var(--tblr-border-color)' }}>
         <div className="d-flex align-items-center w-100 gap-3">
           <Button 
             element="button"
             onClick={() => window.history.back()} 
-            className="p-0 text-dark border-0 shadow-none bg-transparent" 
+            className="p-0 text-body border-0 shadow-none bg-transparent" 
             icon="arrow-left" 
             size="md" 
             iconOnly 
           />
 
-          <h2 className="mb-0 fw-bold h3" style={{ color: '#2d333a' }}>
+          <h2 className="mb-0 fw-bold h3" style={{ color: 'var(--tblr-body-color)' }}>
             {mode === 'live' ? 'Scan' : mode === 'captured' ? 'Sesuaikan' : 'Hasil'}
           </h2>
 
@@ -751,7 +751,7 @@ export default function TrackerPhotoPage() {
                     size="md"
                     iconOnly
                   />
-                  <div className={`dropdown-menu dropdown-menu-end shadow-sm ${isSettingsOpen ? 'show' : ''}`} style={{ width: '240px', position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem' }} data-bs-theme="light">
+                  <div className={`dropdown-menu dropdown-menu-end shadow-sm ${isSettingsOpen ? 'show' : ''}`} style={{ width: '240px', position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem' }}>
                     <div className="dropdown-header">PENGATURAN</div>
                     <label className="dropdown-item d-flex align-items-center">
                       <span className="me-2">Auto crop</span>
@@ -806,7 +806,7 @@ export default function TrackerPhotoPage() {
 
       {/* TOP PROGRESS LOADER (Standalone below header) */}
       {autoCropTimeLeft !== null && (
-        <div className="progress progress-xs" style={{ height: '4px', borderRadius: 0, background: 'rgba(0,0,0,0.05)', zIndex: 120, flexShrink: 0 }}>
+        <div className="progress progress-xs" style={{ height: '4px', borderRadius: 0, background: 'rgba(var(--tblr-body-color-rgb), 0.05)', zIndex: 120, flexShrink: 0 }}>
           <div
             className="progress-bar"
             style={{
@@ -823,7 +823,7 @@ export default function TrackerPhotoPage() {
         <div ref={wrapperRef} className="w-100 h-100 position-relative">
 
           {/* LAYERS */}
-          {shutterActive && <div className="position-absolute top-0 start-0 w-100 h-100" style={{ background: '#fff', zIndex: 50, pointerEvents: 'none' }} />}
+          {shutterActive && <div className="position-absolute top-0 start-0 w-100 h-100" style={{ background: 'var(--tblr-bg-surface)', zIndex: 50, pointerEvents: 'none' }} />}
 
           {isProcessing && (
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center gap-3" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', zIndex: 30 }}>
@@ -868,8 +868,8 @@ export default function TrackerPhotoPage() {
       {/* BOTTOM CONTROLS */}
       <div className="w-100" style={{
         flexShrink: 0,
-        background: '#fff',
-        borderTop: '1px solid #eee',
+        background: 'var(--tblr-bg-surface)',
+        borderTop: '1px solid var(--tblr-border-color)',
         zIndex: 100,
         padding: '1rem 1.25rem calc(1rem + env(safe-area-inset-bottom))',
         display: 'flex',

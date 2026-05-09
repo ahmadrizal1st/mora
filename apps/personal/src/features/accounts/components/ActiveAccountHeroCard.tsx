@@ -22,12 +22,12 @@ export function ActiveAccountHeroCard({
       <div className="card-body p-4">
         <div className="text-secondary text-uppercase fw-semibold fs-5 mb-1">{type}</div>
         <div className="d-flex align-items-center gap-2 mb-4">
-          <h1 className="mb-0 fw-bold text-dark">{name}</h1>
+          <h1 className="mb-0 fw-bold text-body">{name}</h1>
           <span className="badge badge-outline text-primary">Active</span>
         </div>
         
         <div className="text-secondary small mb-1">Saldo tersedia</div>
-        <div className="display-6 fw-bold mb-0 font-monospace text-dark">{balance}</div>
+        <div className="display-6 fw-bold mb-0 font-monospace text-body">{balance}</div>
         <div className="text-muted small mb-4">IDR • {num}</div>
         
         <div className={clsx('badge py-1 px-2 mb-4', chgPos ? 'bg-success-lt text-success' : 'bg-danger-lt text-danger')}>

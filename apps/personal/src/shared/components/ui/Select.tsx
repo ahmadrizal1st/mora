@@ -227,7 +227,7 @@ export function Select({
           {selected.map(val => {
             const opt = allOptions.find(o => o.value.toString() === val.toString())
             return (
-              <span key={val} className={clsx("badge", "bg-white", "text-dark", "border", "p-1", "rounded-1", "fw-normal", "d-flex", "align-items-center")} style={{ fontSize: '0.75rem', lineHeight: '1' }}>
+              <span key={val} className={clsx("badge", "bg-body-tertiary", "text-body", "border", "p-1", "rounded-1", "fw-normal", "d-flex", "align-items-center")} style={{ fontSize: '0.75rem', lineHeight: '1' }}>
                 {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={opt.avatar} size="xs" className="me-1" />}
                 {opt?.image && <img src={opt.image} alt="" style={{ width: '16px', height: '16px', objectFit: 'contain' }} className="me-1" />}
                 {(indicator === 'flag' || opt?.flag) && opt?.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-1')}></span>}
@@ -369,7 +369,7 @@ export function Select({
           }}
         >
           {!multiple && showSearch && (
-            <div className="p-2 border-bottom sticky-top bg-white">
+            <div className="p-2 border-bottom sticky-top bg-surface">
               <input 
                 ref={inputRef}
                 type="text" 
@@ -398,7 +398,7 @@ export function Select({
               <div className="dropdown-item text-muted">No results found</div>
             )}
             {allOptions.length > 10 && !search && (
-              <div className="dropdown-item text-muted border-top bg-light" style={{ fontSize: '0.75rem' }}>
+              <div className="dropdown-item text-muted border-top bg-body-tertiary" style={{ fontSize: '0.75rem' }}>
                 Showing first 10 items. Use search to find more.
               </div>
             )}

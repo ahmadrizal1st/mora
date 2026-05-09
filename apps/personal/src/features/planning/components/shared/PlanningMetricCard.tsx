@@ -14,7 +14,7 @@ export function PlanningMetricCard({ title, value, subtext, icon, valueColor }: 
     <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
       <div className="card-body p-4">
         <div className="d-flex align-items-center gap-2 mb-3">
-          <div className={clsx('avatar avatar-xs rounded-circle bg-light shadow-none', valueColor && `text-${valueColor}`)}>
+          <div className={clsx('avatar avatar-xs rounded-circle bg-body-tertiary shadow-none', valueColor && `text-${valueColor}`)}>
             <Icon icon={icon} size="xs" />
           </div>
           <div className="text-secondary text-uppercase fw-bold text-ls-sm" style={{ fontSize: '10px' }}>{title}</div>

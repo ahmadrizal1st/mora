@@ -72,7 +72,7 @@ export function GoalsTab() {
             <h3 className="card-title fw-bold d-flex align-items-center gap-2 m-0">
               <Icon icon="star" size="sm" style={{ color: '#f59f00' }} />
               My Dreams & Wishes
-              <span className="badge bg-light text-secondary border ms-2" style={{ fontSize: '11px' }}>{goals.length}</span>
+              <span className="badge bg-body-tertiary text-secondary border ms-2" style={{ fontSize: '11px' }}>{goals.length}</span>
             </h3>
             <button className="btn btn-ghost-orange btn-sm rounded-pill fw-bold">Filter</button>
           </div>
@@ -95,11 +95,11 @@ export function GoalsTab() {
                 {/* Add Button is always part of the grid flow */}
                 <div className="col-12 col-md-6">
                   <div 
-                    className="card shadow-none cursor-pointer d-flex align-items-center justify-content-center py-5 h-100 transition-all hover-bg-light hover-border-primary" 
+                    className="card shadow-none cursor-pointer d-flex align-items-center justify-content-center py-5 h-100 transition-all hover-bg-surface hover-border-primary" 
                     style={{ 
                       borderRadius: '16px', 
-                      border: '2px dashed #cbd5e1', 
-                      background: 'rgba(248, 250, 252, 0.4)', 
+                      border: '2px dashed var(--tblr-border-color)', 
+                      background: 'var(--tblr-bg-surface-secondary, rgba(248, 250, 252, 0.4))', 
                       minHeight: '300px',
                       transition: 'all 0.3s ease'
                     }}
@@ -146,7 +146,7 @@ export function GoalsTab() {
                     <div className="d-flex justify-content-between align-items-start">
                       <div>
                         <div className="text-secondary mb-1 fw-bold" style={{ fontSize: '10px', textTransform: 'uppercase' }}>{m.date}</div>
-                        <div className="fw-bold text-dark small leading-tight">{m.label}</div>
+                        <div className="fw-bold text-body small leading-tight">{m.label}</div>
                       </div>
                       <span className={`badge ${m.type === 'achievement' ? 'bg-success-lt' : 'bg-primary-lt'} border-0`} style={{ fontSize: '9px' }}>
                         {m.type === 'achievement' ? 'Tercapai' : 'Target'}
@@ -158,16 +158,16 @@ export function GoalsTab() {
                 {/* Visual filler for future milestones */}
                 <div className="mb-0 position-relative opacity-50">
                   <div 
-                    className="position-absolute rounded-circle bg-light border-dashed border-2" 
-                    style={{ width: '20px', height: '20px', left: '-31px', top: '2px', borderColor: '#cbd5e1' }}
+                    className="position-absolute rounded-circle bg-body-tertiary border-dashed border-2" 
+                    style={{ width: '20px', height: '20px', left: '-31px', top: '2px', borderColor: 'var(--tblr-border-color)' }}
                   ></div>
                   <div className="text-secondary small italic">Impian berikutnya sedang menunggu...</div>
                 </div>
               </div>
 
               {/* Motivational Footer to fill space */}
-              <div className="mt-4 p-3 bg-light rounded-3 border-0 text-center">
-                <div className="small fw-bold text-dark mb-1">Terus Konsisten!</div>
+              <div className="mt-4 p-3 bg-body-tertiary rounded-3 border-0 text-center">
+                <div className="small fw-bold text-body mb-1">Terus Konsisten!</div>
                 <div className="text-secondary" style={{ fontSize: '11px' }}>Setiap langkah kecil membawamu lebih dekat ke impian.</div>
               </div>
             </div>

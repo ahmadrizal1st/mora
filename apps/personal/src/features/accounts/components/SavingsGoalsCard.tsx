@@ -29,7 +29,7 @@ export function SavingsGoalsCard({ goals }: SavingsGoalsCardProps) {
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <div className="d-flex align-items-center gap-2">
                     <span className="fs-3">{g.ico}</span>
-                    <span className="text-dark fw-bold small">{g.n}</span>
+                    <span className="text-body fw-bold small">{g.n}</span>
                   </div>
                   <span className="fw-bold font-monospace" style={{ color: g.col, fontSize: '0.8rem' }}>{pct}%</span>
                 </div>

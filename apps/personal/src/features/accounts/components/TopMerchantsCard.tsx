@@ -23,11 +23,11 @@ export function TopMerchantsCard() {
                   </div>
                 </div>
                 <div className="col">
-                  <div className="text-dark fw-bold small">{m.name}</div>
+                  <div className="text-body fw-bold small">{m.name}</div>
                   <div className="text-secondary small" style={{ fontSize: '0.7rem' }}>{m.count} transaksi • {m.cat}</div>
                 </div>
                 <div className="col-auto text-end">
-                  <div className="text-dark fw-bold font-monospace small">{m.amount}</div>
+                  <div className="text-body fw-bold font-monospace small">{m.amount}</div>
                 </div>
               </div>
             </div>

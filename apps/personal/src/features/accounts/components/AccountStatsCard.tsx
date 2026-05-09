@@ -8,15 +8,15 @@ export function AccountStatsCard() {
         
         <div className="row g-3">
           <div className="col-6">
-            <div className="p-2 bg-light rounded text-center">
+            <div className="p-2 bg-body-tertiary rounded text-center">
               <div className="text-secondary small mb-1">Rerata Harian</div>
-              <div className="text-dark fw-bold font-monospace">Rp 320rb</div>
+              <div className="text-body fw-bold font-monospace">Rp 320rb</div>
             </div>
           </div>
           <div className="col-6">
-            <div className="p-2 bg-light rounded text-center">
+            <div className="p-2 bg-body-tertiary rounded text-center">
               <div className="text-secondary small mb-1">Frekuensi</div>
-              <div className="text-dark fw-bold font-monospace">1.2x / hari</div>
+              <div className="text-body fw-bold font-monospace">1.2x / hari</div>
             </div>
           </div>
           <div className="col-12">
@@ -25,7 +25,7 @@ export function AccountStatsCard() {
                    <Icon icon="calendar-stats" size="sm" className="text-primary" />
                    <span className="text-secondary small">Hari Paling Boros</span>
                 </div>
-                <span className="text-dark fw-bold small">Jumat, 12 Mei</span>
+                <span className="text-body fw-bold small">Jumat, 12 Mei</span>
              </div>
           </div>
         </div>

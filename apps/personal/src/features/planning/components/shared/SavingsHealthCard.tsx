@@ -104,7 +104,7 @@ export function SavingsHealthCard() {
 
   return (
     <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-header border-bottom py-3 px-4 bg-white">
+      <div className="card-header border-bottom py-3 px-4 bg-surface">
         <h3 className="card-title fw-bold m-0 d-flex align-items-center gap-2">
           <Icon icon="activity" size="sm" className="text-primary" />
           Financial Health Score
@@ -140,7 +140,7 @@ export function SavingsHealthCard() {
                   transform: 'translateX(-50%) translateY(-50%)',
                   width: '28px',
                   height: '28px',
-                  backgroundColor: 'white',
+                  backgroundColor: 'var(--tblr-bg-surface)',
                   borderRadius: '50%',
                   border: `5px solid ${activeColor}`,
                   boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
@@ -157,7 +157,7 @@ export function SavingsHealthCard() {
           
           <div className="text-muted small mb-1">May 26, 2024</div>
           <div className="text-secondary opacity-50 mb-1" style={{ fontSize: '10px' }}>VantageScore 3.0 from Banking App</div>
-          <div className="text-dark small cursor-pointer fw-bold d-flex align-items-center justify-content-center gap-1 mt-1">
+          <div className="text-body small cursor-pointer fw-bold d-flex align-items-center justify-content-center gap-1 mt-1">
             Refresh Score <Icon icon="refresh" size="xs" />
           </div>
         </div>
@@ -167,19 +167,19 @@ export function SavingsHealthCard() {
         <div className="space-y-3">
           <div className="d-flex justify-content-between align-items-center">
             <span className="text-secondary small fw-medium">Average Daily Balance</span>
-            <span className="fw-bold text-dark">{formatCurrency(1748.09 * 15000)}</span>
+            <span className="fw-bold text-body">{formatCurrency(1748.09 * 15000)}</span>
           </div>
           <div className="d-flex justify-content-between align-items-center">
             <span className="text-secondary small fw-medium">Last Statement Balance</span>
-            <span className="fw-bold text-dark">{formatCurrency(2300.03 * 15000)}</span>
+            <span className="fw-bold text-body">{formatCurrency(2300.03 * 15000)}</span>
           </div>
           <div className="d-flex justify-content-between align-items-center">
             <span className="text-secondary small fw-medium">Routing Number</span>
-            <span className="fw-bold text-dark">1267231469</span>
+            <span className="fw-bold text-body">1267231469</span>
           </div>
           <div className="d-flex justify-content-between align-items-center">
             <span className="text-secondary small fw-medium">Account Number</span>
-            <span className="fw-bold text-dark">2343</span>
+            <span className="fw-bold text-body">2343</span>
           </div>
         </div>
       </div>

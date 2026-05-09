@@ -13,7 +13,7 @@ export function SmartInsightCard() {
         </div>
         
         <div className="flex-grow-1">
-          <p className="text-dark mb-4 fw-medium leading-relaxed" style={{ fontSize: '13px' }}>
+          <p className="text-body mb-4 fw-medium leading-relaxed" style={{ fontSize: '13px' }}>
             Jika Anda menambah setoran <strong className="text-orange">Rp 500rb/bulan</strong>, target <span className="text-orange fw-bold">DP Rumah</span> bisa tercapai <span className="badge bg-orange-lt text-orange border border-orange-subtle px-2">2 Bulan</span> lebih cepat dari estimasi saat ini.
           </p>
         </div>

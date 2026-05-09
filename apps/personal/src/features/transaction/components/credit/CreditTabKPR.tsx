@@ -1,4 +1,3 @@
-import React from 'react';
 import { Icon, Chart } from '@/shared/components/ui';
 
 const fmt = (n: number) =>
@@ -109,7 +108,7 @@ export function CreditTabKPR() {
                 {[
                   { label: 'Plafon',         value: fmt(kpr.loanAmount) },
                   { label: 'Sudah dilunasi', value: fmt(kpr.paid),               cls: 'text-success' },
-                  { label: 'Cicilan/bln',    value: fmt(kpr.monthlyInstallment) },
+                  { label: 'Cicilan per bln',    value: fmt(kpr.monthlyInstallment) },
                   { label: 'Suku bunga',     value: `${kpr.interestRate}% p.a.`,
                     extra: <span className="badge bg-warning-lt text-warning border-0 rounded-1 ms-1" style={{ fontSize: '10px' }}>Floating</span> },
                   { label: 'Periode fixed',  value: kpr.fixedPeriod },
@@ -136,6 +135,7 @@ export function CreditTabKPR() {
                 </div>
               </div>
 
+
               <div className={`alert alert-${urgentColor} d-flex align-items-center gap-2 mt-3 mb-0`} role="alert">
                 <Icon icon="calendar-event" size={16} />
                 <div>
@@ -143,7 +143,6 @@ export function CreditTabKPR() {
                   <div className="small opacity-75">{kpr.daysLeft} hari lagi • {fmt(kpr.monthlyInstallment)}</div>
                 </div>
               </div>
-            </div>
 
               <div className="mt-3">
                 <button className="btn btn-warning w-100 fw-bold text-white">
@@ -154,7 +153,7 @@ export function CreditTabKPR() {
             </div>
           </div>
         </div>
-
+        
         {/* Right: Charts + Schedule */}
         <div className="col-12 col-lg-8">
           {/* Payment History */}
@@ -211,7 +210,7 @@ export function CreditTabKPR() {
                   yaxis: {
                     labels: {
                       style: { colors: 'var(--tblr-secondary)', fontWeight: 500 },
-                      formatter: (v: number) => (v / 1_000_000).toFixed(0) + ' jt',
+                      formatter: (v: number) => (v * 0.000001).toFixed(0) + ' jt',
                     },
                   },
                   extend: {
@@ -262,6 +261,6 @@ export function CreditTabKPR() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 }

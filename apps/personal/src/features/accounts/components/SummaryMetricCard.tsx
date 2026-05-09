@@ -14,7 +14,7 @@ export function SummaryMetricCard({ title, value, subtext, icon, valueColor }: S
     <div className="card shadow-sm border-0 h-100">
       <div className="card-body p-3">
         <div className="d-flex align-items-center gap-2 mb-3">
-          <div className={clsx('avatar avatar-xs rounded bg-light', valueColor && `text-${valueColor}`)}>
+          <div className={clsx('avatar avatar-xs rounded bg-body-tertiary', valueColor && `text-${valueColor}`)}>
             <Icon icon={icon} size="xs" />
           </div>
           <div className="text-secondary text-uppercase fw-semibold fs-5">{title}</div>

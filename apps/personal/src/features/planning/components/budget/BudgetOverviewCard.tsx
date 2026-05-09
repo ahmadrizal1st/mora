@@ -31,7 +31,7 @@ export function BudgetOverviewCard({ totalBudget, spent, safeToSpendPerDay }: Bu
               offsetY: 8,
               fontSize: '22px',
               fontWeight: 700,
-              color: '#1e293b'
+              color: 'var(--tblr-body-color)'
             }
           }
         }
@@ -53,20 +53,20 @@ export function BudgetOverviewCard({ totalBudget, spent, safeToSpendPerDay }: Bu
           <div className="flex-fill ps-2">
             <div className="text-secondary small fw-bold text-uppercase mb-1" style={{ fontSize: '10px' }}>Anggaran Terpakai</div>
             <div className="h2 fw-bold mb-0 text-primary" style={{ letterSpacing: '-0.5px', fontSize: '1.5rem' }}>{formatCurrency(spent)}</div>
-            <div className="text-muted small">dari <span className="fw-bold text-dark">{formatCurrency(totalBudget)}</span></div>
+            <div className="text-muted small">dari <span className="fw-bold text-body">{formatCurrency(totalBudget)}</span></div>
           </div>
         </div>
 
         <div className="row g-2">
           <div className="col-6">
-            <div className="p-3 rounded-3 bg-light-lt border border-light shadow-sm h-100">
+            <div className="p-3 rounded-3 bg-body-tertiary border shadow-sm h-100">
               <div className="d-flex align-items-center gap-2 mb-2">
                 <div className="avatar avatar-xs rounded-3 bg-secondary-lt text-secondary border border-secondary" style={{ width: '22px', height: '22px' }}>
                   <Icon icon="wallet" size="xs" />
                 </div>
                 <span className="text-muted small fw-bold text-uppercase" style={{ fontSize: '9px' }}>Sisa Saldo</span>
               </div>
-              <div className="fw-bold text-dark fs-3">{formatCurrency(totalBudget - spent)}</div>
+              <div className="fw-bold text-body fs-3">{formatCurrency(totalBudget - spent)}</div>
             </div>
           </div>
           <div className="col-6">
@@ -75,7 +75,7 @@ export function BudgetOverviewCard({ totalBudget, spent, safeToSpendPerDay }: Bu
                 <div className="avatar avatar-xs rounded-3 bg-success-lt text-success border border-success" style={{ width: '22px', height: '22px' }}>
                   <Icon icon="shield-check" size="xs" />
                 </div>
-                <span className="text-success-dark small fw-bold text-uppercase" style={{ fontSize: '9px' }}>Aman Digunakan</span>
+                <span className="text-success small fw-bold text-uppercase" style={{ fontSize: '9px' }}>Aman Digunakan</span>
               </div>
               <div className="fw-bold text-success fs-3">{formatCurrency(safeToSpendPerDay)} <span className="small opacity-50 fw-normal">/hr</span></div>
             </div>

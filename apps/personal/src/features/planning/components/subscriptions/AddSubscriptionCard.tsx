@@ -3,9 +3,9 @@ import { Icon } from '@/shared/components/ui/Icon';
 
 export function AddSubscriptionCard() {
   return (
-    <div className="card h-100 shadow-none transition-all hover-bg-light" style={{ 
+    <div className="card h-100 shadow-none transition-all hover-bg-body-tertiary" style={{ 
       borderRadius: '12px', 
-      border: '1.5px dashed #dce1e7',
+      border: '1.5px dashed var(--tblr-border-color)',
       cursor: 'pointer',
       background: 'transparent',
       minHeight: '50px'

@@ -35,7 +35,7 @@ export function GoalsOverviewCard({ totalSaved, totalTarget }: GoalsOverviewCard
               <span className="small fw-bold text-secondary">KEMAJUAN GLOBAL</span>
               <span className="small fw-bold text-orange">{percentage}%</span>
             </div>
-            <div className="progress progress-md" style={{ height: '12px', borderRadius: '20px', backgroundColor: '#f1f4f9' }}>
+            <div className="progress progress-md" style={{ height: '12px', borderRadius: '20px', backgroundColor: 'var(--tblr-border-color)' }}>
               <div 
                 className="progress-bar bg-orange" 
                 role="progressbar" 
@@ -54,13 +54,13 @@ export function GoalsOverviewCard({ totalSaved, totalTarget }: GoalsOverviewCard
         <div className="mt-auto pt-4 border-top">
           <div className="row g-3">
             <div className="col-6">
-              <div className="p-3 bg-light rounded-3 border-0 transition-all hover-bg-light-dark">
+              <div className="p-3 bg-body-tertiary rounded-3 border-0 transition-all hover-bg-surface">
                 <div className="text-secondary small mb-1 fw-bold" style={{ fontSize: '9px', letterSpacing: '0.05em' }}>SISA TARGET</div>
-                <div className="fw-bold text-dark fs-4">{formatCurrency(totalTarget - totalSaved)}</div>
+                <div className="fw-bold text-body fs-4">{formatCurrency(totalTarget - totalSaved)}</div>
               </div>
             </div>
             <div className="col-6">
-              <div className="p-3 bg-light rounded-3 border-0 transition-all hover-bg-light-dark">
+              <div className="p-3 bg-body-tertiary rounded-3 border-0 transition-all hover-bg-surface">
                 <div className="text-secondary small mb-1 fw-bold" style={{ fontSize: '9px', letterSpacing: '0.05em' }}>RATA-RATA /BULAN</div>
                 <div className="fw-bold text-success fs-4">+{formatCurrency(6000000)}</div>
               </div>

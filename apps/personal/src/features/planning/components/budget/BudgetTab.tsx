@@ -52,7 +52,7 @@ export function BudgetTab() {
       {/* LEVEL 3: Categories vs Insights */}
       <div className="col-lg-8">
         <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px', overflow: 'hidden' }}>
-          <div className="card-header border-bottom py-3 px-4 bg-white">
+          <div className="card-header border-bottom py-3 px-4 bg-surface">
             <h3 className="card-title fw-bold m-0 d-flex align-items-center gap-2">
               <Icon icon="category" size="sm" className="text-primary" />
               Allocation Summary
@@ -60,7 +60,7 @@ export function BudgetTab() {
           </div>
           <div className="card-body p-4">
             <div className="mb-5">
-              <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-light">
+              <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary-subtle">
                 <div className="d-flex align-items-center gap-2">
                   <div className="avatar avatar-xs rounded bg-primary text-white shadow-sm">
                     <Icon icon="home" size="xs" />
@@ -68,7 +68,7 @@ export function BudgetTab() {
                   <h4 className="fw-bold m-0 small text-uppercase text-ls-sm">Needs (50%)</h4>
                 </div>
                 <div className="text-end">
-                  <div className="small text-muted" style={{ fontSize: '10px' }}>Terpakai: <span className="text-dark fw-bold">{formatCurrency(needs.reduce((a, b) => a + b.spent, 0))}</span> / {formatCurrency(needs.reduce((a, b) => a + b.limit, 0))}</div>
+                  <div className="small text-muted" style={{ fontSize: '10px' }}>Terpakai: <span className="text-body fw-bold">{formatCurrency(needs.reduce((a, b) => a + b.spent, 0))}</span> / {formatCurrency(needs.reduce((a, b) => a + b.limit, 0))}</div>
                 </div>
               </div>
               <div className="row g-4">
@@ -81,7 +81,7 @@ export function BudgetTab() {
             </div>
 
             <div>
-              <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-light">
+              <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary-subtle">
                 <div className="d-flex align-items-center gap-2">
                   <div className="avatar avatar-xs rounded bg-warning text-white shadow-sm">
                     <Icon icon="star" size="xs" />
@@ -89,7 +89,7 @@ export function BudgetTab() {
                   <h4 className="fw-bold m-0 small text-uppercase text-ls-sm">Wants (30%)</h4>
                 </div>
                 <div className="text-end">
-                  <div className="small text-muted" style={{ fontSize: '10px' }}>Terpakai: <span className="text-dark fw-bold">{formatCurrency(wants.reduce((a, b) => a + b.spent, 0))}</span> / {formatCurrency(wants.reduce((a, b) => a + b.limit, 0))}</div>
+                  <div className="small text-muted" style={{ fontSize: '10px' }}>Terpakai: <span className="text-body fw-bold">{formatCurrency(wants.reduce((a, b) => a + b.spent, 0))}</span> / {formatCurrency(wants.reduce((a, b) => a + b.limit, 0))}</div>
                 </div>
               </div>
               <div className="row g-4">

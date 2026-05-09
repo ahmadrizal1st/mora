@@ -253,7 +253,7 @@ export const TransactionListPage: FC = () => {
               className="border-0 p-0 bg-transparent ms-auto" 
               onClick={() => setIsFilterModalOpen(true)}
               style={{ 
-                color: '#1e293b',
+                color: 'var(--tblr-body-color)',
                 cursor: 'pointer',
                 outline: 'none',
                 boxShadow: 'none',
@@ -292,14 +292,14 @@ export const TransactionListPage: FC = () => {
               <div className="card-actions d-flex align-items-center gap-2">
                 <div className="btn-group shadow-sm rounded-2 overflow-hidden me-2">
                   <button 
-                    className={`btn btn-icon border-0 ${viewMode === 'list' ? 'btn-primary' : 'btn-light'}`}
+                    className={`btn btn-icon border-0 ${viewMode === 'list' ? 'btn-primary' : 'btn-ghost-secondary bg-surface'}`}
                     onClick={() => setViewMode('list')}
                     title="Tampilan Daftar"
                   >
                     <Icon icon="list" size={18} />
                   </button>
                   <button 
-                    className={`btn btn-icon border-0 ${viewMode === 'table' ? 'btn-primary' : 'btn-light'}`}
+                    className={`btn btn-icon border-0 ${viewMode === 'table' ? 'btn-primary' : 'btn-ghost-secondary bg-surface'}`}
                     onClick={() => setViewMode('table')}
                     title="Tampilan Tabel"
                   >
@@ -386,7 +386,7 @@ export const TransactionListPage: FC = () => {
         size="fullscreen"
         className="p-0"
       >
-        <div className="d-flex flex-column h-100 bg-white">
+        <div className="d-flex flex-column h-100 bg-surface">
           <header className="px-3 py-3 border-bottom d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center gap-3">
               <button 

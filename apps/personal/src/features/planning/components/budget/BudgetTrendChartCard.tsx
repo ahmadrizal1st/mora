@@ -49,7 +49,7 @@ export function BudgetTrendChartCard() {
       },
       grid: {
         show: true,
-        borderColor: '#f1f4f9',
+        borderColor: 'var(--tblr-border-color)',
         strokeDashArray: 4,
         padding: { top: 0, right: 10, left: 0, bottom: 0 }
       },

@@ -51,7 +51,7 @@ export function BudgetInsights() {
 
   return (
     <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <div className="card-header border-bottom py-3 px-4 bg-surface d-flex align-items-center justify-content-between">
         <h4 className="fw-bold m-0 d-flex align-items-center gap-2">
           <Icon icon="bulb" size="sm" className="text-warning" />
           Budget Insights
@@ -61,7 +61,7 @@ export function BudgetInsights() {
       <div className="card-body p-0">
         <div className="list-group list-group-flush">
           {insights.map((insight, idx) => (
-            <div key={idx} className="list-group-item py-3 px-4 border-0 border-bottom-light hover-bg-light transition-all cursor-pointer">
+            <div key={idx} className="list-group-item py-3 px-4 border-0 border-bottom hover-bg-body-tertiary transition-all cursor-pointer">
               <div className="d-flex align-items-center gap-3">
                 <div className={`avatar avatar-md rounded-3 bg-${insight.color}-lt text-${insight.color} border border-${insight.color}`}>
                   <Icon icon={insight.icon as any} size="sm" />
@@ -75,7 +75,7 @@ export function BudgetInsights() {
                     </span>
                   </div>
                   <div className="d-flex align-items-center justify-content-between">
-                    <span className="fw-bold text-dark">{insight.value}</span>
+                    <span className="fw-bold text-body">{insight.value}</span>
                     <span className="text-muted small">{insight.subvalue}</span>
                   </div>
                 </div>
@@ -84,10 +84,10 @@ export function BudgetInsights() {
           ))}
         </div>
       </div>
-      <div className="card-footer p-3 bg-light-lt border-0 rounded-bottom-16">
+      <div className="card-footer p-3 bg-body-tertiary border-0 rounded-bottom-16">
         <div className="d-flex align-items-center justify-content-between mb-2">
           <span className="small fw-bold text-secondary text-uppercase" style={{ fontSize: '10px' }}>Month Progress</span>
-          <span className="small fw-bold text-dark">16 / 31 Days</span>
+          <span className="small fw-bold text-body">16 / 31 Days</span>
         </div>
         <div className="progress progress-xs" style={{ height: '6px' }}>
           <div className="progress-bar bg-primary" style={{ width: '51%' }}></div>

@@ -28,7 +28,7 @@ export function EmergencyFundCard() {
         <div className="mb-3 d-flex justify-content-between align-items-end">
           <div>
             <div className="text-secondary small mb-1 fw-bold" style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>TERKUMPUL</div>
-            <div className="fw-bold text-dark fs-2">{formatCurrency(current)}</div>
+            <div className="fw-bold text-body fs-2">{formatCurrency(current)}</div>
           </div>
           <div className="text-end">
             <div className="text-secondary small mb-1 fw-bold" style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>TARGET (6 BLN)</div>
@@ -36,7 +36,7 @@ export function EmergencyFundCard() {
           </div>
         </div>
 
-        <div className="progress progress-md mb-4" style={{ height: '10px', backgroundColor: '#f1f4f9', borderRadius: '10px' }}>
+        <div className="progress progress-md mb-4" style={{ height: '10px', backgroundColor: 'var(--tblr-border-color)', borderRadius: '10px' }}>
           <div 
             className="progress-bar bg-orange" 
             style={{ 
@@ -48,7 +48,7 @@ export function EmergencyFundCard() {
           ></div>
         </div>
 
-        <div className="p-3 bg-light rounded-3 border-0 position-relative overflow-hidden">
+        <div className="p-3 bg-body-tertiary rounded-3 border-0 position-relative overflow-hidden">
           {/* Subtle background glow */}
           <div className="position-absolute top-0 start-0 w-100 h-100 bg-orange opacity-5"></div>
           

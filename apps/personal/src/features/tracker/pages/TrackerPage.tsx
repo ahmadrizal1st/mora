@@ -8,60 +8,49 @@ const TRACKER_METHODS = [
     label: 'Manual Entry',
     description: 'Quickly type in your transaction details manually',
     path: '/tracker/input',
-    bgColor: '#ffffff',
-    iconColor: '#f97316', // orange
+    colorName: 'orange',
     icon: 'pencil',
-    textColor: 'dark',
   },
   {
     id: 'text',
     label: 'Text Message',
     description: 'Paste text or SMS for automatic extraction',
     path: '/tracker/text',
-    bgColor: '#e8f4ff', // light blue
-    iconColor: '#206bc4', // primary
+    colorName: 'blue',
     icon: 'message-2',
-    textColor: 'primary',
   },
   {
     id: 'scan',
     label: 'Scan Receipt',
     description: 'Use AI to scan physical receipts from camera',
     path: '/tracker/photo',
-    bgColor: '#206bc4', // solid blue
-    iconColor: '#ffffff',
+    colorName: 'primary',
     icon: 'scan',
-    textColor: 'white',
+    isSolid: true,
   },
   {
     id: 'image',
     label: 'Upload Image',
     description: 'Pick a receipt photo from your gallery',
     path: '/tracker/image',
-    bgColor: '#f6ffed', // light green
-    iconColor: '#2fb344', // success
+    colorName: 'success',
     icon: 'photo',
-    textColor: 'success',
   },
   {
     id: 'file',
     label: 'Document',
     description: 'Import PDF invoices or bank statements',
     path: '/tracker/file',
-    bgColor: '#fff1f0', // light red
-    iconColor: '#d63939', // danger
+    colorName: 'danger',
     icon: 'file-description',
-    textColor: 'danger',
   },
   {
     id: 'audio',
     label: 'Voice Note',
     description: 'Record your expense details with your voice',
     path: '/tracker/audio',
-    bgColor: '#fffbe6', // light yellow
-    iconColor: '#f59f00', // warning
+    colorName: 'warning',
     icon: 'microphone',
-    textColor: 'warning',
   },
 ];
 

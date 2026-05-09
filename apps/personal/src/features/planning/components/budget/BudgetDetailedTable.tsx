@@ -8,7 +8,7 @@ export function BudgetDetailedTable() {
 
   return (
     <div className="card shadow-sm border-0" style={{ borderRadius: '12px' }}>
-      <div className="card-header border-bottom py-3 px-4 bg-white">
+      <div className="card-header border-bottom py-3 px-4 bg-surface">
         <h3 className="card-title fw-bold m-0 d-flex align-items-center gap-2">
           <Icon icon="table" size="sm" className="text-primary" />
           Detailed Breakdown
@@ -36,11 +36,11 @@ export function BudgetDetailedTable() {
                 <tr key={cat.id}>
                   <td>
                     <div className="d-flex align-items-center gap-2">
-                      <div className="avatar avatar-xs rounded bg-light text-dark shadow-none border">
+                      <div className="avatar avatar-xs rounded bg-body-tertiary text-body shadow-none border">
                         <Icon icon={cat.icon as any} size="xs" />
                       </div>
                       <div>
-                        <div className="fw-bold text-dark">{cat.name}</div>
+                        <div className="fw-bold text-body">{cat.name}</div>
                         <div className="text-muted small text-capitalize">{cat.type}</div>
                       </div>
                     </div>

@@ -33,7 +33,7 @@ export function SubscriptionsTab() {
           {['Semua', 'Streaming', 'Kerja', 'Edukasi', 'Lainnya'].map((cat, i) => (
             <button 
               key={i} 
-              className={`btn btn-sm rounded-pill fw-bold px-4 ${i === 0 ? 'btn-primary text-white shadow-sm' : 'btn-white shadow-sm border-0'}`}
+              className={`btn btn-sm rounded-pill fw-bold px-4 ${i === 0 ? 'btn-primary text-white shadow-sm' : 'btn-ghost-secondary border-0'}`}
               style={{ height: '38px' }}
             >
               {cat}

@@ -20,7 +20,7 @@ export function SubscriptionMetricStrip() {
                 </div>
                 <div>
                   <div className="text-secondary fw-bold text-uppercase" style={{ fontSize: '9px', letterSpacing: '0.05em' }}>{m.label}</div>
-                  <div className="h4 fw-bold text-dark mb-0">{m.value}</div>
+                  <div className="h4 fw-bold text-body mb-0">{m.value}</div>
                 </div>
               </div>
             </div>

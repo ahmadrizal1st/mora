@@ -33,9 +33,9 @@ export function TrialTrackerCard() {
       <div className="card-body p-4 d-flex flex-column h-100">
         <div className="vstack gap-3 flex-grow-1">
           {trials.map(trial => (
-            <div key={trial.id} className="p-3 bg-light rounded-3 transition-all border border-transparent hover-border-primary-lt">
+            <div key={trial.id} className="p-3 bg-body-tertiary rounded-3 transition-all border border-transparent hover-border-primary-lt">
               <div className="d-flex align-items-start gap-3">
-                <div className="bg-white p-2 rounded-3 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '42px', height: '42px', overflow: 'hidden' }}>
+                <div className="bg-surface p-2 rounded-3 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '42px', height: '42px', overflow: 'hidden' }}>
                   <img 
                     src={trial.logo} 
                     alt="" 
@@ -48,7 +48,7 @@ export function TrialTrackerCard() {
                 <div className="flex-grow-1">
                   <div className="d-flex justify-content-between align-items-start">
                     <div>
-                      <div className="fw-bold text-dark" style={{ fontSize: '13px' }}>{trial.name}</div>
+                      <div className="fw-bold text-body" style={{ fontSize: '13px' }}>{trial.name}</div>
                       <div className="text-secondary" style={{ fontSize: '11px' }}>Billed {trial.price}</div>
                     </div>
                     <div className="text-end">

@@ -11,7 +11,7 @@ export function AccountSettingsCard() {
             <div className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center gap-2">
                 <Icon icon="shield-lock" size="sm" className="text-success" />
-                <span className="text-dark small fw-medium">Status Keamanan</span>
+                <span className="text-body small fw-medium">Status Keamanan</span>
               </div>
               <span className="badge bg-success-lt">Terlindungi</span>
             </div>
@@ -21,9 +21,9 @@ export function AccountSettingsCard() {
             <div className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center gap-2">
                 <Icon icon="arrows-up-down" size="sm" className="text-primary" />
-                <span className="text-dark small fw-medium">Limit Transfer Harian</span>
+                <span className="text-body small fw-medium">Limit Transfer Harian</span>
               </div>
-              <span className="text-dark fw-bold font-monospace small">Rp 25.000.000</span>
+              <span className="text-body fw-bold font-monospace small">Rp 25.000.000</span>
             </div>
           </div>
 
@@ -31,7 +31,7 @@ export function AccountSettingsCard() {
             <div className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center gap-2">
                 <Icon icon="refresh" size="sm" className="text-secondary" />
-                <span className="text-dark small fw-medium">Auto-debit Status</span>
+                <span className="text-body small fw-medium">Auto-debit Status</span>
               </div>
               <span className="text-secondary small">3 Aktif</span>
             </div>
