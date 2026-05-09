@@ -50,7 +50,7 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
           {/* Status Header */}
           <section className="status-header text-center">
             <div className="status-icon-box mx-auto">
-               <Icon icon={categoryIcon as any} size={36} color="white" stroke={2.5} />
+               <Icon icon={categoryIcon as string} size={36} color="white" stroke={2.5} />
             </div>
             <h2 className="status-text mt-4">
               {transaction.type === 'income' ? 'Transfer Berhasil' : 'Pembayaran Berhasil'}
@@ -258,14 +258,15 @@ export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
 
         .watermark-pattern {
           position: absolute;
-          inset: -100%; /* Massive over-coverage to handle any rotation */
+          inset: -100%;
           width: 300%;
           height: 300%;
-          opacity: 0.04;
+          opacity: 0.05;
           pointer-events: none;
-          background-image: url("/logo/mora.png");
+          background-image: url("/logo/logo-nobg-fill.png");
           background-repeat: repeat;
-          background-size: 45px auto;
+          background-size: 100px auto;
+          filter: sepia(100%) saturate(1200%) hue-rotate(350deg) brightness(95%);
           transform: rotate(-25deg);
           transform-origin: center;
           z-index: 0;

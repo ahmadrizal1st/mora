@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { clsx } from 'clsx'
 import { Icon } from '../ui/Icon'
 import { Avatar } from '../ui/Avatar'
@@ -17,6 +17,7 @@ export function NavbarSideUser({
   hideUsername,
   dark,
 }: NavbarSideUserProps) {
+  const navigate = useNavigate()
   const { user, logout } = useAuth()
   
   // Use first person from data as default "Andrew Forbist"
@@ -33,6 +34,7 @@ export function NavbarSideUser({
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault()
     await logout()
+    navigate({ to: '/' })
   }
 
   return (

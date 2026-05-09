@@ -39,7 +39,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ]
 
     const pathname = location.pathname
-    const isPublicPath = publicPaths.includes(pathname) || pathname.startsWith('/error-')
+    const isPublicPath = publicPaths.includes(pathname) || pathname === '/' || pathname.startsWith('/error-')
 
     const isAuthenticated = context.auth.isAuthenticated
 

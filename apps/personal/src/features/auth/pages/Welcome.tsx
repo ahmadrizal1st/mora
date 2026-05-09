@@ -14,7 +14,7 @@ export default function Welcome() {
         <div className="text-center mt-6">
           <div className="mb-4">
             <img
-              src="/logo/mora-nobg.png"
+              src="/logo/logo-nobg-fill.png"
               style={{
                 height: '110px',
                 width: 'auto',

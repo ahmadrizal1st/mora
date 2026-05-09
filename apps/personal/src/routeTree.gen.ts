@@ -26,7 +26,7 @@ import { Route as Error429RouteImport } from './routes/error-429'
 import { Route as Error404RouteImport } from './routes/error-404'
 import { Route as Error403RouteImport } from './routes/error-403'
 import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as CreditsRouteImport } from './routes/credits'
+import { Route as CreditRouteImport } from './routes/credit'
 import { Route as AuthLockRouteImport } from './routes/auth-lock'
 import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as ActivityRouteImport } from './routes/activity'
@@ -131,9 +131,9 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CreditsRoute = CreditsRouteImport.update({
-  id: '/credits',
-  path: '/credits',
+const CreditRoute = CreditRouteImport.update({
+  id: '/credit',
+  path: '/credit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLockRoute = AuthLockRouteImport.update({
@@ -235,7 +235,7 @@ export interface FileRoutesByFullPath {
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
-  '/credits': typeof CreditsRoute
+  '/credit': typeof CreditRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
@@ -273,7 +273,7 @@ export interface FileRoutesByTo {
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
-  '/credits': typeof CreditsRoute
+  '/credit': typeof CreditRoute
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
   '/error-429': typeof Error429Route
@@ -311,7 +311,7 @@ export interface FileRoutesById {
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
-  '/credits': typeof CreditsRoute
+  '/credit': typeof CreditRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
@@ -351,7 +351,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/assets'
     | '/auth-lock'
-    | '/credits'
+    | '/credit'
     | '/dashboard'
     | '/error-403'
     | '/error-404'
@@ -389,7 +389,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/assets'
     | '/auth-lock'
-    | '/credits'
+    | '/credit'
     | '/error-403'
     | '/error-404'
     | '/error-429'
@@ -426,7 +426,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/assets'
     | '/auth-lock'
-    | '/credits'
+    | '/credit'
     | '/dashboard'
     | '/error-403'
     | '/error-404'
@@ -465,7 +465,7 @@ export interface RootRouteChildren {
   ActivityRoute: typeof ActivityRoute
   AssetsRoute: typeof AssetsRoute
   AuthLockRoute: typeof AuthLockRoute
-  CreditsRoute: typeof CreditsRoute
+  CreditRoute: typeof CreditRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   Error403Route: typeof Error403Route
   Error404Route: typeof Error404Route
@@ -614,11 +614,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/credits': {
-      id: '/credits'
-      path: '/credits'
-      fullPath: '/credits'
-      preLoaderRoute: typeof CreditsRouteImport
+    '/credit': {
+      id: '/credit'
+      path: '/credit'
+      fullPath: '/credit'
+      preLoaderRoute: typeof CreditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth-lock': {
@@ -784,7 +784,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActivityRoute: ActivityRoute,
   AssetsRoute: AssetsRoute,
   AuthLockRoute: AuthLockRoute,
-  CreditsRoute: CreditsRoute,
+  CreditRoute: CreditRoute,
   DashboardRoute: DashboardRouteWithChildren,
   Error403Route: Error403Route,
   Error404Route: Error404Route,

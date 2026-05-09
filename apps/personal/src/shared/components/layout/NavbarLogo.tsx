@@ -24,23 +24,34 @@ export function NavbarLogo({
   const logoContent = (
     <>
       {!hideLogo && (
-        <div className={clsx('navbar-brand-image d-flex align-items-center', showTitle && 'me-3')}>
-          <img 
-            src="/logo/mora-nobg.png" 
-            alt="Mora" 
-            height="24" 
+        <div className={clsx('d-flex align-items-center', showTitle && 'me-3')} style={{ lineHeight: 1 }}>
+          <div 
             className="me-2"
-            style={{ display: 'block', maxWidth: '100%', height: 'auto', maxHeight: '24px' }}
+            style={{ 
+              width: 'clamp(32px, 8vw, 44px)', 
+              height: 'clamp(32px, 8vw, 44px)', 
+              backgroundColor: 'var(--tblr-primary)',
+              WebkitMaskImage: 'url("/logo/logo-nobg-fill.png")',
+              maskImage: 'url("/logo/logo-nobg-fill.png")',
+              WebkitMaskSize: 'contain',
+              maskSize: 'contain',
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              WebkitMaskPosition: 'center',
+              maskPosition: 'center',
+              flexShrink: 0
+            }}
           />
           <span 
             className="h1 mb-0 fw-bold" 
             style={{ 
               color: 'var(--tblr-primary)', 
               letterSpacing: '-0.05rem',
-              fontFamily: '"Comic Sans MS", "Comic Sans", cursive'
+              fontFamily: "'Slackey', cursive",
+              lineHeight: 1
             }}
           >
-            Mora
+            mora
           </span>
         </div>
       )}

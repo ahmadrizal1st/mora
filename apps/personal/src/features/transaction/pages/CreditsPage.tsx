@@ -1,28 +1,36 @@
 import { useState } from 'react';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Button, Icon, Spinner, Modal, Select, Datepicker, AutosizeTextarea, Pagination } from '@/shared/components/ui';
+import { Button, Icon, Modal, Select, Datepicker, AutosizeTextarea } from '@/shared/components/ui';
 import { useAccounts } from '../hooks/useAccounts';
 import axios from '@/shared/api/client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { CreditCard } from '../components/CreditCard';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { CreditHeroBanner } from '../components/CreditHeroBanner';
+import { CreditTabOverview } from '../components/credit/CreditTabOverview';
+import { CreditTabCreditCard } from '../components/credit/CreditTabCreditCard';
+import { CreditTabKTA } from '../components/credit/CreditTabKTA';
+import { CreditTabKPR } from '../components/credit/CreditTabKPR';
+import { CreditTabPaylater } from '../components/credit/CreditTabPaylater';
+import { CreditTabScore } from '../components/credit/CreditTabScore';
 import type { Account } from '../types/transaction.types';
+
+type TabId = 'overview' | 'credit-card' | 'kta' | 'kpr' | 'paylater' | 'score';
+
+const TABS: { id: TabId; label: string; icon: string; badge?: string; badgeColor?: string }[] = [
+  { id: 'overview',     label: 'Overview',      icon: 'layout-dashboard' },
+  { id: 'credit-card',  label: 'Credit Card',   icon: 'credit-card',    badge: '2',    badgeColor: 'azure' },
+  { id: 'kta',          label: 'KTA / Pinjaman', icon: 'building-bank',  badge: '1',    badgeColor: 'primary' },
+  { id: 'kpr',          label: 'KPR / Mortgage', icon: 'home',           badge: '1',    badgeColor: 'warning' },
+  { id: 'paylater',     label: 'Paylater',       icon: 'clock-dollar',   badge: '3',    badgeColor: 'green' },
+  { id: 'score',        label: 'Credit Score',   icon: 'chart-bar' },
+];
 
 export default function CreditsPage() {
   const queryClient = useQueryClient();
-  const { data: accountsResponse, isLoading: accountsLoading } = useAccounts();
+  const { data: accountsResponse } = useAccounts();
   const accounts = accountsResponse?.data || [];
 
-  // Fetch only accounts that already have credits
-  const [page, setPage] = useState(1);
-  const { data: creditsResponse, isLoading: creditsLoading } = useQuery({
-    queryKey: ['credits', page],
-    queryFn: async () => {
-      const res = await axios.get('/credits', { params: { page } });
-      return res.data;
-    }
-  });
-  const creditAccounts = creditsResponse?.data || [];
-
+  const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -73,14 +81,7 @@ export default function CreditsPage() {
         notes: account.credit.notes || ''
       });
     } else {
-      setFormData({
-        limit: 0,
-        total_amount: 0,
-        installment_amount: 0,
-        installment_type: 'monthly',
-        due_date: '',
-        notes: ''
-      });
+      setFormData({ limit: 0, total_amount: 0, installment_amount: 0, installment_type: 'monthly', due_date: '', notes: '' });
     }
     setIsModalOpen(true);
   };
@@ -91,13 +92,11 @@ export default function CreditsPage() {
     color: acc.color
   }));
 
-  const isLoading = accountsLoading || creditsLoading;
-
   return (
-    <BaseLayout 
+    <BaseLayout
       pageTitle="Manajemen Kredit & Pinjaman"
       pageActions={
-        <div style={{ width: '220px' }}>
+        <div className="w-100" style={{ maxWidth: '220px' }}>
           <Select
             options={accountOptions}
             placeholder={
@@ -109,71 +108,62 @@ export default function CreditsPage() {
             showSearch={true}
             triggerClassName="btn btn-primary w-100 fw-bold border-0 shadow-sm text-white"
             onChange={(val) => {
-              const acc = accounts.find(a => a.id === val);
+              const acc = accounts.find((a: Account) => a.id === val);
               if (acc) openForm(acc);
             }}
           />
         </div>
       }
     >
-      <div className="container-xl pt-3">
-        {/* Cards Grid */}
-        <div className="row g-4">
-                {isLoading ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="col-sm-6 col-lg-4">
-                      <div className="card shadow-sm border-0" style={{ height: '220px' }}>
-                        <div className="card-body p-4 d-flex align-items-center justify-content-center">
-                          <Spinner />
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : creditAccounts.length === 0 ? (
-                  <div className="col-12 text-center py-5">
-                    <div className="card border-0 shadow-sm py-5">
-                      <div className="card-body">
-                        <Icon icon="credit-card" size={48} className="mb-3 opacity-20" />
-                        <div className="text-muted">Belum ada profil kredit yang ditambahkan.</div>
-                        <div className="mt-3 text-secondary small">Klik tombol "Tambah Profil Kredit" di pojok kanan atas untuk memulai.</div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  creditAccounts.map((acc: Account) => (
-                    <div key={acc.id} className="col-sm-6 col-lg-4">
-                      <CreditCard 
-                        account={acc} 
-                        onEdit={(acc) => openForm(acc)} 
-                        onDelete={(id) => {
-                          if (window.confirm('Apakah Anda yakin ingin menghapus profil kredit ini?')) {
-                            deleteMutation.mutate(id);
-                          }
-                        }}
-                      />
-                    </div>
-                  ))
-        )}
-                </div>
+      <div className="container-xl pt-3 pb-5">
+        {/* Hero Banner — always visible */}
+        <CreditHeroBanner />
 
-                {/* Pagination footer */}
-                {creditsResponse && creditsResponse.last_page > 1 && (
-                  <div className="mt-5 d-flex flex-column flex-md-row align-items-center justify-content-between py-3 gap-3">
-                    <div className="text-secondary small d-flex align-items-center">
-                      Menampilkan&nbsp;<strong>{creditsResponse.from}</strong>&nbsp;–&nbsp;<strong>{creditsResponse.to}</strong>&nbsp;dari&nbsp;<strong>{creditsResponse.total}</strong>&nbsp;data
-                    </div>
-                    <div className="pagination-wrapper">
-                      <Pagination
-                        activeItem={page}
-                        count={creditsResponse.last_page}
-                        className="m-0"
-                        onPageChange={(p) => setPage(p)}
-                      />
-                    </div>
-                  </div>
-                )}
+        {/* Tab Navigation */}
+        <div className="card border-0 shadow-sm mb-4">
+          <div className="card-body p-0">
+            <div className="overflow-auto">
+              <ul
+                className="nav nav-tabs nav-fill border-0 px-3 flex-nowrap"
+                style={{ minWidth: 'max-content' }}
+                role="tablist"
+              >
+                {TABS.map(tab => (
+                  <li key={tab.id} className="nav-item" role="presentation">
+                    <button
+                      className={`nav-link border-0 px-3 py-3 d-flex align-items-center gap-2 fw-medium ${activeTab === tab.id ? 'active' : ''}`}
+                      style={{ whiteSpace: 'nowrap', fontSize: '13px' }}
+                      onClick={() => setActiveTab(tab.id)}
+                      role="tab"
+                      aria-selected={activeTab === tab.id}
+                    >
+                      <Icon icon={tab.icon} size={15} />
+                      {tab.label}
+                      {tab.badge && (
+                        <span className={`badge bg-${tab.badgeColor}-lt text-${tab.badgeColor} border-0 rounded-pill`}>
+                          {tab.badge}
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div>
+          {activeTab === 'overview'     && <CreditTabOverview />}
+          {activeTab === 'credit-card'  && <CreditTabCreditCard />}
+          {activeTab === 'kta'          && <CreditTabKTA />}
+          {activeTab === 'kpr'          && <CreditTabKPR />}
+          {activeTab === 'paylater'     && <CreditTabPaylater />}
+          {activeTab === 'score'        && <CreditTabScore />}
+        </div>
       </div>
 
+      {/* Add/Edit Credit Modal */}
       <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} size="lg">
         <div className="modal-header border-0 pb-0">
           <h5 className="modal-title h2 fw-bold">Profil Kredit: {selectedAccount?.name}</h5>
@@ -186,10 +176,10 @@ export default function CreditsPage() {
                 <label className="form-label">Limit Kredit (Plafon)</label>
                 <div className="input-group">
                   <span className="input-group-text">Rp</span>
-                  <input 
-                    type="number" 
-                    className="form-control" 
-                    value={formData.limit} 
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={formData.limit}
                     onChange={e => setFormData({...formData, limit: parseInt(e.target.value) || 0})}
                   />
                 </div>
@@ -198,10 +188,10 @@ export default function CreditsPage() {
                 <label className="form-label">Total Pinjaman Saat Ini</label>
                 <div className="input-group">
                   <span className="input-group-text">Rp</span>
-                  <input 
-                    type="number" 
-                    className="form-control" 
-                    value={formData.total_amount} 
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={formData.total_amount}
                     onChange={e => setFormData({...formData, total_amount: parseInt(e.target.value) || 0})}
                   />
                 </div>
@@ -213,10 +203,10 @@ export default function CreditsPage() {
                 <label className="form-label">Besar Cicilan</label>
                 <div className="input-group">
                   <span className="input-group-text">Rp</span>
-                  <input 
-                    type="number" 
-                    className="form-control" 
-                    value={formData.installment_amount} 
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={formData.installment_amount}
                     onChange={e => setFormData({...formData, installment_amount: parseInt(e.target.value) || 0})}
                   />
                 </div>
@@ -227,27 +217,25 @@ export default function CreditsPage() {
                   value={formData.installment_type}
                   onChange={val => setFormData({...formData, installment_type: val})}
                   showSearch={false}
-                  options={[
-                    { value: 'monthly', label: 'Bulanan' }
-                  ]}
+                  options={[{ value: 'monthly', label: 'Bulanan' }]}
                 />
               </div>
             </div>
 
             <div className="mb-3">
-                <label className="form-label">Tenggat Waktu (Jatuh Tempo)</label>
-                <Datepicker
-                  value={formData.due_date}
-                  onChange={(val) => setFormData({...formData, due_date: val})}
-                  layout="icon"
-                />
+              <label className="form-label">Tenggat Waktu (Jatuh Tempo)</label>
+              <Datepicker
+                value={formData.due_date}
+                onChange={(val) => setFormData({...formData, due_date: val})}
+                layout="icon"
+              />
             </div>
 
             <div className="mb-3">
               <label className="form-label">Catatan Tambahan</label>
-              <AutosizeTextarea 
-                className="form-control" 
-                rows={3} 
+              <AutosizeTextarea
+                className="form-control"
+                rows={3}
                 value={formData.notes}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({...formData, notes: e.target.value})}
                 placeholder="Misal: Cicilan rumah ke-12"

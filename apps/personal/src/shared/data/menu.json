@@ -2,21 +2,18 @@
   "dashboard": {
     "title": "Dashboard",
     "icon": "home",
-    "url": "dashboard"
+    "children": {
+      "dashboard":  { "url": "dashboard", "title": "Dashboard" },
+      "assets":     { "url": "assets",    "title": "Asset Management" }
+    }
   },
 
   "cashflow": {
     "title": "Cashflow",
     "icon": "cash",
-    "columns": 2,
     "children": {
       "transactions":  { "url": "transactions", "title": "Riwayat Transaksi" },
-      "tracker":       { "url": "tracker",     "title": "Catat Transaksi" },
-      "accounts":      { "url": "accounts",    "title": "Kelola Akun" },
-      "assets":        { "url": "assets",      "title": "Asset Management" },
-      "subscriptions": { "url": "subscription","title": "Subscription Hub" },
-      "split":         { "url": "split",       "title": "Split Bill" },
-      "forecast":      { "url": "ai/forecast", "title": "Cash Flow Forecast" }
+      "accounts":      { "url": "accounts",    "title": "Kelola Akun" }
     }
   },
 
@@ -24,103 +21,19 @@
     "title": "Wealth",
     "icon": "building-bank",
     "columns": 2,
-    "children": {
-      "portfolio":    { "url": "portfolio",              "title": "My Portfolio" },
-      "comparison":   { "url": "portfolio/compare",      "title": "Compare Strategy" },
-      "market":       { "url": "market",                 "title": "Market Prices" },
-      "watchlist":    { "url": "market/watchlist",       "title": "My Watchlist" },
-      "halal":        { "url": "market/halal-screener",  "title": "Halal & ESG Screener" },
-      "dividend":     { "url": "portfolio/dividend",     "title": "Dividend Calendar" },
-      "converter":    { "url": "converter",              "title": "Forex & Crypto Conv" },
-      "robo_advisor": { "url": "portfolio/robo-advisor", "title": "Robo-Advisor" },
-      "tax":          { "url": "portfolio/tax",          "title": "Investment Tax" }
-    }
+    "url": "portfolio"
   },
 
   "credit": {
     "title": "Credit",
     "icon": "credit-card",
-    "columns": 2,
-    "children": {
-      "summary":       { "url": "credit",               "title": "Credit Overview" },
-      "personal_loan": { "url": "credit/personal-loan", "title": "Personal Loans" },
-      "mortgage":      { "url": "credit/mortgage",      "title": "Home Mortgage" },
-      "cards":         { "url": "credit/cards",         "title": "Credit Cards" },
-      "paylater":      { "url": "credit/paylater",      "title": "Paylater Manage" },
-      "planner":       { "url": "credit/debt-planner",  "title": "Debt Payoff Plan" },
-      "score":         { "url": "credit/score",         "title": "Credit Score" }
-    }
+    "url": "credit"
   },
 
   "planning": {
     "title": "Planning",
     "icon": "target",
-    "columns": 2,
-    "children": {
-      "dashboard":  { "url": "planning",              "title": "Planning Dashboard" },
-      "goals":      { "url": "goals",                "title": "Financial Goals" },
-      "emergency":  { "url": "goals/emergency-fund", "title": "Emergency Fund" },
-      "retirement": { "url": "goals/retirement",     "title": "Retirement Simulation" },
-      "insurance":  { "url": "goals/insurance",      "title": "Insurance Planner" },
-      "hajj":       { "url": "goals/hajj-saving",    "title": "Hajj Planning" },
-      "reminders":  { "url": "reminder",             "title": "Bill Reminders" },
-      "zakat_tax":  { "url": "zakat",                "title": "Zakat & Tax" },
-      "net_worth":  { "url": "analytics/networth",   "title": "Net Worth" }
-    }
-  },
-
-  "analytics": {
-    "title": "Analytics",
-    "icon": "chart-bar",
-    "columns": 2,
-    "children": {
-      "overview":      { "url": "analytics",         "title": "Analytics Overview" },
-      "cashflow":      { "url": "analytics/cashflow", "title": "Cashflow Report" },
-      "behavior":      { "url": "behavior",           "title": "Spending Behavior" },
-      "health_score":  { "url": "behavior/score",     "title": "Financial Health Score" },
-      "benchmark":     { "url": "benchmark",          "title": "Spending Benchmark" },
-      "forecast":      { "url": "ai/forecast",        "title": "Cash Flow Forecast" }
-    }
-  },
-
-  "ai_tools": {
-    "title": "AI & Tools",
-    "icon": "cpu",
-    "columns": 2,
-    "children": {
-      "ai_chat":      { "url": "ai",           "title": "AI Copilot" },
-      "autopilot":    { "url": "ai/autopilot", "title": "AI Autopilot" },
-      "price_check":  { "url": "price-check",  "title": "Price Checker" },
-      "rules":        { "url": "rules",        "title": "Automation Rules" },
-      "round_up":     { "url": "round-up",     "title": "Round-Up Saving" },
-      "salary_split": { "url": "salary-split", "title": "Salary Splitter" },
-      "receipts":     { "url": "receipts",     "title": "Receipt Scanner" }
-    }
-  },
-
-  "local": {
-    "title": "Local",
-    "icon": "map-pin",
-    "columns": 2,
-    "children": {
-      "atm":   { "url": "nearby/atm",   "title": "Nearby ATM" },
-      "promo": { "url": "nearby/promo", "title": "Nearby Promo" }
-    }
-  },
-
-  "ecosystem": {
-    "title": "Ecosystem",
-    "icon": "grid-dots",
-    "columns": 2,
-    "children": {
-      "bank_sync": { "url": "bank-sync",       "title": "Bank & Finance Hub" },
-      "vault":     { "url": "vault",           "title": "File Vault" },
-      "learn":     { "url": "learn",           "title": "Academy Hub" },
-      "news":      { "url": "news",            "title": "Financial News" },
-      "family":    { "url": "settings/family", "title": "Family Mode" },
-      "profile":   { "url": "profile",         "title": "My Account" },
-      "settings":  { "url": "settings",        "title": "System Settings" }
-    }
+    "url": "planning"
   },
 
   "gamification": {
