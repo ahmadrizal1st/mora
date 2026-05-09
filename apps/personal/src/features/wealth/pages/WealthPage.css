@@ -1,0 +1,45 @@
+/* Wealth specific animations and minor tweaks that don't conflict with Tabler UI */
+
+.tab-content-anim {
+    animation: slideUpFade 0.3s ease-out;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.text-purple {
+    color: #7c6fff !important;
+}
+
+.bg-purple-lt {
+    background-color: rgba(124, 111, 255, 0.1) !important;
+    color: #7c6fff !important;
+}
+
+/* Ensure consistent spacing in row-cards */
+.row-cards {
+    margin-bottom: 1.5rem;
+}
+
+/* Progress bar adjustments for dense tables */
+.progress-xs {
+    height: 4px;
+}
+
+/* Ensure badges look like Tabler standard */
+.badge-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    padding: 0;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-top: -2px;
+}
