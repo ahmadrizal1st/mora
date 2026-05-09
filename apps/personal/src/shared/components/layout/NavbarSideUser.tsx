@@ -34,7 +34,10 @@ export function NavbarSideUser({
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault()
     await logout()
-    navigate({ to: '/' })
+    
+    // If mobile (typically < 768px), go to Welcome page, else go to Sign In
+    const isMobile = window.innerWidth < 768
+    navigate({ to: isMobile ? '/' : '/sign-in' })
   }
 
   return (

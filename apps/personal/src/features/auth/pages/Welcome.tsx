@@ -12,20 +12,39 @@ export default function Welcome() {
 
       <div className="container-tight d-flex flex-column align-items-center justify-content-between py-6 px-4 welcome-page-content" style={{ position: 'relative', zIndex: 2, flex: 1 }}>
         <div className="text-center mt-6">
-          <div className="mb-4">
-            <img
-              src="/logo/logo-nobg-fill.png"
+          <div className="mb-3 d-flex flex-column align-items-center">
+            <div 
               style={{
-                height: '110px',
-                width: 'auto',
-                filter: 'brightness(0) invert(1) drop-shadow(0 15px 25px rgba(0,0,0,0.15))'
+                height: '80px',
+                width: '120px',
+                backgroundColor: 'white',
+                WebkitMaskImage: 'url("/logo/logo-nobg-fill.png")',
+                maskImage: 'url("/logo/logo-nobg-fill.png")',
+                WebkitMaskSize: 'contain',
+                maskSize: 'contain',
+                WebkitMaskRepeat: 'no-repeat',
+                maskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'center',
+                maskPosition: 'center',
+                filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.1))'
               }}
-              alt="Mora Finance"
             />
+            <div 
+              className="mb-0 text-white brand-text-welcome" 
+              style={{ 
+                fontFamily: "'Slackey', cursive",
+                fontSize: '2.5rem',
+                letterSpacing: '-0.04em',
+                lineHeight: 1,
+                marginTop: '-20px',
+                textShadow: '0 10px 40px rgba(0,0,0,0.2)',
+                position: 'relative',
+                zIndex: 10
+              }}
+            >
+              mora
+            </div>
           </div>
-          <h1 className="display-3 fw-bolder text-white mb-0" style={{ letterSpacing: '-0.06em', textShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
-            Mora Finance
-          </h1>
         </div>
 
         <div className="w-100 text-center mb-4">
