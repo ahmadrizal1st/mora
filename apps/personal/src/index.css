@@ -732,6 +732,88 @@ button[role="tab"]:focus-visible {
   font-family: 'Slackey', cursive !important;
 }
 
+/* --- Wealth Module Premium Aesthetics --- */
+.wealth-card-premium {
+  background: var(--tblr-bg-surface);
+  position: relative;
+  overflow: hidden;
+}
+
+.asset-class-tile-premium {
+  border: 1px solid var(--tblr-border-color-light, rgba(0, 0, 0, 0.05)) !important;
+  background: linear-gradient(135deg, var(--tblr-bg-surface-secondary) 0%, var(--tblr-bg-surface) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.asset-class-tile-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 100% 0%, rgba(var(--tblr-primary-rgb), 0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.performance-metric-glow {
+  position: relative;
+  display: inline-block;
+}
+
+.performance-metric-glow::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.2;
+  border-radius: 2px;
+  filter: blur(1px);
+}
+
+.chart-header-actions .btn {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.4rem 0.75rem;
+}
+
+.card-header-premium {
+  padding: 1.25rem 1.5rem 0.5rem 1.5rem !important;
+}
+
+.card-body-premium {
+  padding: 1rem 1.5rem 1.5rem 1.5rem !important;
+}
+
+.wealth-value-display {
+  letter-spacing: -0.04em;
+  font-weight: 900;
+  background: linear-gradient(to bottom, var(--tblr-body-color) 0%, color-mix(in srgb, var(--tblr-body-color), transparent 20%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom ApexCharts Tooltip Premium */
+.apexcharts-tooltip.apexcharts-theme-dark {
+  background: rgba(15, 23, 42, 0.9) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 12px !important;
+}
+
+.apexcharts-tooltip-title {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  font-weight: 700 !important;
+  padding: 8px 12px !important;
+}
+
 
 @media (max-width: 576px) {
   .brand-text-welcome {

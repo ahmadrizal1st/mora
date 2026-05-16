@@ -17,12 +17,6 @@
     }
   },
 
-  "wealth": {
-    "title": "Wealth",
-    "icon": "building-bank",
-    "columns": 2,
-    "url": "portfolio"
-  },
 
   "credit": {
     "title": "Credit",
