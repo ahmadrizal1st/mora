@@ -241,26 +241,30 @@ export function CreditTabCreditCard() {
 
         <div className="col-12 col-lg-8">
           <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '20px' }}>
-            <div className="card-header border-0 pb-0">
+            <div className="card-header border-0 pb-0 px-4 pt-4">
               <h3 className="card-title fw-bold">Tren Pengeluaran</h3>
               <div className="card-actions">
-                <span className="text-muted small">6 bulan terakhir — {card.name}</span>
+                <span className="text-muted small">12 bulan terakhir — {card.name}</span>
               </div>
             </div>
-            <div className="card-body p-4 pt-2">
+            <div className="card-body p-0">
               <Chart
                 chartId={`credit-spending-${card.id}`}
-                height={22}
+                height={26}
                 chartData={{
                   type: 'bar',
-                  series: [{ name: 'Pengeluaran', color: card.color || 'var(--tblr-primary)', data: [1200000, 850000, 1500000, 950000, 1100000, 1300000] }],
-                  categories: ['Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
+                  series: [{ 
+                    name: 'Pengeluaran', 
+                    color: card.color || 'var(--tblr-primary)', 
+                    data: [0.8, 1.2, 0.9, 1.1, 1.3, 0.7, 1.2, 0.85, 1.5, 0.95, 1.1, 1.3] 
+                  }],
+                  categories: ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
                   datalabels: false,
                   legend: false,
                   grid: {
                     strokeDashArray: 4,
                     borderColor: 'var(--tblr-border-color)',
-                    padding: { top: 0, right: 0, bottom: 0, left: 10 },
+                    padding: { top: 10, right: 20, bottom: 0, left: 20 },
                   },
                   xaxis: {
                     axisBorder: { show: false },
@@ -270,14 +274,14 @@ export function CreditTabCreditCard() {
                     min: 0,
                     labels: {
                       style: { colors: 'var(--tblr-secondary)', fontWeight: 500 },
-                      formatter: (v: number) => (v / 1_000_000).toFixed(1) + 'jt',
+                      formatter: (v: number) => v.toFixed(1) + 'jt',
                     },
                   },
                   extend: {
                     plotOptions: {
                       bar: {
-                        columnWidth: '45%',
-                        borderRadius: 6,
+                        columnWidth: '70%',
+                        borderRadius: 4,
                         distributed: false,
                       }
                     },

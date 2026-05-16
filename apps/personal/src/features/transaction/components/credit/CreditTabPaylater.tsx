@@ -264,26 +264,30 @@ export function CreditTabPaylater() {
 
         <div className="col-12 col-lg-8">
           <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '20px' }}>
-            <div className="card-header border-0 pb-0">
+            <div className="card-header border-0 pb-0 px-4 pt-4">
               <h3 className="card-title fw-bold">Tren Pengeluaran</h3>
               <div className="card-actions">
-                <span className="text-muted small">6 bulan terakhir — {prov.name}</span>
+                <span className="text-muted small">12 bulan terakhir — {prov.name}</span>
               </div>
             </div>
-            <div className="card-body p-4 pt-2">
+            <div className="card-body p-0">
               <Chart
                 chartId={`paylater-spending-${prov.id}`}
-                height={22}
+                height={26}
                 chartData={{
                   type: 'bar',
-                  series: [{ name: 'Pengeluaran', color: prov.color || 'var(--tblr-primary)', data: spendHistory.map(v => v / 1000000) }],
-                  categories: historyLabels,
+                  series: [{ 
+                    name: 'Pengeluaran', 
+                    color: prov.color || 'var(--tblr-primary)', 
+                    data: [0.7, 0.9, 1.2, 0.8, 1.1, 1.4, 0.9, 1.1, 0.8, 1.3, 1.0, 1.2] 
+                  }],
+                  categories: ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
                   datalabels: false,
                   legend: false,
                   grid: {
                     strokeDashArray: 4,
                     borderColor: 'var(--tblr-border-color)',
-                    padding: { top: 0, right: 0, bottom: 0, left: 10 },
+                    padding: { top: 10, right: 20, bottom: 0, left: 20 },
                   },
                   xaxis: {
                     axisBorder: { show: false },
@@ -299,12 +303,12 @@ export function CreditTabPaylater() {
                   extend: {
                     plotOptions: {
                       bar: {
-                        columnWidth: '45%',
-                        borderRadius: 6,
+                        columnWidth: '70%',
+                        borderRadius: 4,
                         distributed: false,
                       }
                     },
-                    tooltip: { theme: 'dark' },
+                    tooltip: { theme: 'dark', y: { formatter: (v: number) => fmt(v) } },
                   },
                 }}
               />
