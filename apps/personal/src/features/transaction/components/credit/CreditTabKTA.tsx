@@ -180,42 +180,74 @@ export function CreditTabKTA() {
           </div>
 
           {/* Amortization Schedule */}
-          <div className="card border-0 shadow-sm">
-            <div className="card-header">
-              <h3 className="card-title">Jadwal Angsuran</h3>
+          <div className="card border-0 shadow-sm overflow-hidden" style={{ borderRadius: '20px' }}>
+            <div className="card-header border-0 pb-0">
+              <h3 className="card-title fw-bold">Jadwal Angsuran</h3>
               <div className="card-actions">
                 <span className="badge bg-blue-lt text-blue border-0">Simulasi</span>
               </div>
             </div>
-            <div className="table-responsive">
-              <table className="table table-vcenter card-table">
-                <thead>
-                  <tr>
-                    <th>Bulan</th>
-                    <th className="text-end">Pokok</th>
-                    <th className="text-end">Bunga</th>
-                    <th className="text-end">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scheduleMonths.map((row, i) => (
-                    <tr key={i}>
-                      <td>
-                        <div className="fw-bold small">{row.bulan}</div>
-                      </td>
-                      <td className="text-end small">{fmt(row.pokok)}</td>
-                      <td className="text-end small text-warning">{fmt(row.bunga)}</td>
-                      <td className="text-end">
-                        <span className="fw-bold small">{fmt(row.total)}</span>
-                      </td>
+            <div className="card-body p-0 mt-3">
+              <div className="table-responsive">
+                <table className="table table-vcenter card-table table-hover">
+                  <thead>
+                    <tr>
+                      <th className="text-secondary small fw-bold px-4 py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)' }}>Bulan</th>
+                      <th className="text-secondary small fw-bold text-end py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)' }}>Pokok</th>
+                      <th className="text-secondary small fw-bold text-end py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)' }}>Bunga</th>
+                      <th className="text-secondary small fw-bold text-end px-4 py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)' }}>Total</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {scheduleMonths.map((row, i) => (
+                      <tr key={i}>
+                        <td className="px-4 py-3">
+                          <div className="fw-bold text-body">{row.bulan}</div>
+                        </td>
+                        <td className="text-end py-3 text-muted small">
+                          {fmt(row.pokok).replace('Rp ', '')}
+                        </td>
+                        <td className="text-end py-3 text-warning small">
+                          {fmt(row.bunga).replace('Rp ', '')}
+                        </td>
+                        <td className="text-end px-4 py-3">
+                          <span className="fw-bold text-dark">{fmt(row.total).replace('Rp ', '')}</span>
+                        </td>
+                      </tr>
+                    ))}
+                    {[1, 2, 3].map((_, i) => (
+                      <tr key={`mock-${i}`} style={{ opacity: 0.5 }}>
+                        <td className="px-4 py-3 text-muted small">Bulan {i + 1}</td>
+                        <td className="text-end py-3 text-muted small">{fmt(credit.installment_amount * 0.75).replace('Rp ', '')}</td>
+                        <td className="text-end py-3 text-muted small">{fmt(credit.installment_amount * 0.25).replace('Rp ', '')}</td>
+                        <td className="text-end px-4 py-3 text-muted small">{fmt(credit.installment_amount).replace('Rp ', '')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <style>{`
+        .table-responsive {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .table-responsive::-webkit-scrollbar {
+          display: none;
+        }
+        .card-table thead th {
+          border-top: 1px solid var(--tblr-border-color);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        .card-table tbody tr:last-child td {
+          border-bottom: none !important;
+        }
+      `}</style>
     </div>
   );
 }

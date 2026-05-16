@@ -56,7 +56,7 @@ export function CreditHeroBanner() {
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body p-3 p-lg-4">
               <div className="d-flex align-items-center gap-2 mb-3">
-                <div className="avatar avatar-sm bg-red text-white" style={{ borderRadius: '12px' }}>
+                <div className="avatar avatar-sm bg-red text-white" style={{ borderRadius: '10px' }}>
                   <Icon icon="credit-card" size={16} />
                 </div>
                 <div className="subheader text-muted m-0" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>TOTAL LIMIT</div>
@@ -72,7 +72,7 @@ export function CreditHeroBanner() {
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body p-3 p-lg-4">
               <div className="d-flex align-items-center gap-2 mb-3">
-                <div className="avatar avatar-sm bg-azure text-white" style={{ borderRadius: '12px' }}>
+                <div className="avatar avatar-sm bg-azure text-white" style={{ borderRadius: '10px' }}>
                   <Icon icon="chart-pie" size={16} />
                 </div>
                 <div className="subheader text-muted m-0" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>OUTSTANDING</div>
@@ -92,7 +92,7 @@ export function CreditHeroBanner() {
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body p-3 p-lg-4">
               <div className="d-flex align-items-center gap-2 mb-3">
-                <div className="avatar avatar-sm bg-orange text-white" style={{ borderRadius: '12px' }}>
+                <div className="avatar avatar-sm bg-orange text-white" style={{ borderRadius: '10px' }}>
                   <Icon icon="calendar-event" size={16} />
                 </div>
                 <div className="subheader text-muted m-0" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>JATUH TEMPO</div>
@@ -117,7 +117,7 @@ export function CreditHeroBanner() {
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body p-3 p-lg-4">
               <div className="d-flex align-items-center gap-2 mb-3">
-                <div className="avatar avatar-sm bg-blue text-white" style={{ borderRadius: '12px' }}>
+                <div className="avatar avatar-sm bg-blue text-white" style={{ borderRadius: '10px' }}>
                   <Icon icon="award" size={16} />
                 </div>
                 <div className="subheader text-muted m-0" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>CREDIT SCORE</div>

@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Icon } from '@/shared/components/ui';
+import { useState, useMemo } from 'react';
+import { Icon, Button } from '@/shared/components/ui';
 import { useCredits } from '../hooks/useCredits';
 
 type Strategy = 'avalanche' | 'snowball';
@@ -47,41 +47,65 @@ export function DebtPayoffPlannerPreview() {
       <div className="row g-2 g-lg-3">
         {/* Strategy Selection */}
         <div className="col-12 col-md-5">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-header">
-              <h3 className="card-title">Strategi Pelunasan</h3>
+          <div className="card border-0 shadow-sm h-100 overflow-hidden">
+            <div className="card-header py-2 px-3 bg-transparent">
+              <h3 className="card-title fw-bold" style={{ fontSize: '13px' }}>Strategi Pelunasan</h3>
             </div>
-            <div className="card-body">
-              <p className="text-muted small mb-3">
+            <div className="card-body p-3">
+              <p className="text-muted mb-3" style={{ fontSize: '12px' }}>
                 Pilih metode terbaik untuk melunasi hutang Anda lebih cepat.
               </p>
-
+              
               <div className="d-flex flex-column gap-2 mb-3">
                 {([
-                  { key: 'avalanche', label: 'Metode Avalanche', sub: 'Bayar bunga tertinggi lebih dulu' },
-                  { key: 'snowball',  label: 'Metode Snowball',   sub: 'Bayar hutang terkecil lebih dulu' },
-                ] as { key: Strategy; label: string; sub: string }[]).map(s => (
-                  <button
-                    key={s.key}
-                    className={`btn text-start d-flex justify-content-between align-items-center ${strategy === s.key ? 'btn-primary' : 'btn-ghost-secondary'}`}
-                    onClick={() => setStrategy(s.key)}
-                  >
-                    <div>
-                      <div className="fw-bold">{s.label}</div>
-                      <div className={`small ${strategy === s.key ? 'opacity-75' : 'text-muted'}`}>{s.sub}</div>
+                  { key: 'avalanche', label: 'Metode Avalanche', sub: 'Bunga tertinggi dulu', icon: 'trending-down', color: 'azure' },
+                  { key: 'snowball',  label: 'Metode Snowball',   sub: 'Hutang terkecil dulu', icon: 'snowflake', color: 'blue' },
+                ] as const).map(s => {
+                  const isActive = strategy === s.key;
+                  return (
+                    <div 
+                      key={s.key}
+                      onClick={() => setStrategy(s.key)}
+                      className={`p-3 rounded-3 border-2 cursor-pointer transition-all d-flex align-items-center gap-3 ${
+                        isActive 
+                          ? `border-${s.color} bg-${s.color}-lt shadow-sm` 
+                          : 'border-transparent bg-body-tertiary border-opacity-10'
+                      }`}
+                      style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
+                    >
+                      <div className={`avatar avatar-md rounded-circle ${isActive ? `bg-${s.color} text-white` : 'bg-white text-muted shadow-sm'}`}>
+                        <Icon icon={s.icon as any} size={20} />
+                      </div>
+                      <div className="flex-fill">
+                        <div className={`fw-bold ${isActive ? `text-${s.color}` : ''}`} style={{ fontSize: '13px' }}>{s.label}</div>
+                        <div className="text-muted" style={{ fontSize: '11px' }}>{s.sub}</div>
+                      </div>
+                      {isActive && (
+                        <div className={`badge bg-${s.color} rounded-circle p-1`}>
+                          <Icon icon="check" size={12} className="text-white" />
+                        </div>
+                      )}
                     </div>
-                    {strategy === s.key && <Icon icon="check" size={18} />}
-                  </button>
-                ))}
+                  );
+                })}
               </div>
 
-              <div className="alert alert-primary mb-0 p-2">
-                <div className="d-flex align-items-start gap-2">
-                  <Icon icon="info-circle" size={16} className="mt-1 flex-shrink-0" />
+              <div className="p-3 rounded-3 border border-azure border-opacity-50 bg-azure-lt position-relative overflow-hidden shadow-sm" style={{ boxShadow: '0 0 15px rgba(32, 107, 196, 0.05)' }}>
+                <div className="position-absolute top-0 end-0 p-1 opacity-20 mr-n2 mt-n2">
+                  <Icon icon="sparkles" size={48} className="text-azure" />
+                </div>
+                <div className="d-flex align-items-start gap-3 position-relative">
+                  <div className="bg-azure text-white flex-shrink-0 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', borderRadius: '10px' }}>
+                    <Icon icon="info-circle" size={18} />
+                  </div>
                   <div>
-                    <div className="fw-bold small">Rekomendasi AI</div>
-                    <div className="small">
-                      Prioritas: <strong>{strategyDebts[0]?.name || '-'}</strong> ({strategy === 'avalanche' ? 'Bunga tertinggi' : 'Saldo terkecil'}).
+                    <div className="fw-bold text-azure small mb-1 d-flex align-items-center gap-2">
+                      Rekomendasi AI
+                      <span className="badge bg-azure text-white border-0" style={{ fontSize: '8px', padding: '2px 5px' }}>CERDAS</span>
+                    </div>
+                    <div className="small text-dark-emphasis" style={{ lineHeight: '1.5' }}>
+                      Prioritas: <span className="badge bg-white text-azure border border-azure border-opacity-25 fw-bold ms-1" style={{ fontSize: '11px' }}>{strategyDebts[0]?.name || '-'}</span>. 
+                      <div className="mt-1 opacity-75">Bayar ini dulu karena memiliki {strategy === 'avalanche' ? 'suku bunga tertinggi' : 'saldo terkecil'}.</div>
                     </div>
                   </div>
                 </div>
@@ -100,7 +124,7 @@ export function DebtPayoffPlannerPreview() {
               </div>
             </div>
             <div className="table-responsive">
-              <table className="table table-vcenter card-table table-nowrap">
+              <table className="table table-vcenter card-table table-nowrap table-borderless">
                 <thead>
                   <tr>
                     <th>Jatuh Tempo</th>
@@ -128,10 +152,17 @@ export function DebtPayoffPlannerPreview() {
                         <td className="text-end">
                           <div className="fw-bold small">{fmt(b.credit?.installment_amount || b.credit?.total_amount || 0)}</div>
                         </td>
-                        <td>
-                          <button className={`btn btn-sm ${isUrgent ? 'btn-danger' : 'btn-ghost-secondary'}`}>
-                            {isUrgent ? 'Bayar' : 'Detail'}
-                          </button>
+                        <td style={{ width: '80px' }}>
+                          <Button 
+                            block 
+                            size="sm" 
+                            element="button"
+                            color={isUrgent ? 'danger' : 'azure'}
+                            outline={!isUrgent}
+                            className="fw-bold"
+                            style={{ fontSize: '10px', padding: '0.25rem 0.5rem' }}
+                            text={isUrgent ? 'Bayar' : 'Detail'}
+                          />
                         </td>
                       </tr>
                     );
