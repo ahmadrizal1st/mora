@@ -1,74 +1,52 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Icon, Chart } from '@/shared/components/ui';
+import { useCredits } from '../../hooks/useCredits';
 
-const fmt = (n: number) =>
-  'Rp ' + new Intl.NumberFormat('id-ID').format(n);
-
-const MONTHS = ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'];
-
-const providers = [
-  {
-    id: 'gopay-later',
-    name: 'GoPay Later',
-    icon: 'device-mobile',
-    color: 'green',
-    limit: 5_000_000,
-    used: 1_200_000,
-    usedPct: 24,
-    dueDate: '28 Mei',
-    daysLeft: 17,
-    minPayment: 120_000,
-    status: 'active' as const,
-    transactions: [
-      { date: '06 Mei', merchant: 'Gojek - GoFood',       amount: 89_000 },
-      { date: '04 Mei', merchant: 'Gojek - GoCar',        amount: 45_000 },
-      { date: '02 Mei', merchant: 'Tokopedia via GoPay',  amount: 350_000 },
-      { date: '01 Mei', merchant: 'Gojek - GoSend',       amount: 25_000 },
-    ],
-    spendHistory: [800_000, 1_100_000, 650_000, 1_400_000, 980_000, 1_200_000],
-  },
-  {
-    id: 'shopee-paylater',
-    name: 'Shopee PayLater',
-    icon: 'shopping-bag',
-    color: 'orange',
-    limit: 10_000_000,
-    used: 2_800_000,
-    usedPct: 28,
-    dueDate: '5 Jun',
-    daysLeft: 25,
-    minPayment: 280_000,
-    status: 'active' as const,
-    transactions: [
-      { date: '07 Mei', merchant: 'Shopee - Fashion',    amount: 450_000 },
-      { date: '05 Mei', merchant: 'Shopee - Elektronik', amount: 1_200_000 },
-      { date: '03 Mei', merchant: 'Shopee - Kebutuhan',  amount: 310_000 },
-      { date: '01 Mei', merchant: 'Shopee - Buku',       amount: 95_000 },
-    ],
-    spendHistory: [1_500_000, 2_100_000, 1_800_000, 3_200_000, 2_400_000, 2_800_000],
-  },
-  {
-    id: 'akulaku',
-    name: 'Akulaku',
-    icon: 'wallet',
-    color: 'azure',
-    limit: 3_000_000,
-    used: 0,
-    usedPct: 0,
-    dueDate: '-',
-    daysLeft: 0,
-    minPayment: 0,
-    status: 'paid' as const,
-    transactions: [],
-    spendHistory: [500_000, 300_000, 800_000, 200_000, 0, 0],
-  },
-];
+const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
 export function CreditTabPaylater() {
-  const [activeProvider, setActiveProvider] = useState(providers[0].id);
-  const prov = providers.find(p => p.id === activeProvider)!;
-  const totalUsed  = providers.reduce((s, p) => s + p.used,  0);
-  const totalLimit = providers.reduce((s, p) => s + p.limit, 0);
+  const { data: allCredits = [], isLoading } = useCredits();
+  
+  const providers = useMemo(() => {
+    return allCredits.filter(acc => acc.credit?.credit_type === 'paylater');
+  }, [allCredits]);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  
+  // Derived state: Use selected ID or default to the first provider ID
+  const activeProviderId = selectedId ?? providers[0]?.id;
+
+  const activeAccount = useMemo(() => {
+    return providers.find(p => p.id === activeProviderId) || providers[0];
+  }, [providers, activeProviderId]);
+
+  const totalUsed  = providers.reduce((s, p) => s + (p.credit?.total_amount || 0),  0);
+  const totalLimit = providers.reduce((s, p) => s + (p.credit?.limit || 0), 0);
+
+  if (isLoading) {
+    return <div className="py-5 text-center text-muted">Memuat data Paylater...</div>;
+  }
+
+  if (providers.length === 0) {
+    return (
+      <div className="card border-0 shadow-sm py-5 text-center">
+        <div className="card-body">
+          <Icon icon="clock-dollar" size={48} className="mb-3 text-muted opacity-50" />
+          <h3 className="fw-bold">Belum Ada Paylater</h3>
+          <p className="text-muted">Tambahkan profil Paylater Anda melalui menu "Tambah Profil" di atas.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const prov = activeAccount!;
+  const credit = prov.credit!;
+  const usedPct = credit.limit > 0 ? Math.round((credit.total_amount / credit.limit) * 100) : 0;
+  const daysLeft = credit.due_date ? Math.ceil((new Date(credit.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
+
+  // Placeholder for history/tx
+  const spendHistory = [totalUsed * 0.5, totalUsed * 0.7, totalUsed * 0.6, totalUsed * 0.9, totalUsed * 0.8, totalUsed];
+  const transactions: any[] = [];
 
   return (
     <div>
@@ -76,9 +54,9 @@ export function CreditTabPaylater() {
       <div className="row g-2 g-lg-3 mb-4">
         {[
           { label: 'Total Limit',       value: fmt(totalLimit), sub: `${providers.length} provider` },
-          { label: 'Total Dipakai',     value: fmt(totalUsed),  sub: `${Math.round(totalUsed / totalLimit * 100)}% utilisasi` },
-          { label: 'Provider Aktif',    value: String(providers.filter(p => p.status === 'active').length), sub: `${providers.filter(p => p.status === 'paid').length} lunas` },
-          { label: 'Tagihan Berikutnya', value: '28 Mei', sub: 'GoPay Later' },
+          { label: 'Total Dipakai',     value: fmt(totalUsed),  sub: `${Math.round(totalLimit > 0 ? (totalUsed / totalLimit * 100) : 0)}% utilisasi` },
+          { label: 'Provider Aktif',    value: String(providers.length), sub: 'Semua aktif' },
+          { label: 'Tagihan Berikutnya', value: credit.due_date ? new Date(credit.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-', sub: prov.name },
         ].map((item, i) => (
           <div key={i} className="col-6 col-md-3">
             <div className="card border-0 shadow-sm h-100">
@@ -94,39 +72,40 @@ export function CreditTabPaylater() {
 
       {/* Provider Selector */}
       <div className="row g-3 mb-4">
-        {providers.map(p => (
-          <div key={p.id} className="col-12 col-md-4">
-            <button
-              className="w-100 text-start border-0 p-0 bg-transparent"
-              onClick={() => setActiveProvider(p.id)}
-            >
-              <div className={`card shadow-sm h-100 ${activeProvider === p.id ? `border border-${p.color}` : 'border-0'}`}>
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className={`avatar avatar-sm bg-${p.color}-lt text-${p.color} rounded-2`}>
-                        <Icon icon={p.icon} size={16} />
-                      </span>
-                      <div>
-                        <div className="fw-bold small">{p.name}</div>
-                        <span className={`badge bg-${p.status === 'paid' ? 'success' : 'primary'}-lt text-${p.status === 'paid' ? 'success' : 'primary'} border-0 rounded-1`} style={{ fontSize: '10px' }}>
-                          {p.status === 'paid' ? 'Lunas' : 'Aktif'}
+        {providers.map(p => {
+          const pPct = p.credit!.limit > 0 ? Math.round((p.credit!.total_amount / p.credit!.limit) * 100) : 0;
+          return (
+            <div key={p.id} className="col-12 col-md-4">
+              <button
+                className="w-100 text-start border-0 p-0 bg-transparent"
+                onClick={() => setSelectedId(p.id)}
+              >
+                <div className={`card shadow-sm h-100 ${activeProviderId === p.id ? `border border-primary` : 'border-0'}`}>
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <div className="d-flex align-items-center gap-2">
+                        <span className={`avatar avatar-sm bg-primary-lt text-primary rounded-2`}>
+                          <Icon icon="device-mobile" size={16} />
                         </span>
+                        <div>
+                          <div className="fw-bold small">{p.name}</div>
+                          <span className="badge bg-primary-lt text-primary border-0 rounded-1" style={{ fontSize: '10px' }}>Aktif</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="progress progress-sm mb-1">
-                    <div className={`progress-bar bg-${p.color}`} style={{ width: `${p.usedPct}%` }} />
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <span className="text-muted" style={{ fontSize: '11px' }}>{fmt(p.used)}</span>
-                    <span className="text-muted" style={{ fontSize: '11px' }}>{fmt(p.limit)}</span>
+                    <div className="progress progress-sm mb-1">
+                      <div className="progress-bar bg-primary" style={{ width: `${pPct}%` }} />
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <span className="text-muted" style={{ fontSize: '11px' }}>{fmt(p.credit!.total_amount)}</span>
+                      <span className="text-muted" style={{ fontSize: '11px' }}>{fmt(p.credit!.limit)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </button>
-          </div>
-        ))}
+              </button>
+            </div>
+          );
+        })}
       </div>
 
       {/* Detail of selected provider */}
@@ -136,19 +115,17 @@ export function CreditTabPaylater() {
           <div className="card border-0 shadow-sm">
             <div className="card-header">
               <div className="d-flex align-items-center gap-3">
-                <span className={`avatar avatar-sm bg-${prov.color}-lt text-${prov.color} rounded-2`}>
-                  <Icon icon={prov.icon} size={16} />
+                <span className={`avatar avatar-sm bg-primary-lt text-primary rounded-2`}>
+                  <Icon icon="device-mobile" size={16} />
                 </span>
                 <div>
                   <div className="card-title fw-bold mb-0">{prov.name}</div>
-                  <span className={`badge bg-${prov.status === 'paid' ? 'success' : 'primary'}-lt text-${prov.status === 'paid' ? 'success' : 'primary'} border-0 rounded-1`} style={{ fontSize: '10px' }}>
-                    {prov.status === 'paid' ? 'Lunas' : 'Aktif'}
-                  </span>
+                  <span className="badge bg-primary-lt text-primary border-0 rounded-1" style={{ fontSize: '10px' }}>Aktif</span>
                 </div>
               </div>
-              {prov.status === 'active' && (
+              {daysLeft !== null && (
                 <div className="card-actions">
-                  <span className="text-muted small">{prov.daysLeft} hari lagi</span>
+                  <span className="text-muted small">{daysLeft} hari lagi</span>
                 </div>
               )}
             </div>
@@ -156,13 +133,12 @@ export function CreditTabPaylater() {
             <div className="card-body">
               <ul className="list-group list-group-flush">
                 {[
-                  { label: 'Limit',       value: fmt(prov.limit) },
-                  { label: 'Dipakai',     value: fmt(prov.used),               cls: prov.used > 0 ? 'text-danger' : '' },
-                  { label: 'Sisa limit',  value: fmt(prov.limit - prov.used),  cls: 'text-success' },
-                  { label: 'Utilisasi',   value: `${prov.usedPct}%` },
-                  ...(prov.status === 'active' ? [
-                    { label: 'Jatuh tempo',      value: prov.dueDate },
-                    { label: 'Minimum payment',  value: fmt(prov.minPayment), cls: 'text-warning' },
+                  { label: 'Limit',       value: fmt(credit.limit) },
+                  { label: 'Dipakai',     value: fmt(credit.total_amount),               cls: credit.total_amount > 0 ? 'text-danger' : '' },
+                  { label: 'Sisa limit',  value: fmt(Math.max(0, credit.limit - credit.total_amount)),  cls: 'text-success' },
+                  { label: 'Utilisasi',   value: `${usedPct}%` },
+                  ...(credit.due_date ? [
+                    { label: 'Jatuh tempo',      value: new Date(credit.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) },
                   ] : []),
                 ].map((item, i) => (
                   <li key={i} className="list-group-item d-flex justify-content-between align-items-center px-0">
@@ -174,23 +150,21 @@ export function CreditTabPaylater() {
 
               <div className="mt-3">
                 <div className="d-flex justify-content-between mb-1">
-                  <span className="text-muted small">{prov.usedPct}% dipakai</span>
-                  <span className="text-muted small">{100 - prov.usedPct}% tersedia</span>
+                  <span className="text-muted small">{usedPct}% dipakai</span>
+                  <span className="text-muted small">{100 - usedPct}% tersedia</span>
                 </div>
                 <div className="progress progress-sm">
-                  <div className={`progress-bar bg-${prov.color}`} style={{ width: `${prov.usedPct}%` }} />
+                  <div className={`progress-bar bg-primary`} style={{ width: `${usedPct}%` }} />
                 </div>
               </div>
-            </div>
 
-            {prov.status === 'active' && (
               <div className="mt-3">
                 <button className="btn btn-primary w-100 fw-bold">
                   <Icon icon="credit-card" size={16} className="me-2" />
                   Bayar Tagihan
                 </button>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
@@ -200,7 +174,7 @@ export function CreditTabPaylater() {
             <div className="card-header">
               <h3 className="card-title">Tren Penggunaan</h3>
               <div className="card-actions">
-                <span className="text-muted small">6 bulan terakhir — {prov.name}</span>
+                <span className="text-muted small">Simulasi — {prov.name}</span>
               </div>
             </div>
             <div className="card-body">
@@ -210,7 +184,7 @@ export function CreditTabPaylater() {
                 chartData={{
                   type: 'bar',
                   stacked: false,
-                  series: [{ name: 'Penggunaan', color: `var(--tblr-${prov.color})`, data: prov.spendHistory }],
+                  series: [{ name: 'Penggunaan', color: `var(--tblr-primary)`, data: spendHistory }],
                   categories: ['Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
                   datalabels: false,
                   legend: false,
@@ -246,7 +220,7 @@ export function CreditTabPaylater() {
                 <button className="btn btn-sm btn-ghost-secondary">Lihat semua</button>
               </div>
             </div>
-            {prov.transactions.length === 0 ? (
+            {transactions.length === 0 ? (
               <div className="card-body text-center py-5 text-muted">
                 <Icon icon="receipt-off" size={32} className="mb-2 opacity-50" />
                 <div className="small">Tidak ada transaksi aktif</div>
@@ -255,7 +229,7 @@ export function CreditTabPaylater() {
               <div className="table-responsive">
                 <table className="table table-vcenter card-table">
                   <tbody>
-                    {prov.transactions.map((tx, i) => (
+                    {transactions.map((tx, i) => (
                       <tr key={i}>
                         <td className="w-1">
                           <span className="avatar avatar-sm bg-secondary-lt text-secondary rounded-2">

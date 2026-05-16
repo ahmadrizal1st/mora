@@ -1,45 +1,54 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Icon } from '@/shared/components/ui';
-
-const loans = [
-  {
-    id: 'kta-mandiri',
-    name: 'KTA Mandiri',
-    bank: 'Bank Mandiri',
-    type: 'Kredit Tanpa Agunan',
-    totalAmount: 50_000_000,
-    remaining: 31_250_000,
-    paid: 18_750_000,
-    paidPct: 37.5,
-    monthlyInstallment: 1_400_000,
-    interestRate: 8.5,
-    tenor: 48,
-    remaining_months: 36,
-    startDate: 'Jan 2023',
-    endDate: 'Jan 2027',
-    dueDate: '14 Mei',
-    daysLeft: 3,
-    purpose: 'Modal Usaha',
-    paymentHistory: [true, true, true, true, true, true, true, true, true, true, true, true],
-  },
-];
+import { useCredits } from '../../hooks/useCredits';
 
 const MONTHS = ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'];
 
-const fmt = (n: number) =>
-  'Rp ' + new Intl.NumberFormat('id-ID').format(n);
+const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
 export function CreditTabKTA() {
-  const [activeLoan, setActiveLoan] = useState(loans[0].id);
-  const loan = loans.find(l => l.id === activeLoan)!;
-  const urgentColor = loan.daysLeft <= 5 ? 'danger' : 'warning';
+  const { data: allCredits = [], isLoading } = useCredits();
+  
+  const loans = useMemo(() => {
+    return allCredits.filter(acc => acc.credit?.credit_type === 'kta');
+  }, [allCredits]);
 
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  
+  // Derived state: Use selected ID or default to the first loan ID
+  const activeLoanId = selectedId ?? loans[0]?.id;
+
+  const activeAccount = useMemo(() => {
+    return loans.find(l => l.id === activeLoanId) || loans[0];
+  }, [loans, activeLoanId]);
+
+  if (isLoading) {
+    return <div className="py-5 text-center text-muted">Memuat data pinjaman...</div>;
+  }
+
+  if (loans.length === 0) {
+    return (
+      <div className="card border-0 shadow-sm py-5 text-center">
+        <div className="card-body">
+          <Icon icon="building-bank" size={48} className="mb-3 text-muted opacity-50" />
+          <h3 className="fw-bold">Belum Ada Pinjaman KTA</h3>
+          <p className="text-muted">Tambahkan profil pinjaman Anda melalui menu "Tambah Profil" di atas.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const loan = activeAccount!;
+  const credit = loan.credit!;
+  const paidAmount = Math.max(0, credit.limit - credit.total_amount);
+  const paidPct = credit.limit > 0 ? Math.round((paidAmount / credit.limit) * 100) : 0;
+  const daysLeft = credit.due_date ? Math.ceil((new Date(credit.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
+  const urgentColor = (daysLeft !== null && daysLeft <= 5) ? 'danger' : 'warning';
+
+  // Placeholder for history/schedule
+  const paymentHistory = [true, true, true, true, true, true, true, true, true, true, true, true];
   const scheduleMonths = [
-    { bulan: 'Mei 2026', pokok: 1_050_000, bunga: 350_000, total: 1_400_000 },
-    { bulan: 'Jun 2026', pokok: 1_060_000, bunga: 340_000, total: 1_400_000 },
-    { bulan: 'Jul 2026', pokok: 1_069_000, bunga: 331_000, total: 1_400_000 },
-    { bulan: 'Agu 2026', pokok: 1_079_000, bunga: 321_000, total: 1_400_000 },
-    { bulan: 'Sep 2026', pokok: 1_089_000, bunga: 311_000, total: 1_400_000 },
+    { bulan: 'Segera', pokok: credit.installment_amount * 0.7, bunga: credit.installment_amount * 0.3, total: credit.installment_amount },
   ];
 
   return (
@@ -47,25 +56,28 @@ export function CreditTabKTA() {
       {/* Loan Selector */}
       {loans.length > 1 && (
         <div className="row g-3 mb-4">
-          {loans.map(l => (
-            <div key={l.id} className="col-12 col-md-6">
-              <button
-                className="w-100 text-start border-0 p-0 bg-transparent"
-                onClick={() => setActiveLoan(l.id)}
-              >
-                <div className={`card shadow-sm ${activeLoan === l.id ? 'border border-primary' : 'border-0'}`}>
-                  <div className="card-body">
-                    <div className="fw-bold">{l.name}</div>
-                    <div className="text-secondary small mb-2">{l.bank}</div>
-                    <div className="progress progress-sm mb-1">
-                      <div className="progress-bar bg-primary" style={{ width: `${l.paidPct}%` }} />
+          {loans.map(l => {
+            const lPaidPct = l.credit!.limit > 0 ? Math.round(((l.credit!.limit - l.credit!.total_amount) / l.credit!.limit) * 100) : 0;
+            return (
+              <div key={l.id} className="col-12 col-md-6">
+                <button
+                  className="w-100 text-start border-0 p-0 bg-transparent"
+                  onClick={() => setSelectedId(l.id)}
+                >
+                  <div className={`card shadow-sm ${activeLoanId === l.id ? 'border border-primary' : 'border-0'}`}>
+                    <div className="card-body">
+                      <div className="fw-bold">{l.name}</div>
+                      <div className="text-secondary small mb-2">{l.provider?.name || 'Bank'}</div>
+                      <div className="progress progress-sm mb-1">
+                        <div className="progress-bar bg-primary" style={{ width: `${lPaidPct}%` }} />
+                      </div>
+                      <div className="text-muted small">{lPaidPct}% terlunasi</div>
                     </div>
-                    <div className="text-muted small">{l.paidPct}% terlunasi</div>
                   </div>
-                </div>
-              </button>
-            </div>
-          ))}
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -80,29 +92,29 @@ export function CreditTabKTA() {
                 </span>
                 <div>
                   <div className="card-title fw-bold mb-0">{loan.name}</div>
-                  <div className="text-muted small">{loan.type}</div>
+                  <div className="text-muted small">Kredit Tanpa Agunan</div>
                 </div>
               </div>
-              <div className="card-actions">
-                <span className={`badge bg-${urgentColor}-lt text-${urgentColor} border-0`}>
-                  {loan.daysLeft} hari lagi
-                </span>
-              </div>
+              {daysLeft !== null && (
+                <div className="card-actions">
+                  <span className={`badge bg-${urgentColor}-lt text-${urgentColor} border-0`}>
+                    {daysLeft} hari lagi
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="card-body">
               {/* Key-value list */}
               <ul className="list-group list-group-flush">
                 {[
-                  { label: 'Plafon',         value: fmt(loan.totalAmount) },
-                  { label: 'Sudah dibayar',  value: fmt(loan.paid),             cls: 'text-success' },
-                  { label: 'Sisa pokok',     value: fmt(loan.remaining),        cls: 'text-danger' },
-                  { label: 'Cicilan/bln',    value: fmt(loan.monthlyInstallment) },
-                  { label: 'Suku bunga',     value: `${loan.interestRate}% p.a.` },
-                  { label: 'Tenor',          value: `${loan.tenor} bulan` },
-                  { label: 'Sisa tenor',     value: `${loan.remaining_months} bulan` },
-                  { label: 'Periode',        value: `${loan.startDate} — ${loan.endDate}` },
-                  { label: 'Tujuan',         value: loan.purpose },
+                  { label: 'Plafon',         value: fmt(credit.limit) },
+                  { label: 'Sudah dibayar',  value: fmt(paidAmount),             cls: 'text-success' },
+                  { label: 'Sisa pokok',     value: fmt(credit.total_amount),        cls: 'text-danger' },
+                  { label: 'Cicilan/bln',    value: fmt(credit.installment_amount) },
+                  { label: 'Suku bunga',     value: `${credit.interest_rate || 0}% p.a.` },
+                  { label: 'Tenor',          value: `${credit.tenor_months || 0} bulan` },
+                  { label: 'Jatuh tempo',    value: credit.due_date ? new Date(credit.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-' },
                 ].map((item, i) => (
                   <li key={i} className="list-group-item d-flex justify-content-between align-items-center px-0">
                     <span className="text-muted small">{item.label}</span>
@@ -114,22 +126,24 @@ export function CreditTabKTA() {
               {/* Progress */}
               <div className="mt-3">
                 <div className="d-flex justify-content-between mb-1">
-                  <span className="text-muted small">{loan.paidPct}% terlunasi</span>
-                  <span className="text-muted small">{100 - loan.paidPct}% tersisa</span>
+                  <span className="text-muted small">{paidPct}% terlunasi</span>
+                  <span className="text-muted small">{100 - paidPct}% tersisa</span>
                 </div>
                 <div className="progress progress-sm">
-                  <div className="progress-bar bg-primary" style={{ width: `${loan.paidPct}%` }} />
+                  <div className="progress-bar bg-primary" style={{ width: `${paidPct}%` }} />
                 </div>
               </div>
 
               {/* Due Date Alert */}
-              <div className={`alert alert-${urgentColor} d-flex align-items-center gap-2 mt-3 mb-0`} role="alert">
-                <Icon icon="calendar-event" size={16} />
-                <div>
-                  <div className="fw-bold small">Jatuh tempo: {loan.dueDate}</div>
-                  <div className="small opacity-75">{loan.daysLeft} hari lagi • {fmt(loan.monthlyInstallment)}</div>
+              {daysLeft !== null && (
+                <div className={`alert alert-${urgentColor} d-flex align-items-center gap-2 mt-3 mb-0`} role="alert">
+                  <Icon icon="calendar-event" size={16} />
+                  <div>
+                    <div className="fw-bold small">Jatuh tempo: {new Date(credit.due_date!).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })}</div>
+                    <div className="small opacity-75">{daysLeft} hari lagi • {fmt(credit.installment_amount)}</div>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="mt-3">
                 <button className="btn btn-primary w-100 fw-bold">
@@ -155,22 +169,12 @@ export function CreditTabKTA() {
               <div className="d-flex flex-wrap gap-2">
                 {MONTHS.map((m, i) => (
                   <div key={i} className="text-center">
-                    <span className={`avatar avatar-sm rounded-circle mb-1 ${loan.paymentHistory[i] ? 'bg-success' : 'bg-danger'} text-white`}>
-                      <Icon icon={loan.paymentHistory[i] ? 'check' : 'x'} size={14} />
+                    <span className={`avatar avatar-sm rounded-circle mb-1 ${paymentHistory[i] ? 'bg-success' : 'bg-danger'} text-white`}>
+                      <Icon icon={paymentHistory[i] ? 'check' : 'x'} size={14} />
                     </span>
                     <div className="text-muted" style={{ fontSize: '10px' }}>{m}</div>
                   </div>
                 ))}
-              </div>
-              <div className="d-flex gap-3 mt-3">
-                <span className="d-flex align-items-center gap-1 text-muted small">
-                  <span className="badge bg-success d-inline-block rounded-circle p-1" />
-                  Tepat waktu
-                </span>
-                <span className="d-flex align-items-center gap-1 text-muted small">
-                  <span className="badge bg-danger d-inline-block rounded-circle p-1" />
-                  Terlambat
-                </span>
               </div>
             </div>
           </div>
@@ -180,7 +184,7 @@ export function CreditTabKTA() {
             <div className="card-header">
               <h3 className="card-title">Jadwal Angsuran</h3>
               <div className="card-actions">
-                <span className="badge bg-blue-lt text-blue border-0">5 Bulan ke Depan</span>
+                <span className="badge bg-blue-lt text-blue border-0">Simulasi</span>
               </div>
             </div>
             <div className="table-responsive">
@@ -198,7 +202,6 @@ export function CreditTabKTA() {
                     <tr key={i}>
                       <td>
                         <div className="fw-bold small">{row.bulan}</div>
-                        {i === 0 && <div className="text-danger small">Segera</div>}
                       </td>
                       <td className="text-end small">{fmt(row.pokok)}</td>
                       <td className="text-end small text-warning">{fmt(row.bunga)}</td>

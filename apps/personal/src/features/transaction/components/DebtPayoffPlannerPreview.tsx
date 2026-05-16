@@ -1,16 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Icon } from '@/shared/components/ui';
+import { useCredits } from '../hooks/useCredits';
 
 type Strategy = 'avalanche' | 'snowball';
 
-const bills = [
-  { date: '14 Mei', daysLeft: 3, name: 'Personal Loan',  bank: 'Bank Mandiri', amount: 'Rp 1.400.000', urgent: true },
-  { date: '20 Mei', daysLeft: 9, name: 'Visa Platinum',  bank: 'Bank BCA',     amount: 'Rp 750.000',   urgent: false },
-  { date: '25 Mei', daysLeft: 14, name: 'KPR BTN',       bank: 'Bank BTN',     amount: 'Rp 4.800.000', urgent: false },
-];
+const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
 export function DebtPayoffPlannerPreview() {
   const [strategy, setStrategy] = useState<Strategy>('avalanche');
+  const { data: credits = [], isLoading } = useCredits();
+
+  const strategyDebts = useMemo(() => {
+    const validDebts = credits.filter(c => c.credit && (c.credit.total_amount || 0) > 0);
+    
+    if (strategy === 'avalanche') {
+      // Bunga tertinggi dulu
+      return [...validDebts].sort((a, b) => (b.credit?.interest_rate || 0) - (a.credit?.interest_rate || 0));
+    } else {
+      // Saldo terkecil dulu
+      return [...validDebts].sort((a, b) => (a.credit?.total_amount || 0) - (b.credit?.total_amount || 0));
+    }
+  }, [credits, strategy]);
+
+  const upcomingBills = useMemo(() => {
+    return credits
+      .filter(c => c.credit?.due_date)
+      .sort((a, b) => new Date(a.credit!.due_date!).getTime() - new Date(b.credit!.due_date!).getTime())
+      .slice(0, 5);
+  }, [credits]);
+
+  if (isLoading) return null;
+  
+  if (credits.length === 0) {
+    return (
+      <div className="card border-0 shadow-sm mb-4 py-5 text-center">
+        <div className="card-body">
+           <Icon icon="comet" size={32} className="text-muted opacity-50 mb-2" />
+           <p className="text-muted mb-0">Belum ada data hutang untuk dianalisis. Tambahkan profil kredit untuk menggunakan Planner.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-4">
@@ -45,13 +75,13 @@ export function DebtPayoffPlannerPreview() {
                 ))}
               </div>
 
-              <div className="alert alert-primary mb-0">
+              <div className="alert alert-primary mb-0 p-2">
                 <div className="d-flex align-items-start gap-2">
                   <Icon icon="info-circle" size={16} className="mt-1 flex-shrink-0" />
                   <div>
                     <div className="fw-bold small">Rekomendasi AI</div>
                     <div className="small">
-                      Metode <strong>Avalanche</strong> hemat <strong>Rp 12,4 jt</strong> bunga vs Snowball.
+                      Prioritas: <strong>{strategyDebts[0]?.name || '-'}</strong> ({strategy === 'avalanche' ? 'Bunga tertinggi' : 'Saldo terkecil'}).
                     </div>
                   </div>
                 </div>
@@ -66,7 +96,7 @@ export function DebtPayoffPlannerPreview() {
             <div className="card-header">
               <h3 className="card-title">Tagihan Mendatang</h3>
               <div className="card-actions">
-                <span className="badge bg-blue-lt text-blue border-0">30 Hari ke Depan</span>
+                <span className="badge bg-blue-lt text-blue border-0">Terdekat</span>
               </div>
             </div>
             <div className="table-responsive">
@@ -80,28 +110,32 @@ export function DebtPayoffPlannerPreview() {
                   </tr>
                 </thead>
                 <tbody>
-                  {bills.map((b, i) => (
-                    <tr key={i}>
-                      <td>
-                        <div className="fw-bold small">{b.date}</div>
-                        <div className={`small ${b.urgent ? 'text-danger' : 'text-muted'}`}>
-                          {b.daysLeft} hari lagi
-                        </div>
-                      </td>
-                      <td>
-                        <div className="fw-bold small">{b.name}</div>
-                        <div className="text-muted small">{b.bank}</div>
-                      </td>
-                      <td className="text-end">
-                        <div className="fw-bold small">{b.amount}</div>
-                      </td>
-                      <td>
-                        <button className={`btn btn-sm ${b.urgent ? 'btn-danger' : 'btn-ghost-secondary'}`}>
-                          {b.urgent ? 'Bayar' : 'Detail'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {upcomingBills.map((b, i) => {
+                    const daysLeft = b.credit!.due_date ? Math.ceil((new Date(b.credit!.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : 0;
+                    const isUrgent = daysLeft <= 7;
+                    return (
+                      <tr key={i}>
+                        <td>
+                          <div className="fw-bold small">{new Date(b.credit!.due_date!).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</div>
+                          <div className={`small ${isUrgent ? 'text-danger' : 'text-muted'}`}>
+                            {daysLeft} hari lagi
+                          </div>
+                        </td>
+                        <td>
+                          <div className="fw-bold small">{b.name}</div>
+                          <div className="text-muted small">{b.provider?.name || 'Bank'}</div>
+                        </td>
+                        <td className="text-end">
+                          <div className="fw-bold small">{fmt(b.credit?.installment_amount || b.credit?.total_amount || 0)}</div>
+                        </td>
+                        <td>
+                          <button className={`btn btn-sm ${isUrgent ? 'btn-danger' : 'btn-ghost-secondary'}`}>
+                            {isUrgent ? 'Bayar' : 'Detail'}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

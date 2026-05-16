@@ -1,48 +1,6 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Icon, Chart } from '@/shared/components/ui';
-
-const cards = [
-  {
-    id: 'visa-platinum',
-    name: 'Visa Platinum',
-    bank: 'Bank BCA',
-    last4: '4892',
-    limit: 20_000_000,
-    used: 3_200_000,
-    dueDate: '20 Mei 2026',
-    daysLeft: 9,
-    rewards: 12_450,
-    color: 'primary',
-    usedPct: 16,
-    transactions: [
-      { date: '05 Mei', merchant: 'Tokopedia',  amount: 450_000, category: 'Belanja' },
-      { date: '04 Mei', merchant: 'Grab Food',  amount: 89_000,  category: 'Makan' },
-      { date: '03 Mei', merchant: 'Netflix',    amount: 54_000,  category: 'Hiburan' },
-      { date: '01 Mei', merchant: 'Indomaret',  amount: 210_000, category: 'Kebutuhan' },
-    ],
-    spendHistory: [1_800_000, 2_100_000, 1_500_000, 2_800_000, 1_900_000, 3_200_000],
-  },
-  {
-    id: 'mastercard-gold',
-    name: 'Mastercard Gold',
-    bank: 'Bank Mandiri',
-    last4: '7731',
-    limit: 15_000_000,
-    used: 8_500_000,
-    dueDate: '25 Mei 2026',
-    daysLeft: 14,
-    rewards: 8_320,
-    color: 'warning',
-    usedPct: 56,
-    transactions: [
-      { date: '06 Mei', merchant: 'SPBU Pertamina', amount: 600_000,   category: 'Transport' },
-      { date: '05 Mei', merchant: 'Hypermart',      amount: 1_200_000, category: 'Kebutuhan' },
-      { date: '03 Mei', merchant: 'PLN Mobile',     amount: 350_000,   category: 'Tagihan' },
-      { date: '02 Mei', merchant: 'Shopee',         amount: 890_000,   category: 'Belanja' },
-    ],
-    spendHistory: [4_200_000, 6_800_000, 5_100_000, 7_300_000, 6_500_000, 8_500_000],
-  },
-];
+import { useCredits } from '../../hooks/useCredits';
 
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
@@ -53,45 +11,84 @@ function UtilBadge({ pct }: { pct: number }) {
 }
 
 export function CreditTabCreditCard() {
-  const [activeCard, setActiveCard] = useState(cards[0].id);
-  const card = cards.find(c => c.id === activeCard)!;
+  const { data: allCredits = [], isLoading } = useCredits();
+  
+  const cards = useMemo(() => {
+    return allCredits.filter(acc => acc.credit?.credit_type === 'credit_card');
+  }, [allCredits]);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  
+  // Derived state: Use the selected ID or default to the first card's ID
+  const activeCardId = selectedId ?? cards[0]?.id;
+
+  const activeAccount = useMemo(() => {
+    return cards.find(c => c.id === activeCardId) || cards[0];
+  }, [cards, activeCardId]);
+
+  if (isLoading) {
+    return <div className="py-5 text-center text-muted">Memuat data kartu kredit...</div>;
+  }
+
+  if (cards.length === 0) {
+    return (
+      <div className="card border-0 shadow-sm py-5 text-center">
+        <div className="card-body">
+          <Icon icon="credit-card-off" size={48} className="mb-3 text-muted opacity-50" />
+          <h3 className="fw-bold">Belum Ada Kartu Kredit</h3>
+          <p className="text-muted">Tambahkan profil kartu kredit Anda melalui menu "Tambah Profil" di atas.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const card = activeAccount!;
+  const credit = card.credit!;
+  const daysLeft = credit.due_date ? Math.ceil((new Date(credit.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
+
+  // Placeholder history if not available
+  const spendHistory = card.history?.expense?.slice(-6) || [0, 0, 0, 0, 0, 0];
+  const historyLabels = card.history?.labels?.slice(-6) || ['-', '-', '-', '-', '-', '-'];
 
   return (
     <div>
       {/* Card Selector */}
       <div className="row g-3 mb-4">
-        {cards.map(c => (
-          <div key={c.id} className="col-12 col-md-6">
-            <button
-              className="w-100 text-start border-0 p-0 bg-transparent"
-              onClick={() => setActiveCard(c.id)}
-            >
-              <div className={`card shadow-sm h-100 ${activeCard === c.id ? `border border-${c.color}` : 'border-0'}`}>
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-start mb-3">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className={`avatar avatar-sm bg-${c.color}-lt text-${c.color} rounded-2`}>
-                        <Icon icon="credit-card" size={16} />
-                      </span>
-                      <div>
-                        <div className="fw-bold small">{c.name}</div>
-                        <div className="text-muted" style={{ fontSize: '11px' }}>{c.bank} •••• {c.last4}</div>
+        {cards.map(c => {
+          const cUsedPct = (c.credit!.limit > 0) ? Math.round((c.credit!.total_amount / c.credit!.limit) * 100) : 0;
+          return (
+            <div key={c.id} className="col-12 col-md-6">
+              <button
+                className="w-100 text-start border-0 p-0 bg-transparent"
+                onClick={() => setSelectedId(c.id)}
+              >
+                <div className={`card shadow-sm h-100 ${activeCardId === c.id ? `border border-primary` : 'border-0'}`}>
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-start mb-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <span className={`avatar avatar-sm bg-primary-lt text-primary rounded-2`} style={{ backgroundColor: `${c.color}20`, color: c.color }}>
+                          <Icon icon="credit-card" size={16} />
+                        </span>
+                        <div>
+                          <div className="fw-bold small">{c.name}</div>
+                          <div className="text-muted" style={{ fontSize: '11px' }}>{c.provider?.name || 'Bank'}</div>
+                        </div>
                       </div>
+                      <UtilBadge pct={cUsedPct} />
                     </div>
-                    <UtilBadge pct={c.usedPct} />
-                  </div>
-                  <div className="progress progress-sm mb-2">
-                    <div className={`progress-bar bg-${c.color}`} style={{ width: `${c.usedPct}%` }} />
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <span className="text-muted small">{fmt(c.used)} dipakai</span>
-                    <span className="text-muted small">Limit {fmt(c.limit)}</span>
+                    <div className="progress progress-sm mb-2">
+                      <div className={`progress-bar`} style={{ width: `${cUsedPct}%`, backgroundColor: c.color }} />
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <span className="text-muted small">{fmt(c.credit!.total_amount)} dipakai</span>
+                      <span className="text-muted small">Limit {fmt(c.credit!.limit)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </button>
-          </div>
-        ))}
+              </button>
+            </div>
+          );
+        })}
       </div>
 
       {/* Detail of selected card */}
@@ -101,28 +98,30 @@ export function CreditTabCreditCard() {
           <div className="card border-0 shadow-sm">
             <div className="card-header">
               <div className="d-flex align-items-center gap-3">
-                <span className={`avatar avatar-sm bg-${card.color}-lt text-${card.color} rounded-2`}>
+                <span className={`avatar avatar-sm rounded-2`} style={{ backgroundColor: `${card.color}20`, color: card.color }}>
                   <Icon icon="credit-card" size={16} />
                 </span>
                 <div>
                   <div className="card-title fw-bold mb-0">{card.name}</div>
-                  <div className="text-muted small">{card.bank} •••• {card.last4}</div>
+                  <div className="text-muted small">{card.provider?.name || 'Bank'}</div>
                 </div>
               </div>
-              <div className="card-actions">
-                <span className={`badge bg-${card.daysLeft <= 5 ? 'danger' : 'warning'}-lt text-${card.daysLeft <= 5 ? 'danger' : 'warning'} border-0`}>
-                  {card.daysLeft}h lagi
-                </span>
-              </div>
+              {daysLeft !== null && (
+                <div className="card-actions">
+                  <span className={`badge bg-${daysLeft <= 5 ? 'danger' : 'warning'}-lt text-${daysLeft <= 5 ? 'danger' : 'warning'} border-0`}>
+                    {daysLeft}h lagi
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="card-body">
               <ul className="list-group list-group-flush">
                 {[
-                  { label: 'Tagihan bulan ini',  value: fmt(card.used) },
-                  { label: 'Minimum payment',    value: fmt(Math.round(card.used * 0.1)), cls: 'text-danger' },
-                  { label: 'Jatuh tempo',        value: card.dueDate },
-                  { label: 'Sisa limit',         value: fmt(card.limit - card.used), cls: 'text-success' },
+                  { label: 'Tagihan saat ini',  value: fmt(credit.total_amount) },
+                  { label: 'Minimum payment',    value: fmt(credit.minimum_payment || Math.round(credit.total_amount * 0.1)), cls: 'text-danger' },
+                  { label: 'Jatuh tempo',        value: credit.due_date ? new Date(credit.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-' },
+                  { label: 'Sisa limit',         value: fmt(credit.limit - credit.total_amount), cls: 'text-success' },
                 ].map((item, i) => (
                   <li key={i} className="list-group-item d-flex justify-content-between align-items-center px-0">
                     <span className="text-muted small">{item.label}</span>
@@ -131,16 +130,14 @@ export function CreditTabCreditCard() {
                 ))}
               </ul>
 
-              {/* Reward Points */}
+              {/* Reward Points - Optional visual */}
               <div className="mt-3 p-3 rounded-2 bg-primary-lt">
                 <div className="d-flex align-items-center justify-content-between">
                   <div>
                     <div className="fw-bold small text-primary">Reward Points</div>
-                    <div className="text-muted small">Tukar hadiah kapan saja</div>
+                    <div className="text-muted small">Update otomatis dari mutasi</div>
                   </div>
-                  <div className="h4 fw-bold text-primary m-0">
-                    {new Intl.NumberFormat('id-ID').format(card.rewards)} pts
-                  </div>
+                  <div className="h4 fw-bold text-primary m-0">- pts</div>
                 </div>
               </div>
               {/* Actions */}
@@ -150,7 +147,7 @@ export function CreditTabCreditCard() {
                   Bayar Tagihan
                 </button>
                 <button className="btn btn-ghost-secondary w-100">
-                  Lihat e-Statement
+                  Lihat Transaksi
                 </button>
               </div>
             </div>
@@ -163,7 +160,7 @@ export function CreditTabCreditCard() {
             <div className="card-header">
               <h3 className="card-title">Tren Pengeluaran</h3>
               <div className="card-actions">
-                <span className="text-muted small">6 bulan — {card.name}</span>
+                <span className="text-muted small">6 bulan terakhir — {card.name}</span>
               </div>
             </div>
             <div className="card-body">
@@ -173,8 +170,8 @@ export function CreditTabCreditCard() {
                 chartData={{
                   type: 'bar',
                   stacked: false,
-                  series: [{ name: 'Pengeluaran', color: `var(--tblr-${card.color})`, data: card.spendHistory }],
-                  categories: ['Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
+                  series: [{ name: 'Pengeluaran', color: card.color, data: spendHistory }],
+                  categories: historyLabels,
                   datalabels: false,
                   legend: false,
                   grid: {
@@ -212,27 +209,9 @@ export function CreditTabCreditCard() {
                 <button className="btn btn-sm btn-ghost-secondary">Lihat semua</button>
               </div>
             </div>
-            <div className="table-responsive">
-              <table className="table table-vcenter card-table">
-                <tbody>
-                  {card.transactions.map((tx, i) => (
-                    <tr key={i}>
-                      <td className="w-1">
-                        <span className="avatar avatar-sm bg-secondary-lt text-secondary rounded-2">
-                          <Icon icon="shopping-cart" size={14} />
-                        </span>
-                      </td>
-                      <td>
-                        <div className="fw-bold small">{tx.merchant}</div>
-                        <div className="text-muted small">{tx.date} • {tx.category}</div>
-                      </td>
-                      <td className="text-end">
-                        <div className="fw-bold small text-danger">-{fmt(tx.amount)}</div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="card-body py-5 text-center text-muted">
+               <Icon icon="receipt-off" size={32} className="mb-2 opacity-50" />
+               <div className="small">Transaksi terbaru akan muncul di sini</div>
             </div>
           </div>
         </div>

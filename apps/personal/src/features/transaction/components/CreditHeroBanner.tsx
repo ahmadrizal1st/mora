@@ -1,53 +1,87 @@
-import React from 'react';
 import { Icon } from '@/shared/components/ui';
+import { useCreditSummary } from '../hooks/useCreditSummary';
+
+const shortFmt = (n: number) => {
+  if (n >= 1_000_000_000) return 'Rp ' + (n / 1_000_000_000).toFixed(1) + ' M';
+  if (n >= 1_000_000) return 'Rp ' + (n / 1_000_000).toFixed(0) + ' jt';
+  return 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
+};
 
 export function CreditHeroBanner() {
-  const utilPct = 28;
-  const scoreVal = 742;
+  const { 
+    totalLimit, 
+    totalOutstanding, 
+    utilizationPct, 
+    nextDue, 
+    nextDueAmount,
+    creditScore,
+    scoreTrend,
+    activeCount,
+    isLoading 
+  } = useCreditSummary();
+
+  if (isLoading) {
+    return (
+      <div className="mb-4">
+        <div className="row g-2 g-lg-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="col-6 col-lg-3">
+              <div className="card border-0 shadow-sm h-100 placeholder-glow">
+                <div className="card-body p-3 p-lg-4">
+                  <div className="placeholder col-6 mb-3"></div>
+                  <div className="placeholder col-10 mb-1"></div>
+                  <div className="placeholder col-8"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Safe date handling to avoid TS 'never' issues
+  const dueDate = nextDue as (Date | null);
+  const formattedDate = dueDate instanceof Date ? dueDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-';
+  const daysRemaining = dueDate instanceof Date ? Math.ceil((dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
+
+  const utilColor = utilizationPct > 70 ? 'danger' : utilizationPct > 40 ? 'warning' : 'success';
 
   return (
     <div className="mb-4">
       <div className="row g-2 g-lg-3">
-
+        
         {/* Total Limit */}
         <div className="col-6 col-lg-3">
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body p-3 p-lg-4">
-              <div className="d-flex align-items-center gap-3 mb-3">
-                <div className="avatar avatar-sm bg-primary-lt text-primary rounded-2">
-                  <Icon icon="credit-card" size={18} />
+              <div className="d-flex align-items-center gap-2 mb-3">
+                <div className="avatar avatar-sm bg-red text-white" style={{ borderRadius: '12px' }}>
+                  <Icon icon="credit-card" size={16} />
                 </div>
-                <div className="subheader text-secondary m-0">Total Limit</div>
+                <div className="subheader text-muted m-0" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>TOTAL LIMIT</div>
               </div>
-              <div className="h2 fw-bold m-0 mb-1">Rp 85 jt</div>
-              <div className="text-secondary small">3 jalur kredit aktif</div>
+              <div className="h1 fw-bold m-0 mb-1">{shortFmt(totalLimit)}</div>
+              <div className="text-muted small">{activeCount} jalur kredit aktif</div>
             </div>
           </div>
         </div>
 
-        {/* Total Outstanding + Utilization */}
+        {/* Total Outstanding */}
         <div className="col-6 col-lg-3">
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body p-3 p-lg-4">
-              <div className="d-flex align-items-center gap-3 mb-3">
-                <div className="avatar avatar-sm bg-azure-lt text-azure rounded-2">
-                  <Icon icon="chart-pie" size={18} />
+              <div className="d-flex align-items-center gap-2 mb-3">
+                <div className="avatar avatar-sm bg-azure text-white" style={{ borderRadius: '12px' }}>
+                  <Icon icon="chart-pie" size={16} />
                 </div>
-                <div className="subheader text-secondary m-0">Outstanding</div>
+                <div className="subheader text-muted m-0" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>OUTSTANDING</div>
               </div>
-              <div className="h2 fw-bold m-0 mb-2">Rp 24 jt</div>
-              <div
-                className="progress mb-2"
-                style={{ height: '6px', borderRadius: '99px', background: 'color-mix(in srgb, var(--tblr-primary), transparent 85%)' }}
-              >
-                <div
-                  className="progress-bar bg-primary"
-                  style={{ width: `${utilPct}%`, borderRadius: '99px' }}
-                />
-              </div>
+              <div className="h1 fw-bold m-0 mb-1 text-danger">{shortFmt(totalOutstanding)}</div>
               <div className="d-flex align-items-center gap-2">
-                <span className="text-secondary small">{utilPct}% utilisasi</span>
-                <span className="badge bg-success-lt text-success border-0 px-2 rounded-1" style={{ fontSize: '10px' }}>Aman</span>
+                <span className={`badge bg-${utilColor}-lt text-${utilColor} border-0 px-2 rounded-pill`} style={{ fontSize: '10px' }}>
+                  {utilizationPct.toFixed(0)}% Utilisasi
+                </span>
               </div>
             </div>
           </div>
@@ -57,16 +91,22 @@ export function CreditHeroBanner() {
         <div className="col-6 col-lg-3">
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body p-3 p-lg-4">
-              <div className="d-flex align-items-center gap-3 mb-3">
-                <div className="avatar avatar-sm bg-warning-lt text-warning rounded-2">
-                  <Icon icon="calendar-event" size={18} />
+              <div className="d-flex align-items-center gap-2 mb-3">
+                <div className="avatar avatar-sm bg-orange text-white" style={{ borderRadius: '12px' }}>
+                  <Icon icon="calendar-event" size={16} />
                 </div>
-                <div className="subheader text-secondary m-0">Jatuh Tempo</div>
+                <div className="subheader text-muted m-0" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>JATUH TEMPO</div>
               </div>
-              <div className="h2 fw-bold m-0 mb-2">14 Mei</div>
-              <div className="d-flex align-items-center gap-2">
-                <span className="badge bg-warning-lt text-warning border-0 px-2 rounded-1" style={{ fontSize: '10px' }}>3 hari lagi</span>
-                <span className="fw-bold small">Rp 1,4 jt</span>
+              <div className="h1 fw-bold m-0 mb-1 text-warning">{formattedDate}</div>
+              <div className="d-flex align-items-center justify-content-between">
+                {dueDate instanceof Date ? (
+                  <>
+                    <span className="text-muted" style={{ fontSize: '11px' }}>Sisa {daysRemaining} hari</span>
+                    <span className="fw-bold text-dark" style={{ fontSize: '12px' }}>{shortFmt(nextDueAmount)}</span>
+                  </>
+                ) : (
+                  <span className="text-muted small">Tidak ada tagihan</span>
+                )}
               </div>
             </div>
           </div>
@@ -76,19 +116,19 @@ export function CreditHeroBanner() {
         <div className="col-6 col-lg-3">
           <div className="card border-0 shadow-sm h-100">
             <div className="card-body p-3 p-lg-4">
-              <div className="d-flex align-items-center gap-3 mb-3">
-                <div className="avatar avatar-sm bg-success-lt text-success rounded-2">
-                  <Icon icon="award" size={18} />
+              <div className="d-flex align-items-center gap-2 mb-3">
+                <div className="avatar avatar-sm bg-blue text-white" style={{ borderRadius: '12px' }}>
+                  <Icon icon="award" size={16} />
                 </div>
-                <div className="subheader text-secondary m-0">Credit Score</div>
+                <div className="subheader text-muted m-0" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>CREDIT SCORE</div>
               </div>
-              <div className="d-flex align-items-baseline gap-2 mb-2">
-                <div className="h2 fw-bold m-0 text-success">{scoreVal}</div>
-                <span className="small text-success fw-bold">↑ +8</span>
+              <div className="d-flex align-items-baseline gap-2 mb-1">
+                <div className="h1 fw-bold m-0 text-success">{creditScore}</div>
+                <span className="small text-success fw-bold">↑ +{scoreTrend}</span>
               </div>
-              <div className="d-flex align-items-center gap-2">
-                <span className="badge bg-success-lt text-success border-0 px-2 rounded-1" style={{ fontSize: '10px' }}>Very Good</span>
-                <span className="text-secondary small">6 bln</span>
+              <div className="d-flex align-items-center justify-content-between">
+                <span className="badge bg-blue-lt text-blue border-0 px-2 rounded-pill" style={{ fontSize: '10px' }}>Very Good</span>
+                <span className="text-muted" style={{ fontSize: '11px' }}>SLIK/OJK</span>
               </div>
             </div>
           </div>

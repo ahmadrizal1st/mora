@@ -24,6 +24,9 @@ export interface CreditAccount {
   notes?: string;
   created_at: string;
   updated_at: string;
+  credit_type?: 'credit_card' | 'kta' | 'kpr' | 'paylater' | 'other';
+  tenor_months?: number;
+  start_date?: string;
 }
 
 export interface Provider {

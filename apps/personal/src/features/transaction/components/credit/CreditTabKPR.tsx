@@ -1,51 +1,60 @@
+import { useState, useMemo } from 'react';
 import { Icon, Chart } from '@/shared/components/ui';
+import { useCredits } from '../../hooks/useCredits';
 
-const fmt = (n: number) =>
-  'Rp ' + new Intl.NumberFormat('id-ID').format(n);
+const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
 const MONTHS = ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'];
 
-const kpr = {
-  name: 'KPR BTN',
-  bank: 'Bank BTN',
-  propertyName: 'Rumah Grand Sentosa',
-  propertyAddress: 'Jl. Melati No. 12, Bekasi Utara',
-  propertyValue: 1_200_000_000,
-  purchasePrice: 900_000_000,
-  loanAmount: 720_000_000,
-  remaining: 480_000_000,
-  paid: 240_000_000,
-  paidPct: 60,
-  ltv: 40,
-  interestType: 'Floating',
-  interestRate: 6.75,
-  fixedPeriod: '2 tahun pertama (selesai)',
-  monthlyInstallment: 4_800_000,
-  tenor: 240,
-  remainingMonths: 144,
-  startDate: 'Jan 2014',
-  endDate: 'Jan 2034',
-  dueDate: '25 Mei',
-  daysLeft: 14,
-  appraisalValue: 1_450_000_000,
-  equityGain: 250_000_000,
-  paymentHistory: [true, true, true, true, true, true, true, true, true, true, true, true],
-  amortization: [
-    { bulan: 'Mei 2026', pokok: 2_000_000, bunga: 2_800_000, total: 4_800_000 },
-    { bulan: 'Jun 2026', pokok: 2_011_000, bunga: 2_789_000, total: 4_800_000 },
-    { bulan: 'Jul 2026', pokok: 2_023_000, bunga: 2_777_000, total: 4_800_000 },
-    { bulan: 'Agu 2026', pokok: 2_034_000, bunga: 2_766_000, total: 4_800_000 },
-    { bulan: 'Sep 2026', pokok: 2_045_000, bunga: 2_755_000, total: 4_800_000 },
-  ],
-  principalHistory: [226_000_000, 228_000_000, 230_000_000, 232_000_000, 236_000_000, 240_000_000],
-};
-
 export function CreditTabKPR() {
-  const urgentColor = kpr.daysLeft <= 7 ? 'danger' : 'warning';
+  const { data: allCredits = [], isLoading } = useCredits();
+  
+  const loans = useMemo(() => {
+    return allCredits.filter(acc => acc.credit?.credit_type === 'kpr');
+  }, [allCredits]);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  
+  // Derived state: Use selected ID or default to the first loan ID
+  const activeLoanId = selectedId ?? loans[0]?.id;
+
+  const activeAccount = useMemo(() => {
+    return loans.find(l => l.id === activeLoanId) || loans[0];
+  }, [loans, activeLoanId]);
+
+  if (isLoading) {
+    return <div className="py-5 text-center text-muted">Memuat data KPR...</div>;
+  }
+
+  if (loans.length === 0) {
+    return (
+      <div className="card border-0 shadow-sm py-5 text-center">
+        <div className="card-body">
+          <Icon icon="home-off" size={48} className="mb-3 text-muted opacity-50" />
+          <h3 className="fw-bold">Belum Ada Pinjaman KPR</h3>
+          <p className="text-muted">Tambahkan profil KPR Anda melalui menu "Tambah Profil" di atas.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const loan = activeAccount!;
+  const credit = loan.credit!;
+  const paidAmount = Math.max(0, credit.limit - credit.total_amount);
+  const paidPct = credit.limit > 0 ? Math.round((paidAmount / credit.limit) * 100) : 0;
+  const daysLeft = credit.due_date ? Math.ceil((new Date(credit.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
+  const urgentColor = (daysLeft !== null && daysLeft <= 7) ? 'danger' : 'warning';
+
+  // Placeholder history
+  const paymentHistory = [true, true, true, true, true, true, true, true, true, true, true, true];
+  const principalHistory = [paidAmount * 0.9, paidAmount * 0.92, paidAmount * 0.94, paidAmount * 0.96, paidAmount * 0.98, paidAmount];
+  const amortization = [
+    { bulan: 'Segera', pokok: credit.installment_amount * 0.4, bunga: credit.installment_amount * 0.6, total: credit.installment_amount },
+  ];
 
   return (
     <div>
-      {/* Property Hero */}
+      {/* Property Hero (Mocked details, real financial data) */}
       <div className="card border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, var(--tblr-warning) 0%, #e67e00 100%)' }}>
         <div className="card-body p-4 text-white">
           <div className="row align-items-center">
@@ -55,16 +64,16 @@ export function CreditTabKPR() {
                   <Icon icon="home" size={16} />
                 </span>
                 <div>
-                  <div className="fw-bold">{kpr.propertyName}</div>
-                  <div className="small opacity-75">{kpr.propertyAddress}</div>
+                  <div className="fw-bold">{loan.name}</div>
+                  <div className="small opacity-75">{loan.provider?.name || 'Bank KPR'}</div>
                 </div>
               </div>
               <div className="row g-3">
                 {[
-                  { label: 'Nilai Properti',  value: fmt(kpr.propertyValue) },
-                  { label: 'Nilai Appraisal', value: fmt(kpr.appraisalValue) },
-                  { label: 'Equity Gain',     value: `+${fmt(kpr.equityGain)}` },
-                  { label: 'LTV',             value: `${kpr.ltv}%` },
+                  { label: 'Plafon Pinjaman',  value: fmt(credit.limit) },
+                  { label: 'Suku Bunga',       value: `${credit.interest_rate || 0}% p.a.` },
+                  { label: 'Tenor Total',      value: `${credit.tenor_months || 0} bln` },
+                  { label: 'Sudah Berjalan',   value: `${Math.round((paidAmount / credit.installment_amount))} bln (est.)` },
                 ].map((item, i) => (
                   <div key={i} className="col-6 col-md-3">
                     <div className="small opacity-75 mb-1">{item.label}</div>
@@ -75,12 +84,26 @@ export function CreditTabKPR() {
             </div>
             <div className="col-12 col-md-4 mt-3 mt-md-0 text-md-end">
               <div className="small opacity-75 mb-1">Sisa Pokok Pinjaman</div>
-              <div className="display-6 fw-bold">{fmt(kpr.remaining)}</div>
-              <div className="small opacity-75 mt-1">dari {fmt(kpr.loanAmount)} plafon</div>
+              <div className="display-6 fw-bold">{fmt(credit.total_amount)}</div>
+              <div className="small opacity-75 mt-1">pelunasan {paidPct}%</div>
             </div>
           </div>
         </div>
       </div>
+
+      {loans.length > 1 && (
+        <div className="mb-4 d-flex gap-2 overflow-x-auto pb-2">
+          {loans.map(l => (
+            <button
+              key={l.id}
+              className={`btn btn-sm ${activeLoanId === l.id ? 'btn-warning text-white' : 'btn-ghost-warning'}`}
+              onClick={() => setSelectedId(l.id)}
+            >
+              {l.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="row g-3">
         {/* Left: Detail */}
@@ -92,29 +115,29 @@ export function CreditTabKPR() {
                   <Icon icon="home" size={16} />
                 </span>
                 <div>
-                  <div className="card-title fw-bold mb-0">{kpr.name}</div>
-                  <div className="text-muted small">{kpr.bank}</div>
+                  <div className="card-title fw-bold mb-0">{loan.name}</div>
+                  <div className="text-muted small">{loan.provider?.name}</div>
                 </div>
               </div>
-              <div className="card-actions">
-                <span className={`badge bg-${urgentColor}-lt text-${urgentColor} border-0`}>
-                  {kpr.daysLeft} hari lagi
-                </span>
-              </div>
+              {daysLeft !== null && (
+                <div className="card-actions">
+                  <span className={`badge bg-${urgentColor}-lt text-${urgentColor} border-0`}>
+                    {daysLeft} hari lagi
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="card-body">
               <ul className="list-group list-group-flush">
                 {[
-                  { label: 'Plafon',         value: fmt(kpr.loanAmount) },
-                  { label: 'Sudah dilunasi', value: fmt(kpr.paid),               cls: 'text-success' },
-                  { label: 'Cicilan per bln',    value: fmt(kpr.monthlyInstallment) },
-                  { label: 'Suku bunga',     value: `${kpr.interestRate}% p.a.`,
+                  { label: 'Total Pinjaman', value: fmt(credit.limit) },
+                  { label: 'Sudah dilunasi', value: fmt(paidAmount),               cls: 'text-success' },
+                  { label: 'Cicilan per bln',    value: fmt(credit.installment_amount) },
+                  { label: 'Suku bunga',     value: `${credit.interest_rate || 0}% p.a.`,
                     extra: <span className="badge bg-warning-lt text-warning border-0 rounded-1 ms-1" style={{ fontSize: '10px' }}>Floating</span> },
-                  { label: 'Periode fixed',  value: kpr.fixedPeriod },
-                  { label: 'Tenor',          value: `${kpr.tenor} bulan (20 thn)` },
-                  { label: 'Sisa tenor',     value: `${kpr.remainingMonths} bulan (12 thn)` },
-                  { label: 'Periode',        value: `${kpr.startDate} — ${kpr.endDate}` },
+                  { label: 'Tenor',          value: `${credit.tenor_months || 0} bulan` },
+                  { label: 'Jatuh tempo',    value: credit.due_date ? new Date(credit.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) : '-' },
                 ].map((item, i) => (
                   <li key={i} className="list-group-item d-flex justify-content-between align-items-center px-0">
                     <span className="text-muted small">{item.label}</span>
@@ -127,22 +150,22 @@ export function CreditTabKPR() {
 
               <div className="mt-3">
                 <div className="d-flex justify-content-between mb-1">
-                  <span className="text-muted small">{kpr.paidPct}% terlunasi</span>
-                  <span className="text-muted small">LTV {kpr.ltv}%</span>
+                  <span className="text-muted small">{paidPct}% terlunasi</span>
                 </div>
                 <div className="progress progress-sm">
-                  <div className="progress-bar bg-warning" style={{ width: `${kpr.paidPct}%` }} />
+                  <div className="progress-bar bg-warning" style={{ width: `${paidPct}%` }} />
                 </div>
               </div>
 
-
-              <div className={`alert alert-${urgentColor} d-flex align-items-center gap-2 mt-3 mb-0`} role="alert">
-                <Icon icon="calendar-event" size={16} />
-                <div>
-                  <div className="fw-bold small">Jatuh tempo: {kpr.dueDate}</div>
-                  <div className="small opacity-75">{kpr.daysLeft} hari lagi • {fmt(kpr.monthlyInstallment)}</div>
+              {daysLeft !== null && (
+                <div className={`alert alert-${urgentColor} d-flex align-items-center gap-2 mt-3 mb-0`} role="alert">
+                  <Icon icon="calendar-event" size={16} />
+                  <div>
+                    <div className="fw-bold small">Tagihan Berikutnya</div>
+                    <div className="small opacity-75">{daysLeft} hari lagi • {fmt(credit.installment_amount)}</div>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="mt-3">
                 <button className="btn btn-warning w-100 fw-bold text-white">
@@ -168,8 +191,8 @@ export function CreditTabKPR() {
               <div className="d-flex flex-wrap gap-2">
                 {MONTHS.map((m, i) => (
                   <div key={i} className="text-center">
-                    <span className={`avatar avatar-sm rounded-circle mb-1 ${kpr.paymentHistory[i] ? 'bg-success' : 'bg-danger'} text-white`}>
-                      <Icon icon={kpr.paymentHistory[i] ? 'check' : 'x'} size={14} />
+                    <span className={`avatar avatar-sm rounded-circle mb-1 ${paymentHistory[i] ? 'bg-success' : 'bg-danger'} text-white`}>
+                      <Icon icon={paymentHistory[i] ? 'check' : 'x'} size={14} />
                     </span>
                     <div className="text-muted" style={{ fontSize: '10px' }}>{m}</div>
                   </div>
@@ -183,17 +206,17 @@ export function CreditTabKPR() {
             <div className="card-header">
               <h3 className="card-title">Pengurangan Pokok</h3>
               <div className="card-actions">
-                <span className="text-muted small">6 bulan akumulasi</span>
+                <span className="text-muted small">Simulasi Akumulasi</span>
               </div>
             </div>
             <div className="card-body">
               <Chart
-                chartId="kpr-principal"
+                chartId={`kpr-principal-${loan.id}`}
                 height={18}
                 chartData={{
                   type: 'line',
                   stacked: false,
-                  series: [{ name: 'Pokok Terlunasi', color: 'var(--tblr-warning)', data: kpr.principalHistory }],
+                  series: [{ name: 'Pokok Terlunasi', color: 'var(--tblr-warning)', data: principalHistory }],
                   categories: ['Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
                   datalabels: false,
                   legend: false,
@@ -228,7 +251,7 @@ export function CreditTabKPR() {
             <div className="card-header">
               <h3 className="card-title">Jadwal Angsuran</h3>
               <div className="card-actions">
-                <span className="badge bg-blue-lt text-blue border-0">5 Bulan ke Depan</span>
+                <span className="badge bg-blue-lt text-blue border-0">Simulasi</span>
               </div>
             </div>
             <div className="table-responsive">
@@ -242,11 +265,10 @@ export function CreditTabKPR() {
                   </tr>
                 </thead>
                 <tbody>
-                  {kpr.amortization.map((row, i) => (
+                  {amortization.map((row, i) => (
                     <tr key={i}>
                       <td>
                         <div className="fw-bold small">{row.bulan}</div>
-                        {i === 0 && <div className="text-warning small">Segera</div>}
                       </td>
                       <td className="text-end small">{fmt(row.pokok)}</td>
                       <td className="text-end small text-warning">{fmt(row.bunga)}</td>
@@ -261,6 +283,6 @@ export function CreditTabKPR() {
           </div>
         </div>
       </div>
-      </div>
+    </div>
   );
 }

@@ -1,93 +1,139 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Icon } from '@/shared/components/ui';
+import { useCredits } from '../hooks/useCredits';
 
-const creditTypes = [
-  {
-    title: 'Personal Loan',
-    subtitle: 'KTA • 3 tahun tersisa',
-    icon: 'building-bank',
-    color: 'primary',
-    rows: [
-      { label: 'Plafon',      value: 'Rp 50.000.000' },
-      { label: 'Sisa',        value: 'Rp 31.250.000', cls: 'text-danger' },
-      { label: 'Cicilan/bln', value: 'Rp 1.400.000' },
-      { label: 'Suku bunga',  value: '8,5% p.a.' },
-    ],
-    progress: 37.5,
-    progressColor: 'primary',
-    progressLabel: '37,5% terlunasi',
-  },
-  {
-    title: 'Mortgage / KPR',
-    subtitle: 'Floating • 12 tahun tersisa',
-    icon: 'home',
-    color: 'warning',
-    rows: [
-      { label: 'Nilai properti', value: 'Rp 1,2 M' },
-      { label: 'Sisa pokok',     value: 'Rp 480 jt',  cls: 'text-danger' },
-      { label: 'Cicilan/bln',    value: 'Rp 4.800.000' },
-      { label: 'Suku bunga',     value: '6,75% p.a.',
-        extra: <span className="badge bg-warning-lt text-warning border-0 rounded-1 ms-1" style={{ fontSize: '10px' }}>Floating</span> },
-    ],
-    progress: 60,
-    progressColor: 'warning',
-    progressLabel: '60% terlunasi • LTV 40%',
-  },
-  {
-    title: 'Credit Cards',
-    subtitle: '2 kartu aktif',
-    icon: 'credit-card',
-    color: 'azure',
-    customBody: (
-      <div>
-        <div className="row g-2 mb-3">
-          {[
-            { name: 'Visa Platinum',   usage: 'Rp 3,2 jt / 20 jt', pct: 16, color: 'success' },
-            { name: 'Mastercard Gold', usage: 'Rp 8,5 jt / 15 jt', pct: 56, color: 'warning' },
-          ].map((cc, i) => (
-            <div key={i} className="col-6">
-              <div className="card border shadow-none bg-transparent">
-                <div className="card-body p-2">
-                  <div className="fw-bold small mb-1">{cc.name}</div>
-                  <div className="text-muted mb-2" style={{ fontSize: '11px' }}>{cc.usage}</div>
-                  <div className="progress progress-sm mb-1">
-                    <div className={`progress-bar bg-${cc.color}`} style={{ width: `${cc.pct}%` }} />
-                  </div>
-                  <div className="text-muted" style={{ fontSize: '10px' }}>{cc.pct}% used</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="d-flex gap-2 flex-wrap">
-          <span className="badge bg-secondary-lt text-secondary border-0 px-3 py-2 rounded-pill fw-normal">Rewards: 12.450 pts</span>
-          <span className="badge bg-secondary-lt text-secondary border-0 px-3 py-2 rounded-pill fw-normal">Due: 20 Mei</span>
-        </div>
-      </div>
-    ),
-  },
-  {
-    title: 'Paylater',
-    subtitle: '2 provider aktif',
-    icon: 'clock-dollar',
-    color: 'green',
-    rows: [
-      { label: 'GoPay Later',    value: 'Rp 1,2 jt / 5 jt' },
-      { label: 'Shopee PayLater', value: 'Rp 2,8 jt / 10 jt' },
-      { label: 'Akulaku',        value: 'Rp 0 / 3 jt',
-        extra: <span className="badge bg-success-lt text-success border-0 rounded-1 ms-1" style={{ fontSize: '10px' }}>Lunas</span> },
-    ],
-    infoBox: (
-      <div className="alert alert-primary mb-0 mt-3">
-        <div className="small">
-          Total outstanding: <strong>Rp 4 jt dari Rp 18 jt limit</strong>
-        </div>
-      </div>
-    ),
-  },
-];
+const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
 export function CreditTypeCards() {
+  const { data: credits = [], isLoading } = useCredits();
+
+  const creditTypes = useMemo(() => {
+    // KTA
+    const ktaLoans = credits.filter(c => c.credit?.credit_type === 'kta');
+    const ktaLimit = ktaLoans.reduce((s, c) => s + (c.credit?.limit || 0), 0);
+    const ktaUsed = ktaLoans.reduce((s, c) => s + (c.credit?.total_amount || 0), 0);
+    const ktaPaid = Math.max(0, ktaLimit - ktaUsed);
+    const ktaPct = ktaLimit > 0 ? (ktaPaid / ktaLimit) * 100 : 0;
+
+    // KPR
+    const kprLoans = credits.filter(c => c.credit?.credit_type === 'kpr');
+    const kprLimit = kprLoans.reduce((s, c) => s + (c.credit?.limit || 0), 0);
+    const kprUsed = kprLoans.reduce((s, c) => s + (c.credit?.total_amount || 0), 0);
+    const kprPaid = Math.max(0, kprLimit - kprUsed);
+    const kprPct = kprLimit > 0 ? (kprPaid / kprLimit) * 100 : 0;
+
+    // CC
+    const ccAccounts = credits.filter(c => c.credit?.credit_type === 'credit_card');
+    const ccLimit = ccAccounts.reduce((s, c) => s + (c.credit?.limit || 0), 0);
+    const ccUsed = ccAccounts.reduce((s, c) => s + (c.credit?.total_amount || 0), 0);
+    const ccPct = ccLimit > 0 ? (ccUsed / ccLimit) * 100 : 0;
+
+    // Paylater
+    const plAccounts = credits.filter(c => c.credit?.credit_type === 'paylater');
+    const plLimit = plAccounts.reduce((s, c) => s + (c.credit?.limit || 0), 0);
+    const plUsed = plAccounts.reduce((s, c) => s + (c.credit?.total_amount || 0), 0);
+    const plPct = plLimit > 0 ? (plUsed / plLimit) * 100 : 0;
+
+    return [
+      {
+        id: 'kta',
+        title: 'Personal Loan',
+        subtitle: `${ktaLoans.length} pinjaman aktif`,
+        icon: 'building-bank',
+        color: 'primary',
+        rows: [
+          { label: 'Total Plafon',      value: fmt(ktaLimit) },
+          { label: 'Sisa Hutang',       value: fmt(ktaUsed), cls: 'text-danger' },
+          { label: 'Sudah Dibayar',     value: fmt(ktaPaid), cls: 'text-success' },
+        ],
+        progress: ktaPct,
+        progressColor: 'primary',
+        progressLabel: `${ktaPct.toFixed(1)}% terlunasi`,
+        visible: ktaLoans.length > 0
+      },
+      {
+        id: 'kpr',
+        title: 'Mortgage / KPR',
+        subtitle: `${kprLoans.length} properti`,
+        icon: 'home',
+        color: 'warning',
+        rows: [
+          { label: 'Total Plafon',      value: fmt(kprLimit) },
+          { label: 'Sisa Hutang',       value: fmt(kprUsed), cls: 'text-danger' },
+          { label: 'Sudah Dibayar',     value: fmt(kprPaid), cls: 'text-success' },
+        ],
+        progress: kprPct,
+        progressColor: 'warning',
+        progressLabel: `${kprPct.toFixed(1)}% terlunasi`,
+        visible: kprLoans.length > 0
+      },
+      {
+        id: 'cc',
+        title: 'Credit Cards',
+        subtitle: `${ccAccounts.length} kartu aktif`,
+        icon: 'credit-card',
+        color: 'azure',
+        customBody: (
+          <div>
+            <div className="row g-2 mb-3">
+              {ccAccounts.map((c, i) => {
+                const pct = c.credit!.limit > 0 ? Math.round((c.credit!.total_amount / c.credit!.limit) * 100) : 0;
+                return (
+                  <div key={i} className="col-6">
+                    <div className="card border shadow-none bg-transparent">
+                      <div className="card-body p-2">
+                        <div className="fw-bold small mb-1">{c.name}</div>
+                        <div className="text-muted mb-2" style={{ fontSize: '11px' }}>{fmt(c.credit!.total_amount)} / {fmt(c.credit!.limit)}</div>
+                        <div className="progress progress-sm mb-1">
+                          <div className={`progress-bar bg-${pct > 60 ? 'danger' : pct > 30 ? 'warning' : 'success'}`} style={{ width: `${pct}%` }} />
+                        </div>
+                        <div className="text-muted" style={{ fontSize: '10px' }}>{pct}% used</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ),
+        visible: ccAccounts.length > 0
+      },
+      {
+        id: 'paylater',
+        title: 'Paylater',
+        subtitle: `${plAccounts.length} provider aktif`,
+        icon: 'clock-dollar',
+        color: 'green',
+        rows: [
+          { label: 'Total Limit',  value: fmt(plLimit) },
+          { label: 'Total Dipakai', value: fmt(plUsed), cls: 'text-danger' },
+          { label: 'Sisa Limit',   value: fmt(plLimit - plUsed), cls: 'text-success' },
+        ],
+        infoBox: (
+          <div className="alert alert-primary mb-0 mt-3 p-2">
+            <div className="small">
+              Global utilization: <strong>{plPct.toFixed(1)}%</strong>
+            </div>
+          </div>
+        ),
+        visible: plAccounts.length > 0
+      },
+    ].filter(ct => ct.visible);
+  }, [credits]);
+
+  if (isLoading) return null;
+  
+  if (creditTypes.length === 0) {
+    return (
+      <div className="card border-0 shadow-sm mb-4">
+        <div className="card-body text-center py-5">
+           <Icon icon="info-circle" size={32} className="text-muted opacity-50 mb-2" />
+           <p className="text-muted mb-0">Belum ada rincian tipe kredit. Tambahkan profil kredit untuk melihat ringkasan di sini.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mb-4">
       <div className="row g-2 g-lg-3">
@@ -115,7 +161,7 @@ export function CreditTypeCards() {
                         <li key={i} className="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
                           <span className="text-muted small">{row.label}</span>
                           <span className={`fw-bold small ${row.cls ?? ''}`}>
-                            {row.value}{row.extra}
+                            {row.value}
                           </span>
                         </li>
                       ))}
