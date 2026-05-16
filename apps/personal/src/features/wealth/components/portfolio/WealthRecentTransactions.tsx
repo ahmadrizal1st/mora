@@ -11,27 +11,27 @@ const MOCK_RECENT_TRANSACTIONS = [
 
 export function WealthRecentTransactions() {
   return (
-    <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-header border-bottom-0 pt-4 pb-0">
+    <div className="card shadow-sm border-0 h-100">
+      <div className="card-header border-0 pb-0">
         <h3 className="card-title fw-bold">Recent Activities</h3>
       </div>
-      <div className="card-body">
+      <div className="card-body d-flex flex-column justify-content-center">
         <div className="d-flex flex-column gap-3">
           {MOCK_RECENT_TRANSACTIONS.map((tx) => (
-            <div key={tx.id} className="d-flex align-items-center">
-              <div className={clsx('avatar avatar-sm rounded-circle shadow-none me-3', `bg-${tx.color}-lt text-${tx.color}`)}>
-                <Icon icon={tx.icon as string} size="sm" />
+            <div key={tx.id} className="d-flex align-items-center py-2">
+              <div className={clsx('avatar avatar-sm rounded shadow-none border-0 me-3', `bg-${tx.color}-lt text-${tx.color}`)}>
+                <Icon icon={tx.icon as string} size="sm" stroke={2.5} />
               </div>
               <div className="flex-fill">
-                <div className="d-flex justify-content-between align-items-center mb-1">
+                <div className="d-flex justify-content-between align-items-center mb-0">
                   <span className="fw-bold text-body">{tx.asset}</span>
                   <span className={clsx('fw-bold', tx.type === 'sell' ? 'text-danger' : tx.type === 'dividend' ? 'text-success' : 'text-body')}>
                     {tx.type === 'sell' ? '-' : '+'}{formatCurrency(tx.amount)}
                   </span>
                 </div>
                 <div className="d-flex justify-content-between text-secondary" style={{ fontSize: '11px' }}>
-                  <span>{tx.name}</span>
-                  <span>{tx.date}</span>
+                  <span className="opacity-75">{tx.name}</span>
+                  <span className="opacity-50">{tx.date}</span>
                 </div>
               </div>
             </div>

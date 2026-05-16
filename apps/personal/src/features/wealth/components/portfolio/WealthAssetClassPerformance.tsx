@@ -10,11 +10,11 @@ const ASSET_PERF = [
 
 export function WealthAssetClassPerformance() {
   return (
-    <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-header border-bottom-0 pt-4">
+    <div className="card shadow-sm border-0 h-100">
+      <div className="card-header border-0 pb-0">
         <h3 className="card-title fw-bold">Market Performance</h3>
       </div>
-      <div className="card-body">
+      <div className="card-body d-flex flex-column justify-content-center">
         <div className="row g-3">
           {ASSET_PERF.map((asset) => (
             <div key={asset.name} className="col-6">

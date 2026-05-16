@@ -6,33 +6,40 @@ interface WealthMetricCardProps {
   value: string;
   subtext: string;
   icon: string;
-  valueColor?: 'success' | 'danger' | 'primary' | 'warning' | 'purple';
+  valueColor?: 'success' | 'danger' | 'primary' | 'warning' | 'purple' | string;
   trend?: { value: string; positive: boolean };
 }
 
 export function WealthMetricCard({ title, value, subtext, icon, valueColor, trend }: WealthMetricCardProps) {
-  const colorClass = valueColor === 'purple' ? 'text-purple' : valueColor === 'success' ? 'text-success' : valueColor === 'danger' ? 'text-danger' : valueColor ? `text-${valueColor}` : '';
-  
+  const colorClass = valueColor === 'purple' ? 'purple' : valueColor === 'success' ? 'success' : valueColor === 'danger' ? 'danger' : valueColor || 'primary';
+  const textColorClass = `text-${colorClass}`;
+
   return (
-    <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-body p-4">
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <div className="d-flex align-items-center gap-2">
-            <div className={clsx('avatar avatar-xs rounded-circle bg-body-tertiary shadow-none', colorClass)}>
-              <Icon icon={icon} size="xs" />
-            </div>
-            <div className="text-secondary text-uppercase fw-bold text-ls-sm" style={{ fontSize: '10px' }}>{title}</div>
+    <div className="card border-0 shadow-sm h-100">
+      <div className="card-body p-3 d-flex flex-column justify-content-between">
+        {/* Header Row */}
+        <div className="d-flex justify-content-between align-items-start mb-2 mb-md-4">
+          <div
+            className={`bg-${colorClass} text-white rounded-2 d-flex align-items-center justify-content-center shadow-sm`}
+            style={{ width: '40px', height: '40px' }}
+          >
+            <Icon icon={icon} color="white" />
           </div>
           {trend && (
-            <span className={clsx('badge', trend.positive ? 'bg-success-lt text-success' : 'bg-danger-lt text-danger')}>
+            <span className={clsx('badge badge-pill border-0', trend.positive ? 'bg-success-lt text-success' : 'bg-danger-lt text-danger')}>
               {trend.value}
             </span>
           )}
         </div>
-        <div className={clsx('h1 mb-1 fw-black metric-value lh-1', colorClass)}>
-          {value}
+
+        {/* Metrics */}
+        <div className="mt-auto">
+          <div className={clsx('h1 mb-1 fw-bold h1-mobile', textColorClass)}>{value}</div>
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="subheader text-secondary m-0 text-mobile-xs">{title}</div>
+            <div className="text-secondary small opacity-75" style={{ fontSize: '0.7rem' }}>{subtext}</div>
+          </div>
         </div>
-        <div className="text-muted small fw-medium" style={{ fontSize: '11px' }}>{subtext}</div>
       </div>
     </div>
   );

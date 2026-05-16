@@ -63,21 +63,19 @@ export function WealthPage() {
       </div>
 
       {/* 2. NAVIGATION TOOLBAR */}
-      <div className="card shadow-sm border-0 mb-4 bg-surface" style={{ borderRadius: '12px' }}>
-        <div className="card-body py-2 px-3">
-          <div className="row align-items-center g-3">
-            <div className="col-12 col-md-auto">
-              <WealthSegmentedNav activeTab={activeTab} onTabChange={setActiveTab} />
-            </div>
-            <div className="col-12 col-md-auto ms-md-auto d-flex align-items-center gap-3">
-              <button className="btn btn-icon btn-white border-0 bg-transparent text-secondary hover-primary">
-                <Icon icon="refresh" size="sm" />
-              </button>
-              <button className="btn btn-primary btn-sm px-3 d-flex align-items-center gap-2 rounded-2 shadow-sm">
-                <Icon icon="plus" size="sm" stroke={2.5} />
-                <span className="fw-bold">Trade / Add</span>
-              </button>
-            </div>
+      <div className="mb-4">
+        <div className="d-flex align-items-center justify-content-between g-3 flex-wrap">
+          <div className="bg-white p-1 rounded-3 shadow-sm border border-light">
+            <WealthSegmentedNav activeTab={activeTab} onTabChange={setActiveTab} />
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <button className="btn btn-icon btn-ghost-secondary border-0 rounded-circle">
+              <Icon icon="refresh" size="sm" />
+            </button>
+            <button className="btn btn-primary px-4 d-flex align-items-center gap-2 rounded-3 shadow-sm border-0">
+              <Icon icon="plus" size="sm" stroke={2.5} />
+              <span className="fw-bold">Add Asset</span>
+            </button>
           </div>
         </div>
       </div>

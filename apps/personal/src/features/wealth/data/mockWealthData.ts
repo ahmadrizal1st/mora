@@ -21,7 +21,7 @@ export const MOCK_PORTFOLIO_DATA = {
       gain: 575_000,
       gainPercent: 12.5,
       color: '#3ecf8e',
-      logo: 'B',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg',
     },
     {
       id: '2',
@@ -36,7 +36,7 @@ export const MOCK_PORTFOLIO_DATA = {
       gain: -580_000,
       gainPercent: -7.63,
       color: '#e05c7a',
-      logo: 'T',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Telkom_Indonesia_2013.svg',
     },
     {
       id: '3',
@@ -51,7 +51,7 @@ export const MOCK_PORTFOLIO_DATA = {
       gain: 4_400_000,
       gainPercent: 26.67,
       color: '#f5a623',
-      logo: 'A',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Aneka_Tambang_logo.svg',
     },
     {
       id: '4',
@@ -66,7 +66,7 @@ export const MOCK_PORTFOLIO_DATA = {
       gain: 11_500_000,
       gainPercent: 11.98,
       color: '#7c6fff',
-      logo: 'R',
+      logo: '',
     },
     {
       id: '5',
@@ -81,7 +81,7 @@ export const MOCK_PORTFOLIO_DATA = {
       gain: 7_250_000,
       gainPercent: 30.21,
       color: '#627eea',
-      logo: 'Ξ',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/0/01/Ethereum_logo_translucent.svg',
     },
     {
       id: '6',
@@ -96,7 +96,7 @@ export const MOCK_PORTFOLIO_DATA = {
       gain: 5_600_000,
       gainPercent: 10.98,
       color: '#f59f00',
-      logo: 'Au',
+      logo: '',
     },
     {
       id: '7',
@@ -111,7 +111,7 @@ export const MOCK_PORTFOLIO_DATA = {
       gain: 750_000,
       gainPercent: 3.0,
       color: '#5b9ef7',
-      logo: 'S',
+      logo: '',
     },
   ],
 };
@@ -127,11 +127,11 @@ export const MOCK_ALLOCATION_DATA = [
 
 // ─── Watchlist ─────────────────────────────────────────────────────────────
 export const MOCK_WATCHLIST = [
-  { ticker: 'GOTO', name: 'GoTo Gojek Tokopedia', price: 67, change: -3.2, volume: '1.2B', logo: 'G', sector: 'Teknologi' },
-  { ticker: 'BRIS', name: 'Bank Syariah Indonesia', price: 2_060, change: 1.8, volume: '450M', logo: 'B', sector: 'Perbankan' },
-  { ticker: 'INDF', name: 'Indofood Sukses Makmur', price: 7_225, change: 0.4, volume: '320M', logo: 'I', sector: 'Konsumer' },
-  { ticker: 'ASII', name: 'Astra International', price: 4_820, change: -0.9, volume: '220M', logo: 'A', sector: 'Otomotif' },
-  { ticker: 'BTC-IDR', name: 'Bitcoin', price: 1_485_000_000, change: 2.7, volume: '88B', logo: '₿', sector: 'Kripto' },
+  { ticker: 'GOTO', name: 'GoTo Gojek Tokopedia', price: 67, change: -3.2, volume: '1.2B', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/22/GoTo_logo.svg', sector: 'Teknologi' },
+  { ticker: 'BRIS', name: 'Bank Syariah Indonesia', price: 2_060, change: 1.8, volume: '450M', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/18/Bank_Syariah_Indonesia_logo.svg', sector: 'Perbankan' },
+  { ticker: 'INDF', name: 'Indofood Sukses Makmur', price: 7_225, change: 0.4, volume: '320M', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/04/Indofood_logo.svg', sector: 'Konsumer' },
+  { ticker: 'ASII', name: 'Astra International', price: 4_820, change: -0.9, volume: '220M', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Astra_International_logo.svg', sector: 'Otomotif' },
+  { ticker: 'BTC-IDR', name: 'Bitcoin', price: 1_485_000_000, change: 2.7, volume: '88B', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg', sector: 'Kripto' },
 ];
 
 // ─── Performance History (12 months) ──────────────────────────────────────
@@ -144,22 +144,22 @@ export const MOCK_PERFORMANCE_SERIES = {
 // ─── Top Movers (Intraday) ─────────────────────────────────────────────────
 export const MOCK_TOP_MOVERS = {
   gainers: [
-    { ticker: 'ANTM', price: 2_090, change: 6.63, logo: 'A' },
-    { ticker: 'BRIS', price: 2_060, change: 4.56, logo: 'B' },
-    { ticker: 'NICL', price: 1_325, change: 3.91, logo: 'N' },
+    { ticker: 'ANTM', price: 2_090, change: 6.63, logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Aneka_Tambang_logo.svg' },
+    { ticker: 'BRIS', price: 2_060, change: 4.56, logo: 'https://upload.wikimedia.org/wikipedia/commons/1/18/Bank_Syariah_Indonesia_logo.svg' },
+    { ticker: 'NICL', price: 1_325, change: 3.91, logo: '' },
   ],
   losers: [
-    { ticker: 'GOTO', price: 67, change: -3.2, logo: 'G' },
-    { ticker: 'ASII', price: 4_820, change: -2.05, logo: 'A' },
-    { ticker: 'TLKM', price: 3_510, change: -1.38, logo: 'T' },
+    { ticker: 'GOTO', price: 67, change: -3.2, logo: 'https://upload.wikimedia.org/wikipedia/commons/2/22/GoTo_logo.svg' },
+    { ticker: 'ASII', price: 4_820, change: -2.05, logo: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Astra_International_logo.svg' },
+    { ticker: 'TLKM', price: 3_510, change: -1.38, logo: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Telkom_Indonesia_2013.svg' },
   ],
 };
 
 // ─── Dividend Calendar ─────────────────────────────────────────────────────
 export const MOCK_DIVIDENDS = [
-  { ticker: 'BBCA', date: '15 Mei 2026', amount: 45_000, status: 'upcoming' },
-  { ticker: 'ANTM', date: '28 Mei 2026', amount: 210_000, status: 'upcoming' },
-  { ticker: 'TLKM', date: '10 Apr 2026', amount: 130_000, status: 'paid' },
+  { ticker: 'BBCA', date: '15 Mei 2026', amount: 45_000, status: 'upcoming', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg' },
+  { ticker: 'ANTM', date: '28 Mei 2026', amount: 210_000, status: 'upcoming', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Aneka_Tambang_logo.svg' },
+  { ticker: 'TLKM', date: '10 Apr 2026', amount: 130_000, status: 'paid', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Telkom_Indonesia_2013.svg' },
 ];
 
 // ─── Risk Profile ──────────────────────────────────────────────────────────

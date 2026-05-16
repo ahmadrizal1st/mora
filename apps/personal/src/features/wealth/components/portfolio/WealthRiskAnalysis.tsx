@@ -5,25 +5,23 @@ export function WealthRiskAnalysis() {
   const { score, level, description, allocation } = MOCK_RISK_PROFILE;
 
   return (
-    <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-header border-bottom-0 pt-4">
+    <div className="card shadow-sm border-0 h-100">
+      <div className="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
         <h3 className="card-title fw-bold">Risk Profile</h3>
-        <div className="card-actions">
-          <span className="badge bg-primary-lt text-primary fw-bold px-3 rounded-pill">Score: {score}</span>
-        </div>
+        <span className="badge bg-primary-lt text-primary fw-bold px-3 rounded-pill border-0">Score: {score}</span>
       </div>
-      <div className="card-body">
-        <div className="text-center mb-4 p-3 rounded-3 bg-body-tertiary">
-          <div className="subheader mb-1">CURRENT PROFILE</div>
-          <div className="h2 fw-black text-primary mb-2">{level}</div>
+      <div className="card-body d-flex flex-column justify-content-center">
+        <div className="text-center mb-4 p-3 rounded-3 bg-body-tertiary border-0 shadow-none">
+          <div className="subheader mb-1 opacity-75">CURRENT PROFILE</div>
+          <div className="h2 fw-black text-primary mb-2 tracking-tight">{level}</div>
           <p className="text-secondary small mb-0 px-2" style={{ lineHeight: '1.4' }}>{description}</p>
         </div>
 
-        <div className="subheader mb-3">ASSET DISTRIBUTION</div>
-        <div className="progress progress-lg mb-3 shadow-none" style={{ height: '8px', borderRadius: '100px' }}>
-          <div className="progress-bar bg-danger" style={{ width: `${allocation.high}%` }} />
-          <div className="progress-bar bg-warning" style={{ width: `${allocation.medium}%` }} />
-          <div className="progress-bar bg-success" style={{ width: `${allocation.low}%` }} />
+        <div className="subheader mb-3 opacity-75">ASSET DISTRIBUTION</div>
+        <div className="progress progress-lg mb-3 shadow-none overflow-hidden" style={{ height: '8px', borderRadius: '100px' }}>
+          <div className="progress-bar bg-danger border-0" style={{ width: `${allocation.high}%` }} />
+          <div className="progress-bar bg-warning border-0" style={{ width: `${allocation.medium}%` }} />
+          <div className="progress-bar bg-success border-0" style={{ width: `${allocation.low}%` }} />
         </div>
         
         <div className="d-flex flex-column gap-2">

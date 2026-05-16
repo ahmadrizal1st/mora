@@ -3,6 +3,7 @@ import { clsx } from 'clsx';
 import { Icon } from '@/shared/components/ui/Icon';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
 import { MOCK_WATCHLIST } from '../../data/mockWealthData';
+import { AssetLogo } from '../shared/AssetLogo';
 
 export function WatchlistTab() {
   const [searchQ, setSearchQ] = useState('');
@@ -17,7 +18,7 @@ export function WatchlistTab() {
     <div className="row row-cards tab-content-anim">
       {/* Search and Filters */}
       <div className="col-12">
-        <div className="card">
+        <div className="card shadow-sm border-0 rounded-3">
           <div className="card-body">
             <div className="row g-2">
               <div className="col">
@@ -46,7 +47,7 @@ export function WatchlistTab() {
 
       {/* Watchlist Table */}
       <div className="col-12">
-        <div className="card">
+        <div className="card shadow-sm border-0 rounded-3">
           <div className="table-responsive">
             <table className="table table-vcenter card-table">
               <thead>
@@ -63,7 +64,7 @@ export function WatchlistTab() {
                   <tr key={item.ticker}>
                     <td>
                       <div className="d-flex align-items-center">
-                        <span className="avatar avatar-sm me-2 rounded">{item.logo}</span>
+                        <AssetLogo ticker={item.ticker} name={item.name} type={item.sector === 'Kripto' ? 'kripto' : 'saham'} logoUrl={item.logo} size="sm" className="me-2" />
                         <div>
                           <div className="font-weight-medium">{item.ticker}</div>
                           <div className="text-secondary small">{item.name}</div>
@@ -74,7 +75,7 @@ export function WatchlistTab() {
                       <div className="fw-bold">{formatCurrency(item.price)}</div>
                     </td>
                     <td>
-                      <span className={clsx('fw-bold', item.change >= 0 ? 'text-green' : 'text-red')}>
+                      <span className={clsx('badge badge-pill border-0', item.change >= 0 ? 'bg-success-lt text-success' : 'bg-danger-lt text-danger')}>
                         {item.change >= 0 ? '+' : ''}{item.change}%
                       </span>
                     </td>
@@ -103,39 +104,43 @@ export function WatchlistTab() {
 
       {/* Quick Add Suggestions */}
       <div className="col-lg-8">
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">Rekomendasi Untuk Kamu</h3>
+        <div className="card shadow-sm border-0 h-100">
+          <div className="card-header border-0 pb-0">
+            <h3 className="card-title fw-bold">Rekomendasi Untuk Kamu</h3>
           </div>
-          <div className="list-group list-group-flush">
-            {[
-              { ticker: 'BMRI', name: 'Bank Mandiri', reason: 'Dividen tinggi 5.6%', badge: 'Dividen', color: 'orange' },
-              { ticker: 'ICBP', name: 'Indofood CBP', reason: 'Fundamental kuat, undervalued', badge: 'Value', color: 'green' },
-              { ticker: 'PGAS', name: 'PGN Gas', reason: 'Momentum bullish +18% bulan ini', badge: 'Momentum', color: 'blue' },
-            ].map((r) => (
-              <div key={r.ticker} className="list-group-item">
-                <div className="row align-items-center">
-                  <div className="col-auto">
-                    <span className={clsx('avatar avatar-sm rounded', `bg-${r.color}`)}>{r.ticker[0]}</span>
-                  </div>
-                  <div className="col">
-                    <div className="font-weight-medium">{r.ticker}</div>
-                    <div className="text-secondary small">{r.reason}</div>
-                  </div>
-                  <div className="col-auto">
-                    <button className="btn btn-sm btn-white">Add to Watchlist</button>
+          <div className="card-body">
+            <div className="list-group list-group-flush">
+              {[
+                { ticker: 'BMRI', name: 'Bank Mandiri', reason: 'Dividen tinggi 5.6%', badge: 'Dividen', color: 'orange', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg' },
+                { ticker: 'ICBP', name: 'Indofood CBP', reason: 'Fundamental kuat, undervalued', badge: 'Value', color: 'green', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/04/Indofood_logo.svg' },
+                { ticker: 'PGAS', name: 'PGN Gas', reason: 'Momentum bullish +18% bulan ini', badge: 'Momentum', color: 'blue', logoUrl: '' },
+              ].map((r) => (
+                <div key={r.ticker} className="list-group-item border-0 py-3">
+                  <div className="row align-items-center">
+                    <div className="col-auto">
+                      <AssetLogo ticker={r.ticker} name={r.name} logoUrl={r.logoUrl} size="sm" />
+                    </div>
+                    <div className="col">
+                      <div className="font-weight-medium">{r.ticker}</div>
+                      <div className="text-secondary small">{r.reason}</div>
+                    </div>
+                    <div className="col-auto">
+                      <button className="btn btn-sm btn-white">Add to Watchlist</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="col-lg-4">
-        <div className="card bg-dark text-white">
-          <div className="card-body">
-            <div className="subheader text-white-50 mb-3">Notifikasi Harga</div>
+        <div className="card bg-dark text-white shadow-sm border-0 h-100">
+          <div className="card-header border-0 pb-0">
+            <h3 className="card-title text-white fw-bold">Notifikasi Harga</h3>
+          </div>
+          <div className="card-body d-flex flex-column justify-content-between">
             <div className="list-group list-group-flush list-group-transparent">
               {[
                 { label: 'BBCA > 10.500', active: true },
