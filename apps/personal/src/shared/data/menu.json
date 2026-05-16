@@ -3,20 +3,19 @@
     "title": "Dashboard",
     "icon": "home",
     "children": {
-      "dashboard":  { "url": "dashboard", "title": "Dashboard" },
-      "assets":     { "url": "assets",    "title": "Asset Management" }
+      "overview":  { "url": "dashboard", "title": "Overview" },
+      "assets":    { "url": "assets",    "title": "Asset Management" }
     }
   },
 
   "cashflow": {
     "title": "Cashflow",
-    "icon": "cash",
+    "icon": "cash-banknote",
     "children": {
       "transactions":  { "url": "transactions", "title": "Riwayat Transaksi" },
       "accounts":      { "url": "accounts",    "title": "Kelola Akun" }
     }
   },
-
 
   "credit": {
     "title": "Credit",
@@ -30,19 +29,9 @@
     "url": "planning"
   },
 
-  "gamification": {
+  "achievements": {
     "title": "Achievements",
     "icon": "trophy",
-    "columns": 2,
-    "children": {
-      "streak":       { "url": "gamification/streak", "title": "Daily Streak" },
-      "quests":       { "url": "gamification/quests", "title": "Daily Quests" },
-      "achievements": { "url": "achievements",         "title": "Achievements Hub" },
-      "leaderboard":  { "url": "leaderboard",          "title": "Leaderboard" },
-      "challenges":   { "url": "challenges",           "title": "Saving Challenges" },
-      "referral":     { "url": "referral",             "title": "Referral & Reward" },
-      "recap":        { "url": "recap/weekly",         "title": "Weekly Recap" },
-      "reward_store": { "url": "gamification/store",   "title": "Reward Store" }
-    }
+    "url": "achievements"
   }
 }

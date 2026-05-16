@@ -30,6 +30,7 @@ import { Route as CreditRouteImport } from './routes/credit'
 import { Route as AuthLockRouteImport } from './routes/auth-lock'
 import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as ActivityRouteImport } from './routes/activity'
+import { Route as AchievementsRouteImport } from './routes/achievements'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as R2StepVerificationCodeRouteImport } from './routes/2-step-verification-code'
 import { Route as R2StepVerificationRouteImport } from './routes/2-step-verification'
@@ -43,6 +44,9 @@ import { Route as TrackerInputRouteImport } from './routes/tracker.input'
 import { Route as TrackerImageRouteImport } from './routes/tracker.image'
 import { Route as TrackerFileRouteImport } from './routes/tracker.file'
 import { Route as TrackerAudioRouteImport } from './routes/tracker.audio'
+import { Route as GamificationStreakRouteImport } from './routes/gamification.streak'
+import { Route as GamificationStoreRouteImport } from './routes/gamification.store'
+import { Route as GamificationQuestsRouteImport } from './routes/gamification.quests'
 import { Route as DashboardAssetsRouteImport } from './routes/dashboard.assets'
 import { Route as AccountsAccountIdRouteImport } from './routes/accounts.$accountId'
 
@@ -151,6 +155,11 @@ const ActivityRoute = ActivityRouteImport.update({
   path: '/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AchievementsRoute = AchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountsRoute = AccountsRouteImport.update({
   id: '/accounts',
   path: '/accounts',
@@ -216,6 +225,21 @@ const TrackerAudioRoute = TrackerAudioRouteImport.update({
   path: '/tracker/audio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamificationStreakRoute = GamificationStreakRouteImport.update({
+  id: '/gamification/streak',
+  path: '/gamification/streak',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamificationStoreRoute = GamificationStoreRouteImport.update({
+  id: '/gamification/store',
+  path: '/gamification/store',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamificationQuestsRoute = GamificationQuestsRouteImport.update({
+  id: '/gamification/quests',
+  path: '/gamification/quests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardAssetsRoute = DashboardAssetsRouteImport.update({
   id: '/assets',
   path: '/assets',
@@ -232,6 +256,7 @@ export interface FileRoutesByFullPath {
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRouteWithChildren
+  '/achievements': typeof AchievementsRoute
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -255,6 +280,9 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof SignUpRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
   '/dashboard/assets': typeof DashboardAssetsRoute
+  '/gamification/quests': typeof GamificationQuestsRoute
+  '/gamification/store': typeof GamificationStoreRoute
+  '/gamification/streak': typeof GamificationStreakRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
@@ -270,6 +298,7 @@ export interface FileRoutesByTo {
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRouteWithChildren
+  '/achievements': typeof AchievementsRoute
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -292,6 +321,9 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
   '/dashboard/assets': typeof DashboardAssetsRoute
+  '/gamification/quests': typeof GamificationQuestsRoute
+  '/gamification/store': typeof GamificationStoreRoute
+  '/gamification/streak': typeof GamificationStreakRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
@@ -308,6 +340,7 @@ export interface FileRoutesById {
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRouteWithChildren
+  '/achievements': typeof AchievementsRoute
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -331,6 +364,9 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
   '/dashboard/assets': typeof DashboardAssetsRoute
+  '/gamification/quests': typeof GamificationQuestsRoute
+  '/gamification/store': typeof GamificationStoreRoute
+  '/gamification/streak': typeof GamificationStreakRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
@@ -348,6 +384,7 @@ export interface FileRouteTypes {
     | '/2-step-verification'
     | '/2-step-verification-code'
     | '/accounts'
+    | '/achievements'
     | '/activity'
     | '/assets'
     | '/auth-lock'
@@ -371,6 +408,9 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/accounts/$accountId'
     | '/dashboard/assets'
+    | '/gamification/quests'
+    | '/gamification/store'
+    | '/gamification/streak'
     | '/tracker/audio'
     | '/tracker/file'
     | '/tracker/image'
@@ -386,6 +426,7 @@ export interface FileRouteTypes {
     | '/2-step-verification'
     | '/2-step-verification-code'
     | '/accounts'
+    | '/achievements'
     | '/activity'
     | '/assets'
     | '/auth-lock'
@@ -408,6 +449,9 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/accounts/$accountId'
     | '/dashboard/assets'
+    | '/gamification/quests'
+    | '/gamification/store'
+    | '/gamification/streak'
     | '/tracker/audio'
     | '/tracker/file'
     | '/tracker/image'
@@ -423,6 +467,7 @@ export interface FileRouteTypes {
     | '/2-step-verification'
     | '/2-step-verification-code'
     | '/accounts'
+    | '/achievements'
     | '/activity'
     | '/assets'
     | '/auth-lock'
@@ -446,6 +491,9 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/accounts/$accountId'
     | '/dashboard/assets'
+    | '/gamification/quests'
+    | '/gamification/store'
+    | '/gamification/streak'
     | '/tracker/audio'
     | '/tracker/file'
     | '/tracker/image'
@@ -462,6 +510,7 @@ export interface RootRouteChildren {
   R2StepVerificationRoute: typeof R2StepVerificationRoute
   R2StepVerificationCodeRoute: typeof R2StepVerificationCodeRoute
   AccountsRoute: typeof AccountsRouteWithChildren
+  AchievementsRoute: typeof AchievementsRoute
   ActivityRoute: typeof ActivityRoute
   AssetsRoute: typeof AssetsRoute
   AuthLockRoute: typeof AuthLockRoute
@@ -483,6 +532,9 @@ export interface RootRouteChildren {
   SignInIllustrationRoute: typeof SignInIllustrationRoute
   SignInLinkRoute: typeof SignInLinkRoute
   SignUpRoute: typeof SignUpRoute
+  GamificationQuestsRoute: typeof GamificationQuestsRoute
+  GamificationStoreRoute: typeof GamificationStoreRoute
+  GamificationStreakRoute: typeof GamificationStreakRoute
   TrackerAudioRoute: typeof TrackerAudioRoute
   TrackerFileRoute: typeof TrackerFileRoute
   TrackerImageRoute: typeof TrackerImageRoute
@@ -642,6 +694,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/achievements': {
+      id: '/achievements'
+      path: '/achievements'
+      fullPath: '/achievements'
+      preLoaderRoute: typeof AchievementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/accounts': {
       id: '/accounts'
       path: '/accounts'
@@ -733,6 +792,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackerAudioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gamification/streak': {
+      id: '/gamification/streak'
+      path: '/gamification/streak'
+      fullPath: '/gamification/streak'
+      preLoaderRoute: typeof GamificationStreakRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gamification/store': {
+      id: '/gamification/store'
+      path: '/gamification/store'
+      fullPath: '/gamification/store'
+      preLoaderRoute: typeof GamificationStoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gamification/quests': {
+      id: '/gamification/quests'
+      path: '/gamification/quests'
+      fullPath: '/gamification/quests'
+      preLoaderRoute: typeof GamificationQuestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/assets': {
       id: '/dashboard/assets'
       path: '/assets'
@@ -781,6 +861,7 @@ const rootRouteChildren: RootRouteChildren = {
   R2StepVerificationRoute: R2StepVerificationRoute,
   R2StepVerificationCodeRoute: R2StepVerificationCodeRoute,
   AccountsRoute: AccountsRouteWithChildren,
+  AchievementsRoute: AchievementsRoute,
   ActivityRoute: ActivityRoute,
   AssetsRoute: AssetsRoute,
   AuthLockRoute: AuthLockRoute,
@@ -802,6 +883,9 @@ const rootRouteChildren: RootRouteChildren = {
   SignInIllustrationRoute: SignInIllustrationRoute,
   SignInLinkRoute: SignInLinkRoute,
   SignUpRoute: SignUpRoute,
+  GamificationQuestsRoute: GamificationQuestsRoute,
+  GamificationStoreRoute: GamificationStoreRoute,
+  GamificationStreakRoute: GamificationStreakRoute,
   TrackerAudioRoute: TrackerAudioRoute,
   TrackerFileRoute: TrackerFileRoute,
   TrackerImageRoute: TrackerImageRoute,

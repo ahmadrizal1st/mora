@@ -121,6 +121,22 @@ function FeatureIcon({ type }: { type: string }) {
         <path d="M9 12l2 2 4-4" stroke={Primary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     )
+  case 'Trophy':
+    return (
+      <svg {...iconProps}>
+        <path d="M8 21h8M12 17v4M7 4h10" stroke={Indigo} strokeWidth="1.5" />
+        <path d="M17 4v8a5 5 0 0 1-10 0V4" stroke={Indigo} strokeWidth="1.5" />
+        <path d="M15 9h2a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2" stroke={Primary} strokeWidth="1.5" />
+        <path d="M9 9H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke={Primary} strokeWidth="1.5" />
+      </svg>
+    )
+  case 'History':
+    return (
+      <svg {...iconProps}>
+        <circle cx="12" cy="12" r="9" stroke={Indigo} strokeWidth="1.5" />
+        <path d="M12 7v5l3 3" stroke={Primary} strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    )
     default:
       return null
   }
@@ -131,18 +147,14 @@ export function MobileGridMenu() {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const menuItems = [
-    { label: 'Analytics', href: '/analytics' },
-    { label: 'AI Advisor', href: '/ai' },
-    { label: 'Tracker', href: '/tracker' },
-    { label: 'Assets', href: '/assets' },
-    { label: 'Subs', href: '/tracker/subscriptions' },
-    { label: 'Portfolio', href: '/portfolio' },
-    { label: 'Market', href: '/market' },
-    { label: 'Goals', href: '/goals' },
-    { label: 'Academy', href: '/learn' },
-    { label: 'Crypto', href: '/dashboard-crypto' },
-    { label: 'Notif', href: '/notifications' },
-    { label: 'Security', href: '/settings/security' },
+    { label: 'Dashboard', href: '/dashboard', icon: 'Analytics' },
+    { label: 'Assets', href: '/assets', icon: 'Assets' },
+    { label: 'Tracker', href: '/tracker', icon: 'Tracker' },
+    { label: 'Planning', href: '/planning', icon: 'Goals' },
+    { label: 'Credit', href: '/credit', icon: 'Security' },
+    { label: 'Achievements', href: '/achievements', icon: 'Trophy' },
+    { label: 'History', href: '/activity', icon: 'History' },
+    { label: 'Accounts', href: '/accounts', icon: 'Portfolio' },
   ]
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -196,7 +208,7 @@ export function MobileGridMenu() {
                       border: '1px solid rgba(47, 179, 68, 0.08)'
                     }}
                   >
-                    <FeatureIcon type={item.label} />
+                    <FeatureIcon type={item.icon || item.label} />
                   </div>
                   <div 
                     className="fw-medium text-truncate w-100 text-center text-mobile-xs" 
