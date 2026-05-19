@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from '@tanstack/react-router';
 import { MOCK_GOALS_DATA } from '../../data/mockPlanningData';
+import { Goal, GoalsData } from '../../types';
 import { GoalsOverviewCard } from './GoalsOverviewCard';
 import { GoalCard } from './GoalCard';
 import { GoalTrajectoryChart } from './GoalTrajectoryChart';
@@ -11,11 +12,11 @@ import { formatCurrency } from '@/shared/utils/currencyUtils';
 
 interface GoalsTabProps {
   onAdd?: () => void;
-  onEditGoal?: (goal: any) => void;
-  data?: typeof MOCK_GOALS_DATA;
+  onEditGoal?: (goal: Goal) => void;
+  data?: GoalsData;
 }
 
-export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA }: GoalsTabProps) {
+export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA as GoalsData }: GoalsTabProps) {
   const { totalSaved, totalTarget, goals, milestones } = data;
 
   // Main Page Filter States
@@ -181,7 +182,7 @@ export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA }: GoalsTab
                               className="form-check-input" 
                               name="statusFilter"
                               checked={statusFilter === opt.value}
-                              onChange={() => setStatusFilter(opt.value as any)}
+                              onChange={() => setStatusFilter(opt.value as 'all' | 'active' | 'achieved')}
                             />
                             <span className="form-check-label small ms-2 text-body" style={{ fontSize: '12px' }}>{opt.label}</span>
                           </label>
@@ -203,7 +204,7 @@ export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA }: GoalsTab
                               className="form-check-input" 
                               name="targetFilter"
                               checked={targetFilter === opt.value}
-                              onChange={() => setTargetFilter(opt.value as any)}
+                              onChange={() => setTargetFilter(opt.value as 'all' | 'under30' | 'above30')}
                             />
                             <span className="form-check-label small ms-2 text-body" style={{ fontSize: '12px' }}>{opt.label}</span>
                           </label>
@@ -397,7 +398,7 @@ export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA }: GoalsTab
                               className="form-check-input" 
                               name="modalStatusFilter"
                               checked={modalStatusFilter === opt.value}
-                              onChange={() => setModalStatusFilter(opt.value as any)}
+                              onChange={() => setModalStatusFilter(opt.value as 'all' | 'active' | 'achieved')}
                             />
                             <span className="form-check-label small ms-2 text-body" style={{ fontSize: '12px' }}>{opt.label}</span>
                           </label>
@@ -419,7 +420,7 @@ export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA }: GoalsTab
                               className="form-check-input" 
                               name="modalTargetFilter"
                               checked={modalTargetFilter === opt.value}
-                              onChange={() => setModalTargetFilter(opt.value as any)}
+                              onChange={() => setModalTargetFilter(opt.value as 'all' | 'under30' | 'above30')}
                             />
                             <span className="form-check-label small ms-2 text-body" style={{ fontSize: '12px' }}>{opt.label}</span>
                           </label>
@@ -482,7 +483,7 @@ export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA }: GoalsTab
                               className="avatar avatar-xs rounded-circle text-white shadow-sm d-flex align-items-center justify-content-center"
                               style={{ backgroundColor: g.color || '#ff6b00', width: '28px', height: '28px' }}
                             >
-                              <Icon icon={g.icon as any} size={12} className="m-0 text-white" />
+                              <Icon icon={g.icon as string} size={12} className="m-0 text-white" />
                             </span>
                             <span className="fw-bold">{g.name}</span>
                           </div>

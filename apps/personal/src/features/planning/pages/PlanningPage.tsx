@@ -7,6 +7,7 @@ import { GoalsTab } from '../components/goals/GoalsTab';
 import { SubscriptionsTab } from '../components/subscriptions/SubscriptionsTab';
 import { Icon, MonthPicker, Modal, ModalHeader, Button } from '@/shared/components/ui';
 import { MOCK_BUDGET_DATA, MOCK_GOALS_DATA, MOCK_SUBSCRIPTIONS_DATA } from '../data/mockPlanningData';
+import type { Goal, GoalsData, SubscriptionsData } from '../types';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
 import './PlanningPage.css';
 
@@ -48,13 +49,13 @@ export function PlanningPage() {
   const [subIcon, setSubIcon] = useState('device-tv');
 
   // Lifted state with local storage fallback
-  const [goalsData, setGoalsData] = useState(() => {
+  const [goalsData, setGoalsData] = useState<GoalsData>(() => {
     const stored = localStorage.getItem('visatamora_goals');
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
         if (parsed && Array.isArray(parsed.goals)) {
-          parsed.goals = parsed.goals.map((g: any) => ({
+          parsed.goals = parsed.goals.map((g: Goal) => ({
             ...g,
             color: g.color === '#5b9ef7' || g.color === '#7c6fff' ? '#ff6b00' : g.color
           }));
@@ -66,7 +67,7 @@ export function PlanningPage() {
     return MOCK_GOALS_DATA;
   });
 
-  const [subsData, setSubsData] = useState(() => {
+  const [subsData, setSubsData] = useState<SubscriptionsData>(() => {
     const stored = localStorage.getItem('visatamora_subscriptions');
     if (stored) {
       try {
@@ -88,7 +89,7 @@ export function PlanningPage() {
     return `${months[date.getMonth()]} ${date.getFullYear()}`;
   };
 
-  const [editingGoal, setEditingGoal] = useState<any | null>(null);
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
 
   const handleOpenAddGoal = () => {
     setEditingGoal(null);
@@ -101,7 +102,7 @@ export function PlanningPage() {
     setIsGoalModalOpen(true);
   };
 
-  const handleEditGoal = (goal: any) => {
+  const handleEditGoal = (goal: Goal) => {
     setEditingGoal(goal);
     setGoalName(goal.name);
     setGoalTarget(goal.target.toString());
@@ -112,20 +113,12 @@ export function PlanningPage() {
     setIsGoalModalOpen(true);
   };
 
-  const handleAddNew = () => {
-    if (activeTab === 'goals') {
-      handleOpenAddGoal();
-    } else if (activeTab === 'subscriptions') {
-      setIsSubModalOpen(true);
-    }
-  };
-
   const handleAddGoalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (editingGoal) {
       // Edit Mode
-      const updatedGoals = goalsData.goals.map((g: any) => {
+      const updatedGoals = goalsData.goals.map((g: Goal) => {
         if (g.id === editingGoal.id) {
           return {
             ...g,
@@ -140,8 +133,8 @@ export function PlanningPage() {
         return g;
       });
 
-      const totalSaved = updatedGoals.reduce((sum: number, g: any) => sum + g.saved, 0);
-      const totalTarget = updatedGoals.reduce((sum: number, g: any) => sum + g.target, 0);
+      const totalSaved = updatedGoals.reduce((sum: number, g: Goal) => sum + g.saved, 0);
+      const totalTarget = updatedGoals.reduce((sum: number, g: Goal) => sum + g.target, 0);
 
       const updated = {
         ...goalsData,
@@ -190,10 +183,10 @@ export function PlanningPage() {
 
   const handleDeleteGoal = (goalId: string) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus impian ini?')) {
-      const updatedGoals = goalsData.goals.filter((g: any) => g.id !== goalId);
+      const updatedGoals = goalsData.goals.filter((g: Goal) => g.id !== goalId);
       
-      const totalSaved = updatedGoals.reduce((sum: number, g: any) => sum + g.saved, 0);
-      const totalTarget = updatedGoals.reduce((sum: number, g: any) => sum + g.target, 0);
+      const totalSaved = updatedGoals.reduce((sum: number, g: Goal) => sum + g.saved, 0);
+      const totalTarget = updatedGoals.reduce((sum: number, g: Goal) => sum + g.target, 0);
 
       const updated = {
         ...goalsData,
@@ -224,7 +217,7 @@ export function PlanningPage() {
       name: subName,
       amount: parseFloat(subCost) || 0,
       dueDate: `2026-05-${subDueDate.padStart(2, '0')}`,
-      status: subStatus as any,
+      status: subStatus as 'paid' | 'unpaid' | 'upcoming',
       icon: subIcon,
       color: '#5b9ef7'
     };

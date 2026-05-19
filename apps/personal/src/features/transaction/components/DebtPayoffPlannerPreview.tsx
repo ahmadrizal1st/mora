@@ -33,7 +33,7 @@ export function DebtPayoffPlannerPreview() {
   
   if (credits.length === 0) {
     return (
-      <div className="card border-0 shadow-sm mb-4 py-5 text-center">
+      <div className="card border shadow-none mb-4 py-5 text-center" style={{ borderRadius: '16px' }}>
         <div className="card-body">
            <Icon icon="comet" size={32} className="text-muted opacity-50 mb-2" />
            <p className="text-muted mb-0">Belum ada data hutang untuk dianalisis. Tambahkan profil kredit untuk menggunakan Planner.</p>
@@ -47,8 +47,8 @@ export function DebtPayoffPlannerPreview() {
       <div className="row g-2 g-lg-3">
         {/* Strategy Selection */}
         <div className="col-12 col-md-5">
-          <div className="card border-0 shadow-sm h-100 overflow-hidden">
-            <div className="card-header py-2 px-3 bg-transparent">
+          <div className="card border shadow-none h-100 overflow-hidden" style={{ borderRadius: '16px' }}>
+            <div className="card-header py-2 px-3 bg-transparent border-0 pb-0 pt-3">
               <h3 className="card-title fw-bold" style={{ fontSize: '13px' }}>Strategi Pelunasan</h3>
             </div>
             <div className="card-body p-3">
@@ -58,8 +58,8 @@ export function DebtPayoffPlannerPreview() {
               
               <div className="d-flex flex-column gap-2 mb-3">
                 {([
-                  { key: 'avalanche', label: 'Metode Avalanche', sub: 'Bunga tertinggi dulu', icon: 'trending-down', color: 'azure' },
-                  { key: 'snowball',  label: 'Metode Snowball',   sub: 'Hutang terkecil dulu', icon: 'snowflake', color: 'blue' },
+                  { key: 'avalanche', label: 'Metode Avalanche', sub: 'Bunga tertinggi dulu', icon: 'trending-down', color: 'orange' },
+                  { key: 'snowball',  label: 'Metode Snowball',   sub: 'Hutang terkecil dulu', icon: 'snowflake', color: 'orange' },
                 ] as const).map(s => {
                   const isActive = strategy === s.key;
                   return (
@@ -90,21 +90,21 @@ export function DebtPayoffPlannerPreview() {
                 })}
               </div>
 
-              <div className="p-3 rounded-3 border border-azure border-opacity-50 bg-azure-lt position-relative overflow-hidden shadow-sm" style={{ boxShadow: '0 0 15px rgba(32, 107, 196, 0.05)' }}>
+              <div className="p-3 rounded-3 border border-orange border-opacity-50 bg-orange-lt position-relative overflow-hidden shadow-sm" style={{ boxShadow: '0 0 15px rgba(255, 107, 0, 0.05)' }}>
                 <div className="position-absolute top-0 end-0 p-1 opacity-20 mr-n2 mt-n2">
-                  <Icon icon="sparkles" size={48} className="text-azure" />
+                  <Icon icon="sparkles" size={48} className="text-orange" />
                 </div>
                 <div className="d-flex align-items-start gap-3 position-relative">
-                  <div className="bg-azure text-white flex-shrink-0 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', borderRadius: '10px' }}>
+                  <div className="bg-orange text-white flex-shrink-0 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', borderRadius: '10px' }}>
                     <Icon icon="info-circle" size={18} />
                   </div>
                   <div>
-                    <div className="fw-bold text-azure small mb-1 d-flex align-items-center gap-2">
+                    <div className="fw-bold text-orange small mb-1 d-flex align-items-center gap-2">
                       Rekomendasi AI
-                      <span className="badge bg-azure text-white border-0" style={{ fontSize: '8px', padding: '2px 5px' }}>CERDAS</span>
+                      <span className="badge bg-orange text-white border-0" style={{ fontSize: '8px', padding: '2px 5px' }}>CERDAS</span>
                     </div>
                     <div className="small text-dark-emphasis" style={{ lineHeight: '1.5' }}>
-                      Prioritas: <span className="badge bg-white text-azure border border-azure border-opacity-25 fw-bold ms-1" style={{ fontSize: '11px' }}>{strategyDebts[0]?.name || '-'}</span>. 
+                      Prioritas: <span className="badge bg-white text-orange border border-orange border-opacity-25 fw-bold ms-1" style={{ fontSize: '11px' }}>{strategyDebts[0]?.name || '-'}</span>. 
                       <div className="mt-1 opacity-75">Bayar ini dulu karena memiliki {strategy === 'avalanche' ? 'suku bunga tertinggi' : 'saldo terkecil'}.</div>
                     </div>
                   </div>
@@ -116,11 +116,11 @@ export function DebtPayoffPlannerPreview() {
 
         {/* Upcoming Bills */}
         <div className="col-12 col-md-7">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-header">
-              <h3 className="card-title">Tagihan Mendatang</h3>
+          <div className="card border shadow-none h-100" style={{ borderRadius: '16px' }}>
+            <div className="card-header border-0 pb-0 pt-3">
+              <h3 className="card-title fw-bold">Tagihan Mendatang</h3>
               <div className="card-actions">
-                <span className="badge bg-blue-lt text-blue border-0">Terdekat</span>
+                <span className="badge bg-orange-lt text-orange border-0">Terdekat</span>
               </div>
             </div>
             <div className="table-responsive">
@@ -153,16 +153,27 @@ export function DebtPayoffPlannerPreview() {
                           <div className="fw-bold small">{fmt(b.credit?.installment_amount || b.credit?.total_amount || 0)}</div>
                         </td>
                         <td style={{ width: '80px' }}>
-                          <Button 
-                            block 
-                            size="sm" 
-                            element="button"
-                            color={isUrgent ? 'danger' : 'azure'}
-                            outline={!isUrgent}
-                            className="fw-bold"
-                            style={{ fontSize: '10px', padding: '0.25rem 0.5rem' }}
-                            text={isUrgent ? 'Bayar' : 'Detail'}
-                          />
+                          {isUrgent ? (
+                            <Button 
+                              block 
+                              size="sm" 
+                              element="button"
+                              color="danger"
+                              className="fw-bold"
+                              style={{ fontSize: '10px', padding: '0.25rem 0.5rem' }}
+                              text="Bayar"
+                            />
+                          ) : (
+                            <Button 
+                              block 
+                              size="sm" 
+                              element="button"
+                              white={true}
+                              className="fw-bold text-body"
+                              style={{ fontSize: '10px', padding: '0.25rem 0.5rem', color: 'var(--tblr-emphasis-color)' }}
+                              text="Detail"
+                            />
+                          )}
                         </td>
                       </tr>
                     );

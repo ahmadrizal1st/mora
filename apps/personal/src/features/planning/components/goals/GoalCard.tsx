@@ -51,7 +51,7 @@ export function GoalCard({ goal, onClick }: GoalCardProps) {
         <div className="d-flex justify-content-between align-items-start">
           <div className="p-2 rounded-circle d-flex align-items-center justify-content-center"
                style={{ background: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(10px)', width: '40px', height: '40px', border: '1px solid rgba(255,255,255,0.3)' }}>
-            <Icon icon={goal.icon as any} size="sm" className="text-white" />
+            <Icon icon={goal.icon as string} size="sm" className="text-white" />
           </div>
           <div className="py-1 px-3 rounded-pill text-white fw-bold shadow-none" 
                style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(10px)', fontSize: '10px', border: '1px solid rgba(255,255,255,0.2)', letterSpacing: '0.05em' }}>
