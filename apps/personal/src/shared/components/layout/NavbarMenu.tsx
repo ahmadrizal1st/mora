@@ -7,6 +7,20 @@ import type { NavItem } from '@/shared/types/common.types'
 
 export type { NavItem }
 
+const closeDropdowns = () => {
+  const openMenus = document.querySelectorAll('.dropdown-menu.show')
+  openMenus.forEach((menu) => menu.classList.remove('show'))
+  
+  const openToggles = document.querySelectorAll('[data-bs-toggle="dropdown"].show')
+  openToggles.forEach((toggle) => {
+    toggle.classList.remove('show')
+    toggle.setAttribute('aria-expanded', 'false')
+  })
+  
+  const openItems = document.querySelectorAll('.dropdown.show, .dropend.show')
+  openItems.forEach((item) => item.classList.remove('show'))
+}
+
 function NavSubMenu({ items, currentPath }: { items: NavItem[]; currentPath: string }) {
   return (
     <div className="dropdown-menu">
@@ -39,6 +53,7 @@ function NavSubMenu({ items, currentPath }: { items: NavItem[]; currentPath: str
               href={item.href}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={closeDropdowns}
             >
               {item.label}
             </a>
@@ -49,6 +64,7 @@ function NavSubMenu({ items, currentPath }: { items: NavItem[]; currentPath: str
             key={index}
             className={clsx('dropdown-item', active && 'active')}
             to={item.href || '#'}
+            onClick={closeDropdowns}
             {...(active ? { 'aria-current': 'page' } : {})}
           >
             {item.label}
@@ -127,6 +143,7 @@ function NavMenuDropdownItem({ item, currentPath }: { item: NavItem; currentPath
         href={item.href}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={closeDropdowns}
       >
         {item.label}
         {item.badge && (
@@ -140,6 +157,7 @@ function NavMenuDropdownItem({ item, currentPath }: { item: NavItem; currentPath
     <Link
       className={clsx('dropdown-item', active && 'active')}
       to={item.href || '#'}
+      onClick={closeDropdowns}
       {...(active ? { 'aria-current': 'page' } : {})}
     >
       {item.label}
