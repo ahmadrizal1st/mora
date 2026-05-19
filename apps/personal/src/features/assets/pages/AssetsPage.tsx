@@ -42,15 +42,15 @@ export default function AssetsPage() {
   const totalAssets = stats.cash + stats.investment + stats.saving;
   const netWorth = totalAssets - stats.liabilities;
   return (
-    <BaseLayout pageTitle="Asset Management">
+    <BaseLayout pageTitle="Laporan Keuangan">
       <div className="row row-cards g-3">
         {/* COLUMN 1 & 2 Combined (6/12 total width) - Used for small stats, wide chart, and table */}
         <div className="col-lg-6">
           <div className="row row-cards g-3">
-            {/* Top Stat 1: Net Worth */}
+            {/* Top Stat 1: Total Aset Bersih */}
             <div className="col-md-6">
               <VisualStatCard
-                title="Net Worth"
+                title="Total Aset Bersih"
                 value={formatCurrency(netWorth)}
                 trendPercentage=""
                 trendAbsolute=""
@@ -58,10 +58,10 @@ export default function AssetsPage() {
                 isPositive={netWorth >= 0}
               />
             </div>
-            {/* Top Stat 2: Cash */}
+            {/* Top Stat 2: Kas & Rekening */}
             <div className="col-md-6">
               <VisualStatCard
-                title="Cash & Equivalents"
+                title="Kas & Rekening"
                 value={formatCurrency(stats.cash)}
                 trendPercentage=""
                 trendAbsolute=""
@@ -69,21 +69,21 @@ export default function AssetsPage() {
                 isPositive={true}
               />
             </div>
-            {/* Bottom Stat 1: Investment */}
+            {/* Bottom Stat 1: Tabungan */}
             <div className="col-md-6">
               <VisualStatCard
-                title="Investment Portfolio"
-                value={formatCurrency(stats.investment)}
+                title="Tabungan"
+                value={formatCurrency(stats.saving)}
                 trendPercentage=""
                 trendAbsolute=""
-                icon="chart-bar"
+                icon="pig-money"
                 isPositive={true}
               />
             </div>
-            {/* Bottom Stat 2: Liabilities */}
+            {/* Bottom Stat 2: Kewajiban */}
             <div className="col-md-6">
               <VisualStatCard
-                title="Total Liabilities"
+                title="Total Kewajiban"
                 value={formatCurrency(stats.liabilities)}
                 trendPercentage=""
                 trendAbsolute=""

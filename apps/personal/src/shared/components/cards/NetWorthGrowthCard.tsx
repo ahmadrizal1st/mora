@@ -37,7 +37,7 @@ export function NetWorthGrowthCard({ currentNetWorth }: NetWorthGrowthCardProps)
       <div className="card-body p-0 d-flex flex-column h-100">
         
         <div className="p-4 pb-0">
-          <div className="text-secondary mb-3" style={{ fontSize: '1rem' }}>Net Worth Growth</div>
+          <div className="text-secondary mb-3" style={{ fontSize: '1rem' }}>Tren Arus Kas</div>
           
           <div className="d-flex align-items-center mb-4">
             <div className="me-3 d-flex align-items-center justify-content-center">
@@ -55,12 +55,12 @@ export function NetWorthGrowthCard({ currentNetWorth }: NetWorthGrowthCardProps)
             </div>
             
             <div>
-              <div className="fw-medium text-dark mb-1">Total Assets: {formatCurrency(currentNetWorth)}</div>
+              <div className="fw-medium text-dark mb-1">Total Pemasukan Bulan Ini: {formatCurrency(currentNetWorth)}</div>
               <div className="text-muted small d-flex align-items-center gap-1">
                 <span className="text-success fw-bold d-flex align-items-center gap-1">
-                   <Icon icon="trend-up" size="xs" /> Tracking
+                   <Icon icon="trending-up" size="xs" /> Naik
                 </span>
-                Net Worth Progression
+                Tren Keuangan Bulanan
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@
     "icon": "home",
     "children": {
       "overview":  { "url": "dashboard", "title": "Overview" },
-      "assets":    { "url": "assets",    "title": "Asset Management" }
+      "assets":    { "url": "assets",    "title": "Laporan Keuangan" }
     }
   },
 
