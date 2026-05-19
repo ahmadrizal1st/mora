@@ -8,7 +8,7 @@ import { useCredits } from '../../hooks/useCredits';
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
 export function CreditTabOverview() {
-  const { totalOutstanding, totalMonthlyBurden, activeCount, utilizationPct, isLoading } = useCreditSummary();
+  const { totalOutstanding, totalMonthlyBurden, activeCount, utilizationPct, creditScore, scoreTrend, isLoading } = useCreditSummary();
   const { data: credits = [] } = useCredits();
   const [isExpanded, setIsExpanded] = React.useState(false);
 
@@ -50,6 +50,9 @@ export function CreditTabOverview() {
     return alerts;
   }, [credits, isLoading]);
 
+  const scoreColor = creditScore >= 740 ? 'var(--tblr-success)' : creditScore >= 670 ? 'var(--tblr-primary)' : 'var(--tblr-warning)';
+  const scoreLabel = creditScore >= 740 ? 'Sangat Baik' : creditScore >= 670 ? 'Baik' : 'Perlu Pantau';
+
   if (isLoading) {
     return <div className="py-5 text-center text-muted">Memuat ringkasan kredit...</div>;
   }
@@ -58,43 +61,132 @@ export function CreditTabOverview() {
 
   return (
     <>
-      <div className="row g-2 g-lg-3 mb-4">
-        <div className="col-6 col-md-3">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-body p-3">
-              <div className="subheader text-secondary mb-1">Total Hutang</div>
-              <div className="h3 fw-bold m-0 text-danger">{fmt(totalOutstanding)}</div>
-              <div className="text-secondary small mt-1">semua jalur kredit</div>
+      <div className="row g-3 mb-4">
+        {/* Left: Credit Score Widget */}
+        <div className="col-12 col-lg-4">
+          <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '16px' }}>
+            <div className="card-body p-3 d-flex flex-column justify-content-between">
+              <div>
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <div className="subheader text-secondary" style={{ letterSpacing: '0.05em', fontSize: '9px', fontWeight: 600 }}>CREDIT SCORE</div>
+                  <span className={`badge bg-${scoreColor === 'var(--tblr-success)' ? 'success' : scoreColor === 'var(--tblr-primary)' ? 'primary' : 'warning'} text-white border-0 px-2 py-1 rounded-pill fw-bold shadow-sm`} style={{ fontSize: '9px', letterSpacing: '0.3px' }}>
+                    {scoreLabel.toUpperCase()}
+                  </span>
+                </div>
+                
+                <div className="d-flex align-items-center gap-3">
+                  <div className="h1 fw-black m-0 lh-1" style={{ fontSize: '42px', color: scoreColor }}>{creditScore}</div>
+                  <div className="d-flex flex-column">
+                    <div className="text-success small fw-bold d-flex align-items-center" style={{ fontSize: '13px' }}>
+                      <Icon icon="trending-up" size={14} className="me-1" />
+                      +{scoreTrend}
+                    </div>
+                    <div className="text-muted" style={{ fontSize: '9px' }}>vs bulan lalu</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Added Key Factors to fill space */}
+              <div className="my-2 py-2 border-top border-bottom border-dashed border-secondary-subtle">
+                <div className="row g-2">
+                  <div className="col-6">
+                    <div className="d-flex align-items-center gap-2">
+                      <Icon icon="check" size={12} className="text-success" />
+                      <div style={{ fontSize: '10px' }}>
+                        <div className="text-muted text-uppercase fw-bold" style={{ fontSize: '8px' }}>Pembayaran</div>
+                        <div className="fw-bold text-dark">Lancar</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-6">
+                    <div className="d-flex align-items-center gap-2">
+                      <Icon icon="chart-pie" size={12} className="text-primary" />
+                      <div style={{ fontSize: '10px' }}>
+                        <div className="text-muted text-uppercase fw-bold" style={{ fontSize: '8px' }}>Utilisasi</div>
+                        <div className="fw-bold text-dark">{utilizationPct.toFixed(0)}% Sehat</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-0">
+                <div className="progress progress-sm mb-1" style={{ height: '4px', background: 'var(--tblr-border-color-light)', borderRadius: '10px' }}>
+                  <div className="progress-bar" style={{ width: `${(creditScore / 850) * 100}%`, backgroundColor: scoreColor }} />
+                </div>
+                <div className="d-flex justify-content-between text-muted" style={{ fontSize: '9px', fontWeight: 600 }}>
+                  <span>300</span>
+                  <span className="text-uppercase" style={{ letterSpacing: '0.5px', opacity: 0.6 }}>Credit Health Index</span>
+                  <span>850</span>
+                </div>
+              </div>
+            </div>
+            <div className="card-footer bg-body-tertiary border-0 py-2 px-3">
+              <div className="d-flex align-items-center gap-2 text-muted" style={{ fontSize: '10px' }}>
+                <Icon icon="shield-check" size={12} className="text-success" />
+                Diverifikasi SLIK/OJK • Mei 2026
+              </div>
             </div>
           </div>
         </div>
-        <div className="col-6 col-md-3">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-body p-3">
-              <div className="subheader text-secondary mb-1">Beban Bulanan</div>
-              <div className="h3 fw-bold m-0">{fmt(totalMonthlyBurden)}</div>
-              <div className="text-secondary small mt-1">total cicilan/bulan</div>
+
+        {/* Right: Key Metrics Grid */}
+        <div className="col-12 col-lg-8">
+          <div className="row g-2 h-100">
+            <div className="col-6 col-md-6">
+              <div className="card border-0 shadow-sm h-100">
+                <div className="card-body p-3">
+                  <div className="d-flex align-items-center gap-2 mb-2">
+                    <span className="avatar avatar-xs bg-red text-white rounded-2" style={{ width: '22px', height: '22px' }}>
+                      <Icon icon="wallet" size={11} />
+                    </span>
+                    <div className="subheader text-secondary m-0" style={{ fontSize: '9px', fontWeight: 600 }}>TOTAL HUTANG</div>
+                  </div>
+                  <div className="h2 fw-black m-0 text-danger" style={{ fontSize: '24px' }}>{fmt(totalOutstanding).replace('Rp ', '')}</div>
+                  <div className="text-muted small" style={{ fontSize: '10px' }}>Sisa saldo aktif</div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className="col-6 col-md-3">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-body p-3">
-              <div className="subheader text-secondary mb-1">Jalur Aktif</div>
-              <div className="h3 fw-bold m-0">{activeCount}</div>
-              <div className="text-secondary small mt-1">kartu, pinjaman, paylater</div>
+            <div className="col-6 col-md-6">
+              <div className="card border-0 shadow-sm h-100">
+                <div className="card-body p-3">
+                  <div className="d-flex align-items-center gap-2 mb-2">
+                    <span className="avatar avatar-xs bg-azure text-white rounded-2" style={{ width: '22px', height: '22px' }}>
+                      <Icon icon="calendar-dollar" size={11} />
+                    </span>
+                    <div className="subheader text-secondary m-0" style={{ fontSize: '9px', fontWeight: 600 }}>BEBAN BULANAN</div>
+                  </div>
+                  <div className="h2 fw-black m-0" style={{ fontSize: '24px' }}>{fmt(totalMonthlyBurden).replace('Rp ', '')}</div>
+                  <div className="text-muted small" style={{ fontSize: '10px' }}>Total cicilan/bln</div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className="col-6 col-md-3">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-body p-3">
-              <div className="subheader text-secondary mb-1">Utilisasi Global</div>
-              <div className={`h3 fw-bold m-0 ${utilizationPct > 40 ? 'text-warning' : 'text-success'}`}>{utilizationPct.toFixed(0)}%</div>
-              <div className="text-secondary small mt-1">
-                <span className={`badge bg-${utilizationPct > 40 ? 'warning' : 'success'}-lt text-${utilizationPct > 40 ? 'warning' : 'success'} border-0 px-2 rounded-1`} style={{ fontSize: '10px' }}>
-                  {utilizationPct > 40 ? 'Perlu Pantau' : 'Sehat'}
-                </span>
+            <div className="col-6 col-md-6">
+              <div className="card border-0 shadow-sm h-100">
+                <div className="card-body p-3">
+                  <div className="d-flex align-items-center gap-2 mb-2">
+                    <span className="avatar avatar-xs bg-green text-white rounded-2" style={{ width: '22px', height: '22px' }}>
+                      <Icon icon="chart-bar" size={11} />
+                    </span>
+                    <div className="subheader text-secondary m-0" style={{ fontSize: '9px', fontWeight: 600 }}>UTILISASI GLOBAL</div>
+                  </div>
+                  <div className={`h2 fw-black m-0 ${utilizationPct > 40 ? 'text-warning' : 'text-success'}`} style={{ fontSize: '24px' }}>{utilizationPct.toFixed(0)}%</div>
+                  <div className="text-muted small" style={{ fontSize: '10px' }}>Kapasitas terpakai</div>
+                </div>
+              </div>
+            </div>
+            <div className="col-6 col-md-6">
+              <div className="card border-0 shadow-sm h-100">
+                <div className="card-body p-3">
+                  <div className="d-flex align-items-center gap-2 mb-2">
+                    <span className="avatar avatar-xs bg-purple text-white rounded-2" style={{ width: '22px', height: '22px' }}>
+                      <Icon icon="building-bank" size={11} />
+                    </span>
+                    <div className="subheader text-secondary m-0" style={{ fontSize: '9px', fontWeight: 600 }}>JALUR AKTIF</div>
+                  </div>
+                  <div className="h2 fw-black m-0" style={{ fontSize: '24px' }}>{activeCount}</div>
+                  <div className="text-muted small" style={{ fontSize: '10px' }}>Layanan berjalan</div>
+                </div>
               </div>
             </div>
           </div>

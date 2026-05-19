@@ -191,7 +191,7 @@ export function Button({
   return (
     <El
       href={El === 'a' && !to ? href : undefined}
-      {...(El === 'button' ? { type: type || 'button' } : {})}
+      {...(El === 'button' ? { type: type || 'button', disabled } : {})}
       id={id}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onClick={handleOnClick as any}

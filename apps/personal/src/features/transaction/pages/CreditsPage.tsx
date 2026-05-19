@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Button, Icon, Modal, Select, Datepicker, AutosizeTextarea } from '@/shared/components/ui';
+import { Button, Icon, Modal, ModalHeader, Select, Datepicker, AutosizeTextarea } from '@/shared/components/ui';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -21,7 +21,6 @@ const TABS: { id: TabId; label: string; icon: string; badge?: string; badgeColor
   { id: 'kta',          label: 'KTA / Pinjaman', icon: 'building-bank',  badge: '1',    badgeColor: 'primary' },
   { id: 'kpr',          label: 'KPR / Mortgage', icon: 'home',           badge: '1',    badgeColor: 'warning' },
   { id: 'paylater',     label: 'Paylater',       icon: 'clock-dollar',   badge: '3',    badgeColor: 'green' },
-  { id: 'score',        label: 'Credit Score',   icon: 'chart-bar' },
 ];
 
 export default function CreditsPage() {
@@ -50,21 +49,53 @@ export default function CreditsPage() {
       // Simulation delay
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Mock successful response to bypass 500 errors
-      return { success: true, data: { ...data } };
-
-      /* 
-      // Original Logic:
-      const payload = {
-        ...data,
-        installment_type: 'monthly',
-        due_date: data.due_date || null,
-        notes: data.notes || null,
-      };
       if (!selectedAccount) throw new Error('Account not selected');
-      const res = await axios.post(`/accounts/${selectedAccount.id}/credit`, payload);
-      return res.data;
-      */
+
+      const stored = localStorage.getItem('visatamora_credits');
+      let credits: Account[] = [];
+      if (stored) {
+        try {
+          credits = JSON.parse(stored);
+        } catch (e) {}
+      }
+
+      const existingIndex = credits.findIndex(c => c.id === selectedAccount.id);
+      
+      const updatedCredit = {
+        credit_type: data.credit_type,
+        limit: data.limit,
+        total_amount: data.total_amount,
+        installment_amount: data.installment_amount,
+        interest_rate: data.interest_rate,
+        tenor_months: data.tenor_months,
+        billing_cycle_day: data.billing_cycle_day,
+        minimum_payment: data.minimum_payment,
+        due_date: data.due_date,
+        notes: data.notes
+      };
+
+      if (existingIndex >= 0) {
+        credits[existingIndex] = {
+          ...credits[existingIndex],
+          balance: -data.total_amount,
+          credit: updatedCredit
+        };
+      } else {
+        const newAcc: Account = {
+          id: selectedAccount.id,
+          name: selectedAccount.name,
+          account_type: (data.credit_type === 'kta' || data.credit_type === 'kpr') ? 'loan' : 'credit',
+          balance: -data.total_amount,
+          currency: selectedAccount.currency || 'IDR',
+          provider: selectedAccount.provider || { name: 'Bank' },
+          color: selectedAccount.color || '#206bc4',
+          credit: updatedCredit
+        };
+        credits.push(newAcc);
+      }
+
+      localStorage.setItem('visatamora_credits', JSON.stringify(credits));
+      return { success: true, data };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['credits'] });
@@ -75,16 +106,17 @@ export default function CreditsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // Simulation delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Mock successful deletion
+      const stored = localStorage.getItem('visatamora_credits');
+      if (stored) {
+        try {
+          let credits: Account[] = JSON.parse(stored);
+          credits = credits.filter(c => c.id !== id);
+          localStorage.setItem('visatamora_credits', JSON.stringify(credits));
+        } catch (e) {}
+      }
       return { success: true };
-
-      /*
-      // Original Logic:
-      await axios.delete(`/accounts/${id}/credit`);
-      */
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['credits'] });
@@ -123,6 +155,23 @@ export default function CreditsPage() {
     setIsModalOpen(true);
   };
 
+  const openFormForType = (type: 'credit_card' | 'kta' | 'kpr' | 'paylater') => {
+    setSelectedAccount(null);
+    setFormData({
+      credit_type: type,
+      limit: 0,
+      total_amount: 0,
+      installment_amount: 0,
+      interest_rate: 0,
+      tenor_months: 0,
+      billing_cycle_day: 0,
+      minimum_payment: 0,
+      due_date: '',
+      notes: ''
+    });
+    setIsModalOpen(true);
+  };
+
   const accountOptions = accounts.map((acc: Account) => ({
     value: acc.id,
     label: acc.name,
@@ -132,69 +181,58 @@ export default function CreditsPage() {
   return (
     <BaseLayout
       pageTitle="Manajemen Kredit & Pinjaman"
-      pageActions={
-        <div className="w-100" style={{ maxWidth: '220px' }}>
-          <Select
-            options={accountOptions}
-            placeholder={
-              <>
-                <Icon icon="plus" size={18} className="me-1" />
-                Tambah Profil Kredit
-              </>
-            }
-            showSearch={true}
-            triggerClassName="btn btn-primary w-100 fw-bold border-0 shadow-sm text-white"
-            onChange={(val) => {
-              const acc = accounts.find((a: Account) => a.id === val);
-              if (acc) openForm(acc);
-            }}
-          />
-        </div>
-      }
     >
       <div className="container-xl pt-3 pb-5">
         {/* Hero Banner — always visible */}
         <CreditHeroBanner />
 
-        {/* Tab Navigation */}
-        <div className="card border-0 shadow-sm mb-4">
-          <div className="overflow-x-auto hide-scrollbar">
-            <div
-              className="d-flex flex-nowrap"
-              style={{ minWidth: 'max-content', borderBottom: '1px solid var(--tblr-border-color-light)' }}
-              role="tablist"
-            >
-              {TABS.map(tab => (
-                <button
-                  key={tab.id}
-                  className="border-0 bg-transparent d-flex align-items-center gap-2 px-4 py-3 fw-medium"
-                  style={{
-                    whiteSpace: 'nowrap',
-                    fontSize: '13px',
-                    outline: 'none',
-                    boxShadow: 'none',
-                    color: activeTab === tab.id ? 'var(--tblr-primary)' : 'var(--tblr-muted)',
-                    borderBottom: activeTab === tab.id ? '2px solid var(--tblr-primary)' : '2px solid transparent',
-                    transition: 'color 0.15s ease, border-color 0.15s ease',
-                    marginBottom: '-1px',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => setActiveTab(tab.id)}
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                >
-                  <Icon icon={tab.icon} size={15} />
-                  {tab.label}
-                  {tab.badge && (
-                    <span
-                      className={`badge bg-${tab.badgeColor}-lt text-${tab.badgeColor} border-0 rounded-pill`}
-                      style={{ fontSize: '10px' }}
-                    >
-                      {tab.badge}
-                    </span>
-                  )}
-                </button>
-              ))}
+        {/* Tab Navigation — Exact Segmented Control from Image */}
+        <div className="mb-4 d-flex justify-content-center">
+          <div 
+            className="p-1 d-inline-flex bg-body-tertiary rounded-3" 
+            style={{ 
+              backgroundColor: '#f4f6fa',
+              border: '1px solid rgba(0,0,0,0.04)',
+              padding: '2px'
+            }}
+          >
+            <div className="d-flex flex-nowrap" role="tablist">
+              {TABS.map(tab => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    className={`border-0 d-flex align-items-center justify-content-center gap-2 px-3 py-1 fw-bold transition-all`}
+                    style={{
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      whiteSpace: 'nowrap',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      height: '32px',
+                      backgroundColor: isActive ? '#ffffff' : 'transparent',
+                      color: isActive ? '#1e293b' : '#64748b',
+                      border: isActive ? '1px solid #e6e8eb' : '1px solid transparent',
+                      boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
+                      margin: '2px'
+                    }}
+                    onClick={() => setActiveTab(tab.id)}
+                    role="tab"
+                    aria-selected={isActive}
+                  >
+                    <Icon icon={tab.icon} size={15} />
+                    <span>{tab.label}</span>
+                    {tab.badge && (
+                      <span
+                        className={`badge bg-${tab.badgeColor} text-white border-0 rounded-pill ms-1`}
+                        style={{ fontSize: '8px', padding: '1px 5px' }}
+                      >
+                        {tab.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -202,38 +240,81 @@ export default function CreditsPage() {
         {/* Tab Content */}
         <div>
           {activeTab === 'overview'     && <CreditTabOverview />}
-          {activeTab === 'credit-card'  && <CreditTabCreditCard />}
-          {activeTab === 'kta'          && <CreditTabKTA />}
-          {activeTab === 'kpr'          && <CreditTabKPR />}
-          {activeTab === 'paylater'     && <CreditTabPaylater />}
+          {activeTab === 'credit-card'  && <CreditTabCreditCard onAdd={() => openFormForType('credit_card')} />}
+          {activeTab === 'kta'          && <CreditTabKTA onAdd={() => openFormForType('kta')} />}
+          {activeTab === 'kpr'          && <CreditTabKPR onAdd={() => openFormForType('kpr')} />}
+          {activeTab === 'paylater'     && <CreditTabPaylater onAdd={() => openFormForType('paylater')} />}
           {activeTab === 'score'        && <CreditTabScore />}
         </div>
       </div>
 
       {/* Add/Edit Credit Modal */}
       <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} size="lg">
-        <div className="modal-header border-0 pb-0">
-          <h5 className="modal-title h2 fw-bold">Profil Kredit: {selectedAccount?.name}</h5>
-          <button type="button" className="btn-close" onClick={() => setIsModalOpen(false)}></button>
-        </div>
+        <ModalHeader
+          title={selectedAccount ? `Profil Kredit: ${selectedAccount.name}` : 'Tambah Profil Kredit Baru'}
+          onClose={() => setIsModalOpen(false)}
+        />
         <div className="modal-body pt-4">
           <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(formData); }}>
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <label className="form-label">Jenis Kredit</label>
-                <Select
-                  value={formData.credit_type}
-                  onChange={val => setFormData({...formData, credit_type: val})}
-                  showSearch={false}
-                  options={[
-                    { value: 'credit_card', label: 'Credit Card' },
-                    { value: 'kta', label: 'KTA / Pinjaman' },
-                    { value: 'kpr', label: 'KPR / Mortgage' },
-                    { value: 'paylater', label: 'Paylater' },
-                    { value: 'other', label: 'Lainnya' },
-                  ]}
-                />
+            {!selectedAccount && (
+              <div className="row mb-3">
+                <div className="col-md-12">
+                  <label className="form-label fw-bold">Pilih Rekening / Akun</label>
+                  <Select
+                    options={accountOptions}
+                    placeholder="Pilih rekening untuk profil kredit ini"
+                    showSearch={true}
+                    onChange={(val) => {
+                      const acc = accounts.find((a: Account) => a.id === val);
+                      if (acc) {
+                        setSelectedAccount(acc);
+                        if (acc.credit) {
+                          setFormData({
+                            credit_type: acc.credit.credit_type || formData.credit_type,
+                            limit: acc.credit.limit,
+                            total_amount: acc.credit.total_amount,
+                            installment_amount: acc.credit.installment_amount,
+                            interest_rate: acc.credit.interest_rate || 0,
+                            tenor_months: acc.credit.tenor_months || 0,
+                            billing_cycle_day: acc.credit.billing_cycle_day || 0,
+                            minimum_payment: acc.credit.minimum_payment || 0,
+                            due_date: acc.credit.due_date ? acc.credit.due_date.split('T')[0] : '',
+                            notes: acc.credit.notes || ''
+                          });
+                        }
+                      }
+                    }}
+                  />
+                </div>
               </div>
+            )}
+            <div className="mb-3">
+              <label className="form-label">Jenis Kredit</label>
+              <div className="form-selectgroup">
+                {[
+                  { value: 'credit_card', label: 'Credit Card' },
+                  { value: 'kta', label: 'KTA / Pinjaman' },
+                  { value: 'kpr', label: 'KPR / Mortgage' },
+                  { value: 'paylater', label: 'Paylater' },
+                ].map((item) => (
+                  <label key={item.value} className="form-selectgroup-item">
+                    <input
+                      type="radio"
+                      name="credit_type"
+                      value={item.value}
+                      checked={formData.credit_type === item.value}
+                      onChange={() => setFormData({...formData, credit_type: item.value as any})}
+                      className="form-selectgroup-input"
+                    />
+                    <span className="form-selectgroup-label">
+                      {item.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="row">
               <div className="col-md-6 mb-3">
                 <label className="form-label">Suku Bunga (% p.a.)</label>
                 <div className="input-group">
@@ -352,7 +433,7 @@ export default function CreditsPage() {
               />
             </div>
 
-            <div className="mt-4 pt-3 border-top d-flex justify-content-between">
+            <div className="mt-4 d-flex justify-content-between">
               <div>
                 {selectedAccount?.credit && (
                   <Button 
@@ -373,8 +454,8 @@ export default function CreditsPage() {
                 )}
               </div>
               <div className="d-flex gap-2">
-                <Button element="button" type="button" color="ghost-secondary" onClick={() => setIsModalOpen(false)}>Batal</Button>
-                <Button element="button" type="submit" color="primary" loading={mutation.isPending}>Simpan Profil</Button>
+                <Button element="button" type="button" link className="text-muted" onClick={() => setIsModalOpen(false)}>Batal</Button>
+                <Button element="button" type="submit" color="primary" icon="check" loading={mutation.isPending} disabled={!selectedAccount}>Simpan Profil</Button>
               </div>
             </div>
           </form>

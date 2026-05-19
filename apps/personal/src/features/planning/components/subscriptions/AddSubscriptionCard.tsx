@@ -1,15 +1,23 @@
 import React from 'react';
 import { Icon } from '@/shared/components/ui/Icon';
 
-export function AddSubscriptionCard() {
+interface AddSubscriptionCardProps {
+  onClick?: () => void;
+}
+
+export function AddSubscriptionCard({ onClick }: AddSubscriptionCardProps) {
   return (
-    <div className="card h-100 shadow-none transition-all hover-bg-body-tertiary" style={{ 
-      borderRadius: '12px', 
-      border: '1.5px dashed var(--tblr-border-color)',
-      cursor: 'pointer',
-      background: 'transparent',
-      minHeight: '50px'
-    }}>
+    <div 
+      className="card h-100 shadow-none transition-all hover-bg-body-tertiary" 
+      style={{ 
+        borderRadius: '12px', 
+        border: '1.5px dashed var(--tblr-border-color)',
+        cursor: 'pointer',
+        background: 'transparent',
+        minHeight: '50px'
+      }}
+      onClick={onClick}
+    >
       <div className="card-body p-3 d-flex align-items-center justify-content-center text-center">
         <div>
           <div className="mb-2">

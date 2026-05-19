@@ -4,13 +4,7 @@ import { useCredits } from '../../hooks/useCredits';
 
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
-function UtilBadge({ pct }: { pct: number }) {
-  if (pct <= 30) return <span className="badge bg-success-lt text-success border-0 rounded-1">Aman ({pct}%)</span>;
-  if (pct <= 60) return <span className="badge bg-warning-lt text-warning border-0 rounded-1">Perhatian ({pct}%)</span>;
-  return <span className="badge bg-danger-lt text-danger border-0 rounded-1">Tinggi ({pct}%)</span>;
-}
-
-export function CreditTabPaylater() {
+export function CreditTabPaylater({ onAdd }: { onAdd?: () => void }) {
   const { data: allCredits = [], isLoading } = useCredits();
   
   const providers = useMemo(() => {
@@ -26,23 +20,6 @@ export function CreditTabPaylater() {
     return providers.find(p => p.id === activeProviderId) || providers[0];
   }, [providers, activeProviderId]);
 
-  const totalUsed  = providers.reduce((s, p) => s + (p.credit?.total_amount || 0),  0);
-  const totalLimit = providers.reduce((s, p) => s + (p.credit?.limit || 0), 0);
-
-  const { spendHistory, historyLabels } = useMemo(() => {
-    if (activeAccount?.history?.expense && activeAccount.history.expense.length > 0) {
-      return {
-        spendHistory: activeAccount.history.expense.slice(-6),
-        historyLabels: activeAccount.history.labels?.slice(-6) || []
-      };
-    }
-    // Mock data if empty
-    return {
-      spendHistory: [450000, 720000, 310000, 890000, 560000, 680000],
-      historyLabels: ['Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei']
-    };
-  }, [activeAccount]);
-
   if (isLoading) {
     return <div className="py-5 text-center text-muted">Memuat data Paylater...</div>;
   }
@@ -53,7 +30,11 @@ export function CreditTabPaylater() {
         <div className="card-body">
           <Icon icon="clock-dollar" size={48} className="mb-3 text-muted opacity-50" />
           <h3 className="fw-bold">Belum Ada Paylater</h3>
-          <p className="text-muted">Tambahkan profil Paylater Anda melalui menu "Tambah Profil" di atas.</p>
+          <p className="text-muted mb-3">Tambahkan profil Paylater Anda melalui menu "Tambah Profil" di atas.</p>
+          <Button element="button" color="primary" onClick={onAdd}>
+            <Icon icon="plus" size={16} className="me-2" />
+            Tambah Paylater
+          </Button>
         </div>
       </div>
     );
@@ -62,29 +43,9 @@ export function CreditTabPaylater() {
   const prov = activeAccount!;
   const credit = prov.credit!;
   const usedPct = credit.limit > 0 ? Math.round((credit.total_amount / credit.limit) * 100) : 0;
-  const daysLeft = credit.due_date ? Math.ceil((new Date(credit.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
 
   return (
     <div>
-      {/* Summary strip */}
-      <div className="row g-2 g-lg-3 mb-4">
-        {[
-          { label: 'Total Limit',       value: fmt(totalLimit), sub: `${providers.length} provider` },
-          { label: 'Total Dipakai',     value: fmt(totalUsed),  sub: `${Math.round(totalLimit > 0 ? (totalUsed / totalLimit * 100) : 0)}% utilisasi` },
-          { label: 'Provider Aktif',    value: String(providers.length), sub: 'Semua aktif' },
-          { label: 'Tagihan Berikutnya', value: credit.due_date ? new Date(credit.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-', sub: prov.name },
-        ].map((item, i) => (
-          <div key={i} className="col-6 col-md-3">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
-                <div className="subheader text-muted mb-1">{item.label}</div>
-                <div className="h3 fw-bold m-0">{item.value}</div>
-                <div className="text-muted small mt-1">{item.sub}</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
 
       {/* Provider Selector - Horizontal Tiles */}
       <div className="d-flex flex-nowrap overflow-x-auto gap-3 pb-3 mb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -159,8 +120,10 @@ export function CreditTabPaylater() {
             backgroundColor: 'transparent', 
             minHeight: '135px',
             border: '1.5px dashed rgba(32, 107, 196, 0.25)',
-            color: 'var(--tblr-primary)'
+            color: 'var(--tblr-primary)',
+            cursor: 'pointer'
           }}
+          onClick={onAdd}
         >
           <div className="text-center opacity-75">
             <Icon icon="plus" size={20} className="mb-1" />
@@ -176,7 +139,7 @@ export function CreditTabPaylater() {
           <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '20px' }}>
             <div className="card-body p-4">
               <div className="d-flex align-items-center gap-3 mb-4">
-                <span className="avatar avatar-md bg-body-tertiary text-primary rounded-3 border">
+                <span className="avatar avatar-md text-white rounded-3 shadow-sm" style={{ backgroundColor: prov.color || 'var(--tblr-primary)', border: 'none' }}>
                   <Icon icon="credit-card" size={24} />
                 </span>
                 <div>
@@ -227,18 +190,18 @@ export function CreditTabPaylater() {
               </div>
 
               <div className="d-grid gap-2">
-                <Button 
-                  color="primary" 
-                  className="w-100 fw-bold shadow-sm"
+                <button 
+                  className="btn text-white w-100 position-relative overflow-hidden d-flex align-items-center justify-content-center border-0 px-0 shadow-sm"
                   style={{ 
                     borderRadius: '50px', 
                     height: '42px', 
-                    background: prov.color || 'var(--tblr-primary)',
-                    border: 'none'
+                    backgroundColor: prov.color || 'var(--tblr-primary)',
+                    fontWeight: 700,
+                    fontSize: '13px'
                   }}
                 >
                   Bayar Sekarang
-                </Button>
+                </button>
                 
                 <button 
                   className="btn btn-white w-100 position-relative overflow-hidden d-flex align-items-center justify-content-center border px-0"
@@ -252,10 +215,7 @@ export function CreditTabPaylater() {
                     fontSize: '13px'
                   }}
                 >
-                  <div className="d-flex align-items-center justify-content-center gap-2 w-100">
-                    <Icon icon="list" size={16} className="opacity-50" />
-                    <span>Lihat Transaksi</span>
-                  </div>
+                  <span>Lihat Transaksi</span>
                 </button>
               </div>
             </div>

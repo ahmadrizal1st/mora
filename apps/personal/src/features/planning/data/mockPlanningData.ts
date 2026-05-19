@@ -23,7 +23,7 @@ export const MOCK_GOALS_DATA = {
       eta: 'Des 2026',
       monthlyDeposit: 5000000,
       icon: 'home',
-      color: '#7c6fff',
+      color: '#ff6b00',
       imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=800&auto=format&fit=crop'
     },
     {
@@ -34,7 +34,7 @@ export const MOCK_GOALS_DATA = {
       eta: 'Mar 2027',
       monthlyDeposit: 1000000,
       icon: 'device-laptop',
-      color: '#5b9ef7',
+      color: '#ff6b00',
       imageUrl: 'https://images.unsplash.com/photo-1517336712461-481bf771df4b?q=80&w=800&auto=format&fit=crop'
     },
     {
@@ -45,7 +45,7 @@ export const MOCK_GOALS_DATA = {
       eta: 'Mei 2027',
       monthlyDeposit: 1500000,
       icon: 'plane',
-      color: '#f5a623',
+      color: '#ff6b00',
       imageUrl: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop'
     }
   ],

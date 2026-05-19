@@ -92,17 +92,16 @@ export const useCredits = () => {
   return useQuery({
     queryKey: ['credits'],
     queryFn: async () => {
-      // Forcing dummy data as requested to avoid 500 errors
+      const stored = localStorage.getItem('visatamora_credits');
+      if (stored) {
+        try {
+          return JSON.parse(stored) as Account[];
+        } catch (e) {
+          // ignore parsing error
+        }
+      }
+      localStorage.setItem('visatamora_credits', JSON.stringify(MOCK_CREDITS));
       return MOCK_CREDITS;
-      
-      /* 
-      // Original API Logic:
-      const response = await accountService.getAccounts();
-      const credits = response.data.filter(
-        (acc: Account) => acc.account_type === 'credit' || acc.account_type === 'loan'
-      );
-      return credits;
-      */
     },
   });
 };

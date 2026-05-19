@@ -4,13 +4,7 @@ import { useCredits } from '../../hooks/useCredits';
 
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
-function UtilBadge({ pct }: { pct: number }) {
-  if (pct <= 30) return <span className="badge bg-success-lt text-success border-0 rounded-1">Aman ({pct}%)</span>;
-  if (pct <= 60) return <span className="badge bg-warning-lt text-warning border-0 rounded-1">Perhatian ({pct}%)</span>;
-  return <span className="badge bg-danger-lt text-danger border-0 rounded-1">Tinggi ({pct}%)</span>;
-}
-
-export function CreditTabCreditCard() {
+export function CreditTabCreditCard({ onAdd }: { onAdd?: () => void }) {
   const { data: allCredits = [], isLoading } = useCredits();
   
   const cards = useMemo(() => {
@@ -36,7 +30,11 @@ export function CreditTabCreditCard() {
         <div className="card-body">
           <Icon icon="credit-card-off" size={48} className="mb-3 text-muted opacity-50" />
           <h3 className="fw-bold">Belum Ada Kartu Kredit</h3>
-          <p className="text-muted">Tambahkan profil kartu kredit Anda melalui menu "Tambah Profil" di atas.</p>
+          <p className="text-muted mb-3">Tambahkan profil kartu kredit Anda melalui menu "Tambah Profil" di atas.</p>
+          <Button element="button" color="primary" onClick={onAdd}>
+            <Icon icon="plus" size={16} className="me-2" />
+            Tambah Kartu Kredit
+          </Button>
         </div>
       </div>
     );
@@ -45,21 +43,6 @@ export function CreditTabCreditCard() {
   const card = activeAccount!;
   const credit = card.credit!;
   const usedPct = credit.limit > 0 ? Math.round((credit.total_amount / credit.limit) * 100) : 0;
-  const daysLeft = credit.due_date ? Math.ceil((new Date(credit.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
-
-  const { spendHistory, historyLabels } = useMemo(() => {
-    if (card.history?.expense && card.history.expense.length > 0) {
-      return {
-        spendHistory: card.history.expense.slice(-6),
-        historyLabels: card.history.labels?.slice(-6) || []
-      };
-    }
-    // Mock data if empty
-    return {
-      spendHistory: [1200000, 850000, 1500000, 950000, 1100000, 1300000],
-      historyLabels: ['Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei']
-    };
-  }, [card]);
 
   return (
     <div>
@@ -137,8 +120,10 @@ export function CreditTabCreditCard() {
             backgroundColor: 'transparent', 
             minHeight: '135px',
             border: '1.5px dashed rgba(32, 107, 196, 0.25)',
-            color: 'var(--tblr-primary)'
+            color: 'var(--tblr-primary)',
+            cursor: 'pointer'
           }}
+          onClick={onAdd}
         >
           <div className="text-center opacity-75">
             <Icon icon="plus" size={20} className="mb-1" />
@@ -153,7 +138,7 @@ export function CreditTabCreditCard() {
           <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '20px' }}>
             <div className="card-body p-4">
               <div className="d-flex align-items-center gap-3 mb-4">
-                <span className="avatar avatar-md bg-body-tertiary text-primary rounded-3 border">
+                <span className="avatar avatar-md text-white rounded-3 shadow-sm" style={{ backgroundColor: card.color || 'var(--tblr-primary)', border: 'none' }}>
                   <Icon icon="credit-card" size={24} />
                 </span>
                 <div>
@@ -204,18 +189,18 @@ export function CreditTabCreditCard() {
               </div>
 
               <div className="d-grid gap-2">
-                <Button 
-                  variant="primary" 
-                  className="w-100 fw-bold shadow-sm"
+                <button 
+                  className="btn text-white w-100 position-relative overflow-hidden d-flex align-items-center justify-content-center border-0 px-0 shadow-sm"
                   style={{ 
                     borderRadius: '50px', 
                     height: '42px', 
-                    background: card.color || 'var(--tblr-primary)',
-                    border: 'none'
+                    backgroundColor: card.color || 'var(--tblr-primary)',
+                    fontWeight: 700,
+                    fontSize: '13px'
                   }}
                 >
                   Bayar Sekarang
-                </Button>
+                </button>
                 
                 <button 
                   className="btn btn-white w-100 position-relative overflow-hidden d-flex align-items-center justify-content-center border px-0"
@@ -229,10 +214,7 @@ export function CreditTabCreditCard() {
                     fontSize: '13px'
                   }}
                 >
-                  <div className="d-flex align-items-center justify-content-center gap-2 w-100">
-                    <Icon icon="list" size={16} className="opacity-50" />
-                    <span>Lihat Transaksi</span>
-                  </div>
+                  <span>Lihat Transaksi</span>
                 </button>
               </div>
             </div>

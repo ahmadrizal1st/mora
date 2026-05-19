@@ -14,14 +14,16 @@ interface GoalCardProps {
     color: string;
     imageUrl?: string;
   };
+  onClick?: () => void;
 }
 
-export function GoalCard({ goal }: GoalCardProps) {
+export function GoalCard({ goal, onClick }: GoalCardProps) {
   const [imgError, setImgError] = React.useState(false);
   const percentage = Math.round((goal.saved / goal.target) * 100);
 
   return (
     <div className="card border-0 transition-all overflow-hidden h-100 hover-scale-up" 
+         onClick={onClick}
          style={{ borderRadius: '16px', minHeight: '300px', cursor: 'pointer', position: 'relative' }}>
       
       {/* Background Image / Placeholder */}
@@ -35,11 +37,11 @@ export function GoalCard({ goal }: GoalCardProps) {
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-100 h-100" style={{ background: `linear-gradient(135deg, ${goal.color} 0%, ${goal.color}dd 100%)` }}></div>
+          <div className="w-100 h-100" style={{ background: `linear-gradient(135deg, #ff6b00 0%, #ff8c3b 100%)` }}></div>
         )}
         {/* Dark Overlay Gradient */}
         <div className="position-absolute top-0 start-0 w-100 h-100" 
-             style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.85) 100%)' }}></div>
+             style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.85) 100%)' }}></div>
       </div>
 
       {/* Content Overlay */}

@@ -1,20 +1,76 @@
+import { useState, useMemo } from 'react';
+import { Link } from '@tanstack/react-router';
 import { MOCK_GOALS_DATA } from '../../data/mockPlanningData';
 import { GoalsOverviewCard } from './GoalsOverviewCard';
 import { GoalCard } from './GoalCard';
 import { GoalTrajectoryChart } from './GoalTrajectoryChart';
 import { EmergencyFundCard } from './EmergencyFundCard';
 import { SmartInsightCard } from './SmartInsightCard';
-import { Icon } from '@/shared/components/ui/Icon';
+import { Modal, ModalHeader, Icon } from '@/shared/components/ui';
+import { formatCurrency } from '@/shared/utils/currencyUtils';
 
-export function GoalsTab() {
-  const { totalSaved, totalTarget, goals, milestones } = MOCK_GOALS_DATA;
+interface GoalsTabProps {
+  onAdd?: () => void;
+  onEditGoal?: (goal: any) => void;
+  data?: typeof MOCK_GOALS_DATA;
+}
+
+export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA }: GoalsTabProps) {
+  const { totalSaved, totalTarget, goals, milestones } = data;
+
+  // Main Page Filter States
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'achieved'>('all');
+  const [targetFilter, setTargetFilter] = useState<'all' | 'under30' | 'above30'>('all');
+
+  // Modal State & Modal Filter States
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [modalFilterOpen, setModalFilterOpen] = useState(false);
+  const [modalStatusFilter, setModalStatusFilter] = useState<'all' | 'active' | 'achieved'>('all');
+  const [modalTargetFilter, setModalTargetFilter] = useState<'all' | 'under30' | 'above30'>('all');
+
+  // Filter logic for main page list
+  const filteredGoals = useMemo(() => {
+    return goals.filter(goal => {
+      // Status filter (active if saved < target, achieved if saved >= target)
+      const isAchieved = goal.saved >= goal.target;
+      if (statusFilter === 'active' && isAchieved) return false;
+      if (statusFilter === 'achieved' && !isAchieved) return false;
+
+      // Target filter
+      if (targetFilter === 'under30' && goal.target >= 30000000) return false;
+      if (targetFilter === 'above30' && goal.target < 30000000) return false;
+
+      return true;
+    });
+  }, [goals, statusFilter, targetFilter]);
+
+  // Filter logic for modal table
+  const modalFilteredGoals = useMemo(() => {
+    return goals.filter(goal => {
+      // Status filter
+      const isAchieved = goal.saved >= goal.target;
+      if (modalStatusFilter === 'active' && isAchieved) return false;
+      if (modalStatusFilter === 'achieved' && !isAchieved) return false;
+
+      // Target filter
+      if (modalTargetFilter === 'under30' && goal.target >= 30000000) return false;
+      if (modalTargetFilter === 'above30' && goal.target < 30000000) return false;
+
+      return true;
+    });
+  }, [goals, modalStatusFilter, modalTargetFilter]);
 
   return (
     <div className="row row-cards g-3 tab-content-anim">
       {/* ROW 1: Header Analytics */}
       <div className="col-lg-4">
         <div className="h-100">
-          <GoalsOverviewCard totalSaved={totalSaved} totalTarget={totalTarget} />
+          <GoalsOverviewCard 
+            totalSaved={totalSaved} 
+            totalTarget={totalTarget} 
+            onViewDetail={() => setIsDetailOpen(true)} 
+          />
         </div>
       </div>
       <div className="col-lg-5">
@@ -59,7 +115,9 @@ export function GoalsTab() {
               <div className="small fw-bold text-white text-uppercase" style={{ fontSize: '10px', letterSpacing: '0.05em', opacity: '0.8' }}>1 month to next milestone</div>
             </div>
             <div className="mt-3 pt-3 border-top border-white-subtle text-center">
-              <button className="btn btn-white btn-sm w-100 rounded-pill fw-bold" style={{ color: '#f59f00' }}>Lihat Pencapaian</button>
+              <Link to="/achievements" className="btn btn-white btn-sm w-100 rounded-pill fw-bold" style={{ color: '#f59f00' }}>
+                Lihat Pencapaian
+              </Link>
             </div>
           </div>
         </div>
@@ -72,9 +130,90 @@ export function GoalsTab() {
             <h3 className="card-title fw-bold d-flex align-items-center gap-2 m-0">
               <Icon icon="star" size="sm" style={{ color: '#f59f00' }} />
               My Dreams & Wishes
-              <span className="badge bg-body-tertiary text-secondary border ms-2" style={{ fontSize: '11px' }}>{goals.length}</span>
+              <span className="badge bg-body-tertiary text-secondary border ms-2" style={{ fontSize: '11px' }}>{filteredGoals.length}</span>
             </h3>
-            <button className="btn btn-ghost-orange btn-sm rounded-pill fw-bold">Filter</button>
+            
+            <div className="position-relative">
+              <button 
+                className="btn btn-ghost-orange btn-sm rounded-pill fw-bold d-flex align-items-center gap-1 px-3"
+                style={{ height: '32px' }}
+                onClick={() => setFilterOpen(!filterOpen)}
+              >
+                <Icon icon="filter" size="xs" />
+                Filter
+              </button>
+              
+              {filterOpen && (
+                <>
+                  <div className="position-fixed top-0 start-0 w-100 h-100" style={{ zIndex: 1000 }} onClick={() => setFilterOpen(false)} />
+                  <div 
+                    className="card position-absolute end-0 mt-2 p-3 shadow-lg border border-light-subtle text-body" 
+                    style={{ 
+                      zIndex: 1001, 
+                      width: '280px', 
+                      borderRadius: '16px',
+                      top: '100%',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <span className="fw-bold text-dark small">Filter Impian</span>
+                      <button 
+                        className="btn btn-link btn-sm text-decoration-none p-0 text-muted fw-semibold"
+                        style={{ fontSize: '11px' }}
+                        onClick={() => { setStatusFilter('all'); setTargetFilter('all'); }}
+                      >
+                        Reset
+                      </button>
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label className="form-label small text-secondary fw-semibold mb-2">Status</label>
+                      <div className="d-flex flex-column gap-2">
+                        {[
+                          { value: 'all', label: 'Semua' },
+                          { value: 'active', label: 'Sedang Berjalan' },
+                          { value: 'achieved', label: 'Sudah Tercapai' }
+                        ].map(opt => (
+                          <label key={opt.value} className="form-check m-0 cursor-pointer d-flex align-items-center">
+                            <input 
+                              type="radio" 
+                              className="form-check-input" 
+                              name="statusFilter"
+                              checked={statusFilter === opt.value}
+                              onChange={() => setStatusFilter(opt.value as any)}
+                            />
+                            <span className="form-check-label small ms-2 text-body" style={{ fontSize: '12px' }}>{opt.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mb-2">
+                      <label className="form-label small text-secondary fw-semibold mb-2">Target Nominal</label>
+                      <div className="d-flex flex-column gap-2">
+                        {[
+                          { value: 'all', label: 'Semua' },
+                          { value: 'under30', label: '< Rp 30 Juta' },
+                          { value: 'above30', label: '≥ Rp 30 Juta' }
+                        ].map(opt => (
+                          <label key={opt.value} className="form-check m-0 cursor-pointer d-flex align-items-center">
+                            <input 
+                              type="radio" 
+                              className="form-check-input" 
+                              name="targetFilter"
+                              checked={targetFilter === opt.value}
+                              onChange={() => setTargetFilter(opt.value as any)}
+                            />
+                            <span className="form-check-label small ms-2 text-body" style={{ fontSize: '12px' }}>{opt.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <div className="card-body p-4 pt-2 d-flex flex-column h-100">
             <div 
@@ -87,13 +226,36 @@ export function GoalsTab() {
               className="no-scrollbar flex-grow-1"
             >
               <div className="row g-4">
-                {goals.map(goal => (
-                  <div key={goal.id} className="col-12 col-md-6">
-                    <GoalCard goal={goal} />
+                {filteredGoals.length === 0 ? (
+                  <div className="col-12 text-center py-5">
+                    <div className="p-4 mx-auto" style={{ maxWidth: '400px' }}>
+                      <div className="p-3 bg-orange-lt text-orange rounded-circle d-inline-flex mb-3">
+                        <Icon icon="search" size="md" />
+                      </div>
+                      <h4 className="fw-bold text-orange mb-2">Tidak Ada Impian Ditemukan</h4>
+                      <p className="text-secondary small mb-3">
+                        Tidak ada target impian yang sesuai dengan filter yang Anda pilih. Coba ubah filter atau reset pencarian.
+                      </p>
+                      <button 
+                        className="btn btn-orange rounded-pill btn-sm px-4 fw-bold"
+                        onClick={() => { setStatusFilter('all'); setTargetFilter('all'); }}
+                      >
+                        Reset Filter
+                      </button>
+                    </div>
                   </div>
-                ))}
+                ) : (
+                  filteredGoals.map(goal => (
+                    <div key={goal.id} className="col-12 col-md-6">
+                      <GoalCard 
+                        goal={goal} 
+                        onClick={() => onEditGoal?.(goal)}
+                      />
+                    </div>
+                  ))
+                )}
                 {/* Add Button is always part of the grid flow */}
-                <div className="col-12 col-md-6">
+                <div className="col-12 col-md-6" onClick={onAdd}>
                   <div 
                     className="card shadow-none cursor-pointer d-flex align-items-center justify-content-center py-5 h-100 transition-all hover-bg-surface hover-border-primary" 
                     style={{ 
@@ -175,6 +337,184 @@ export function GoalsTab() {
           <EmergencyFundCard />
         </div>
       </div>
+
+      {/* Goal Details Modal (Now globally managed in GoalsTab) */}
+      <Modal show={isDetailOpen} onClose={() => setIsDetailOpen(false)} size="xl">
+        <ModalHeader title="Detail Progres Impian (Goals)" onClose={() => setIsDetailOpen(false)} />
+        <div className="modal-body p-4">
+          
+          {/* Modal Filter Bar */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="text-secondary small fw-medium">
+              Menampilkan {modalFilteredGoals.length} dari {goals.length} impian
+            </div>
+            
+            <div className="position-relative">
+              <button 
+                className="btn btn-ghost-orange btn-sm rounded-pill fw-bold d-flex align-items-center gap-1 px-3"
+                style={{ height: '32px' }}
+                onClick={() => setModalFilterOpen(!modalFilterOpen)}
+              >
+                <Icon icon="filter" size="xs" />
+                Filter
+              </button>
+              
+              {modalFilterOpen && (
+                <>
+                  <div className="position-fixed top-0 start-0 w-100 h-100" style={{ zIndex: 1060 }} onClick={() => setModalFilterOpen(false)} />
+                  <div 
+                    className="card position-absolute end-0 mt-2 p-3 shadow-lg border border-light-subtle text-body" 
+                    style={{ 
+                      zIndex: 1061, 
+                      width: '280px', 
+                      borderRadius: '16px',
+                      top: '100%',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <span className="fw-bold text-dark small">Filter Impian</span>
+                      <button 
+                        className="btn btn-link btn-sm text-decoration-none p-0 text-muted fw-semibold"
+                        style={{ fontSize: '11px' }}
+                        onClick={() => { setModalStatusFilter('all'); setModalTargetFilter('all'); }}
+                      >
+                        Reset
+                      </button>
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label className="form-label small text-secondary fw-semibold mb-2">Status</label>
+                      <div className="d-flex flex-column gap-2">
+                        {[
+                          { value: 'all', label: 'Semua' },
+                          { value: 'active', label: 'Sedang Berjalan' },
+                          { value: 'achieved', label: 'Sudah Tercapai' }
+                        ].map(opt => (
+                          <label key={opt.value} className="form-check m-0 cursor-pointer d-flex align-items-center">
+                            <input 
+                              type="radio" 
+                              className="form-check-input" 
+                              name="modalStatusFilter"
+                              checked={modalStatusFilter === opt.value}
+                              onChange={() => setModalStatusFilter(opt.value as any)}
+                            />
+                            <span className="form-check-label small ms-2 text-body" style={{ fontSize: '12px' }}>{opt.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mb-2">
+                      <label className="form-label small text-secondary fw-semibold mb-2">Target Nominal</label>
+                      <div className="d-flex flex-column gap-2">
+                        {[
+                          { value: 'all', label: 'Semua' },
+                          { value: 'under30', label: '< Rp 30 Juta' },
+                          { value: 'above30', label: '≥ Rp 30 Juta' }
+                        ].map(opt => (
+                          <label key={opt.value} className="form-check m-0 cursor-pointer d-flex align-items-center">
+                            <input 
+                              type="radio" 
+                              className="form-check-input" 
+                              name="modalTargetFilter"
+                              checked={modalTargetFilter === opt.value}
+                              onChange={() => setModalTargetFilter(opt.value as any)}
+                            />
+                            <span className="form-check-label small ms-2 text-body" style={{ fontSize: '12px' }}>{opt.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {modalFilteredGoals.length === 0 ? (
+            <div className="text-center py-5">
+              <div className="p-4 mx-auto" style={{ maxWidth: '400px' }}>
+                <div className="p-3 bg-orange-lt text-orange rounded-circle d-inline-flex mb-3">
+                  <Icon icon="search" size="md" />
+                </div>
+                <h4 className="fw-bold text-orange mb-2">Tidak Ada Impian Ditemukan</h4>
+                <p className="text-secondary small mb-3">
+                  Tidak ada target impian yang sesuai dengan filter yang Anda pilih. Coba ubah filter atau reset pencarian.
+                </p>
+                <button 
+                  className="btn btn-orange rounded-pill btn-sm px-4 fw-bold"
+                  onClick={() => { setModalStatusFilter('all'); setModalTargetFilter('all'); }}
+                >
+                  Reset Filter
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-vcenter card-table table-hover">
+                <thead>
+                  <tr>
+                    <th className="text-secondary small fw-bold px-3 py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', minWidth: '180px' }}>Nama Impian</th>
+                    <th className="text-secondary small fw-bold py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', minWidth: '130px' }}>Target</th>
+                    <th className="text-secondary small fw-bold py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', minWidth: '130px' }}>Terkumpul</th>
+                    <th className="text-secondary small fw-bold py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', minWidth: '160px' }}>Progres</th>
+                    <th className="text-secondary small fw-bold py-2 text-center" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', minWidth: '120px' }}>Target Selesai</th>
+                    <th className="text-secondary small fw-bold py-2 text-end" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', minWidth: '140px' }}>Saran Tabungan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {modalFilteredGoals.map(g => {
+                    const pct = g.target > 0 ? Math.round((g.saved / g.target) * 100) : 0;
+                    return (
+                      <tr 
+                        key={g.id} 
+                        className="align-middle cursor-pointer animate-in fade-in"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          setIsDetailOpen(false);
+                          onEditGoal?.(g);
+                        }}
+                      >
+                        <td className="px-3 py-3" style={{ minWidth: '180px' }}>
+                          <div className="d-flex align-items-center gap-2">
+                            <span 
+                              className="avatar avatar-xs rounded-circle text-white shadow-sm d-flex align-items-center justify-content-center"
+                              style={{ backgroundColor: g.color || '#ff6b00', width: '28px', height: '28px' }}
+                            >
+                              <Icon icon={g.icon as any} size={12} className="m-0 text-white" />
+                            </span>
+                            <span className="fw-bold">{g.name}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 fw-medium" style={{ minWidth: '130px' }}>{formatCurrency(g.target)}</td>
+                        <td className="py-3 text-success fw-bold" style={{ minWidth: '130px' }}>{formatCurrency(g.saved)}</td>
+                        <td className="py-3" style={{ minWidth: '160px' }}>
+                          <div className="d-flex align-items-center gap-2">
+                            <div className="progress progress-sm flex-grow-1" style={{ height: '8px', borderRadius: '10px', minWidth: '80px' }}>
+                              <div className="progress-bar bg-orange" style={{ width: `${pct}%` }} />
+                            </div>
+                            <span className="small fw-bold text-orange" style={{ minWidth: '35px', textAlign: 'right' }}>{pct}%</span>
+                          </div>
+                        </td>
+                        <td className="py-3 text-center" style={{ minWidth: '120px' }}>
+                          <span className="badge bg-orange-lt text-orange border-0 px-2 py-1" style={{ fontSize: '10px' }}>
+                            {g.eta}
+                          </span>
+                        </td>
+                        <td className="py-3 text-end fw-semibold text-secondary" style={{ minWidth: '140px' }}>
+                          {g.monthlyDeposit ? `${formatCurrency(g.monthlyDeposit)}/bln` : '-'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </Modal>
+
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
