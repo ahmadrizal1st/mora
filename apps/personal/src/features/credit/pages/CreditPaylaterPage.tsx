@@ -1,10 +1,12 @@
 import { useState, useMemo } from 'react';
 import { Icon, Chart, Button } from '@/shared/components/ui';
-import { useCredits } from '../../hooks/useCredits';
+import { useCredits } from '../hooks/useCredits';
+import { useCreditLayoutContext } from '../context/CreditLayoutContext';
 
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
-export function CreditTabPaylater({ onAdd }: { onAdd?: () => void }) {
+export function CreditPaylaterPage() {
+  const { openFormForType } = useCreditLayoutContext();
   const { data: allCredits = [], isLoading } = useCredits();
   
   const providers = useMemo(() => {
@@ -31,7 +33,7 @@ export function CreditTabPaylater({ onAdd }: { onAdd?: () => void }) {
           <Icon icon="clock-dollar" size={48} className="mb-3 text-muted opacity-50" />
           <h3 className="fw-bold">Belum Ada Paylater</h3>
           <p className="text-muted mb-3">Tambahkan profil Paylater Anda melalui menu "Tambah Profil" di atas.</p>
-          <Button element="button" color="primary" onClick={onAdd}>
+          <Button element="button" color="primary" onClick={() => openFormForType('paylater')}>
             <Icon icon="plus" size={16} className="me-2" />
             Tambah Paylater
           </Button>
@@ -123,7 +125,7 @@ export function CreditTabPaylater({ onAdd }: { onAdd?: () => void }) {
             color: 'var(--tblr-primary)',
             cursor: 'pointer'
           }}
-          onClick={onAdd}
+          onClick={() => openFormForType('paylater')}
         >
           <div className="text-center opacity-75">
             <Icon icon="plus" size={20} className="mb-1" />

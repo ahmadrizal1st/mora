@@ -1,16 +1,18 @@
 import { useState, useMemo } from 'react';
 import { Icon, Chart, Button } from '@/shared/components/ui';
-import { useCredits } from '../../hooks/useCredits';
-
-const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
+import { useCredits } from '../hooks/useCredits';
+import { useCreditLayoutContext } from '../context/CreditLayoutContext';
 
 const MONTHS = ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'];
 
-export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
+const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
+
+export function CreditKTAPage() {
+  const { openFormForType } = useCreditLayoutContext();
   const { data: allCredits = [], isLoading } = useCredits();
   
   const loans = useMemo(() => {
-    return allCredits.filter(acc => acc.credit?.credit_type === 'kpr');
+    return allCredits.filter(acc => acc.credit?.credit_type === 'kta');
   }, [allCredits]);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -23,19 +25,19 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
   }, [loans, activeLoanId]);
 
   if (isLoading) {
-    return <div className="py-5 text-center text-muted">Memuat data KPR...</div>;
+    return <div className="py-5 text-center text-muted">Memuat data pinjaman...</div>;
   }
 
   if (loans.length === 0) {
     return (
       <div className="card border-0 shadow-sm py-5 text-center">
         <div className="card-body">
-          <Icon icon="home-off" size={48} className="mb-3 text-muted opacity-50" />
-          <h3 className="fw-bold">Belum Ada Pinjaman KPR</h3>
-          <p className="text-muted mb-3">Tambahkan profil KPR Anda melalui menu "Tambah Profil" di atas.</p>
-          <Button element="button" color="primary" onClick={onAdd}>
+          <Icon icon="building-bank" size={48} className="mb-3 text-muted opacity-50" />
+          <h3 className="fw-bold">Belum Ada Pinjaman KTA</h3>
+          <p className="text-muted mb-3">Tambahkan profil pinjaman Anda melalui menu "Tambah Profil" di atas.</p>
+          <Button element="button" color="primary" onClick={() => openFormForType('kta')}>
             <Icon icon="plus" size={16} className="me-2" />
-            Tambah KPR / Mortgage
+            Tambah KTA / Pinjaman
           </Button>
         </div>
       </div>
@@ -47,18 +49,11 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
   const paidAmount = Math.max(0, credit.limit - credit.total_amount);
   const paidPct = credit.limit > 0 ? Math.round((paidAmount / credit.limit) * 100) : 0;
   const daysLeft = credit.due_date ? Math.ceil((new Date(credit.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
-  const urgentColor = (daysLeft !== null && daysLeft <= 7) ? 'danger' : 'warning';
-
-  // Placeholder history
-  const paymentHistory = [true, true, true, true, true, true, true, true, true, true, true, true];
-  const principalHistory = [paidAmount * 0.9, paidAmount * 0.92, paidAmount * 0.94, paidAmount * 0.96, paidAmount * 0.98, paidAmount];
-  const amortization = [
-    { bulan: 'Segera', pokok: credit.installment_amount * 0.4, bunga: credit.installment_amount * 0.6, total: credit.installment_amount },
-  ];
+  const urgentColor = (daysLeft !== null && daysLeft <= 5) ? 'danger' : 'warning';
 
   return (
     <div>
-      {/* KPR Selector - Horizontal Tiles */}
+      {/* Loan Selector - Horizontal Tiles */}
       <div className="d-flex flex-nowrap overflow-x-auto gap-3 pb-3 mb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {loans.map(l => {
           const lPct = l.credit!.limit > 0 ? Math.round((Math.max(0, l.credit!.limit - l.credit!.total_amount) / l.credit!.limit) * 100) : 0;
@@ -96,7 +91,7 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
                       borderRadius: '10px' 
                     }}
                   >
-                    <Icon icon="home" size={14} />
+                    <Icon icon="building-bank" size={14} />
                   </div>
                 </div>
 
@@ -109,12 +104,12 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
 
                 <div className="mt-2 d-flex align-items-center gap-1" style={{ fontSize: '10px' }}>
                   <Icon 
-                    icon={lDaysLeft !== null && lDaysLeft <= 7 ? 'alert-triangle' : 'trending-down'} 
+                    icon={lDaysLeft !== null && lDaysLeft <= 5 ? 'alert-triangle' : 'trending-down'} 
                     size={12} 
-                    className={lDaysLeft !== null && lDaysLeft <= 7 ? 'text-danger' : 'text-success'} 
+                    className={lDaysLeft !== null && lDaysLeft <= 5 ? 'text-danger' : 'text-success'} 
                   />
-                  <span className={lDaysLeft !== null && lDaysLeft <= 7 ? 'text-danger' : 'text-success'}>
-                    {lDaysLeft !== null && lDaysLeft <= 7 ? `${lDaysLeft} hari lagi` : `Lunas ${lPct}%`}
+                  <span className={lDaysLeft !== null && lDaysLeft <= 5 ? 'text-danger' : 'text-success'}>
+                    {lDaysLeft !== null && lDaysLeft <= 5 ? `${lDaysLeft} hari lagi` : `Lunas ${lPct}%`}
                   </span>
                 </div>
               </div>
@@ -134,11 +129,11 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
             color: 'var(--tblr-primary)',
             cursor: 'pointer'
           }}
-          onClick={onAdd}
+          onClick={() => openFormForType('kta')}
         >
           <div className="text-center opacity-75">
             <Icon icon="plus" size={20} className="mb-1" />
-            <div style={{ fontSize: '11px', fontWeight: 500 }}>Tambah KPR</div>
+            <div style={{ fontSize: '11px', fontWeight: 500 }}>Tambah Pinjaman</div>
           </div>
         </div>
       </div>
@@ -150,11 +145,11 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
             <div className="card-body p-4">
               <div className="d-flex align-items-center gap-3 mb-4">
                 <span className="avatar avatar-md bg-primary text-white rounded-3 shadow-sm" style={{ border: 'none' }}>
-                  <Icon icon="home" size={24} />
+                  <Icon icon="building-bank" size={24} />
                 </span>
                 <div>
                   <h3 className="fw-bold mb-0">{loan.name}</h3>
-                  <div className="text-muted small">KPR — {loan.provider?.name}</div>
+                  <div className="text-muted small">KTA — {loan.provider?.name || 'Bank'}</div>
                 </div>
               </div>
 
@@ -192,9 +187,9 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
 
               <div className="p-3 bg-body-tertiary rounded-3 mb-4 border border-dashed">
                 <div className="d-flex gap-2">
-                  <Icon icon="bulb" size={14} className="text-primary mt-1 flex-shrink-0" />
+                  <Icon icon="info-circle" size={14} className="text-primary mt-1 flex-shrink-0" />
                   <div className="small text-muted" style={{ lineHeight: '1.4' }}>
-                    <span className="fw-bold text-dark">Wawasan:</span> Suku bunga tetap Anda akan berakhir dalam <span className="text-primary fw-bold">4 bulan</span>. Siapkan strategi untuk suku bunga floating.
+                    <span className="fw-bold text-dark">Info:</span> Pinjaman KTA tidak memerlukan agunan. Pastikan pembayaran tepat waktu untuk menjaga skor kredit Anda.
                   </div>
                 </div>
               </div>
@@ -216,8 +211,8 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
                   className="btn btn-white w-100 d-flex align-items-center justify-content-center border"
                   style={{ borderRadius: '50px', height: '42px', fontWeight: 600, fontSize: '13px' }}
                 >
-                  <Icon icon="file-download" size={16} className="me-2 opacity-50" />
-                  Download Dokumen
+                  <Icon icon="history" size={16} className="me-2 opacity-50" />
+                  Riwayat Pembayaran
                 </button>
               </div>
             </div>
@@ -229,22 +224,21 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
             <div className="card-header border-0 pb-0 px-4 pt-4">
               <h3 className="card-title fw-bold">Proyeksi Pelunasan</h3>
               <div className="card-actions">
-                <span className="text-muted small">Distribusi Pokok & Bunga — {loan.name}</span>
+                <span className="text-muted small">Sisa Pokok — {loan.name}</span>
               </div>
             </div>
             <div className="card-body p-0">
               <Chart
-                chartId={`kpr-principal-${loan.id}`}
+                chartId={`kta-principal-${loan.id}`}
                 height={26}
                 chartData={{
                   type: 'area',
                   series: [
-                    { name: 'Sisa Pokok', color: 'var(--tblr-primary)', data: [1200, 1150, 1100, 1050, 1000, 950, 900, 850, 800, 750, 700, 650] },
-                    { name: 'Total Bunga', color: 'var(--tblr-azure)', data: [200, 195, 190, 185, 180, 175, 170, 165, 160, 155, 150, 145] }
+                    { name: 'Sisa Pokok', color: 'var(--tblr-primary)', data: [50, 47, 44, 41, 38, 35, 32, 29, 26, 23, 20, 17] }
                   ],
                   categories: ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
                   datalabels: false,
-                  legend: true,
+                  legend: false,
                   grid: {
                     strokeDashArray: 4,
                     borderColor: 'var(--tblr-border-color)',
@@ -263,7 +257,7 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
                   },
                   extend: {
                     fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0.05 } },
-                    stroke: { width: 2, curve: 'smooth' },
+                    stroke: { width: 3, curve: 'smooth' },
                     tooltip: { theme: 'dark' },
                   },
                 }}
@@ -294,17 +288,17 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {[...Array(8)].map((_, i) => (
+                    {[...Array(6)].map((_, i) => (
                       <tr key={i}>
                         <td className="px-4 py-3 text-nowrap">Mei 2026</td>
                         <td className="py-3">
-                          <div className="fw-bold">Angsuran Ke-{12 + i}</div>
-                          <div className="text-muted small">Status: Berhasil</div>
+                          <div className="fw-bold">Angsuran Ke-{8 + i}</div>
+                          <div className="text-muted small">Status: Terjadwal</div>
                         </td>
-                        <td className="text-end py-3 text-secondary">{fmt(4500000).replace('Rp ', '')}</td>
-                        <td className="text-end py-3 text-secondary">{fmt(750000).replace('Rp ', '')}</td>
+                        <td className="text-end py-3 text-secondary">{fmt(credit.installment_amount * 0.75).replace('Rp ', '')}</td>
+                        <td className="text-end py-3 text-secondary">{fmt(credit.installment_amount * 0.25).replace('Rp ', '')}</td>
                         <td className="text-end px-4 py-3">
-                          <div className="fw-bold text-dark">{fmt(5250000).replace('Rp ', '')}</div>
+                          <div className="fw-bold text-dark">{fmt(credit.installment_amount).replace('Rp ', '')}</div>
                         </td>
                       </tr>
                     ))}
@@ -315,24 +309,6 @@ export function CreditTabKPR({ onAdd }: { onAdd?: () => void }) {
           </div>
         </div>
       </div>
-
-      <style>{`
-        .table-responsive {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-        .table-responsive::-webkit-scrollbar {
-          display: none;
-        }
-        .card-table thead th {
-          border-top: 1px solid var(--tblr-border-color);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-        .card-table tbody tr:last-child td {
-          border-bottom: none !important;
-        }
-      `}</style>
     </div>
   );
 }

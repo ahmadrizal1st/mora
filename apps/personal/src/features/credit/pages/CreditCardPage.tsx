@@ -1,10 +1,12 @@
 import { useState, useMemo } from 'react';
 import { Icon, Chart, Button } from '@/shared/components/ui';
-import { useCredits } from '../../hooks/useCredits';
+import { useCredits } from '../hooks/useCredits';
+import { useCreditLayoutContext } from '../context/CreditLayoutContext';
 
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
-export function CreditTabCreditCard({ onAdd }: { onAdd?: () => void }) {
+export function CreditCardPage() {
+  const { openFormForType } = useCreditLayoutContext();
   const { data: allCredits = [], isLoading } = useCredits();
   
   const cards = useMemo(() => {
@@ -31,7 +33,7 @@ export function CreditTabCreditCard({ onAdd }: { onAdd?: () => void }) {
           <Icon icon="credit-card-off" size={48} className="mb-3 text-muted opacity-50" />
           <h3 className="fw-bold">Belum Ada Kartu Kredit</h3>
           <p className="text-muted mb-3">Tambahkan profil kartu kredit Anda melalui menu "Tambah Profil" di atas.</p>
-          <Button element="button" color="primary" onClick={onAdd}>
+          <Button element="button" color="primary" onClick={() => openFormForType('credit_card')}>
             <Icon icon="plus" size={16} className="me-2" />
             Tambah Kartu Kredit
           </Button>
@@ -123,7 +125,7 @@ export function CreditTabCreditCard({ onAdd }: { onAdd?: () => void }) {
             color: 'var(--tblr-primary)',
             cursor: 'pointer'
           }}
-          onClick={onAdd}
+          onClick={() => openFormForType('credit_card')}
         >
           <div className="text-center opacity-75">
             <Icon icon="plus" size={20} className="mb-1" />

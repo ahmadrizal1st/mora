@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
 import { Icon } from '@/shared/components/ui';
-import { CreditTypeCards } from '../CreditTypeCards';
-import { DebtPayoffPlannerPreview } from '../DebtPayoffPlannerPreview';
-import { useCreditSummary } from '../../hooks/useCreditSummary';
-import { useCredits } from '../../hooks/useCredits';
+import { CreditTypeCards } from '../components/CreditTypeCards';
+import { DebtPayoffPlannerPreview } from '../components/DebtPayoffPlannerPreview';
+import { useCreditSummary } from '../hooks/useCreditSummary';
+import { useCredits } from '../hooks/useCredits';
 
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
 
-export function CreditTabOverview() {
+export function CreditOverviewPage() {
   const { totalOutstanding, totalMonthlyBurden, activeCount, utilizationPct, creditScore, scoreTrend, isLoading } = useCreditSummary();
   const { data: credits = [] } = useCredits();
   const [isExpanded, setIsExpanded] = React.useState(false);

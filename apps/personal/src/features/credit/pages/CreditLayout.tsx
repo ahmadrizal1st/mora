@@ -1,34 +1,21 @@
 import { useState } from 'react';
 import BaseLayout from '@/shared/layouts/BaseLayout';
 import { Button, Icon, Modal, ModalHeader, Select, Datepicker, AutosizeTextarea } from '@/shared/components/ui';
-import { useAccounts } from '../hooks/useAccounts';
+import { useAccounts } from '@/features/transaction/hooks/useAccounts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { CreditHeroBanner } from '../components/CreditHeroBanner';
-import { CreditTabOverview } from '../components/credit/CreditTabOverview';
-import { CreditTabCreditCard } from '../components/credit/CreditTabCreditCard';
-import { CreditTabKTA } from '../components/credit/CreditTabKTA';
-import { CreditTabKPR } from '../components/credit/CreditTabKPR';
-import { CreditTabPaylater } from '../components/credit/CreditTabPaylater';
-import { CreditTabScore } from '../components/credit/CreditTabScore';
-import type { Account } from '../types/transaction.types';
+import type { Account } from '@/features/transaction/types/transaction.types';
 
-type TabId = 'overview' | 'credit-card' | 'kta' | 'kpr' | 'paylater' | 'score';
+import { Outlet } from '@tanstack/react-router';
+import { CreditSegmentedNav } from '../components/shared/CreditSegmentedNav';
+import { CreditLayoutContext } from '../context/CreditLayoutContext';
 
-const TABS: { id: TabId; label: string; icon: string; badge?: string; badgeColor?: string }[] = [
-  { id: 'overview',     label: 'Overview',      icon: 'layout-dashboard' },
-  { id: 'credit-card',  label: 'Credit Card',   icon: 'credit-card',    badge: '2',    badgeColor: 'azure' },
-  { id: 'kta',          label: 'KTA / Pinjaman', icon: 'building-bank',  badge: '1',    badgeColor: 'primary' },
-  { id: 'kpr',          label: 'KPR / Mortgage', icon: 'home',           badge: '1',    badgeColor: 'warning' },
-  { id: 'paylater',     label: 'Paylater',       icon: 'clock-dollar',   badge: '3',    badgeColor: 'green' },
-];
-
-export default function CreditsPage() {
+export default function CreditLayout() {
   const queryClient = useQueryClient();
   const { data: accountsResponse } = useAccounts();
   const accounts = accountsResponse?.data || [];
 
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -187,64 +174,13 @@ export default function CreditsPage() {
         <CreditHeroBanner />
 
         {/* Tab Navigation — Exact Segmented Control from Image */}
-        <div className="mb-4 d-flex justify-content-center">
-          <div 
-            className="p-1 d-inline-flex bg-body-tertiary rounded-3" 
-            style={{ 
-              backgroundColor: '#f4f6fa',
-              border: '1px solid rgba(0,0,0,0.04)',
-              padding: '2px'
-            }}
-          >
-            <div className="d-flex flex-nowrap" role="tablist">
-              {TABS.map(tab => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    className={`border-0 d-flex align-items-center justify-content-center gap-2 px-3 py-1 fw-bold transition-all`}
-                    style={{
-                      borderRadius: '6px',
-                      fontSize: '12px',
-                      whiteSpace: 'nowrap',
-                      cursor: 'pointer',
-                      outline: 'none',
-                      height: '32px',
-                      backgroundColor: isActive ? '#ffffff' : 'transparent',
-                      color: isActive ? '#1e293b' : '#64748b',
-                      border: isActive ? '1px solid #e6e8eb' : '1px solid transparent',
-                      boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
-                      margin: '2px'
-                    }}
-                    onClick={() => setActiveTab(tab.id)}
-                    role="tab"
-                    aria-selected={isActive}
-                  >
-                    <Icon icon={tab.icon} size={15} />
-                    <span>{tab.label}</span>
-                    {tab.badge && (
-                      <span
-                        className={`badge bg-${tab.badgeColor} text-white border-0 rounded-pill ms-1`}
-                        style={{ fontSize: '8px', padding: '1px 5px' }}
-                      >
-                        {tab.badge}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        <CreditSegmentedNav />
 
         {/* Tab Content */}
         <div>
-          {activeTab === 'overview'     && <CreditTabOverview />}
-          {activeTab === 'credit-card'  && <CreditTabCreditCard onAdd={() => openFormForType('credit_card')} />}
-          {activeTab === 'kta'          && <CreditTabKTA onAdd={() => openFormForType('kta')} />}
-          {activeTab === 'kpr'          && <CreditTabKPR onAdd={() => openFormForType('kpr')} />}
-          {activeTab === 'paylater'     && <CreditTabPaylater onAdd={() => openFormForType('paylater')} />}
-          {activeTab === 'score'        && <CreditTabScore />}
+          <CreditLayoutContext.Provider value={{ openFormForType }}>
+            <Outlet />
+          </CreditLayoutContext.Provider>
         </div>
       </div>
 

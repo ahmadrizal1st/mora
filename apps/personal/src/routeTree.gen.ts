@@ -39,6 +39,7 @@ import { Route as TransactionsIndexRouteImport } from './routes/transactions.ind
 import { Route as TrackerIndexRouteImport } from './routes/tracker.index'
 import { Route as PlanningIndexRouteImport } from './routes/planning.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as CreditIndexRouteImport } from './routes/credit.index'
 import { Route as TrackerTextRouteImport } from './routes/tracker.text'
 import { Route as TrackerPhotoRouteImport } from './routes/tracker.photo'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
@@ -52,6 +53,11 @@ import { Route as GamificationStreakRouteImport } from './routes/gamification.st
 import { Route as GamificationStoreRouteImport } from './routes/gamification.store'
 import { Route as GamificationQuestsRouteImport } from './routes/gamification.quests'
 import { Route as DashboardAssetsRouteImport } from './routes/dashboard.assets'
+import { Route as CreditPaylaterRouteImport } from './routes/credit.paylater'
+import { Route as CreditOverviewRouteImport } from './routes/credit.overview'
+import { Route as CreditKtaRouteImport } from './routes/credit.kta'
+import { Route as CreditKprRouteImport } from './routes/credit.kpr'
+import { Route as CreditCreditCardRouteImport } from './routes/credit.credit-card'
 import { Route as AccountsAccountIdRouteImport } from './routes/accounts.$accountId'
 
 const SignUpRoute = SignUpRouteImport.update({
@@ -204,6 +210,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const CreditIndexRoute = CreditIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CreditRoute,
+} as any)
 const TrackerTextRoute = TrackerTextRouteImport.update({
   id: '/tracker/text',
   path: '/tracker/text',
@@ -269,6 +280,31 @@ const DashboardAssetsRoute = DashboardAssetsRouteImport.update({
   path: '/assets',
   getParentRoute: () => DashboardRoute,
 } as any)
+const CreditPaylaterRoute = CreditPaylaterRouteImport.update({
+  id: '/paylater',
+  path: '/paylater',
+  getParentRoute: () => CreditRoute,
+} as any)
+const CreditOverviewRoute = CreditOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => CreditRoute,
+} as any)
+const CreditKtaRoute = CreditKtaRouteImport.update({
+  id: '/kta',
+  path: '/kta',
+  getParentRoute: () => CreditRoute,
+} as any)
+const CreditKprRoute = CreditKprRouteImport.update({
+  id: '/kpr',
+  path: '/kpr',
+  getParentRoute: () => CreditRoute,
+} as any)
+const CreditCreditCardRoute = CreditCreditCardRouteImport.update({
+  id: '/credit-card',
+  path: '/credit-card',
+  getParentRoute: () => CreditRoute,
+} as any)
 const AccountsAccountIdRoute = AccountsAccountIdRouteImport.update({
   id: '/$accountId',
   path: '/$accountId',
@@ -284,7 +320,7 @@ export interface FileRoutesByFullPath {
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
-  '/credit': typeof CreditRoute
+  '/credit': typeof CreditRouteWithChildren
   '/dashboard': typeof DashboardRouteWithChildren
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
@@ -303,6 +339,11 @@ export interface FileRoutesByFullPath {
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
+  '/credit/credit-card': typeof CreditCreditCardRoute
+  '/credit/kpr': typeof CreditKprRoute
+  '/credit/kta': typeof CreditKtaRoute
+  '/credit/overview': typeof CreditOverviewRoute
+  '/credit/paylater': typeof CreditPaylaterRoute
   '/dashboard/assets': typeof DashboardAssetsRoute
   '/gamification/quests': typeof GamificationQuestsRoute
   '/gamification/store': typeof GamificationStoreRoute
@@ -316,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
+  '/credit/': typeof CreditIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/planning/': typeof PlanningIndexRoute
   '/tracker/': typeof TrackerIndexRoute
@@ -330,7 +372,6 @@ export interface FileRoutesByTo {
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
-  '/credit': typeof CreditRoute
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
   '/error-429': typeof Error429Route
@@ -347,6 +388,11 @@ export interface FileRoutesByTo {
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
+  '/credit/credit-card': typeof CreditCreditCardRoute
+  '/credit/kpr': typeof CreditKprRoute
+  '/credit/kta': typeof CreditKtaRoute
+  '/credit/overview': typeof CreditOverviewRoute
+  '/credit/paylater': typeof CreditPaylaterRoute
   '/dashboard/assets': typeof DashboardAssetsRoute
   '/gamification/quests': typeof GamificationQuestsRoute
   '/gamification/store': typeof GamificationStoreRoute
@@ -360,6 +406,7 @@ export interface FileRoutesByTo {
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
+  '/credit': typeof CreditIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/planning': typeof PlanningIndexRoute
   '/tracker': typeof TrackerIndexRoute
@@ -375,7 +422,7 @@ export interface FileRoutesById {
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
-  '/credit': typeof CreditRoute
+  '/credit': typeof CreditRouteWithChildren
   '/dashboard': typeof DashboardRouteWithChildren
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
@@ -394,6 +441,11 @@ export interface FileRoutesById {
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
+  '/credit/credit-card': typeof CreditCreditCardRoute
+  '/credit/kpr': typeof CreditKprRoute
+  '/credit/kta': typeof CreditKtaRoute
+  '/credit/overview': typeof CreditOverviewRoute
+  '/credit/paylater': typeof CreditPaylaterRoute
   '/dashboard/assets': typeof DashboardAssetsRoute
   '/gamification/quests': typeof GamificationQuestsRoute
   '/gamification/store': typeof GamificationStoreRoute
@@ -407,6 +459,7 @@ export interface FileRoutesById {
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
+  '/credit/': typeof CreditIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/planning/': typeof PlanningIndexRoute
   '/tracker/': typeof TrackerIndexRoute
@@ -442,6 +495,11 @@ export interface FileRouteTypes {
     | '/sign-in-link'
     | '/sign-up'
     | '/accounts/$accountId'
+    | '/credit/credit-card'
+    | '/credit/kpr'
+    | '/credit/kta'
+    | '/credit/overview'
+    | '/credit/paylater'
     | '/dashboard/assets'
     | '/gamification/quests'
     | '/gamification/store'
@@ -455,6 +513,7 @@ export interface FileRouteTypes {
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/text'
+    | '/credit/'
     | '/dashboard/'
     | '/planning/'
     | '/tracker/'
@@ -469,7 +528,6 @@ export interface FileRouteTypes {
     | '/activity'
     | '/assets'
     | '/auth-lock'
-    | '/credit'
     | '/error-403'
     | '/error-404'
     | '/error-429'
@@ -486,6 +544,11 @@ export interface FileRouteTypes {
     | '/sign-in-link'
     | '/sign-up'
     | '/accounts/$accountId'
+    | '/credit/credit-card'
+    | '/credit/kpr'
+    | '/credit/kta'
+    | '/credit/overview'
+    | '/credit/paylater'
     | '/dashboard/assets'
     | '/gamification/quests'
     | '/gamification/store'
@@ -499,6 +562,7 @@ export interface FileRouteTypes {
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/text'
+    | '/credit'
     | '/dashboard'
     | '/planning'
     | '/tracker'
@@ -532,6 +596,11 @@ export interface FileRouteTypes {
     | '/sign-in-link'
     | '/sign-up'
     | '/accounts/$accountId'
+    | '/credit/credit-card'
+    | '/credit/kpr'
+    | '/credit/kta'
+    | '/credit/overview'
+    | '/credit/paylater'
     | '/dashboard/assets'
     | '/gamification/quests'
     | '/gamification/store'
@@ -545,6 +614,7 @@ export interface FileRouteTypes {
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/text'
+    | '/credit/'
     | '/dashboard/'
     | '/planning/'
     | '/tracker/'
@@ -560,7 +630,7 @@ export interface RootRouteChildren {
   ActivityRoute: typeof ActivityRoute
   AssetsRoute: typeof AssetsRoute
   AuthLockRoute: typeof AuthLockRoute
-  CreditRoute: typeof CreditRoute
+  CreditRoute: typeof CreditRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
   Error403Route: typeof Error403Route
   Error404Route: typeof Error404Route
@@ -803,6 +873,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/credit/': {
+      id: '/credit/'
+      path: '/'
+      fullPath: '/credit/'
+      preLoaderRoute: typeof CreditIndexRouteImport
+      parentRoute: typeof CreditRoute
+    }
     '/tracker/text': {
       id: '/tracker/text'
       path: '/tracker/text'
@@ -894,6 +971,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAssetsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/credit/paylater': {
+      id: '/credit/paylater'
+      path: '/paylater'
+      fullPath: '/credit/paylater'
+      preLoaderRoute: typeof CreditPaylaterRouteImport
+      parentRoute: typeof CreditRoute
+    }
+    '/credit/overview': {
+      id: '/credit/overview'
+      path: '/overview'
+      fullPath: '/credit/overview'
+      preLoaderRoute: typeof CreditOverviewRouteImport
+      parentRoute: typeof CreditRoute
+    }
+    '/credit/kta': {
+      id: '/credit/kta'
+      path: '/kta'
+      fullPath: '/credit/kta'
+      preLoaderRoute: typeof CreditKtaRouteImport
+      parentRoute: typeof CreditRoute
+    }
+    '/credit/kpr': {
+      id: '/credit/kpr'
+      path: '/kpr'
+      fullPath: '/credit/kpr'
+      preLoaderRoute: typeof CreditKprRouteImport
+      parentRoute: typeof CreditRoute
+    }
+    '/credit/credit-card': {
+      id: '/credit/credit-card'
+      path: '/credit-card'
+      fullPath: '/credit/credit-card'
+      preLoaderRoute: typeof CreditCreditCardRouteImport
+      parentRoute: typeof CreditRoute
+    }
     '/accounts/$accountId': {
       id: '/accounts/$accountId'
       path: '/$accountId'
@@ -915,6 +1027,27 @@ const AccountsRouteChildren: AccountsRouteChildren = {
 const AccountsRouteWithChildren = AccountsRoute._addFileChildren(
   AccountsRouteChildren,
 )
+
+interface CreditRouteChildren {
+  CreditCreditCardRoute: typeof CreditCreditCardRoute
+  CreditKprRoute: typeof CreditKprRoute
+  CreditKtaRoute: typeof CreditKtaRoute
+  CreditOverviewRoute: typeof CreditOverviewRoute
+  CreditPaylaterRoute: typeof CreditPaylaterRoute
+  CreditIndexRoute: typeof CreditIndexRoute
+}
+
+const CreditRouteChildren: CreditRouteChildren = {
+  CreditCreditCardRoute: CreditCreditCardRoute,
+  CreditKprRoute: CreditKprRoute,
+  CreditKtaRoute: CreditKtaRoute,
+  CreditOverviewRoute: CreditOverviewRoute,
+  CreditPaylaterRoute: CreditPaylaterRoute,
+  CreditIndexRoute: CreditIndexRoute,
+}
+
+const CreditRouteWithChildren =
+  CreditRoute._addFileChildren(CreditRouteChildren)
 
 interface DashboardRouteChildren {
   DashboardAssetsRoute: typeof DashboardAssetsRoute
@@ -957,7 +1090,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActivityRoute: ActivityRoute,
   AssetsRoute: AssetsRoute,
   AuthLockRoute: AuthLockRoute,
-  CreditRoute: CreditRoute,
+  CreditRoute: CreditRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
   Error403Route: Error403Route,
   Error404Route: Error404Route,
