@@ -26,7 +26,11 @@
   "planning": {
     "title": "Planning",
     "icon": "target",
-    "url": "planning"
+    "children": {
+      "budget": { "url": "planning/budget", "title": "Budget" },
+      "goals": { "url": "planning/goals", "title": "Goals" },
+      "subscriptions": { "url": "planning/subscriptions", "title": "Subscriptions" }
+    }
   },
 
   "achievements": {

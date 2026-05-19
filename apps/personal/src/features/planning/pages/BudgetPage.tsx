@@ -1,17 +1,16 @@
-import React from 'react';
-import { MOCK_BUDGET_DATA } from '../../data/mockPlanningData';
-import { BudgetOverviewCard } from './BudgetOverviewCard';
-import { BudgetCategoryItem } from './BudgetCategoryItem';
-import { BudgetTrendChartCard } from './BudgetTrendChartCard';
-import { BudgetDetailedTable } from './BudgetDetailedTable';
-import { SavingsHealthCard } from '../shared/SavingsHealthCard';
-import { BudgetBurnRateCard } from './BudgetBurnRateCard';
-import { BudgetInsights } from './BudgetInsights';
-import { BudgetDistributionChart } from './BudgetDistributionChart';
+import { MOCK_BUDGET_DATA } from '../data/mockPlanningData';
+import { BudgetOverviewCard } from '../components/budget/BudgetOverviewCard';
+import { BudgetCategoryItem } from '../components/budget/BudgetCategoryItem';
+import { BudgetTrendChartCard } from '../components/budget/BudgetTrendChartCard';
+import { BudgetDetailedTable } from '../components/budget/BudgetDetailedTable';
+import { SavingsHealthCard } from '../components/shared/SavingsHealthCard';
+import { BudgetBurnRateCard } from '../components/budget/BudgetBurnRateCard';
+import { BudgetInsights } from '../components/budget/BudgetInsights';
+import { BudgetDistributionChart } from '../components/budget/BudgetDistributionChart';
 import { Icon } from '@/shared/components/ui/Icon';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
 
-export function BudgetTab() {
+export function BudgetPage() {
   const { categories, totalBudget, spent, safeToSpendPerDay } = MOCK_BUDGET_DATA;
   
   const needs = categories.filter(c => c.type === 'needs');
@@ -47,7 +46,6 @@ export function BudgetTab() {
           />
         </div>
       </div>
-
 
       {/* LEVEL 3: Categories vs Insights */}
       <div className="col-lg-8">
@@ -117,4 +115,3 @@ export function BudgetTab() {
     </div>
   );
 }
-

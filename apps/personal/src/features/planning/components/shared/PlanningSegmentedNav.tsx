@@ -1,17 +1,12 @@
-import React from 'react';
-import { clsx } from 'clsx';
+import { Link, useLocation } from '@tanstack/react-router';
 import { Icon } from '@/shared/components/ui/Icon';
 
-interface PlanningSegmentedNavProps {
-  activeTab: 'budget' | 'goals' | 'subscriptions';
-  onTabChange: (tab: 'budget' | 'goals' | 'subscriptions') => void;
-}
-
-export function PlanningSegmentedNav({ activeTab, onTabChange }: PlanningSegmentedNavProps) {
+export function PlanningSegmentedNav() {
+  const location = useLocation();
   const tabs = [
-    { id: 'budget', label: 'Monthly Budget', icon: 'chart-pie', badge: '5', badgeColor: 'azure' },
-    { id: 'goals', label: 'Financial Goals', icon: 'target', badge: '3', badgeColor: 'warning' },
-    { id: 'subscriptions', label: 'Subscriptions', icon: 'calendar-event', badge: '4', badgeColor: 'green' },
+    { id: 'budget', label: 'Monthly Budget', icon: 'chart-pie', badge: '5', badgeColor: 'azure', to: '/planning/budget' },
+    { id: 'goals', label: 'Financial Goals', icon: 'target', badge: '3', badgeColor: 'warning', to: '/planning/goals' },
+    { id: 'subscriptions', label: 'Subscriptions', icon: 'calendar-event', badge: '4', badgeColor: 'green', to: '/planning/subscriptions' },
   ] as const;
 
   return (
@@ -25,12 +20,12 @@ export function PlanningSegmentedNav({ activeTab, onTabChange }: PlanningSegment
     >
       <div className="d-flex flex-nowrap" role="tablist">
         {tabs.map((tab) => {
-          const isActive = activeTab === tab.id;
+          const isActive = location.pathname.includes(tab.id);
           return (
-            <button
+            <Link
               key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className="border-0 d-flex align-items-center justify-content-center gap-2 px-3 py-1 fw-bold transition-all"
+              to={tab.to}
+              className="border-0 d-flex align-items-center justify-content-center gap-2 px-3 py-1 fw-bold transition-all text-decoration-none"
               style={{
                 borderRadius: '6px',
                 fontSize: '12px',
@@ -58,7 +53,7 @@ export function PlanningSegmentedNav({ activeTab, onTabChange }: PlanningSegment
                   {tab.badge}
                 </span>
               )}
-            </button>
+            </Link>
           );
         })}
       </div>

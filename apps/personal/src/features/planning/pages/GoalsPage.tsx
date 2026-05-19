@@ -1,22 +1,18 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useContext } from 'react';
 import { Link } from '@tanstack/react-router';
-import { MOCK_GOALS_DATA } from '../../data/mockPlanningData';
-import { Goal, GoalsData } from '../../types';
-import { GoalsOverviewCard } from './GoalsOverviewCard';
-import { GoalCard } from './GoalCard';
-import { GoalTrajectoryChart } from './GoalTrajectoryChart';
-import { EmergencyFundCard } from './EmergencyFundCard';
-import { SmartInsightCard } from './SmartInsightCard';
+import { MOCK_GOALS_DATA } from '../data/mockPlanningData';
+import { GoalsOverviewCard } from '../components/goals/GoalsOverviewCard';
+import { GoalCard } from '../components/goals/GoalCard';
+import { GoalTrajectoryChart } from '../components/goals/GoalTrajectoryChart';
+import { EmergencyFundCard } from '../components/goals/EmergencyFundCard';
+import { SmartInsightCard } from '../components/goals/SmartInsightCard';
 import { Modal, ModalHeader, Icon } from '@/shared/components/ui';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
+import { PlanningContext } from './PlanningLayout';
 
-interface GoalsTabProps {
-  onAdd?: () => void;
-  onEditGoal?: (goal: Goal) => void;
-  data?: GoalsData;
-}
-
-export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA as GoalsData }: GoalsTabProps) {
+export function GoalsPage() {
+  const { goalsData, handleOpenAddGoal, handleEditGoal } = useContext(PlanningContext);
+  const data = goalsData || MOCK_GOALS_DATA;
   const { totalSaved, totalTarget, goals, milestones } = data;
 
   // Main Page Filter States
@@ -250,13 +246,13 @@ export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA as GoalsDat
                     <div key={goal.id} className="col-12 col-md-6">
                       <GoalCard 
                         goal={goal} 
-                        onClick={() => onEditGoal?.(goal)}
+                        onClick={() => handleEditGoal?.(goal)}
                       />
                     </div>
                   ))
                 )}
                 {/* Add Button is always part of the grid flow */}
-                <div className="col-12 col-md-6" onClick={onAdd}>
+                <div className="col-12 col-md-6" onClick={handleOpenAddGoal}>
                   <div 
                     className="card shadow-none cursor-pointer d-flex align-items-center justify-content-center py-5 h-100 transition-all hover-bg-surface hover-border-primary" 
                     style={{ 
@@ -298,7 +294,7 @@ export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA as GoalsDat
             </div>
             <div className="card-body p-4 d-flex flex-column h-100">
               <div className="position-relative ps-4 border-start border-2 border-orange-lt flex-grow-1">
-                {milestones.map((m, i) => (
+                {milestones.map((m: any, i: number) => (
                   <div key={i} className="mb-4 position-relative">
                     <div 
                       className={`position-absolute rounded-circle border border-white d-flex align-items-center justify-content-center ${m.type === 'achievement' ? 'bg-success' : 'bg-orange'}`} 
@@ -474,7 +470,7 @@ export function GoalsTab({ onAdd, onEditGoal, data = MOCK_GOALS_DATA as GoalsDat
                         style={{ cursor: 'pointer' }}
                         onClick={() => {
                           setIsDetailOpen(false);
-                          onEditGoal?.(g);
+                          handleEditGoal?.(g);
                         }}
                       >
                         <td className="px-3 py-3" style={{ minWidth: '180px' }}>

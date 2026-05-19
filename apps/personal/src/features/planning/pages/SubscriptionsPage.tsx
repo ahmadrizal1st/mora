@@ -1,16 +1,17 @@
-import React, { useState, useMemo } from 'react';
-import { MOCK_SUBSCRIPTIONS_DATA } from '../../data/mockPlanningData';
-import { UpcomingBillsCard } from './UpcomingBillsCard';
-import { SubscriptionItem } from './SubscriptionItem';
-import { SubscriptionDistributionChart } from './SubscriptionDistributionChart';
-import { SubscriptionCalendar } from './SubscriptionCalendar';
-import { SubscriptionTrendChart } from './SubscriptionTrendChart';
-import { TrialTrackerCard } from './TrialTrackerCard';
-import { SubscriptionSmartInsight } from './SubscriptionSmartInsight';
-import { AddSubscriptionCard } from './AddSubscriptionCard';
-import { SubscriptionMetricStrip } from './SubscriptionMetricStrip';
-import { SubscriptionCategoryBreakdown } from './SubscriptionCategoryBreakdown';
+import React, { useState, useMemo, useContext } from 'react';
+import { MOCK_SUBSCRIPTIONS_DATA } from '../data/mockPlanningData';
+import { UpcomingBillsCard } from '../components/subscriptions/UpcomingBillsCard';
+import { SubscriptionItem } from '../components/subscriptions/SubscriptionItem';
+import { SubscriptionDistributionChart } from '../components/subscriptions/SubscriptionDistributionChart';
+import { SubscriptionCalendar } from '../components/subscriptions/SubscriptionCalendar';
+import { SubscriptionTrendChart } from '../components/subscriptions/SubscriptionTrendChart';
+import { TrialTrackerCard } from '../components/subscriptions/TrialTrackerCard';
+import { SubscriptionSmartInsight } from '../components/subscriptions/SubscriptionSmartInsight';
+import { AddSubscriptionCard } from '../components/subscriptions/AddSubscriptionCard';
+import { SubscriptionMetricStrip } from '../components/subscriptions/SubscriptionMetricStrip';
+import { SubscriptionCategoryBreakdown } from '../components/subscriptions/SubscriptionCategoryBreakdown';
 import { Icon } from '@/shared/components/ui/Icon';
+import { PlanningContext } from './PlanningLayout';
 
 const getSubCategory = (subName: string): string => {
   const name = subName.toLowerCase();
@@ -20,13 +21,15 @@ const getSubCategory = (subName: string): string => {
   return 'Lainnya';
 };
 
-export function SubscriptionsTab({ onAdd, data = MOCK_SUBSCRIPTIONS_DATA }: { onAdd?: () => void; data?: typeof MOCK_SUBSCRIPTIONS_DATA }) {
+export function SubscriptionsPage() {
+  const { subsData, setIsSubModalOpen } = useContext(PlanningContext);
+  const data = subsData || MOCK_SUBSCRIPTIONS_DATA;
   const { totalMonthly, paidThisMonth, subscriptions } = data;
   const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredSubscriptions = useMemo(() => {
-    return subscriptions.filter(sub => {
+    return subscriptions.filter((sub: any) => {
       const matchesCategory = selectedCategory === 'Semua' || getSubCategory(sub.name) === selectedCategory;
       const matchesSearch = sub.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
@@ -118,13 +121,13 @@ export function SubscriptionsTab({ onAdd, data = MOCK_SUBSCRIPTIONS_DATA }: { on
             </div>
             <div className="card-body p-4">
               <div className="row g-3">
-                {filteredSubscriptions.map(sub => (
+                {filteredSubscriptions.map((sub: any) => (
                   <div key={sub.id} className="col-12 col-md-6 col-lg-4">
                     <SubscriptionItem subscription={{...sub, color: 'var(--tblr-primary)'}} />
                   </div>
                 ))}
                 <div className="col-12 col-md-6 col-lg-4">
-                  <AddSubscriptionCard onClick={onAdd} />
+                  <AddSubscriptionCard onClick={() => setIsSubModalOpen(true)} />
                 </div>
               </div>
             </div>

@@ -37,6 +37,7 @@ import { Route as R2StepVerificationRouteImport } from './routes/2-step-verifica
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions.index'
 import { Route as TrackerIndexRouteImport } from './routes/tracker.index'
+import { Route as PlanningIndexRouteImport } from './routes/planning.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as TrackerTextRouteImport } from './routes/tracker.text'
 import { Route as TrackerPhotoRouteImport } from './routes/tracker.photo'
@@ -44,6 +45,9 @@ import { Route as TrackerInputRouteImport } from './routes/tracker.input'
 import { Route as TrackerImageRouteImport } from './routes/tracker.image'
 import { Route as TrackerFileRouteImport } from './routes/tracker.file'
 import { Route as TrackerAudioRouteImport } from './routes/tracker.audio'
+import { Route as PlanningSubscriptionsRouteImport } from './routes/planning.subscriptions'
+import { Route as PlanningGoalsRouteImport } from './routes/planning.goals'
+import { Route as PlanningBudgetRouteImport } from './routes/planning.budget'
 import { Route as GamificationStreakRouteImport } from './routes/gamification.streak'
 import { Route as GamificationStoreRouteImport } from './routes/gamification.store'
 import { Route as GamificationQuestsRouteImport } from './routes/gamification.quests'
@@ -190,6 +194,11 @@ const TrackerIndexRoute = TrackerIndexRouteImport.update({
   path: '/tracker/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlanningIndexRoute = PlanningIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PlanningRoute,
+} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -224,6 +233,21 @@ const TrackerAudioRoute = TrackerAudioRouteImport.update({
   id: '/tracker/audio',
   path: '/tracker/audio',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PlanningSubscriptionsRoute = PlanningSubscriptionsRouteImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
+  getParentRoute: () => PlanningRoute,
+} as any)
+const PlanningGoalsRoute = PlanningGoalsRouteImport.update({
+  id: '/goals',
+  path: '/goals',
+  getParentRoute: () => PlanningRoute,
+} as any)
+const PlanningBudgetRoute = PlanningBudgetRouteImport.update({
+  id: '/budget',
+  path: '/budget',
+  getParentRoute: () => PlanningRoute,
 } as any)
 const GamificationStreakRoute = GamificationStreakRouteImport.update({
   id: '/gamification/streak',
@@ -269,7 +293,7 @@ export interface FileRoutesByFullPath {
   '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/notifications': typeof NotificationsRoute
-  '/planning': typeof PlanningRoute
+  '/planning': typeof PlanningRouteWithChildren
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
@@ -283,6 +307,9 @@ export interface FileRoutesByFullPath {
   '/gamification/quests': typeof GamificationQuestsRoute
   '/gamification/store': typeof GamificationStoreRoute
   '/gamification/streak': typeof GamificationStreakRoute
+  '/planning/budget': typeof PlanningBudgetRoute
+  '/planning/goals': typeof PlanningGoalsRoute
+  '/planning/subscriptions': typeof PlanningSubscriptionsRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
@@ -290,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/planning/': typeof PlanningIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
 }
@@ -310,7 +338,6 @@ export interface FileRoutesByTo {
   '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/notifications': typeof NotificationsRoute
-  '/planning': typeof PlanningRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
@@ -324,6 +351,9 @@ export interface FileRoutesByTo {
   '/gamification/quests': typeof GamificationQuestsRoute
   '/gamification/store': typeof GamificationStoreRoute
   '/gamification/streak': typeof GamificationStreakRoute
+  '/planning/budget': typeof PlanningBudgetRoute
+  '/planning/goals': typeof PlanningGoalsRoute
+  '/planning/subscriptions': typeof PlanningSubscriptionsRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
@@ -331,6 +361,7 @@ export interface FileRoutesByTo {
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/planning': typeof PlanningIndexRoute
   '/tracker': typeof TrackerIndexRoute
   '/transactions': typeof TransactionsIndexRoute
 }
@@ -353,7 +384,7 @@ export interface FileRoutesById {
   '/error-maintenance': typeof ErrorMaintenanceRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/notifications': typeof NotificationsRoute
-  '/planning': typeof PlanningRoute
+  '/planning': typeof PlanningRouteWithChildren
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
@@ -367,6 +398,9 @@ export interface FileRoutesById {
   '/gamification/quests': typeof GamificationQuestsRoute
   '/gamification/store': typeof GamificationStoreRoute
   '/gamification/streak': typeof GamificationStreakRoute
+  '/planning/budget': typeof PlanningBudgetRoute
+  '/planning/goals': typeof PlanningGoalsRoute
+  '/planning/subscriptions': typeof PlanningSubscriptionsRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
@@ -374,6 +408,7 @@ export interface FileRoutesById {
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/planning/': typeof PlanningIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
 }
@@ -411,6 +446,9 @@ export interface FileRouteTypes {
     | '/gamification/quests'
     | '/gamification/store'
     | '/gamification/streak'
+    | '/planning/budget'
+    | '/planning/goals'
+    | '/planning/subscriptions'
     | '/tracker/audio'
     | '/tracker/file'
     | '/tracker/image'
@@ -418,6 +456,7 @@ export interface FileRouteTypes {
     | '/tracker/photo'
     | '/tracker/text'
     | '/dashboard/'
+    | '/planning/'
     | '/tracker/'
     | '/transactions/'
   fileRoutesByTo: FileRoutesByTo
@@ -438,7 +477,6 @@ export interface FileRouteTypes {
     | '/error-maintenance'
     | '/forgot-password'
     | '/notifications'
-    | '/planning'
     | '/profile'
     | '/reset-password'
     | '/settings'
@@ -452,6 +490,9 @@ export interface FileRouteTypes {
     | '/gamification/quests'
     | '/gamification/store'
     | '/gamification/streak'
+    | '/planning/budget'
+    | '/planning/goals'
+    | '/planning/subscriptions'
     | '/tracker/audio'
     | '/tracker/file'
     | '/tracker/image'
@@ -459,6 +500,7 @@ export interface FileRouteTypes {
     | '/tracker/photo'
     | '/tracker/text'
     | '/dashboard'
+    | '/planning'
     | '/tracker'
     | '/transactions'
   id:
@@ -494,6 +536,9 @@ export interface FileRouteTypes {
     | '/gamification/quests'
     | '/gamification/store'
     | '/gamification/streak'
+    | '/planning/budget'
+    | '/planning/goals'
+    | '/planning/subscriptions'
     | '/tracker/audio'
     | '/tracker/file'
     | '/tracker/image'
@@ -501,6 +546,7 @@ export interface FileRouteTypes {
     | '/tracker/photo'
     | '/tracker/text'
     | '/dashboard/'
+    | '/planning/'
     | '/tracker/'
     | '/transactions/'
   fileRoutesById: FileRoutesById
@@ -523,7 +569,7 @@ export interface RootRouteChildren {
   ErrorMaintenanceRoute: typeof ErrorMaintenanceRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   NotificationsRoute: typeof NotificationsRoute
-  PlanningRoute: typeof PlanningRoute
+  PlanningRoute: typeof PlanningRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SettingsRoute: typeof SettingsRoute
@@ -743,6 +789,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackerIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/planning/': {
+      id: '/planning/'
+      path: '/'
+      fullPath: '/planning/'
+      preLoaderRoute: typeof PlanningIndexRouteImport
+      parentRoute: typeof PlanningRoute
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
@@ -791,6 +844,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/tracker/audio'
       preLoaderRoute: typeof TrackerAudioRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/planning/subscriptions': {
+      id: '/planning/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/planning/subscriptions'
+      preLoaderRoute: typeof PlanningSubscriptionsRouteImport
+      parentRoute: typeof PlanningRoute
+    }
+    '/planning/goals': {
+      id: '/planning/goals'
+      path: '/goals'
+      fullPath: '/planning/goals'
+      preLoaderRoute: typeof PlanningGoalsRouteImport
+      parentRoute: typeof PlanningRoute
+    }
+    '/planning/budget': {
+      id: '/planning/budget'
+      path: '/budget'
+      fullPath: '/planning/budget'
+      preLoaderRoute: typeof PlanningBudgetRouteImport
+      parentRoute: typeof PlanningRoute
     }
     '/gamification/streak': {
       id: '/gamification/streak'
@@ -856,6 +930,24 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface PlanningRouteChildren {
+  PlanningBudgetRoute: typeof PlanningBudgetRoute
+  PlanningGoalsRoute: typeof PlanningGoalsRoute
+  PlanningSubscriptionsRoute: typeof PlanningSubscriptionsRoute
+  PlanningIndexRoute: typeof PlanningIndexRoute
+}
+
+const PlanningRouteChildren: PlanningRouteChildren = {
+  PlanningBudgetRoute: PlanningBudgetRoute,
+  PlanningGoalsRoute: PlanningGoalsRoute,
+  PlanningSubscriptionsRoute: PlanningSubscriptionsRoute,
+  PlanningIndexRoute: PlanningIndexRoute,
+}
+
+const PlanningRouteWithChildren = PlanningRoute._addFileChildren(
+  PlanningRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R2StepVerificationRoute: R2StepVerificationRoute,
@@ -874,7 +966,7 @@ const rootRouteChildren: RootRouteChildren = {
   ErrorMaintenanceRoute: ErrorMaintenanceRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   NotificationsRoute: NotificationsRoute,
-  PlanningRoute: PlanningRoute,
+  PlanningRoute: PlanningRouteWithChildren,
   ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SettingsRoute: SettingsRoute,
