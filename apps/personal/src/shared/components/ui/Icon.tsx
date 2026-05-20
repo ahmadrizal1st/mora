@@ -56,7 +56,7 @@ export function Icon({ icon, className, color, size, inline, filled, stroke, sty
     )
   }
 
-  const isBuiltInSize = typeof size === 'string' && ['xxs', 'xs', 'sm', 'md', 'lg', 'xl'].includes(size)
+  const isBuiltInSize = typeof size === 'string' && ['xxs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'].includes(size)
 
   const classes = clsx(
     'icon',
@@ -73,6 +73,7 @@ export function Icon({ icon, className, color, size, inline, filled, stroke, sty
     md: 20,
     lg: 24,
     xl: 32,
+    '2xl': 48,
   }
 
   const normalizedSize = typeof size === 'string' ? sizeMap[size] || size : size
