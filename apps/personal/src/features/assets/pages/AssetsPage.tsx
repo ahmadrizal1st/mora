@@ -42,7 +42,7 @@ export default function AssetsPage() {
   const totalAssets = stats.cash + stats.investment + stats.saving;
   const netWorth = totalAssets - stats.liabilities;
   return (
-    <BaseLayout pageTitle="Laporan Keuangan">
+    <BaseLayout pageTitle="Asset">
       <div className="row row-cards g-3">
         {/* COLUMN 1 & 2 Combined (6/12 total width) - Used for small stats, wide chart, and table */}
         <div className="col-lg-6">

@@ -27,7 +27,7 @@ export function AssetAllocationCard({ data }: AssetAllocationCardProps) {
     type: 'radialBar',
     series: [
       { name: 'Kebutuhan', color: 'orange',  data: [Number(kebutuhanPct.toFixed(1))] },
-      { name: 'Keinginan', color: 'primary', data: [Number(keinginanPct.toFixed(1))] },
+      { name: 'Keinginan', color: 'azure', data: [Number(keinginanPct.toFixed(1))] },
       { name: 'Tabungan',  color: 'green',   data: [Number(tabunganPct.toFixed(1))]  },
     ],
     hollowSize: '25%',
@@ -69,7 +69,7 @@ export function AssetAllocationCard({ data }: AssetAllocationCardProps) {
   ];
 
   return (
-    <div className="card shadow-sm border-0 h-100">
+    <div className="card shadow-sm border-0">
       <div className="card-header border-0 pb-0 pt-4 px-4">
         <h3 className="card-title fw-bold">Budget 50/30/20</h3>
       </div>

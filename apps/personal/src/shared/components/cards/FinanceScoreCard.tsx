@@ -2,7 +2,7 @@ import { Icon } from '@/shared/components/ui/Icon';
 
 export function FinanceScoreCard() {
   return (
-    <div className="card shadow-sm border-0 h-100" style={{ background: 'var(--tblr-primary-lt)' }}>
+    <div className="card shadow-sm border-0" style={{ background: 'var(--tblr-primary-lt)' }}>
       <div className="card-header border-0 pb-0 pt-4 px-4 bg-transparent">
         <h3 className="card-title fw-bold">Kesehatan Keuangan</h3>
         <div className="card-actions">

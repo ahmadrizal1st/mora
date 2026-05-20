@@ -2,7 +2,7 @@ import { Icon } from '@/shared/components/ui/Icon';
 
 export function RecentActivitiesCard() {
   return (
-    <div className="card shadow-sm border-0 h-100">
+    <div className="card shadow-sm border-0">
       <div className="card-header border-0 pb-0 pt-4 px-4">
         <h3 className="card-title fw-bold">Recent Updates</h3>
         <div className="card-actions">
