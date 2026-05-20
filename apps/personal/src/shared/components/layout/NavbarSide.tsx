@@ -27,24 +27,22 @@ export function NavbarSide({
   showUser = true,
   className,
 }: NavbarSideProps) {
-  const classes = clsx('navbar-nav', 'flex-row', className)
+  const classes = clsx('navbar-nav', 'flex-row', 'align-items-center', 'gap-1 gap-md-2', className)
 
-  const toolsClasses = clsx(
-    `d-none d-${breakpoint}-flex`,
-    'me-3'
-  )
+  const responsiveClass = `d-none d-${breakpoint}-flex`
 
   return (
     <div className={classes}>
       {showNotifications && (
-        <NavbarSideNotifications className="me-2 me-md-3" />
+        <NavbarSideNotifications />
       )}
 
-      {(showTheme || showLanguage) && (
-        <div className={toolsClasses}>
-          {showTheme && <NavbarSideTheme />}
-          {showLanguage && <NavbarSideLanguage />}
-        </div>
+      {showTheme && (
+        <NavbarSideTheme className={responsiveClass} />
+      )}
+
+      {showLanguage && (
+        <NavbarSideLanguage className={responsiveClass} />
       )}
 
       {showUser && (

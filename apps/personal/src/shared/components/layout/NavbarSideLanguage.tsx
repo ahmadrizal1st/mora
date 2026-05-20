@@ -1,9 +1,14 @@
+import { clsx } from 'clsx'
 import { DropdownMenu } from '../ui/DropdownMenu'
 import languages from '../../data/languages.json'
 
-export function NavbarSideLanguage() {
+interface NavbarSideLanguageProps {
+  className?: string
+}
+
+export function NavbarSideLanguage({ className }: NavbarSideLanguageProps) {
     return (
-        <div className="nav-item dropdown d-none d-md-flex me-3">
+        <div className={clsx("nav-item dropdown", className)}>
             {/* Trigger dihandle Bootstrap JS via data-bs-toggle */}
             <a
                 href="#"

@@ -1,11 +1,16 @@
+import { clsx } from 'clsx'
 import { Icon } from '../ui/Icon'
 import { useTheme } from '@/shared/context/ThemeContext'
 
-export function NavbarSideTheme() {
+interface NavbarSideThemeProps {
+  className?: string
+}
+
+export function NavbarSideTheme({ className }: NavbarSideThemeProps) {
     const { config, toggleDarkMode } = useTheme()
 
     return (
-        <div className="nav-item">
+        <div className={clsx("nav-item", className)}>
             {config.theme === 'light' ? (
                 <a
                     href="#"
