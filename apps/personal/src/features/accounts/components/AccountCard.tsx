@@ -19,9 +19,7 @@ export function AccountCard({ isActive, type, name, balance, delta, chgPos, logo
   const isCash = type.toLowerCase().includes('tunai') || type.toLowerCase().includes('cash');
 
   const typeIcon = isBank ? 'building-bank' : isInvest ? 'trending-up' : isCash ? 'cash' : 'wallet';
-  const badgeStyle = color
-    ? { backgroundColor: `${color}22`, color: color, width: '26px', height: '26px' }
-    : { width: '26px', height: '26px' };
+  const badgeStyle = { width: '26px', height: '26px', color: 'white' };
 
   return (
     <div 
@@ -44,11 +42,14 @@ export function AccountCard({ isActive, type, name, balance, delta, chgPos, logo
               style={{ width: '48px', height: '28px', objectFit: 'contain', objectPosition: 'left' }}
             />
           ) : (
-            <div className={clsx('avatar avatar-sm rounded', isActive ? 'bg-primary text-white' : 'bg-primary-lt text-primary')}>
+            <div 
+              className={clsx('d-flex align-items-center justify-content-center text-white shadow-sm', color ? `bg-${color}` : 'bg-primary')}
+              style={{ borderRadius: '10px', width: '32px', height: '32px' }}
+            >
               <Icon icon={isBank ? 'building-bank' : 'wallet'} size="sm" />
             </div>
           )}
-          <span className="badge d-flex align-items-center justify-content-center rounded-circle p-1" style={badgeStyle}>
+          <span className={clsx('badge d-flex align-items-center justify-content-center rounded-circle p-1 shadow-sm', color ? `bg-${color}` : 'bg-primary')} style={badgeStyle}>
             <Icon icon={typeIcon} size={14} />
           </span>
         </div>

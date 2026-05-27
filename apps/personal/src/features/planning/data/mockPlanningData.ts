@@ -3,11 +3,11 @@ export const MOCK_BUDGET_DATA = {
   spent: 6500000,
   safeToSpendPerDay: 150000,
   categories: [
-    { id: '1', name: 'Groceries', limit: 2000000, spent: 1500000, type: 'needs', icon: 'shopping-cart', color: '#3ecf8e' },
-    { id: '2', name: 'Transportasi', limit: 1000000, spent: 1200000, type: 'needs', icon: 'car', color: '#e05c7a' },
-    { id: '3', name: 'Hiburan', limit: 1000000, spent: 300000, type: 'wants', icon: 'device-tv', color: '#f5a623' },
-    { id: '4', name: 'Makan Luar', limit: 1500000, spent: 1400000, type: 'wants', icon: 'tools-kitchen-2', color: '#f5a623' },
-    { id: '5', name: 'Investasi', limit: 2000000, spent: 2000000, type: 'savings', icon: 'chart-line', color: '#3ecf8e' },
+    { id: '1', name: 'Groceries 🛒', limit: 2000000, spent: 1500000, type: 'needs', icon: 'shopping-cart', color: 'green' },
+    { id: '2', name: 'Transportasi 🚗', limit: 1000000, spent: 1200000, type: 'needs', icon: 'car', color: 'red' },
+    { id: '3', name: 'Hiburan 🎮', limit: 1000000, spent: 300000, type: 'wants', icon: 'device-tv', color: 'yellow' },
+    { id: '4', name: 'Makan Luar 🍳', limit: 1500000, spent: 1400000, type: 'wants', icon: 'tools-kitchen-2', color: 'orange' },
+    { id: '5', name: 'Investasi 📈', limit: 2000000, spent: 2000000, type: 'savings', icon: 'chart-line', color: 'teal' },
   ]
 };
 

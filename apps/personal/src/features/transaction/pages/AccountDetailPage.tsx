@@ -212,20 +212,38 @@ export const AccountDetailPage: React.FC = () => {
           <div className="col-lg-4">
             <div className="row g-4 h-100">
               <div className="col-12 col-md-6 col-lg-12">
-                <div className="card border-0 shadow-sm bg-success-lt h-50 mb-4" style={{ borderRadius: '1.25rem' }}>
+                <div className="card border-0 shadow-sm h-50 mb-4" style={{ borderRadius: '1.25rem' }}>
                   <div className="card-body d-flex flex-column justify-content-center p-4">
-                    <div className="text-success mb-2"><Icon icon="trending-up" size={24} /></div>
-                    <div className="text-secondary small fw-bold text-uppercase">Pemasukan Bulan Ini</div>
-                    <div className="h2 fw-bold mb-0 text-success">
+                    <div className="d-flex align-items-center gap-2 mb-3">
+                      <div 
+                        className="d-flex align-items-center justify-content-center bg-green text-white" 
+                        style={{ borderRadius: '10px', width: '32px', height: '32px' }}
+                      >
+                        <Icon icon="trending-up" size="sm" className="text-white" />
+                      </div>
+                      <div className="subheader text-muted m-0 fw-bold" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>
+                        PEMASUKAN BULAN INI
+                      </div>
+                    </div>
+                    <div className="h2 fw-bold mb-0 text-success" style={{ letterSpacing: '-0.5px' }}>
                       {formatCurrency(account.history?.income?.reduce((a, b) => a + b, 0) || 0)}
                     </div>
                   </div>
                 </div>
-                <div className="card border-0 shadow-sm bg-danger-lt h-50" style={{ borderRadius: '1.25rem' }}>
+                <div className="card border-0 shadow-sm h-50" style={{ borderRadius: '1.25rem' }}>
                   <div className="card-body d-flex flex-column justify-content-center p-4">
-                    <div className="text-danger mb-2"><Icon icon="trending-down" size={24} /></div>
-                    <div className="text-secondary small fw-bold text-uppercase">Pengeluaran Bulan Ini</div>
-                    <div className="h2 fw-bold mb-0 text-danger">
+                    <div className="d-flex align-items-center gap-2 mb-3">
+                      <div 
+                        className="d-flex align-items-center justify-content-center bg-red text-white" 
+                        style={{ borderRadius: '10px', width: '32px', height: '32px' }}
+                      >
+                        <Icon icon="trending-down" size="sm" className="text-white" />
+                      </div>
+                      <div className="subheader text-muted m-0 fw-bold" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>
+                        PENGELUARAN BULAN INI
+                      </div>
+                    </div>
+                    <div className="h2 fw-bold mb-0 text-danger" style={{ letterSpacing: '-0.5px' }}>
                       {formatCurrency(account.history?.expense?.reduce((a, b) => a + b, 0) || 0)}
                     </div>
                   </div>

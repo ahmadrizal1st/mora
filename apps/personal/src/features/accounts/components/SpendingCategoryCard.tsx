@@ -1,13 +1,13 @@
 import React from 'react';
 import { Chart } from '@/shared/components/ui/Chart';
+import { Icon } from '@/shared/components/ui/Icon';
 
 interface Category {
   ico: string;
-  bg: string;
+  color: string;
   n: string;
   pct: number;
   v: string;
-  col: string;
 }
 
 interface SpendingCategoryCardProps {
@@ -18,7 +18,7 @@ export function SpendingCategoryCard({ categories }: SpendingCategoryCardProps) 
   const donutChartData = {
     type: 'donut' as const,
     height: 6,
-    series: categories.map(c => ({ name: c.n, data: [c.pct], color: c.col })),
+    series: categories.map(c => ({ name: c.n, data: [c.pct], color: `var(--tblr-${c.color})` })),
     hollowSize: '75%',
     hideTooltip: true,
     legend: false,
@@ -44,7 +44,7 @@ export function SpendingCategoryCard({ categories }: SpendingCategoryCardProps) 
               {categories.slice(0, 4).map((c, i) => (
                 <div key={i} className="col-6">
                   <div className="d-flex align-items-center gap-1">
-                    <span className="badge badge-dot" style={{ backgroundColor: c.col, width: '6px', height: '6px' }}></span>
+                    <span className={`badge badge-dot bg-${c.color}`} style={{ width: '6px', height: '6px' }}></span>
                     <span className="text-secondary text-truncate" style={{ fontSize: '0.65rem' }}>{c.n}</span>
                   </div>
                 </div>
@@ -58,13 +58,23 @@ export function SpendingCategoryCard({ categories }: SpendingCategoryCardProps) 
             <div key={i} className="py-2 border-0">
               <div className="d-flex align-items-center justify-content-between mb-1">
                 <div className="d-flex align-items-center gap-2">
-                  <span className="fs-4">{c.ico}</span>
+                  <div 
+                    className={`d-flex align-items-center justify-content-center bg-${c.color} text-white shadow-sm`}
+                    style={{ 
+                      width: '32px', 
+                      height: '32px', 
+                      borderRadius: '10px', 
+                      flexShrink: 0 
+                    }}
+                  >
+                    <Icon icon={c.ico} size="sm" />
+                  </div>
                   <span className="text-body fw-bold small">{c.n}</span>
                 </div>
                 <span className="text-body fw-bold font-monospace small">{c.v}</span>
               </div>
               <div className="progress progress-xs" style={{ backgroundColor: 'var(--tblr-border-color)' }}>
-                <div className="progress-bar" style={{ width: `${c.pct}%`, backgroundColor: c.col }}></div>
+                <div className={`progress-bar bg-${c.color}`} style={{ width: `${c.pct}%` }}></div>
               </div>
             </div>
           ))}

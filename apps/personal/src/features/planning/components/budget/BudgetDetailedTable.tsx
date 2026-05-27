@@ -36,8 +36,11 @@ export function BudgetDetailedTable() {
                 <tr key={cat.id}>
                   <td>
                     <div className="d-flex align-items-center gap-2">
-                      <div className="avatar avatar-xs rounded bg-body-tertiary text-body shadow-none border">
-                        <Icon icon={cat.icon as any} size="xs" />
+                      <div 
+                        className={`d-flex align-items-center justify-content-center bg-${cat.color}-lt text-${cat.color}`} 
+                        style={{ width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0 }}
+                      >
+                        <Icon icon={cat.icon as any} size="sm" />
                       </div>
                       <div>
                         <div className="fw-bold text-body">{cat.name}</div>

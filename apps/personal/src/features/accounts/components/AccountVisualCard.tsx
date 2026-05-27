@@ -16,17 +16,15 @@ export function AccountVisualCard({ name, num, type, balance, logo, color }: Acc
   const cardIcon = isBank ? 'building-bank' : isInvest ? 'trending-up' : 'wallet';
   const cardLabel = isBank ? 'Debit Card' : isInvest ? 'Investasi' : 'E-Wallet';
 
-  const bg = color
-    ? `linear-gradient(135deg, ${color}ee 0%, ${color}aa 100%)`
-    : isBank
-    ? 'linear-gradient(135deg, #206bc4 0%, #114a8f 100%)'
-    : 'linear-gradient(135deg, #2fb344 0%, #1e7e2f 100%)';
+  const bgStyle = color
+    ? { backgroundColor: `var(--tblr-${color})`, backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.2) 100%)' }
+    : { backgroundImage: isBank ? 'linear-gradient(135deg, #206bc4 0%, #114a8f 100%)' : 'linear-gradient(135deg, #2fb344 0%, #1e7e2f 100%)' };
 
   return (
     <div
       className="card border-0 text-white overflow-hidden shadow-lg mb-3"
       style={{
-        background: bg,
+        ...bgStyle,
         borderRadius: '16px',
         height: '180px',
         position: 'relative',

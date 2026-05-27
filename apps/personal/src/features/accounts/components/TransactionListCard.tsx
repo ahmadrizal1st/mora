@@ -3,7 +3,7 @@ import { Icon } from '@/shared/components/ui/Icon';
 
 interface Transaction {
   ico: string;
-  bg: string;
+  color: string;
   n: string;
   c: string;
   a: string;
@@ -29,8 +29,16 @@ export function TransactionListCard({ transactions }: TransactionListCardProps) 
             <div key={i} className="list-group-item px-0 border-0 py-2">
               <div className="row align-items-center g-3">
                 <div className="col-auto">
-                  <div className="avatar avatar-sm rounded" style={{ backgroundColor: tx.bg }}>
-                    <span className="fs-3">{tx.ico}</span>
+                  <div 
+                    className={`d-flex align-items-center justify-content-center bg-${tx.color} text-white shadow-sm`}
+                    style={{ 
+                      width: '32px', 
+                      height: '32px', 
+                      borderRadius: '10px',
+                      flexShrink: 0
+                    }}
+                  >
+                    <Icon icon={tx.ico} size="sm" />
                   </div>
                 </div>
                 <div className="col">

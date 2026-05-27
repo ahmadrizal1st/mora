@@ -23,8 +23,11 @@ export function BudgetCategoryItem({ category }: BudgetCategoryItemProps) {
       <div className="card-body p-3">
         <div className="d-flex align-items-center justify-content-between mb-3">
           <div className="d-flex align-items-center gap-3">
-            <div className={`avatar avatar-xs rounded bg-${category.color}-lt text-${category.color} shadow-none`}>
-              <Icon icon={category.icon as any} size="xs" />
+            <div 
+              className={clsx('d-flex align-items-center justify-content-center', `bg-${category.color}-lt text-${category.color}`)} 
+              style={{ width: '40px', height: '40px', borderRadius: '14px', flexShrink: 0 }}
+            >
+              <Icon icon={category.icon as any} size="md" />
             </div>
             <div>
               <span className="fw-bold small text-body d-block lh-1 mb-1">{category.name}</span>

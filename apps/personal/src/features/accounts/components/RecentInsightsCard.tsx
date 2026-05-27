@@ -7,7 +7,10 @@ export function RecentInsightsCard() {
         <div className="text-secondary text-uppercase fw-semibold fs-5 mb-4">Recent Insights</div>
         
         <div className="d-flex gap-3 align-items-start mb-4">
-          <div className="avatar avatar-sm rounded bg-blue-lt text-blue">
+          <div 
+            className="d-flex align-items-center justify-content-center bg-blue text-white shadow-sm"
+            style={{ width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0 }}
+          >
             <Icon icon="bulb" size="sm" />
           </div>
           <div>
@@ -19,7 +22,10 @@ export function RecentInsightsCard() {
         </div>
 
         <div className="d-flex gap-3 align-items-start mb-4">
-          <div className="avatar avatar-sm rounded bg-warning-lt text-warning">
+          <div 
+            className="d-flex align-items-center justify-content-center bg-warning text-white shadow-sm"
+            style={{ width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0 }}
+          >
             <Icon icon="alert-triangle" size="sm" />
           </div>
           <div>
@@ -31,7 +37,10 @@ export function RecentInsightsCard() {
         </div>
 
         <div className="d-flex gap-3 align-items-start">
-          <div className="avatar avatar-sm rounded bg-green-lt text-green">
+          <div 
+            className="d-flex align-items-center justify-content-center bg-green text-white shadow-sm"
+            style={{ width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0 }}
+          >
             <Icon icon="shield-check" size="sm" />
           </div>
           <div>

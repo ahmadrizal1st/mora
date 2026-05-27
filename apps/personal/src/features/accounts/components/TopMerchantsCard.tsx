@@ -18,7 +18,10 @@ export function TopMerchantsCard() {
             <div key={i} className="py-2">
               <div className="row align-items-center g-3">
                 <div className="col-auto">
-                  <div className={`avatar avatar-sm rounded bg-${m.color}-lt text-${m.color}`}>
+                  <div 
+                    className={`d-flex align-items-center justify-content-center bg-${m.color} text-white shadow-sm`}
+                    style={{ width: '32px', height: '32px', borderRadius: '10px' }}
+                  >
                     <Icon icon={m.icon} size="sm" />
                   </div>
                 </div>

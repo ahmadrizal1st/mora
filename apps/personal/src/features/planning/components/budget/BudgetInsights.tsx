@@ -63,7 +63,10 @@ export function BudgetInsights() {
           {insights.map((insight, idx) => (
             <div key={idx} className="list-group-item py-3 px-4 border-0 border-bottom hover-bg-body-tertiary transition-all cursor-pointer">
               <div className="d-flex align-items-center gap-3">
-                <div className={`avatar avatar-md rounded-3 bg-${insight.color}-lt text-${insight.color} border border-${insight.color}`}>
+                <div 
+                  className={`d-flex align-items-center justify-content-center bg-${insight.color}-lt text-${insight.color}`}
+                  style={{ width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0 }}
+                >
                   <Icon icon={insight.icon as any} size="sm" />
                 </div>
                 <div className="flex-fill">
