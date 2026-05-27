@@ -63,16 +63,13 @@ export function NavbarSideUser({
         <Link to="/profile" className="dropdown-item">
           <Icon icon="user" className="dropdown-item-icon" /> Profile
         </Link>
-        <a href="#" className="dropdown-item">
-          <Icon icon="chart-pie" className="dropdown-item-icon" /> Analytics
-        </a>
         <div className="dropdown-divider" />
-        <a href="#" className="dropdown-item">
+        <Link to="/settings" className="dropdown-item">
           Settings & Privacy
-        </a>
-        <a href="#" className="dropdown-item">
+        </Link>
+        <Link to="/help" className="dropdown-item">
           Help
-        </a>
+        </Link>
         <a href="#" onClick={handleLogout} className="dropdown-item">
           Sign out
         </a>

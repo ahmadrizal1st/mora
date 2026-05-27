@@ -14,12 +14,15 @@ export default function SettingsPage() {
     photo: user?.avatar || '002m.jpg',
   }
 
-  const navItems = [
+  const profileNavItems = [
     { id: 'account', label: 'Akun Saya' },
     { id: 'privacy', label: 'Privasi & Keamanan' },
     { id: 'notifications', label: 'Notifikasi' },
     { id: 'apps', label: 'Aplikasi Terhubung' },
-    { id: 'plan', label: 'Paket & Langganan', subheader: 'Keanggotaan' },
+  ]
+
+  const membershipNavItems = [
+    { id: 'plan', label: 'Paket & Langganan' },
   ]
 
   return (
@@ -35,26 +38,44 @@ export default function SettingsPage() {
             <div className="col-12 col-md-3 border-end">
               <div className="card-body">
                 <h4 className="subheader">Pengaturan Profil</h4>
-                <div className="list-group list-group-transparent">
-                  {navItems.map((item) => (
-                    <div key={item.id}>
-                      {item.subheader && (
-                        <h4 className="subheader mt-4">{item.subheader}</h4>
+                <div className="list-group list-group-transparent mb-4">
+                  {profileNavItems.map((item) => (
+                    <a
+                      key={item.id}
+                      href="#"
+                      className={clsx(
+                        "list-group-item list-group-item-action d-flex align-items-center border-0 text-decoration-none",
+                        activeTab === item.id && "active"
                       )}
-                      <a
-                        href="#"
-                        className={clsx(
-                          "list-group-item list-group-item-action d-flex align-items-center",
-                          activeTab === item.id && "active"
-                        )}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setActiveTab(item.id)
-                        }}
-                      >
-                        {item.label}
-                      </a>
-                    </div>
+                      style={{ outline: 'none', boxShadow: 'none' }}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setActiveTab(item.id)
+                      }}
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+
+                <h4 className="subheader">Keanggotaan</h4>
+                <div className="list-group list-group-transparent">
+                  {membershipNavItems.map((item) => (
+                    <a
+                      key={item.id}
+                      href="#"
+                      className={clsx(
+                        "list-group-item list-group-item-action d-flex align-items-center border-0 text-decoration-none",
+                        activeTab === item.id && "active"
+                      )}
+                      style={{ outline: 'none', boxShadow: 'none' }}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setActiveTab(item.id)
+                      }}
+                    >
+                      {item.label}
+                    </a>
                   ))}
                 </div>
               </div>
@@ -208,7 +229,7 @@ export default function SettingsPage() {
                         <div className="list-group-item px-0">
                            <div className="row align-items-center">
                               <div className="col-auto">
-                                 <span className="avatar" style={{ backgroundImage: 'url(https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg)' }}></span>
+                                 <span className="avatar bg-white" style={{ backgroundImage: 'url(https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg)', backgroundSize: '75%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}></span>
                               </div>
                               <div className="col text-truncate">
                                  <div className="text-reset d-block">BCA Mobile</div>
@@ -222,7 +243,7 @@ export default function SettingsPage() {
                         <div className="list-group-item px-0">
                            <div className="row align-items-center">
                               <div className="col-auto">
-                                 <span className="avatar" style={{ backgroundImage: 'url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Gopay_logo.svg/1280px-Gopay_logo.svg.png)' }}></span>
+                                 <span className="avatar bg-white" style={{ backgroundImage: 'url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Gopay_logo.svg/1280px-Gopay_logo.svg.png)', backgroundSize: '75%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}></span>
                               </div>
                               <div className="col text-truncate">
                                  <div className="text-reset d-block">GoPay</div>

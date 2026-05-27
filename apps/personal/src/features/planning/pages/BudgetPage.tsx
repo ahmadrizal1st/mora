@@ -6,7 +6,7 @@ import { BudgetDetailedTable } from '../components/budget/BudgetDetailedTable';
 import { SavingsHealthCard } from '../components/shared/SavingsHealthCard';
 import { BudgetBurnRateCard } from '../components/budget/BudgetBurnRateCard';
 import { BudgetInsights } from '../components/budget/BudgetInsights';
-import { BudgetDistributionChart } from '../components/budget/BudgetDistributionChart';
+import { Budget503020Card } from '../components/budget/Budget503020Card';
 import { Icon } from '@/shared/components/ui/Icon';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
 
@@ -31,14 +31,14 @@ export function BudgetPage() {
       </div>
 
       {/* LEVEL 2: Velocity & Distribution (NEW) */}
-      <div className="col-lg-4">
+      <div className="col-lg-4 d-lg-flex">
         <BudgetBurnRateCard spent={spent} totalBudget={totalBudget} />
       </div>
-      <div className="col-lg-4">
-        <BudgetDistributionChart />
+      <div className="col-lg-4 d-lg-flex">
+        <Budget503020Card />
       </div>
-      <div className="col-lg-4">
-        <div className="d-flex flex-column gap-3 h-100">
+      <div className="col-lg-4 d-lg-flex">
+        <div className="d-flex flex-column gap-3 h-100 w-100">
           <BudgetOverviewCard 
             totalBudget={totalBudget} 
             spent={spent} 

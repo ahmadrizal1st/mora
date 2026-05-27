@@ -40,8 +40,8 @@ export function BudgetOverviewCard({ totalBudget, spent, safeToSpendPerDay }: Bu
   };
 
   return (
-    <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-body p-4 d-flex flex-column justify-content-between">
+    <div className="card shadow-sm border-0 h-100 w-100" style={{ borderRadius: '16px' }}>
+      <div className="card-body p-4 d-flex flex-column justify-content-center gap-4">
         <div className="d-flex align-items-center mb-0">
           <div style={{ width: '150px', flexShrink: 0, marginLeft: '-15px' }}>
             <Chart 
