@@ -2,10 +2,7 @@
   "dashboard": {
     "title": "Dashboard",
     "icon": "home",
-    "children": {
-      "overview":  { "url": "dashboard", "title": "Overview" },
-      "assets":    { "url": "assets",    "title": "Asset" }
-    }
+    "url": "dashboard"
   },
 
   "cashflow": {
