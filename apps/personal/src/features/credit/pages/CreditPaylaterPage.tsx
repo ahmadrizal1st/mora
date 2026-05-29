@@ -224,7 +224,7 @@ export function CreditPaylaterPage() {
           </div>
         </div>
 
-        <div className="col-12 col-lg-8">
+        <div className="col-12 col-lg-8 d-none d-lg-block">
           <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '20px' }}>
             <div className="card-header border-0 pb-0 px-4 pt-4">
               <h3 className="card-title fw-bold">Tren Pengeluaran</h3>
@@ -287,8 +287,8 @@ export function CreditPaylaterPage() {
                 <button className="btn btn-sm btn-ghost-azure">Lihat semua</button>
               </div>
             </div>
-            <div className="card-body p-0 mt-3">
-              <div className="table-responsive">
+            <div className="card-body p-0 m-0">
+              <div className="table-responsive d-none d-md-block">
                 <table className="table table-vcenter card-table table-hover">
                   <thead>
                     <tr>
@@ -333,7 +333,7 @@ export function CreditPaylaterPage() {
                           <td className="text-end py-3">
                             <div className="fw-bold text-danger">-{fmt(Math.abs(t.amount)).replace('Rp ', '')}</div>
                           </td>
-                          <td className="text-center px-4 py-3">
+                          <td className="text-center">
                             <span className="badge bg-success-lt text-success border-0 px-2 py-1" style={{ fontSize: '10px' }}>Selesai</span>
                           </td>
                         </tr>
@@ -341,6 +341,44 @@ export function CreditPaylaterPage() {
                     })}
                   </tbody>
                 </table>
+              </div>
+              <div className="d-block d-md-none">
+                <div className="list-group list-group-flush">
+                  {[
+                    { name: 'Shopee Checkout', date: '2026-05-12', amount: -150000, category: 'Shopping', color: '#ff922b' },
+                    { name: 'Lazada Payment', date: '2026-05-11', amount: -225000, category: 'Shopping', color: '#ff922b' },
+                    { name: 'Gofood Order', date: '2026-05-10', amount: -85000, category: 'Food & Bev', color: '#51cf66' },
+                  ].map((t, i) => {
+                    const txDate = new Date(t.date);
+                    const formattedDate = txDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                    return (
+                      <div key={i} className="list-group-item">
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                          <div className="fw-bold text-body">{t.name}</div>
+                          <div className="fw-bold text-danger">-{fmt(Math.abs(t.amount)).replace('Rp ', '')}</div>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="d-flex align-items-center gap-2">
+                            <div className="text-muted small">{formattedDate}</div>
+                            <span 
+                              className="badge badge-outline"
+                              style={{ 
+                                borderColor: `${t.color}40`, 
+                                color: t.color, 
+                                backgroundColor: `${t.color}08`,
+                                fontSize: '9px',
+                                padding: '2px 6px'
+                              }}
+                            >
+                              {t.category}
+                            </span>
+                          </div>
+                          <span className="badge bg-success-lt text-success border-0 px-2 py-1" style={{ fontSize: '9px' }}>Selesai</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

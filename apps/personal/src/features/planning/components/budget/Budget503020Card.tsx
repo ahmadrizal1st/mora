@@ -92,7 +92,7 @@ export function Budget503020Card() {
             .concentric-chart-svg {
               width: 100%;
               height: auto;
-              max-width: 140px;
+              max-width: 250px;
               display: block;
               transition: all 0.2s ease-in-out;
             }

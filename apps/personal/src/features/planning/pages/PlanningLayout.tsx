@@ -298,9 +298,9 @@ export function PlanningLayout() {
         </div>
       }
     >
-      {/* 1. TOP STATS ROW - Perfectly balanced 4-column layout */}
-      <div className="row g-3 mb-4">
-        <div className="col-6 col-lg-3">
+      {/* 1. TOP STATS ROW (DESKTOP) - 4 Separate Cards */}
+      <div className="row g-3 mb-4 d-none d-md-flex">
+        <div className="col-3">
           <PlanningMetricCard 
             title="Total Budget" 
             value={formatCurrency(totalBudget)} 
@@ -309,7 +309,7 @@ export function PlanningLayout() {
             valueColor="primary" 
           />
         </div>
-        <div className="col-6 col-lg-3">
+        <div className="col-3">
           <PlanningMetricCard 
             title="Terpakai" 
             value={formatCurrency(spent)} 
@@ -318,7 +318,7 @@ export function PlanningLayout() {
             valueColor="danger" 
           />
         </div>
-        <div className="col-6 col-lg-3">
+        <div className="col-3">
           <PlanningMetricCard 
             title="Sisa Anggaran" 
             value={formatCurrency(remaining)} 
@@ -327,7 +327,7 @@ export function PlanningLayout() {
             valueColor="success" 
           />
         </div>
-        <div className="col-6 col-lg-3">
+        <div className="col-3">
           <PlanningMetricCard 
             title="Harian (Safe)" 
             value={formatCurrency(MOCK_BUDGET_DATA.safeToSpendPerDay)} 
@@ -335,6 +335,75 @@ export function PlanningLayout() {
             icon="shield-check" 
             valueColor="warning" 
           />
+        </div>
+      </div>
+
+      {/* 1. TOP STATS ROW (MOBILE) - Unified Single Card */}
+      <div className="card border-0 shadow-sm mb-4 overflow-hidden d-block d-md-none" style={{ borderRadius: '16px' }}>
+        <div className="row g-0">
+          {/* Total Budget */}
+          <div className="col-6 border-end border-bottom p-3 position-relative">
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <div className="avatar avatar-sm bg-primary-lt text-primary" style={{ borderRadius: '8px', width: '28px', height: '28px' }}>
+                <Icon icon="wallet" size="sm" />
+              </div>
+              <div className="text-muted fw-bold text-truncate" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>TOTAL BUDGET</div>
+            </div>
+            <div className="fs-4 fw-bold text-body mb-1 text-truncate" style={{ letterSpacing: '-0.5px' }}>
+              {formatCurrency(totalBudget)}
+            </div>
+            <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
+              {formatMonthYear(currentDate)}
+            </div>
+          </div>
+
+          {/* Terpakai */}
+          <div className="col-6 border-bottom p-3 position-relative">
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <div className="avatar avatar-sm bg-danger-lt text-danger" style={{ borderRadius: '8px', width: '28px', height: '28px' }}>
+                <Icon icon="trending-down" size="sm" />
+              </div>
+              <div className="text-muted fw-bold text-truncate" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>TERPAKAI</div>
+            </div>
+            <div className="fs-4 fw-bold text-danger mb-1 text-truncate" style={{ letterSpacing: '-0.5px' }}>
+              {formatCurrency(spent)}
+            </div>
+            <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
+              {Math.round((spent/totalBudget)*100)}% digunakan
+            </div>
+          </div>
+
+          {/* Sisa Anggaran */}
+          <div className="col-6 border-end p-3 position-relative">
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <div className="avatar avatar-sm bg-success-lt text-success" style={{ borderRadius: '8px', width: '28px', height: '28px' }}>
+                <Icon icon="cash" size="sm" />
+              </div>
+              <div className="text-muted fw-bold text-truncate" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>SISA ANGGARAN</div>
+            </div>
+            <div className="fs-4 fw-bold text-success mb-1 text-truncate" style={{ letterSpacing: '-0.5px' }}>
+              {formatCurrency(remaining)}
+            </div>
+            <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
+              Tersedia
+            </div>
+          </div>
+
+          {/* Harian (Safe) */}
+          <div className="col-6 p-3 position-relative">
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <div className="avatar avatar-sm bg-warning-lt text-warning" style={{ borderRadius: '8px', width: '28px', height: '28px' }}>
+                <Icon icon="shield-check" size="sm" />
+              </div>
+              <div className="text-muted fw-bold text-truncate" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>HARIAN (SAFE)</div>
+            </div>
+            <div className="fs-4 fw-bold text-warning mb-1 text-truncate" style={{ letterSpacing: '-0.5px' }}>
+              {formatCurrency(MOCK_BUDGET_DATA.safeToSpendPerDay)}
+            </div>
+            <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
+              Estimasi harian
+            </div>
+          </div>
         </div>
       </div>
 

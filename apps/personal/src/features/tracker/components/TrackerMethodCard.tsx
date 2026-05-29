@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { Link } from '@tanstack/react-router';
+import { clsx } from 'clsx';
 import { Icon } from '@/shared/components/ui/Icon';
-
 interface TrackerMethod {
   id: string;
   label: string;

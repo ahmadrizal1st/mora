@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { Icon } from '@/shared/components/ui';
+import { Icon, Chart } from '@/shared/components/ui';
 import { CreditTypeCards } from '../components/CreditTypeCards';
+import { CreditScoreGauge } from '../components/CreditScoreGauge';
 import { DebtPayoffPlannerPreview } from '../components/DebtPayoffPlannerPreview';
 import { useCreditSummary } from '../hooks/useCreditSummary';
 import { useCredits } from '../hooks/useCredits';
@@ -62,69 +63,46 @@ export function CreditOverviewPage() {
   return (
     <>
       <div className="row g-3 mb-4">
-        {/* Left: Credit Score Widget */}
+        {/* Left: Credit Score Widget (Premium Redesign) */}
         <div className="col-12 col-lg-4">
-          <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '16px' }}>
-            <div className="card-body p-3 d-flex flex-column justify-content-between">
-              <div>
-                <div className="d-flex justify-content-between align-items-center mb-1">
-                  <div className="subheader text-secondary" style={{ letterSpacing: '0.05em', fontSize: '9px', fontWeight: 600 }}>CREDIT SCORE</div>
-                  <span className={`badge bg-${scoreColor === 'var(--tblr-success)' ? 'success' : scoreColor === 'var(--tblr-primary)' ? 'primary' : 'warning'} text-white border-0 px-2 py-1 rounded-pill fw-bold shadow-sm`} style={{ fontSize: '9px', letterSpacing: '0.3px' }}>
-                    {scoreLabel.toUpperCase()}
-                  </span>
-                </div>
-                
-                <div className="d-flex align-items-center gap-3">
-                  <div className="h1 fw-black m-0 lh-1" style={{ fontSize: '42px', color: scoreColor }}>{creditScore}</div>
-                  <div className="d-flex flex-column">
-                    <div className="text-success small fw-bold d-flex align-items-center" style={{ fontSize: '13px' }}>
-                      <Icon icon="trending-up" size={14} className="me-1" />
-                      +{scoreTrend}
-                    </div>
-                    <div className="text-muted" style={{ fontSize: '9px' }}>vs bulan lalu</div>
-                  </div>
-                </div>
+          <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '16px', background: 'linear-gradient(180deg, var(--tblr-bg-surface) 0%, rgba(var(--tblr-primary-rgb), 0.03) 100%)' }}>
+            <div className="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center position-relative">
+              <div className="subheader text-secondary mb-2" style={{ letterSpacing: '0.1em', fontSize: '10px', fontWeight: 700 }}>CREDIT SCORE</div>
+              
+              <div className="position-relative w-100 d-flex justify-content-center" style={{ marginTop: '0px', marginBottom: '-10px' }}>
+                <CreditScoreGauge score={550} />
               </div>
 
-              {/* Added Key Factors to fill space */}
-              <div className="my-2 py-2 border-top border-bottom border-dashed border-secondary-subtle">
+              {/* Status Badge */}
+              <span className={`badge bg-${scoreColor === 'var(--tblr-success)' ? 'success' : scoreColor === 'var(--tblr-primary)' ? 'primary' : 'warning'}-lt text-${scoreColor === 'var(--tblr-success)' ? 'success' : scoreColor === 'var(--tblr-primary)' ? 'primary' : 'warning'} border-0 px-3 py-2 rounded-pill fw-bold shadow-sm mb-4 z-1`} style={{ fontSize: '11px', letterSpacing: '0.5px' }}>
+                {scoreLabel.toUpperCase()}
+              </span>
+
+              {/* Key Factors */}
+              <div className="w-100 mt-auto bg-white rounded-3 shadow-sm border p-3 z-1" style={{ borderColor: 'var(--tblr-border-color-light)' }}>
                 <div className="row g-2">
-                  <div className="col-6">
-                    <div className="d-flex align-items-center gap-2">
-                      <Icon icon="check" size={12} className="text-success" />
-                      <div style={{ fontSize: '10px' }}>
-                        <div className="text-muted text-uppercase fw-bold" style={{ fontSize: '8px' }}>Pembayaran</div>
-                        <div className="fw-bold text-dark">Lancar</div>
-                      </div>
+                  <div className="col-6 border-end" style={{ borderColor: 'var(--tblr-border-color-light)' }}>
+                    <div className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: '9px', letterSpacing: '0.05em' }}>Pembayaran</div>
+                    <div className="d-flex align-items-center justify-content-center gap-1">
+                      <Icon icon="circle-check" size={14} className="text-success" />
+                      <span className="fw-bold text-dark" style={{ fontSize: '12px' }}>Lancar</span>
                     </div>
                   </div>
                   <div className="col-6">
-                    <div className="d-flex align-items-center gap-2">
-                      <Icon icon="chart-pie" size={12} className="text-primary" />
-                      <div style={{ fontSize: '10px' }}>
-                        <div className="text-muted text-uppercase fw-bold" style={{ fontSize: '8px' }}>Utilisasi</div>
-                        <div className="fw-bold text-dark">{utilizationPct.toFixed(0)}% Sehat</div>
-                      </div>
+                    <div className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: '9px', letterSpacing: '0.05em' }}>Utilisasi</div>
+                    <div className="d-flex align-items-center justify-content-center gap-1">
+                      <Icon icon="chart-pie" size={14} className="text-primary" />
+                      <span className="fw-bold text-dark" style={{ fontSize: '12px' }}>{utilizationPct.toFixed(0)}% Sehat</span>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="mb-0">
-                <div className="progress progress-sm mb-1" style={{ height: '4px', background: 'var(--tblr-border-color-light)', borderRadius: '10px' }}>
-                  <div className="progress-bar" style={{ width: `${(creditScore / 850) * 100}%`, backgroundColor: scoreColor }} />
-                </div>
-                <div className="d-flex justify-content-between text-muted" style={{ fontSize: '9px', fontWeight: 600 }}>
-                  <span>300</span>
-                  <span className="text-uppercase" style={{ letterSpacing: '0.5px', opacity: 0.6 }}>Credit Health Index</span>
-                  <span>850</span>
                 </div>
               </div>
             </div>
-            <div className="card-footer bg-body-tertiary border-0 py-2 px-3">
-              <div className="d-flex align-items-center gap-2 text-muted" style={{ fontSize: '10px' }}>
-                <Icon icon="shield-check" size={12} className="text-success" />
-                Diverifikasi SLIK/OJK • Mei 2026
+            
+            <div className="card-footer bg-transparent border-0 pb-3 pt-0 d-flex justify-content-center">
+              <div className="d-flex align-items-center gap-2 text-muted fw-medium" style={{ fontSize: '10px' }}>
+                <Icon icon="shield-check" size={14} className="text-success" />
+                Diverifikasi SLIK/OJK • {new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
               </div>
             </div>
           </div>
@@ -236,7 +214,9 @@ export function CreditOverviewPage() {
       <CreditTypeCards />
 
       {/* Debt Payoff Planner */}
-      <DebtPayoffPlannerPreview />
+      <div className="d-none d-lg-block">
+        <DebtPayoffPlannerPreview />
+      </div>
     </>
   );
 }

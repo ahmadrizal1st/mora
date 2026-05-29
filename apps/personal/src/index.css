@@ -284,6 +284,8 @@ button[role="tab"]:focus-visible {
   transition: all 0.25s ease;
   flex: 1;
   height: 100%;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .bottom-navbar-item.active {

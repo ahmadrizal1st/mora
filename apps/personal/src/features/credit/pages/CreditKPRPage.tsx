@@ -226,7 +226,7 @@ export function CreditKPRPage() {
           </div>
         </div>
 
-        <div className="col-12 col-lg-8">
+        <div className="col-12 col-lg-8 d-none d-lg-block">
           <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '20px' }}>
             <div className="card-header border-0 pb-0 px-4 pt-4">
               <h3 className="card-title fw-bold">Proyeksi Pelunasan</h3>
@@ -283,8 +283,8 @@ export function CreditKPRPage() {
                 <button className="btn btn-sm btn-ghost-azure">Lihat semua jadwal</button>
               </div>
             </div>
-            <div className="card-body p-0 mt-3">
-              <div className="table-responsive">
+            <div className="card-body p-0 m-0">
+              <div className="table-responsive d-none d-md-block">
                 <table className="table table-vcenter card-table table-hover">
                   <thead>
                     <tr>
@@ -305,13 +305,31 @@ export function CreditKPRPage() {
                         </td>
                         <td className="text-end py-3 text-secondary">{fmt(4500000).replace('Rp ', '')}</td>
                         <td className="text-end py-3 text-secondary">{fmt(750000).replace('Rp ', '')}</td>
-                        <td className="text-end px-4 py-3">
+                        <td className="text-end">
                           <div className="fw-bold text-dark">{fmt(5250000).replace('Rp ', '')}</div>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="d-block d-md-none">
+                <div className="list-group list-group-flush">
+                  {[...Array(8)].map((_, i) => (
+                    <div key={i} className="list-group-item">
+                      <div className="d-flex justify-content-between align-items-center mb-1">
+                        <div className="fw-bold">Angsuran Ke-{12 + i}</div>
+                        <div className="fw-bold text-dark">{fmt(5250000).replace('Rp ', '')}</div>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="text-muted small">Mei 2026 • Berhasil</div>
+                        <div className="text-secondary small" style={{ fontSize: '10px' }}>
+                          P: {fmt(4500000).replace('Rp ', '')} | B: {fmt(750000).replace('Rp ', '')}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

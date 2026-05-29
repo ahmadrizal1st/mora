@@ -20,7 +20,7 @@ export function BudgetPage() {
   return (
     <div className="row row-cards g-3 tab-content-anim">
       {/* LEVEL 1: High-Level Analytics Row */}
-      <div className="col-lg-8">
+      <div className="col-lg-8 d-none d-lg-block">
         <div className="h-100">
           <BudgetTrendChartCard />
         </div>
@@ -124,12 +124,12 @@ export function BudgetPage() {
         </div>
       </div>
 
-      <div className="col-lg-4">
+      <div className="col-lg-4 d-none d-lg-block">
         <BudgetInsights />
       </div>
 
       {/* LEVEL 4: Granular Data Row */}
-      <div className="col-lg-12">
+      <div className="col-lg-12 d-none d-md-block">
         <div>
           <BudgetDetailedTable />
         </div>

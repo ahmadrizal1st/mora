@@ -83,20 +83,20 @@ export function SubscriptionsPage() {
         <div className="col-lg-4">
           <UpcomingBillsCard totalMonthly={totalMonthly} paidThisMonth={paidThisMonth} />
         </div>
-        <div className="col-lg-4">
+        <div className="col-lg-4 d-none d-lg-block">
           <SubscriptionTrendChart />
         </div>
-        <div className="col-lg-4">
+        <div className="col-lg-4 d-none d-lg-block">
           <SubscriptionDistributionChart />
         </div>
 
         {/* MIDDLE ROW: Category Breakdown - Now part of main grid, gap controlled by g-3 */}
-        <div className="col-12">
+        <div className="col-12 d-none d-lg-block">
           <SubscriptionCategoryBreakdown />
         </div>
 
         {/* ROW 2: Calendar vs Trial Tracker */}
-        <div className="col-lg-8">
+        <div className="col-lg-8 d-none d-lg-block">
           <SubscriptionCalendar />
         </div>
 

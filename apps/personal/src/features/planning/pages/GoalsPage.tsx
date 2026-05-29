@@ -70,12 +70,12 @@ export function GoalsPage() {
           />
         </div>
       </div>
-      <div className="col-lg-5">
+      <div className="col-lg-5 d-none d-lg-block">
         <div className="h-100">
           <GoalTrajectoryChart />
         </div>
       </div>
-      <div className="col-lg-3">
+      <div className="col-lg-3 d-none d-lg-block">
         <div className="card border-0 h-100 overflow-hidden text-white" style={{ borderRadius: '16px', background: '#f59f00' }}>
           <div className="card-body p-4 d-flex flex-column h-100 position-relative">
             <div 
@@ -285,7 +285,7 @@ export function GoalsPage() {
 
       <div className="col-lg-4">
         <div className="d-flex flex-column gap-3 h-100">
-          <div className="card border-0 flex-grow-1" style={{ borderRadius: '16px' }}>
+          <div className="card border-0 flex-grow-1 d-none d-lg-block" style={{ borderRadius: '16px' }}>
             <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0">
               <h4 className="card-title fw-bold m-0 d-flex align-items-center gap-2 text-ls-sm">
                 <Icon icon="timeline" size="sm" className="text-orange" />
