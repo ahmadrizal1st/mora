@@ -28,6 +28,7 @@ import { Route as Error404RouteImport } from './routes/error-404'
 import { Route as Error403RouteImport } from './routes/error-403'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreditRouteImport } from './routes/credit'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AuthLockRouteImport } from './routes/auth-lock'
 import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as ActivityRouteImport } from './routes/activity'
@@ -41,6 +42,7 @@ import { Route as TrackerIndexRouteImport } from './routes/tracker.index'
 import { Route as PlanningIndexRouteImport } from './routes/planning.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as CreditIndexRouteImport } from './routes/credit.index'
+import { Route as ChatIndexRouteImport } from './routes/chat.index'
 import { Route as TrackerTextRouteImport } from './routes/tracker.text'
 import { Route as TrackerPhotoRouteImport } from './routes/tracker.photo'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
@@ -156,6 +158,11 @@ const CreditRoute = CreditRouteImport.update({
   path: '/credit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLockRoute = AuthLockRouteImport.update({
   id: '/auth-lock',
   path: '/auth-lock',
@@ -220,6 +227,11 @@ const CreditIndexRoute = CreditIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => CreditRoute,
+} as any)
+const ChatIndexRoute = ChatIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ChatRoute,
 } as any)
 const TrackerTextRoute = TrackerTextRouteImport.update({
   id: '/tracker/text',
@@ -326,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
+  '/chat': typeof ChatRouteWithChildren
   '/credit': typeof CreditRouteWithChildren
   '/dashboard': typeof DashboardRouteWithChildren
   '/error-403': typeof Error403Route
@@ -364,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
+  '/chat/': typeof ChatIndexRoute
   '/credit/': typeof CreditIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/planning/': typeof PlanningIndexRoute
@@ -414,6 +428,7 @@ export interface FileRoutesByTo {
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
+  '/chat': typeof ChatIndexRoute
   '/credit': typeof CreditIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/planning': typeof PlanningIndexRoute
@@ -430,6 +445,7 @@ export interface FileRoutesById {
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
+  '/chat': typeof ChatRouteWithChildren
   '/credit': typeof CreditRouteWithChildren
   '/dashboard': typeof DashboardRouteWithChildren
   '/error-403': typeof Error403Route
@@ -468,6 +484,7 @@ export interface FileRoutesById {
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
+  '/chat/': typeof ChatIndexRoute
   '/credit/': typeof CreditIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/planning/': typeof PlanningIndexRoute
@@ -485,6 +502,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/assets'
     | '/auth-lock'
+    | '/chat'
     | '/credit'
     | '/dashboard'
     | '/error-403'
@@ -523,6 +541,7 @@ export interface FileRouteTypes {
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/text'
+    | '/chat/'
     | '/credit/'
     | '/dashboard/'
     | '/planning/'
@@ -573,6 +592,7 @@ export interface FileRouteTypes {
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/text'
+    | '/chat'
     | '/credit'
     | '/dashboard'
     | '/planning'
@@ -588,6 +608,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/assets'
     | '/auth-lock'
+    | '/chat'
     | '/credit'
     | '/dashboard'
     | '/error-403'
@@ -626,6 +647,7 @@ export interface FileRouteTypes {
     | '/tracker/input'
     | '/tracker/photo'
     | '/tracker/text'
+    | '/chat/'
     | '/credit/'
     | '/dashboard/'
     | '/planning/'
@@ -642,6 +664,7 @@ export interface RootRouteChildren {
   ActivityRoute: typeof ActivityRoute
   AssetsRoute: typeof AssetsRoute
   AuthLockRoute: typeof AuthLockRoute
+  ChatRoute: typeof ChatRouteWithChildren
   CreditRoute: typeof CreditRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
   Error403Route: typeof Error403Route
@@ -809,6 +832,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth-lock': {
       id: '/auth-lock'
       path: '/auth-lock'
@@ -899,6 +929,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/credit/'
       preLoaderRoute: typeof CreditIndexRouteImport
       parentRoute: typeof CreditRoute
+    }
+    '/chat/': {
+      id: '/chat/'
+      path: '/'
+      fullPath: '/chat/'
+      preLoaderRoute: typeof ChatIndexRouteImport
+      parentRoute: typeof ChatRoute
     }
     '/tracker/text': {
       id: '/tracker/text'
@@ -1048,6 +1085,16 @@ const AccountsRouteWithChildren = AccountsRoute._addFileChildren(
   AccountsRouteChildren,
 )
 
+interface ChatRouteChildren {
+  ChatIndexRoute: typeof ChatIndexRoute
+}
+
+const ChatRouteChildren: ChatRouteChildren = {
+  ChatIndexRoute: ChatIndexRoute,
+}
+
+const ChatRouteWithChildren = ChatRoute._addFileChildren(ChatRouteChildren)
+
 interface CreditRouteChildren {
   CreditCreditCardRoute: typeof CreditCreditCardRoute
   CreditKprRoute: typeof CreditKprRoute
@@ -1110,6 +1157,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActivityRoute: ActivityRoute,
   AssetsRoute: AssetsRoute,
   AuthLockRoute: AuthLockRoute,
+  ChatRoute: ChatRouteWithChildren,
   CreditRoute: CreditRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
   Error403Route: Error403Route,
