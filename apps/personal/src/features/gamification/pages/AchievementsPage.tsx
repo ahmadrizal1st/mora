@@ -283,7 +283,7 @@ export default function AchievementsPage() {
                 </div>
                 <div className="mx-auto mb-2 d-flex align-items-center justify-content-center" style={{ width: '100px', height: '100px' }}>
                   <img 
-                    src="/static/illustrations/mora-mascot.png" 
+                    src="/static/illustrations/streak/pet.gif" 
                     alt="Mora Mascot" 
                     className="img-fluid"
                     style={{ maxHeight: '100%', objectFit: 'contain' }}

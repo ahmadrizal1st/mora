@@ -822,3 +822,62 @@ button[role="tab"]:focus-visible {
     font-size: 2.5rem !important;
   }
 }
+
+/* Desktop Minimized Sidebar */
+@media (min-width: 992px) {
+  body.sidebar-minimized .navbar-vertical.navbar-expand-lg {
+    width: 4.5rem !important;
+    transition: width 0.3s ease;
+  }
+  body.sidebar-minimized .navbar-vertical.navbar-expand-lg ~ .page {
+    padding-left: 4.5rem !important;
+    transition: padding-left 0.3s ease;
+  }
+  
+  /* Hide titles and extra elements */
+  body.sidebar-minimized .nav-link-title,
+  body.sidebar-minimized .navbar-brand-autodark,
+  body.sidebar-minimized .badge,
+  body.sidebar-minimized .dropdown-toggle::after {
+    display: none !important;
+    opacity: 0;
+  }
+  
+  /* Ensure icons are always visible and centered */
+  body.sidebar-minimized .navbar-vertical .nav-link-icon {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 24px !important;
+    height: 24px !important;
+    margin: 0 auto !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  /* Ensure SVGs inside render properly */
+  body.sidebar-minimized .navbar-vertical .nav-link-icon svg {
+    width: 24px !important;
+    height: 24px !important;
+    display: block !important;
+  }
+  
+  /* Center the nav link itself */
+  body.sidebar-minimized .navbar-nav .nav-link {
+    display: flex !important;
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    text-align: center;
+    width: 100%;
+  }
+
+  body.sidebar-minimized .navbar-nav {
+    align-items: center;
+    width: 100%;
+  }
+  
+  body.sidebar-minimized .nav-item {
+    width: 100%;
+  }
+}

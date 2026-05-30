@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useState, useRef, useEffect } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
-import { Message, useChatStore } from '../store/useChatStore'
+import { type Message, useChatStore } from '../store/useChatStore'
 
 interface ChatMessageBubbleProps {
   message: Message
@@ -117,20 +117,10 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
 
   return (
     <div 
-      className={clsx('d-flex mb-4', isUser ? 'justify-content-end' : 'justify-content-start')}
+      className={clsx('d-flex mb-4 align-items-start', isUser ? 'justify-content-end' : 'justify-content-start')}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {!isUser && (
-        <div className="flex-shrink-0 me-3 mt-1">
-          <div 
-            className="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center text-primary"
-            style={{ width: '32px', height: '32px' }}
-          >
-            <Icon icon="robot" size={20} />
-          </div>
-        </div>
-      )}
       
       <div 
         className={clsx(

@@ -1,5 +1,6 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import { clsx } from 'clsx'
+import { useState, useEffect } from 'react'
 import { NavbarLogo } from './NavbarLogo'
 import { Icon } from '../ui/Icon'
 import { isNavItemActive } from '../../utils/navigation'
@@ -70,7 +71,7 @@ function SidebarMenuItem({ item, currentPath }: { item: NavItem; currentPath: st
           role="button"
           aria-expanded="false"
         >
-          <span className="nav-link-icon d-md-none d-lg-inline-block">
+          <span className="nav-link-icon d-inline-block">
             {item.icon && <Icon icon={item.icon} />}
           </span>
           <span className="nav-link-title">{item.label}</span>
@@ -117,7 +118,7 @@ function SidebarMenuItem({ item, currentPath }: { item: NavItem; currentPath: st
     return (
       <li className={clsx('nav-item', active && 'active')}>
         <a className="nav-link" href={item.href || '#'}>
-          <span className="nav-link-icon d-md-none d-lg-inline-block">
+          <span className="nav-link-icon d-inline-block">
             {item.icon && <Icon icon={item.icon} />}
           </span>
           <span className="nav-link-title">{item.label}</span>
@@ -129,7 +130,7 @@ function SidebarMenuItem({ item, currentPath }: { item: NavItem; currentPath: st
   return (
     <li className={clsx('nav-item', active && 'active')}>
       <Link className="nav-link" to={item.href as string}>
-        <span className="nav-link-icon d-md-none d-lg-inline-block">
+        <span className="nav-link-icon d-inline-block">
           {item.icon && <Icon icon={item.icon} />}
         </span>
         <span className="nav-link-title">{item.label}</span>
@@ -150,6 +151,18 @@ export function Sidebar({
 }: SidebarProps) {
   const location = useLocation()
   const currentPath = location.pathname
+  const [isMinimized, setIsMinimized] = useState(false)
+
+  useEffect(() => {
+    if (isMinimized) {
+      document.body.classList.add('sidebar-minimized')
+    } else {
+      document.body.classList.remove('sidebar-minimized')
+    }
+    return () => {
+      document.body.classList.remove('sidebar-minimized')
+    }
+  }, [isMinimized])
 
   const classes = clsx(
     'navbar',
@@ -190,6 +203,15 @@ export function Sidebar({
             ))}
             {children}
           </ul>
+          <div className="mt-auto p-3 d-none d-lg-flex justify-content-center">
+            <button 
+              className="btn btn-icon btn-ghost-secondary rounded-circle" 
+              onClick={() => setIsMinimized(!isMinimized)}
+              aria-label="Toggle sidebar"
+            >
+              <Icon icon={isMinimized ? "chevron-right" : "chevron-left"} />
+            </button>
+          </div>
         </div>
       </div>
     </aside>

@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from '@tanstack/react-router'
 import { Icon } from '@/shared/components/ui/Icon'
+import { Button } from '@/shared/components/ui/Button'
 import { useChatStore } from '../store/useChatStore'
 import { ChatHistoryDrawer } from '../components/ChatHistoryDrawer'
 import { ChatMessageBubble } from '../components/ChatMessageBubble'
 import { ChatInput } from '../components/ChatInput'
 
 export default function ChatPage() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
   const { messages, activeSessionId, isTyping, sendMessage } = useChatStore()
   
   const currentMessages = activeSessionId ? messages[activeSessionId] || [] : []
@@ -33,22 +33,24 @@ export default function ChatPage() {
         <div className="bg-transparent px-3 py-3 d-flex align-items-center gap-3 position-absolute w-100" style={{ zIndex: 10, top: 0, left: 0, right: 0 }}>
           {/* On mobile, show floating toggle when closed */}
           {!isDrawerOpen && (
-            <button 
-              className="btn btn-light p-2 border-0 shadow-sm d-flex align-items-center justify-content-center rounded-3 flex-shrink-0 d-md-none"
-              style={{ width: '40px', height: '40px', backgroundColor: 'var(--bs-white)' }}
+            <Button 
+              iconOnly
+              ghost
+              size="md"
+              icon="layout-sidebar"
+              className="p-0 text-secondary d-md-none"
               onClick={() => setIsDrawerOpen(true)}
-            >
-              <Icon icon="layout-sidebar" size={20} />
-            </button>
+            />
           )}
           <div className="flex-grow-1"></div>
-          <Link 
+          <Button
             to="/dashboard"
-            className="btn btn-light p-2 border-0 shadow-sm text-body d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
-            style={{ width: '40px', height: '40px', backgroundColor: 'var(--bs-white)' }}
-          >
-            <Icon icon="home" size={20} />
-          </Link>
+            iconOnly
+            ghost
+            size="md"
+            icon="home"
+            className="p-0 text-secondary"
+          />
         </div>
 
         {/* Main Area */}
@@ -85,8 +87,8 @@ export default function ChatPage() {
                   ))}
                   
                   {isTyping && (
-                    <div className="d-flex justify-content-start mb-4">
-                      <div className="flex-shrink-0 me-3 mt-1">
+                    <div className="d-flex justify-content-start mb-4 align-items-start">
+                      <div className="flex-shrink-0 me-3 mt-1" style={{ alignSelf: 'flex-start' }}>
                         <div className="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center text-primary" style={{ width: '32px', height: '32px' }}>
                           <Icon icon="robot" size={20} />
                         </div>
