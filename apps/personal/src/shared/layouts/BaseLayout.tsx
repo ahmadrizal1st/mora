@@ -1,10 +1,11 @@
 import { type ReactNode } from 'react'
-import { useLocation } from '@tanstack/react-router'
+import { useLocation, Link } from '@tanstack/react-router'
 import { clsx } from 'clsx'
 import { Navbar } from '../components/layout/Navbar'
 import { Sidebar } from '../components/layout/Sidebar'
 import { PageHeader } from '../components/layout/PageHeader'
 import { Footer } from '../components/layout/Footer'
+import { Icon } from '../components/ui/Icon'
 
 interface BaseLayoutProps {
   children: ReactNode
@@ -121,6 +122,21 @@ export default function BaseLayout({
         </main>
 
         {!hideFooter && <Footer />}
+      </div>
+
+      {/* Chatbot FAB */}
+      <div 
+        className="position-fixed d-none d-md-block" 
+        style={{ bottom: '2rem', right: '2rem', zIndex: 1050 }}
+      >
+        <Link 
+          to="/chat" 
+          className="btn btn-primary btn-icon rounded-circle shadow-lg d-flex align-items-center justify-content-center transition-colors"
+          style={{ width: '60px', height: '60px' }}
+          title="Open Chat Assistant"
+        >
+          <Icon icon="message-chatbot" size={32} />
+        </Link>
       </div>
     </div>
   )

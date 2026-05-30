@@ -12,9 +12,18 @@ export default function ChatPage() {
   
   const currentMessages = activeSessionId ? messages[activeSessionId] || [] : []
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [showScrollButton, setShowScrollButton] = useState(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 150
+    setShowScrollButton(!isNearBottom)
   }
 
   useEffect(() => {
@@ -45,11 +54,12 @@ export default function ChatPage() {
           <div className="flex-grow-1"></div>
           <Button
             to="/dashboard"
-            iconOnly
-            ghost
+            pill
+            white
             size="md"
             icon="home"
-            className="p-0 text-secondary"
+            text="Home"
+            className="fw-medium text-body"
           />
         </div>
 
@@ -62,7 +72,7 @@ export default function ChatPage() {
                 How can I help you today?
               </h2>
               <div className="w-100" style={{ maxWidth: '768px' }}>
-                <div className="bg-white dark:bg-dark-card shadow-sm rounded-4 overflow-hidden border border-light dark:border-dark">
+                <div className="bg-white dark:bg-dark-card shadow-sm overflow-hidden border border-light dark:border-dark" style={{ borderRadius: '24px' }}>
                   <ChatInput onSendMessage={sendMessage} isTyping={isTyping} />
                 </div>
               </div>
@@ -80,7 +90,12 @@ export default function ChatPage() {
             </div>
           ) : (
             <>
-              <div className="flex-grow-1 overflow-auto p-3 p-md-4 custom-scrollbar" style={{ scrollbarWidth: 'thin' }}>
+              <div 
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="flex-grow-1 overflow-auto p-3 p-md-4 custom-scrollbar" 
+                style={{ scrollbarWidth: 'thin' }}
+              >
                 <div className="mx-auto w-100 d-flex flex-column" style={{ maxWidth: '768px' }}>
                   {currentMessages.map(msg => (
                     <ChatMessageBubble key={msg.id} message={msg} />
@@ -106,8 +121,20 @@ export default function ChatPage() {
                 </div>
               </div>
               
-              <div className="mt-auto px-3 pb-2 pt-2 bg-transparent">
-                <div className="mx-auto w-100 bg-white dark:bg-dark-card shadow rounded-4 overflow-hidden border border-light dark:border-dark" style={{ maxWidth: '768px' }}>
+              <div className="mt-auto px-3 pb-2 pt-2 bg-transparent position-relative">
+                {showScrollButton && (
+                  <div className="position-absolute w-100 d-flex justify-content-center" style={{ top: '-46px', left: 0, zIndex: 100 }}>
+                    <Button 
+                      onClick={scrollToBottom}
+                      iconOnly
+                      icon="arrow-down"
+                      size="md"
+                      className="rounded-circle bg-white dark:bg-dark border border-light dark:border-secondary shadow-sm text-muted hover-text-primary transition-colors d-flex align-items-center justify-content-center m-0 p-0"
+                      style={{ width: '36px', height: '36px', minWidth: '36px', minHeight: '36px' }}
+                    />
+                  </div>
+                )}
+                <div className="mx-auto w-100 bg-white dark:bg-dark-card shadow overflow-hidden border border-light dark:border-dark" style={{ maxWidth: '768px', borderRadius: '24px' }}>
                   <ChatInput onSendMessage={sendMessage} isTyping={isTyping} />
                 </div>
                 <div className="text-center mt-2 mb-1">

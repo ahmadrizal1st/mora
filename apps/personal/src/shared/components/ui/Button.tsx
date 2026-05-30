@@ -193,10 +193,13 @@ export function Button({
       href={El === 'a' && !to ? href : undefined}
       {...(El === 'button' ? { type: type || 'button', disabled } : {})}
       id={id}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onClick={handleOnClick as any}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {...(routingProps as any)}
+      onClick={(e: React.MouseEvent<HTMLElement>) => {
+        if ((routingProps as any).onClick) {
+          (routingProps as any).onClick(e)
+        }
+        handleOnClick(e)
+      }}
       {...extraProps}
       {...props}
       className={classes}

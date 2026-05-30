@@ -1,6 +1,7 @@
 import { clsx } from 'clsx'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Button } from '@/shared/components/ui/Button'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useChatStore } from '../store/useChatStore'
 
 interface ChatHistoryDrawerProps {
@@ -9,10 +10,12 @@ interface ChatHistoryDrawerProps {
 }
 
 export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) {
+  const navigate = useNavigate()
   const { sessions, activeSessionId, loadSession, createNewSession } = useChatStore()
 
   const handleSessionClick = (id: string) => {
     loadSession(id)
+    navigate({ to: '/chat' })
     if (window.innerWidth < 768) {
       onToggle()
     }
@@ -20,6 +23,7 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
 
   const handleNewSession = () => {
     createNewSession()
+    navigate({ to: '/chat' })
     if (window.innerWidth < 768) {
       onToggle()
     }
@@ -46,24 +50,27 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
         {!isOpen ? (
           <div className="d-flex flex-column align-items-center py-3 h-100 gap-1 w-100 bg-white dark:bg-dark-card d-none d-md-flex">
             <button 
-              className="border-0 bg-transparent text-body p-2 d-flex align-items-center justify-content-center rounded-3 opacity-75 hover-opacity-100 transition-opacity" 
+              className="border-0 bg-transparent text-body p-2 d-flex align-items-center justify-content-center rounded-3 opacity-75 hover-opacity-100 transition-opacity mb-2" 
               onClick={onToggle}
               title="Open Sidebar"
             >
               <Icon icon="layout-sidebar" size={20} />
             </button>
             <button 
-              className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-body transition-colors"
+              className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-primary transition-colors"
               onClick={handleNewSession}
-              title="New Chat"
+              title="New chat"
             >
-              <Icon icon="edit" size={20} />
+              <Icon icon="pencil" size={20} />
             </button>
-            <button className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-body transition-colors" title="Search">
+            <Link to="/ai/search" className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-primary transition-colors text-decoration-none" title="Search">
               <Icon icon="search" size={20} />
+            </Link>
+            <button className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-primary transition-colors" title="Templates">
+              <Icon icon="wand" size={20} />
             </button>
-            <button className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-body transition-colors" title="Chats">
-              <Icon icon="message-circle" size={20} />
+            <button className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-primary transition-colors" title="Documents">
+              <Icon icon="file-invoice" size={20} />
             </button>
           </div>
         ) : (
@@ -82,7 +89,7 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
                   <Icon icon="layout-sidebar" size={20} />
                 </button>
                 <button 
-                  className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-body transition-colors d-md-none" 
+                  className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-primary transition-colors d-md-none" 
                   onClick={onToggle}
                 >
                   <Icon icon="x" size={20} />
@@ -90,23 +97,31 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
               </div>
             </div>
 
-            <div className="p-3">
+            <div className="p-3 pb-0 d-flex flex-column gap-1">
               <button 
-                className="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 rounded-3 shadow-sm mb-3"
+                className="w-100 d-flex align-items-center gap-3 p-2 rounded-3 border-0 bg-transparent text-muted hover-text-primary hover-bg-light dark:hover-bg-dark transition-colors text-start"
                 onClick={handleNewSession}
               >
-                <Icon icon="plus" size={18} />
-                New Chat
+                <Icon icon="pencil" size={20} className="opacity-75 flex-shrink-0" />
+                <span className="fw-medium flex-grow-1">New chat</span>
               </button>
-              <div className="input-icon">
-                <span className="input-icon-addon">
-                  <Icon icon="search" size={16} />
-                </span>
-                <input type="text" className="form-control form-control-sm rounded-3 bg-light dark:bg-dark border-0" placeholder="Search chats..." />
-              </div>
+
+              <Link to="/ai/search" className="w-100 d-flex align-items-center gap-3 p-2 rounded-3 border-0 bg-transparent text-muted hover-text-primary hover-bg-light dark:hover-bg-dark transition-colors text-start text-decoration-none">
+                <Icon icon="search" size={20} className="opacity-75 flex-shrink-0" />
+                <span className="fw-medium flex-grow-1">Search</span>
+              </Link>
+              <button className="w-100 d-flex align-items-center gap-3 p-2 rounded-3 border-0 bg-transparent text-muted hover-text-primary hover-bg-light dark:hover-bg-dark transition-colors text-start">
+                <Icon icon="wand" size={20} className="opacity-75 flex-shrink-0" />
+                <span className="fw-medium flex-grow-1">Templates</span>
+              </button>
+              <button className="w-100 d-flex align-items-center gap-3 p-2 rounded-3 border-0 bg-transparent text-muted hover-text-primary hover-bg-light dark:hover-bg-dark transition-colors text-start">
+                <Icon icon="file-invoice" size={20} className="opacity-75 flex-shrink-0" />
+                <span className="fw-medium flex-grow-1">Documents</span>
+              </button>
             </div>
 
-            <div className="flex-grow-1 overflow-auto px-2 pb-3" style={{ scrollbarWidth: 'thin' }}>
+            <div className="flex-grow-1 overflow-auto px-2 pb-3 mt-3" style={{ scrollbarWidth: 'thin' }}>
+              <div className="text-muted small fw-semibold px-2 mb-2" style={{ fontSize: '11px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Recent</div>
               <div className="d-flex flex-column gap-1">
                 {sessions.map((session) => (
                   <button
@@ -115,20 +130,13 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
                       'd-flex align-items-center gap-2 w-100 p-2 rounded-3 border-0 text-start transition-colors',
                       session.id === activeSessionId 
                         ? 'bg-primary bg-opacity-10 text-primary fw-medium' 
-                        : 'bg-transparent text-body hover-bg-light'
+                        : 'bg-transparent text-body hover-bg-light dark:hover-bg-dark hover-text-primary'
                     )}
                     onClick={() => handleSessionClick(session.id)}
                   >
-                    <Icon 
-                      icon="message-circle" 
-                      size={18} 
-                      className={session.id === activeSessionId ? 'text-primary' : 'text-muted flex-shrink-0'} 
-                    />
+
                     <div className="text-truncate flex-grow-1" style={{ minWidth: 0 }}>
-                      <div className="text-truncate d-block" style={{ fontSize: '14px', lineHeight: '1.2' }}>{session.title}</div>
-                      <div className="text-muted text-truncate d-block mt-1" style={{ fontSize: '11px', lineHeight: '1' }}>
-                        {new Date(session.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                      </div>
+                      <div className="text-truncate d-block" style={{ fontSize: '14px', lineHeight: '1.4' }}>{session.title}</div>
                     </div>
                   </button>
                 ))}
@@ -146,10 +154,13 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
               <Button 
                 to="/dashboard"
                 block
-                iconOnly
+                pill
+                white
                 size="md"
                 style={{ height: '42px' }}
                 icon="home"
+                text="Home"
+                className="fw-medium text-body"
               />
             </div>
           </div>

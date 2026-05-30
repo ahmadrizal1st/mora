@@ -80,7 +80,7 @@ export function VoiceRecorder({ onCancel, onSend }: VoiceRecorderProps) {
   }, []);
 
   return (
-    <div className="d-flex align-items-center w-100 py-1 gap-2">
+    <div className="d-flex align-items-center w-100 gap-2">
       <button 
         type="button" 
         className="btn btn-icon btn-sm text-muted bg-transparent border-0 flex-shrink-0" 

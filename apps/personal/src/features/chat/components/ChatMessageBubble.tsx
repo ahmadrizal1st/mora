@@ -202,15 +202,6 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                 {renderVariantSwitcher()}
                 <button 
                   type="button" 
-                  onClick={() => retryMessage(message.id)}
-                  className="btn btn-icon btn-sm text-muted bg-transparent border-0 hover-bg-light p-0" 
-                  style={{ width: '26px', height: '26px' }} 
-                  title="Retry"
-                >
-                  <Icon icon="refresh" size={14} />
-                </button>
-                <button 
-                  type="button" 
                   onClick={() => setIsEditing(true)}
                   className="btn btn-icon btn-sm text-muted bg-transparent border-0 hover-bg-light p-0" 
                   style={{ width: '26px', height: '26px' }} 

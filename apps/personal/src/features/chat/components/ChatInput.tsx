@@ -68,8 +68,8 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
       <div className="p-2 bg-white dark:bg-dark-card">
       <form
         onSubmit={handleSubmit}
-        className="d-flex align-items-end gap-2 position-relative bg-light dark:bg-dark rounded-4 px-3 py-2"
-        style={{ minHeight: '52px' }}
+        className="d-flex align-items-end gap-2 position-relative bg-light dark:bg-dark px-3 py-2"
+        style={{ minHeight: '52px', borderRadius: '16px' }}
       >
         {isRecording ? (
           <VoiceRecorder 
