@@ -34,12 +34,14 @@ interface ChatState {
   deleteSessions: (ids: string[]) => void
 }
 
+const MOCK_SESSION_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+
 const MOCK_INITIAL_SESSIONS: ChatSession[] = [
-  { id: '1', title: 'SOA Framework', updatedAt: new Date().toISOString() },
+  { id: MOCK_SESSION_ID, title: 'SOA Framework', updatedAt: new Date().toISOString() },
 ]
 
 const MOCK_INITIAL_MESSAGES: Record<string, Message[]> = {
-  '1': [
+  [MOCK_SESSION_ID]: [
     { 
       id: 'm1', 
       role: 'user', 
@@ -287,7 +289,7 @@ Gunakan backslash \`\\\` untuk menampilkan karakter khusus:
 
 export const useChatStore = create<ChatState>((set, get) => ({
   sessions: MOCK_INITIAL_SESSIONS,
-  activeSessionId: '1',
+  activeSessionId: MOCK_SESSION_ID,
   messages: MOCK_INITIAL_MESSAGES,
   isTyping: false,
 
@@ -301,7 +303,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         return state
       }
 
-      const newId = 'new-' + Date.now().toString()
+      const newId = crypto.randomUUID()
       
       return {
         activeSessionId: newId,

@@ -394,6 +394,10 @@ button[role="tab"]:focus-visible {
   background-color: rgba(var(--tblr-primary-rgb), 0.05);
 }
 
+.hover-nav-item:hover {
+  background-color: rgba(var(--tblr-primary-rgb), 0.05) !important;
+}
+
 /* =====================================================
    ErrorAlert Component – premium error banner
    ===================================================== */

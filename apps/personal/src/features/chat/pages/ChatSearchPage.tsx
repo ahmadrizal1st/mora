@@ -77,7 +77,7 @@ export function ChatSearchPage() {
       toggleSelection(id)
     } else {
       loadSession(id)
-      navigate({ to: '/chat' })
+      navigate({ to: '/ai/chat/$sessionId', params: { sessionId: id } })
     }
   }
 
@@ -166,7 +166,7 @@ export function ChatSearchPage() {
                       pill
                       color="primary"
                       className="fw-medium border-0 shadow-sm"
-                      to="/chat"
+                      to="/ai/chat/"
                       onClick={() => {
                         createNewSession()
                       }}

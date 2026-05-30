@@ -130,7 +130,7 @@ export default function BaseLayout({
         style={{ bottom: '2rem', right: '2rem', zIndex: 1050 }}
       >
         <Link 
-          to="/chat" 
+          to="/ai/chat/" 
           className="btn btn-primary btn-icon rounded-circle shadow-lg d-flex align-items-center justify-content-center transition-colors"
           style={{ width: '60px', height: '60px' }}
           title="Open Chat Assistant"

@@ -62,7 +62,10 @@ import { Route as CreditKtaRouteImport } from './routes/credit.kta'
 import { Route as CreditKprRouteImport } from './routes/credit.kpr'
 import { Route as CreditCreditCardRouteImport } from './routes/credit.credit-card'
 import { Route as AiSearchRouteImport } from './routes/ai.search'
+import { Route as AiChatRouteImport } from './routes/ai.chat'
 import { Route as AccountsAccountIdRouteImport } from './routes/accounts.$accountId'
+import { Route as AiChatIndexRouteImport } from './routes/ai.chat.index'
+import { Route as AiChatSessionIdRouteImport } from './routes/ai.chat.$sessionId'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -329,10 +332,25 @@ const AiSearchRoute = AiSearchRouteImport.update({
   path: '/ai/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiChatRoute = AiChatRouteImport.update({
+  id: '/ai/chat',
+  path: '/ai/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountsAccountIdRoute = AccountsAccountIdRouteImport.update({
   id: '/$accountId',
   path: '/$accountId',
   getParentRoute: () => AccountsRoute,
+} as any)
+const AiChatIndexRoute = AiChatIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AiChatRoute,
+} as any)
+const AiChatSessionIdRoute = AiChatSessionIdRouteImport.update({
+  id: '/$sessionId',
+  path: '/$sessionId',
+  getParentRoute: () => AiChatRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -365,6 +383,7 @@ export interface FileRoutesByFullPath {
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
+  '/ai/chat': typeof AiChatRouteWithChildren
   '/ai/search': typeof AiSearchRoute
   '/credit/credit-card': typeof CreditCreditCardRoute
   '/credit/kpr': typeof CreditKprRoute
@@ -390,6 +409,8 @@ export interface FileRoutesByFullPath {
   '/planning/': typeof PlanningIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
+  '/ai/chat/$sessionId': typeof AiChatSessionIdRoute
+  '/ai/chat/': typeof AiChatIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -442,6 +463,8 @@ export interface FileRoutesByTo {
   '/planning': typeof PlanningIndexRoute
   '/tracker': typeof TrackerIndexRoute
   '/transactions': typeof TransactionsIndexRoute
+  '/ai/chat/$sessionId': typeof AiChatSessionIdRoute
+  '/ai/chat': typeof AiChatIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -474,6 +497,7 @@ export interface FileRoutesById {
   '/sign-in-link': typeof SignInLinkRoute
   '/sign-up': typeof SignUpRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
+  '/ai/chat': typeof AiChatRouteWithChildren
   '/ai/search': typeof AiSearchRoute
   '/credit/credit-card': typeof CreditCreditCardRoute
   '/credit/kpr': typeof CreditKprRoute
@@ -499,6 +523,8 @@ export interface FileRoutesById {
   '/planning/': typeof PlanningIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
+  '/ai/chat/$sessionId': typeof AiChatSessionIdRoute
+  '/ai/chat/': typeof AiChatIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -532,6 +558,7 @@ export interface FileRouteTypes {
     | '/sign-in-link'
     | '/sign-up'
     | '/accounts/$accountId'
+    | '/ai/chat'
     | '/ai/search'
     | '/credit/credit-card'
     | '/credit/kpr'
@@ -557,6 +584,8 @@ export interface FileRouteTypes {
     | '/planning/'
     | '/tracker/'
     | '/transactions/'
+    | '/ai/chat/$sessionId'
+    | '/ai/chat/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -609,6 +638,8 @@ export interface FileRouteTypes {
     | '/planning'
     | '/tracker'
     | '/transactions'
+    | '/ai/chat/$sessionId'
+    | '/ai/chat'
   id:
     | '__root__'
     | '/'
@@ -640,6 +671,7 @@ export interface FileRouteTypes {
     | '/sign-in-link'
     | '/sign-up'
     | '/accounts/$accountId'
+    | '/ai/chat'
     | '/ai/search'
     | '/credit/credit-card'
     | '/credit/kpr'
@@ -665,6 +697,8 @@ export interface FileRouteTypes {
     | '/planning/'
     | '/tracker/'
     | '/transactions/'
+    | '/ai/chat/$sessionId'
+    | '/ai/chat/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -696,6 +730,7 @@ export interface RootRouteChildren {
   SignInIllustrationRoute: typeof SignInIllustrationRoute
   SignInLinkRoute: typeof SignInLinkRoute
   SignUpRoute: typeof SignUpRoute
+  AiChatRoute: typeof AiChatRouteWithChildren
   AiSearchRoute: typeof AiSearchRoute
   GamificationQuestsRoute: typeof GamificationQuestsRoute
   GamificationStoreRoute: typeof GamificationStoreRoute
@@ -1083,12 +1118,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai/chat': {
+      id: '/ai/chat'
+      path: '/ai/chat'
+      fullPath: '/ai/chat'
+      preLoaderRoute: typeof AiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/accounts/$accountId': {
       id: '/accounts/$accountId'
       path: '/$accountId'
       fullPath: '/accounts/$accountId'
       preLoaderRoute: typeof AccountsAccountIdRouteImport
       parentRoute: typeof AccountsRoute
+    }
+    '/ai/chat/': {
+      id: '/ai/chat/'
+      path: '/'
+      fullPath: '/ai/chat/'
+      preLoaderRoute: typeof AiChatIndexRouteImport
+      parentRoute: typeof AiChatRoute
+    }
+    '/ai/chat/$sessionId': {
+      id: '/ai/chat/$sessionId'
+      path: '/$sessionId'
+      fullPath: '/ai/chat/$sessionId'
+      preLoaderRoute: typeof AiChatSessionIdRouteImport
+      parentRoute: typeof AiChatRoute
     }
   }
 }
@@ -1168,6 +1224,19 @@ const PlanningRouteWithChildren = PlanningRoute._addFileChildren(
   PlanningRouteChildren,
 )
 
+interface AiChatRouteChildren {
+  AiChatSessionIdRoute: typeof AiChatSessionIdRoute
+  AiChatIndexRoute: typeof AiChatIndexRoute
+}
+
+const AiChatRouteChildren: AiChatRouteChildren = {
+  AiChatSessionIdRoute: AiChatSessionIdRoute,
+  AiChatIndexRoute: AiChatIndexRoute,
+}
+
+const AiChatRouteWithChildren =
+  AiChatRoute._addFileChildren(AiChatRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R2StepVerificationRoute: R2StepVerificationRoute,
@@ -1197,6 +1266,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignInIllustrationRoute: SignInIllustrationRoute,
   SignInLinkRoute: SignInLinkRoute,
   SignUpRoute: SignUpRoute,
+  AiChatRoute: AiChatRouteWithChildren,
   AiSearchRoute: AiSearchRoute,
   GamificationQuestsRoute: GamificationQuestsRoute,
   GamificationStoreRoute: GamificationStoreRoute,

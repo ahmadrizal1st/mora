@@ -1,7 +1,7 @@
 import { clsx } from 'clsx'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Button } from '@/shared/components/ui/Button'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate, useLocation } from '@tanstack/react-router'
 import { useChatStore } from '../store/useChatStore'
 
 interface ChatHistoryDrawerProps {
@@ -11,11 +11,22 @@ interface ChatHistoryDrawerProps {
 
 export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) {
   const navigate = useNavigate()
+  const location = useLocation()
+  const currentPath = location.pathname
   const { sessions, activeSessionId, loadSession, createNewSession } = useChatStore()
+
+  const isNavActive = (path: string) => currentPath === path || currentPath.startsWith(path + '/')
+
+  const navItemClass = (active: boolean) => clsx(
+    'w-100 d-flex align-items-center gap-2 p-2 rounded-3 border-0 text-start transition-colors',
+    active
+      ? 'bg-primary bg-opacity-10 text-primary fw-medium'
+      : 'bg-transparent text-body hover-nav-item dark:hover-bg-dark'
+  )
 
   const handleSessionClick = (id: string) => {
     loadSession(id)
-    navigate({ to: '/chat' })
+    navigate({ to: '/ai/chat/$sessionId', params: { sessionId: id } })
     if (window.innerWidth < 768) {
       onToggle()
     }
@@ -23,7 +34,7 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
 
   const handleNewSession = () => {
     createNewSession()
-    navigate({ to: '/chat' })
+    navigate({ to: '/ai/chat/' })
     if (window.innerWidth < 768) {
       onToggle()
     }
@@ -97,26 +108,26 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
               </div>
             </div>
 
-            <div className="p-3 pb-0 d-flex flex-column gap-1">
+            <div className="px-2 pb-0 pt-2 d-flex flex-column gap-1">
               <button 
-                className="w-100 d-flex align-items-center gap-3 p-2 rounded-3 border-0 bg-transparent text-muted hover-text-primary hover-bg-light dark:hover-bg-dark transition-colors text-start"
+                className={navItemClass(currentPath === '/ai/chat/' || currentPath === '/ai/chat')}
                 onClick={handleNewSession}
               >
-                <Icon icon="pencil" size={20} className="opacity-75 flex-shrink-0" />
-                <span className="fw-medium flex-grow-1">New chat</span>
+                <Icon icon="pencil" size={16} className="flex-shrink-0" />
+                <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>New chat</span>
               </button>
 
-              <Link to="/ai/search" className="w-100 d-flex align-items-center gap-3 p-2 rounded-3 border-0 bg-transparent text-muted hover-text-primary hover-bg-light dark:hover-bg-dark transition-colors text-start text-decoration-none">
-                <Icon icon="search" size={20} className="opacity-75 flex-shrink-0" />
-                <span className="fw-medium flex-grow-1">Search</span>
+              <Link to="/ai/search" className={navItemClass(isNavActive('/ai/search')) + ' text-decoration-none'}>
+                <Icon icon="search" size={16} className="flex-shrink-0" />
+                <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>Search</span>
               </Link>
-              <button className="w-100 d-flex align-items-center gap-3 p-2 rounded-3 border-0 bg-transparent text-muted hover-text-primary hover-bg-light dark:hover-bg-dark transition-colors text-start">
-                <Icon icon="wand" size={20} className="opacity-75 flex-shrink-0" />
-                <span className="fw-medium flex-grow-1">Templates</span>
+              <button className={navItemClass(false)}>
+                <Icon icon="wand" size={16} className="flex-shrink-0" />
+                <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>Templates</span>
               </button>
-              <button className="w-100 d-flex align-items-center gap-3 p-2 rounded-3 border-0 bg-transparent text-muted hover-text-primary hover-bg-light dark:hover-bg-dark transition-colors text-start">
-                <Icon icon="file-invoice" size={20} className="opacity-75 flex-shrink-0" />
-                <span className="fw-medium flex-grow-1">Documents</span>
+              <button className={navItemClass(false)}>
+                <Icon icon="file-invoice" size={16} className="flex-shrink-0" />
+                <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>Documents</span>
               </button>
             </div>
 
@@ -130,7 +141,7 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
                       'd-flex align-items-center gap-2 w-100 p-2 rounded-3 border-0 text-start transition-colors',
                       session.id === activeSessionId 
                         ? 'bg-primary bg-opacity-10 text-primary fw-medium' 
-                        : 'bg-transparent text-body hover-bg-light dark:hover-bg-dark hover-text-primary'
+                        : 'bg-transparent text-body hover-nav-item dark:hover-bg-dark'
                     )}
                     onClick={() => handleSessionClick(session.id)}
                   >

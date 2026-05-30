@@ -1,15 +1,42 @@
 import { useState, useEffect, useRef } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Button } from '@/shared/components/ui/Button'
+import { useNavigate, useParams } from '@tanstack/react-router'
 import { useChatStore } from '../store/useChatStore'
 import { ChatHistoryDrawer } from '../components/ChatHistoryDrawer'
 import { ChatMessageBubble } from '../components/ChatMessageBubble'
 import { ChatInput } from '../components/ChatInput'
 
 export default function ChatPage() {
+  const navigate = useNavigate()
+  // sessionId is only present on the /ai/chat/:sessionId route
+  const params = useParams({ strict: false }) as { sessionId?: string }
+  const urlSessionId = params?.sessionId
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
-  const { messages, activeSessionId, isTyping, sendMessage } = useChatStore()
-  
+  const { messages, activeSessionId, isTyping, sendMessage, loadSession, createNewSession } = useChatStore()
+
+  // Sync URL → store on mount / when URL changes
+  useEffect(() => {
+    if (urlSessionId) {
+      // Load a specific session from the URL
+      loadSession(urlSessionId)
+    } else {
+      // /ai/chat/ means new chat
+      createNewSession()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlSessionId])
+
+  const handleSendMessage = (content: string) => {
+    const isNew = !activeSessionId || !(messages[activeSessionId]?.length)
+    sendMessage(content)
+    // After the first message, navigate to the session URL
+    if (isNew && activeSessionId) {
+      navigate({ to: '/ai/chat/$sessionId', params: { sessionId: activeSessionId } })
+    }
+  }
+
   const currentMessages = activeSessionId ? messages[activeSessionId] || [] : []
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -29,6 +56,7 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom()
   }, [currentMessages, isTyping])
+
 
   return (
     <div className="d-flex w-100 bg-light dark:bg-dark" style={{ height: '100dvh', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
@@ -73,7 +101,7 @@ export default function ChatPage() {
               </h2>
               <div className="w-100" style={{ maxWidth: '768px' }}>
                 <div className="bg-white dark:bg-dark-card shadow-sm overflow-hidden border border-light dark:border-dark" style={{ borderRadius: '24px' }}>
-                  <ChatInput onSendMessage={sendMessage} isTyping={isTyping} />
+                  <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} />
                 </div>
               </div>
               <div className="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-4">
@@ -135,7 +163,7 @@ export default function ChatPage() {
                   </div>
                 )}
                 <div className="mx-auto w-100 bg-white dark:bg-dark-card shadow overflow-hidden border border-light dark:border-dark" style={{ maxWidth: '768px', borderRadius: '24px' }}>
-                  <ChatInput onSendMessage={sendMessage} isTyping={isTyping} />
+                  <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} />
                 </div>
                 <div className="text-center mt-2 mb-1">
                   <small className="text-muted" style={{ fontSize: '12px' }}>Mora AI can make mistakes. Please double-check responses.</small>

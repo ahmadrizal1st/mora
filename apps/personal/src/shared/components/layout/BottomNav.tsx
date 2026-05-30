@@ -12,14 +12,14 @@ export function BottomNav() {
   const { openMethodModal } = useTransactionModalStore()
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  if (!isAuthenticated || currentPath.startsWith('/tracker') || currentPath.startsWith('/chat')) return null
+  if (!isAuthenticated || currentPath.startsWith('/tracker') || currentPath.startsWith('/ai/chat')) return null
 
   const navItems = [
     { label: 'Home', icon: 'home', href: '/dashboard' },
     { label: 'Activity', icon: 'file-invoice', href: '/activity' },
     { label: 'Tracker', icon: 'scan', href: '#', isAction: true },
     { label: 'Planning', icon: 'target', href: '/planning' },
-    { label: 'Chat', icon: 'message-circle', href: '/chat' },
+    { label: 'Chat', icon: 'message-circle', href: '/ai/chat/' },
   ]
 
   const isActive = (href: string) => {
