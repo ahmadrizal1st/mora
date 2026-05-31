@@ -99,10 +99,7 @@ export function GoalCard({ goal, onClick }: GoalCardProps) {
         </div>
       </div>
 
-      <style>{`
-        .hover-scale-up:hover img { transform: scale(1.1); }
-        .border-white-subtle { border-color: rgba(255,255,255,0.15) !important; }
-      `}</style>
+
     </div>
   );
 }

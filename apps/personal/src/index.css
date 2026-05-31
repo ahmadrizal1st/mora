@@ -34,14 +34,12 @@ body {
   box-shadow: none !important;
 }
 
-/* Specific Rule: Flag and Checkbox always use factor 1 (4px) regardless of global setting */
 .flag,
 .form-check:not(.form-switch) .form-check-input {
   --tblr-border-radius: 4px !important;
   border-radius: 4px !important;
 }
 
-/* Gray border for active/selected pie segments */
 .apexcharts-canvas path.apexcharts-pie-area.apexcharts-selected {
   stroke: #9ca3af !important;
   stroke-width: 2 !important;
@@ -51,30 +49,26 @@ body {
   cursor: pointer;
 }
 
-/* Hide scrollbar utility */
 .hide-scrollbar {
   -ms-overflow-style: none;
-  /* IE and Edge */
+
   scrollbar-width: none;
-  /* Firefox */
+
 }
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
-  /* Chrome, Safari and Opera */
+
 }
 
-/* Remove focus ring on custom tab buttons (role=tab) */
 button[role="tab"]:focus,
 button[role="tab"]:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
 
-/* --- Mobile Responsive Dashboard Optimization --- */
 @media (max-width: 767.98px) {
 
-  /* Scale down the base headings used in cards */
   .h1,
   h1,
   .h2,
@@ -85,14 +79,12 @@ button[role="tab"]:focus-visible {
     letter-spacing: -0.01em !important;
   }
 
-  /* Card titles on mobile should be compact but clear */
   .card-title {
     font-size: 0.875rem !important;
     font-weight: 700 !important;
     margin-bottom: 0.25rem !important;
   }
 
-  /* Form labels and inputs optimization for small screens */
   .form-label {
     font-size: 0.7rem !important;
     text-transform: uppercase;
@@ -119,16 +111,14 @@ button[role="tab"]:focus-visible {
     padding: 0.35rem 0.75rem !important;
   }
 
-  /* Compact Card Headers */
   .card-header {
     padding: 0.4rem 0.6rem !important;
     min-height: 2.25rem !important;
   }
 
-  /* Smaller select inputs (Dropdowns) */
   .form-select-sm {
     font-size: 0.68rem !important;
-    /* Smaller select */
+
     padding: 0.2rem 1.5rem 0.2rem 0.4rem !important;
     background-position: right 0.3rem center !important;
     background-size: 8px 6px !important;
@@ -136,21 +126,18 @@ button[role="tab"]:focus-visible {
     width: auto !important;
   }
 
-  /* Custom utility for extra large mobile text (e.g. Balances) */
   .text-mobile-lg {
     font-size: 1.35rem !important;
-    /* Smaller lg text */
+
     letter-spacing: -0.03em !important;
   }
 
-  /* Custom utility for standard card values */
   .h1-mobile {
     font-size: 0.95rem !important;
     line-height: 1.2 !important;
     letter-spacing: -0.01em !important;
   }
 
-  /* Align subheaders with Tabler mobile expectations */
   .subheader,
   .text-mobile-xs,
   .text-mobile-xs * {
@@ -159,7 +146,6 @@ button[role="tab"]:focus-visible {
     text-transform: uppercase;
   }
 
-  /* Standardize table font sizes for mobile readability */
   .table,
   .table td,
   .table th,
@@ -171,22 +157,19 @@ button[role="tab"]:focus-visible {
 
   .table> :not(caption)>*>* {
     padding: var(--tblr-spacer-2) !important;
-    /* Aligned with Tabler spacer-2 */
+
   }
 
-  /* Compact card padding on mobile */
   .card-body {
     padding: var(--tblr-spacer-3) !important;
-    /* Aligned with Tabler spacer-3 */
+
   }
 
-  /* Use Tabler standard gutter variables */
   .row.g-2 {
     --tblr-gutter-x: var(--tblr-spacer-2) !important;
     --tblr-gutter-y: var(--tblr-spacer-2) !important;
   }
 
-  /* Scale down icons in cards slightly */
   .bg-primary.rounded-2,
   .bg-green.rounded-2,
   .bg-red.rounded-2,
@@ -212,12 +195,12 @@ button[role="tab"]:focus-visible {
     border: none !important;
     box-shadow: none !important;
     padding-bottom: 3rem !important;
-    /* Extra Large Elegant Geometric Motif */
+
     background-color: transparent !important;
     background-image:
-      /* Soft Branded Glow */
+
       radial-gradient(at 0% 0%, color-mix(in srgb, var(--tblr-primary), transparent 85%) 0px, transparent 70%),
-      /* Large Expansive Rings */
+
       radial-gradient(circle at 150% -20%, transparent 80%, color-mix(in srgb, var(--tblr-primary), transparent 95%) 80.1%, color-mix(in srgb, var(--tblr-primary), transparent 95%) 80.2%, transparent 80.3%),
       radial-gradient(circle at 130% 20%, transparent 90%, color-mix(in srgb, var(--tblr-primary), transparent 97%) 90.1%, color-mix(in srgb, var(--tblr-primary), transparent 97%) 90.2%, transparent 90.3%),
       radial-gradient(circle at 110% -50%, transparent 70%, color-mix(in srgb, var(--tblr-primary), transparent 96%) 70.1%, color-mix(in srgb, var(--tblr-primary), transparent 96%) 70.2%, transparent 70.3%) !important;
@@ -234,11 +217,11 @@ button[role="tab"]:focus-visible {
 
   .mobile-bottom-nav-gap {
     padding-bottom: 7.5rem !important;
-    /* Extra clearance for bottom nav */
+
   }
 
   .mobile-page-gradient {
-    /* Multi-layered radial gradients for "mesh" effect */
+
     background:
       radial-gradient(at 0% 0%, color-mix(in srgb, var(--tblr-primary), transparent 80%) 0px, transparent 50%),
       radial-gradient(at 100% 0%, color-mix(in srgb, var(--tblr-primary), transparent 90%) 0px, transparent 50%),
@@ -248,15 +231,13 @@ button[role="tab"]:focus-visible {
 
 }
 
-/* --- Premium Center Bubble Bottom Navbar (Based on Snippet) --- */
-/* --- Premium Center Bubble Bottom Navbar (Color: Primary/Orange) --- */
 .bottom-navbar {
   position: fixed;
   bottom: 0.75rem; 
   left: 1rem;
   right: 1rem;
   height: 4.25rem;
-  background: var(--tblr-primary); /* Changed from dark to Orange */
+  background: var(--tblr-primary); 
   border-radius: 28px;
   box-shadow: 0 8px 32px rgba(var(--tblr-primary-rgb), 0.4);
   display: flex;
@@ -279,7 +260,7 @@ button[role="tab"]:focus-visible {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.7); /* White for contrast */
+  color: rgba(255, 255, 255, 0.7); 
   text-decoration: none !important;
   transition: all 0.25s ease;
   flex: 1;
@@ -307,7 +288,6 @@ button[role="tab"]:focus-visible {
   color: inherit;
 }
 
-/* Central Action Bubble - White on Orange */
 .bottom-navbar-action-wrapper {
   display: flex;
   flex-direction: column;
@@ -321,15 +301,15 @@ button[role="tab"]:focus-visible {
 .bottom-navbar-action-btn {
   width: 58px;
   height: 58px;
-  background: #ffffff; /* White bubble to pop */
+  background: #ffffff; 
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--tblr-primary); /* Orange icon */
+  color: var(--tblr-primary); 
   box-shadow: 
     0 8px 24px rgba(0, 0, 0, 0.15), 
-    0 0 0 5px var(--tblr-primary); /* Ring matches navbar */
+    0 0 0 5px var(--tblr-primary); 
   transition: transform 0.2s;
   position: relative;
   overflow: hidden;
@@ -369,7 +349,6 @@ button[role="tab"]:focus-visible {
   text-decoration: underline !important;
 }
 
-/* --- Mobile Profile Dropdown Fixes --- */
 @media (max-width: 767.98px) {
   .profile-dropdown-mobile {
     position: fixed !important;
@@ -383,7 +362,7 @@ button[role="tab"]:focus-visible {
     margin: 0 !important;
     transform: none !important;
     z-index: 9999 !important;
-    /* Extremely high z-index to dominate any content or nav */
+
     border: 1px solid var(--tblr-border-color) !important;
     box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.3) !important;
     background: var(--tblr-bg-surface) !important;
@@ -398,9 +377,6 @@ button[role="tab"]:focus-visible {
   background-color: rgba(var(--tblr-primary-rgb), 0.05) !important;
 }
 
-/* =====================================================
-   ErrorAlert Component – premium error banner
-   ===================================================== */
 .error-alert-wrapper {
   margin-bottom: 1.25rem;
 }
@@ -443,7 +419,6 @@ button[role="tab"]:focus-visible {
   line-height: 1.4;
 }
 
-/* "More errors" badge */
 .error-alert__badge {
   position: relative;
   display: inline-flex;
@@ -469,7 +444,6 @@ button[role="tab"]:focus-visible {
   border-color: color-mix(in srgb, var(--tblr-danger, #d63939) 45%, transparent);
 }
 
-/* Tooltip */
 .error-alert__tooltip {
   position: absolute;
   top: calc(100% + 8px);
@@ -537,11 +511,6 @@ button[role="tab"]:focus-visible {
   opacity: 0.6;
 }
 
-/* =====================================================
-   Enhanced Input Error States
-   ===================================================== */
-
-/* Standalone input – softer border + ring, no extra browser icon */
 .form-control.is-invalid,
 .form-select.is-invalid {
   border-color: color-mix(in srgb, var(--tblr-danger, #d63939) 55%, transparent) !important;
@@ -556,16 +525,12 @@ button[role="tab"]:focus-visible {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--tblr-danger, #d63939) 18%, transparent) !important;
 }
 
-/* ── Input group with append button (e.g. password + eye icon) ── */
-
-/* Apply the error ring to the GROUP wrapper, not the inner input */
 .input-group.is-invalid {
   border-radius: var(--tblr-border-radius, 0.375rem);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--tblr-danger, #d63939) 12%, transparent) !important;
   transition: box-shadow 0.15s;
 }
 
-/* Inner input: red border but NO individual shadow (group handles it) */
 .input-group.is-invalid .form-control {
   border-color: color-mix(in srgb, var(--tblr-danger, #d63939) 55%, transparent) !important;
   box-shadow: none !important;
@@ -573,14 +538,12 @@ button[role="tab"]:focus-visible {
   border-right: none !important;
 }
 
-/* Append text (eye icon area): match red border, remove left seam */
 .input-group.is-invalid .input-group-text {
   border-color: color-mix(in srgb, var(--tblr-danger, #d63939) 55%, transparent) !important;
   border-left: none !important;
   box-shadow: none !important;
 }
 
-/* Focus within the group: intensify ring */
 .input-group.is-invalid:focus-within {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--tblr-danger, #d63939) 18%, transparent) !important;
 }
@@ -590,7 +553,6 @@ button[role="tab"]:focus-visible {
   border-color: var(--tblr-danger, #d63939) !important;
 }
 
-/* ── Eye-icon button – balanced symmetrical padding ── */
 .input-group-flat .input-group-text {
   padding-left: 0.625rem !important;
   padding-right: 0.625rem !important;
@@ -604,7 +566,6 @@ button[role="tab"]:focus-visible {
   height: 1.25rem;
 }
 
-/* Field-level error message below input */
 .field-error-msg {
   display: flex;
   align-items: center;
@@ -633,10 +594,9 @@ button[role="tab"]:focus-visible {
   opacity: 0.75;
 }
 
-/* --- Mora Finance Welcome Page: Premium Mesh Glow --- */
 .welcome-bg-premium {
   background-color: var(--tblr-bg-surface);
-  /* Bottom is surface color */
+
   position: absolute;
   top: 0;
   left: 0;
@@ -653,7 +613,6 @@ button[role="tab"]:focus-visible {
   z-index: -1;
 }
 
-/* The Deep Blue Header - Solid at the very top */
 .blob-top {
   background: var(--tblr-primary);
   width: 200%;
@@ -662,11 +621,10 @@ button[role="tab"]:focus-visible {
   left: 50%;
   transform: translateX(-50%);
   filter: blur(80px);
-  /* Soften the edges but keep the top solid */
+
   opacity: 1;
 }
 
-/* The Arched White Glow - Creating the curve from the snippet */
 .blob-center {
   background: radial-gradient(circle at 50% 100%, var(--tblr-bg-surface) 0%, color-mix(in srgb, var(--tblr-bg-surface), transparent 10%) 30%, transparent 75%);
   width: 180vw;
@@ -678,7 +636,6 @@ button[role="tab"]:focus-visible {
   opacity: 1;
 }
 
-/* Subtle corner accents */
 .blob-top-left {
   background: color-mix(in srgb, var(--tblr-primary), black 10%);
   width: 60vw;
@@ -703,7 +660,6 @@ button[role="tab"]:focus-visible {
   z-index: 1;
 }
 
-/* --- Custom Button Enhancements --- */
 .btn-white {
   background: var(--tblr-bg-surface) !important;
   border: 1px solid var(--tblr-border-color) !important;
@@ -732,13 +688,11 @@ button[role="tab"]:focus-visible {
   box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--tblr-primary) 25%, transparent) !important;
 }
 
-/* Welcome Page Specific Branding */
 .brand-text-welcome {
   font-size: 2.5rem !important;
   font-family: 'Slackey', cursive !important;
 }
 
-/* --- Wealth Module Premium Aesthetics --- */
 .wealth-card-premium {
   background: var(--tblr-bg-surface);
   position: relative;
@@ -804,7 +758,6 @@ button[role="tab"]:focus-visible {
   -webkit-text-fill-color: transparent;
 }
 
-/* Custom ApexCharts Tooltip Premium */
 .apexcharts-tooltip.apexcharts-theme-dark {
   background: rgba(15, 23, 42, 0.9) !important;
   backdrop-filter: blur(8px);
@@ -820,14 +773,12 @@ button[role="tab"]:focus-visible {
   padding: 8px 12px !important;
 }
 
-
 @media (max-width: 576px) {
   .brand-text-welcome {
     font-size: 2.5rem !important;
   }
 }
 
-/* Desktop Minimized Sidebar */
 @media (min-width: 992px) {
   body.sidebar-minimized .navbar-vertical.navbar-expand-lg {
     width: 4.5rem !important;
@@ -837,8 +788,7 @@ button[role="tab"]:focus-visible {
     padding-left: 4.5rem !important;
     transition: padding-left 0.3s ease;
   }
-  
-  /* Hide titles and extra elements */
+
   body.sidebar-minimized .nav-link-title,
   body.sidebar-minimized .navbar-brand-autodark,
   body.sidebar-minimized .badge,
@@ -846,8 +796,7 @@ button[role="tab"]:focus-visible {
     display: none !important;
     opacity: 0;
   }
-  
-  /* Ensure icons are always visible and centered */
+
   body.sidebar-minimized .navbar-vertical .nav-link-icon {
     display: flex !important;
     align-items: center;
@@ -858,15 +807,13 @@ button[role="tab"]:focus-visible {
     opacity: 1 !important;
     visibility: visible !important;
   }
-  
-  /* Ensure SVGs inside render properly */
+
   body.sidebar-minimized .navbar-vertical .nav-link-icon svg {
     width: 24px !important;
     height: 24px !important;
     display: block !important;
   }
-  
-  /* Center the nav link itself */
+
   body.sidebar-minimized .navbar-nav .nav-link {
     display: flex !important;
     justify-content: center !important;
@@ -880,13 +827,12 @@ button[role="tab"]:focus-visible {
     align-items: center;
     width: 100%;
   }
-  
+
   body.sidebar-minimized .nav-item {
     width: 100%;
   }
 }
 
-/* Hide scrollbar utility aliases */
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -895,7 +841,414 @@ button[role="tab"]:focus-visible {
   display: none;
 }
 
-/* Fix for ColorPicker appearing behind modal */
 #clr-picker, .clr-picker {
   z-index: 1060 !important;
 }
+
+.chat-input-textarea:focus {
+  box-shadow: none !important;
+  outline: none !important;
+  border-color: transparent !important;
+}
+
+@keyframes waveformAnim {
+  0% { transform: scaleY(0.2); opacity: 0.5; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes blink {
+  0% { opacity: 0.3; transform: scale(0.8); }
+  20% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.3; transform: scale(0.8); }
+}
+
+@keyframes pulse-red {
+  0%   { box-shadow: 0 0 0 0 rgba(214, 57, 57, 0.4); }
+  70%  { box-shadow: 0 0 0 20px rgba(214, 57, 57, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(214, 57, 57, 0); }
+}
+
+:where(.theme-dark, [data-theme="dark"]) .tblr-illustrations-good-info-a { fill: black; opacity: 0.07; }
+:where(.theme-dark, [data-theme="dark"]) .tblr-illustrations-good-info-b { fill: #1D2535; }
+:where(.theme-dark, [data-theme="dark"]) .tblr-illustrations-good-info-c { fill: #454C5E; }
+@media (prefers-color-scheme: dark) {
+  .tblr-illustrations-good-info-a { fill: black; opacity: 0.07; }
+  .tblr-illustrations-good-info-b { fill: #1D2535; }
+  .tblr-illustrations-good-info-c { fill: #454C5E; }
+}
+
+.fc-daygrid-day-frame {
+  aspect-ratio: 1 / 1;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.fc-daygrid-day-events {
+  flex-grow: 1;
+}
+
+.concentric-chart-svg {
+  width: 100%;
+  height: auto;
+  max-width: 250px;
+  display: block;
+  transition: all 0.2s ease-in-out;
+}
+@media (min-width: 992px) {
+  .concentric-chart-svg {
+    max-width: 185px;
+  }
+}
+
+.hover-scale-up:hover img { transform: scale(1.1); }
+.border-white-subtle { border-color: rgba(255,255,255,0.15) !important; }
+
+.table-responsive {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.table-responsive::-webkit-scrollbar {
+  display: none;
+}
+.card-table thead th {
+  border-top: 1px solid var(--tblr-border-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.card-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+.card-table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+@media (min-width: 992px) {
+  .invoice-container-desktop {
+    min-height: auto !important;
+  }
+}
+
+.btn-circular {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--tblr-body-color-rgb), 0.05);
+  border: 1px solid var(--tblr-border-color);
+  color: var(--tblr-body-color);
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.scanner-step-wrapper {
+  min-height: 40px;
+}
+.scanner-step-line {
+  position: absolute;
+  top: 6px;
+  left: 16.66%;
+  right: 16.66%;
+  height: 2px;
+  background: var(--tblr-border-color);
+  z-index: 0;
+}
+.scanner-step-node {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  border: none;
+}
+.scanner-step-node.active {
+  background: var(--tblr-primary, #066FD1);
+  box-shadow: 0 0 0 3px rgba(var(--tblr-primary-rgb), 0.2);
+}
+.scanner-step-node.done {
+  background: var(--tblr-success, #2fb344);
+}
+.scanner-step-node.pending {
+  background: var(--tblr-border-color-light, #e6e7e9);
+}
+.scanner-step-label {
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+.scanner-step-label.active {
+  font-weight: 600;
+  color: var(--tblr-body-color);
+}
+.scanner-step-label.inactive {
+  font-weight: 500;
+  color: var(--tblr-secondary);
+}
+
+.scanner-settings-col {
+  min-width: 120px;
+}
+
+.scanner-status-alert {
+  padding: 0.75rem 1rem !important;
+}
+
+.scanner-page-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--tblr-bg-surface);
+}
+.scanner-top-bar {
+  flex-shrink: 0;
+  background: var(--tblr-bg-surface);
+  z-index: 110;
+  padding: 1rem;
+  padding-top: calc(1rem + env(safe-area-inset-top));
+  border-bottom: 1px solid var(--tblr-border-color);
+}
+.scanner-dropdown-menu {
+  width: 240px;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+}
+.scanner-progress-bar-container {
+  height: 4px;
+  border-radius: 0;
+  background: rgba(var(--tblr-body-color-rgb), 0.05);
+  z-index: 120;
+  flex-shrink: 0;
+}
+.scanner-viewport {
+  flex: 1;
+  background-color: #000;
+  position: relative;
+  overflow: hidden;
+}
+.scanner-shutter-overlay {
+  background: var(--tblr-bg-surface);
+  z-index: 50;
+  pointer-events: none;
+}
+.scanner-processing-overlay {
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 30;
+}
+.scanner-video-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.scanner-canvas-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 10;
+}
+.scanner-captured-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  touch-action: none;
+  cursor: crosshair;
+  z-index: 10;
+  display: block;
+  background-color: #000;
+}
+.scanner-result-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: #000;
+  z-index: 10;
+}
+.scanner-result-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.scanner-bottom-bar {
+  flex-shrink: 0;
+  background: var(--tblr-bg-surface);
+  z-index: 110;
+  padding: 1rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--tblr-border-color);
+}
+.scanner-action-btn-container {
+  width: 64px;
+  height: 64px;
+}
+.scanner-shutter-btn {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--tblr-primary, #066FD1);
+  color: white;
+  border: 4px solid var(--tblr-bg-surface);
+  box-shadow: 0 0 0 2px var(--tblr-border-color);
+  transition: transform 0.1s;
+}
+.scanner-shutter-btn:active {
+  transform: scale(0.95);
+}
+.scanner-shutter-btn-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: white;
+  opacity: 0.1;
+}
+
+.min-w-0 { min-width: 0; }
+.max-w-768 { max-width: 768px; }
+.min-w-240 { min-width: 240px; }
+.h-100dvh { height: 100dvh; }
+.min-h-52 { min-height: 52px; }
+.min-h-30 { min-height: 30px; }
+.min-h-24 { min-height: 24px; }
+.w-32 { width: 32px; height: 32px; }
+.w-28 { width: 28px; height: 28px; }
+.w-26 { width: 26px; height: 26px; }
+.w-20 { width: 20px; height: 20px; }
+.font-serif { font-family: serif; }
+.font-monospace { font-family: monospace; }
+.text-11 { font-size: 11px; }
+.text-12 { font-size: 12px; }
+.text-13 { font-size: 13px; }
+.text-14 { font-size: 14px; }
+.text-875em { font-size: 0.875em; }
+
+.chat-page-container {
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.chat-header-bar {
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+.chat-welcome-container {
+  padding-bottom: 10vh;
+}
+.chat-welcome-card {
+  border-radius: 24px;
+}
+.chat-scrollbar-thin {
+  scrollbar-width: thin;
+}
+.chat-input-textarea {
+  min-height: 52px;
+  border-radius: 16px !important;
+}
+
+.chat-bubble-code-block {
+  background-color: #212121;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.chat-bubble-code-text {
+  font-family: monospace;
+  font-size: 14px;
+  color: #e5e5e5;
+  background-color: transparent;
+  padding: 0;
+}
+.chat-bubble-inline-code {
+  background-color: rgba(128,128,128,0.2);
+  color: var(--tblr-warning, #e65f00);
+  font-size: 0.875em;
+}
+.chat-bubble-reply-wrapper {
+  background-color: rgba(128, 128, 128, 0.1);
+}
+.chat-bubble-reply-user {
+  background-color: rgba(128, 128, 128, 0.25);
+  color: inherit;
+  font-size: 14px;
+}
+.chat-bubble-reply-ai {
+  background-color: var(--tblr-bg-surface);
+  color: var(--tblr-body-color);
+  font-size: 14px;
+}
+.chat-bubble-text {
+  white-space: pre-wrap;
+  border-bottom-right-radius: 4px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  animation: blink 1.4s infinite both;
+}
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+.credit-score-card {
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, var(--tblr-bg-surface) 0%, rgba(var(--tblr-primary-rgb), 0.03) 100%) !important;
+}
+.credit-kta-card {
+  border-radius: 20px !important;
+}
+.text-9 { font-size: 9px !important; }
+.text-10 { font-size: 10px !important; }
+.text-15 { font-size: 15px !important; }
+.text-18 { font-size: 18px !important; }
+.text-24 { font-size: 24px !important; }
+.w-22 { width: 22px !important; height: 22px !important; }
+.w-42 { width: 42px !important; height: 42px !important; }
+.tracking-tight { letter-spacing: -0.02em !important; }
+.tracking-wide { letter-spacing: 0.05em !important; }
+.tracking-wider { letter-spacing: 0.1em !important; }
+.border-subtle { border-color: var(--tblr-border-color) !important; }
+.border-current { border: 1px solid currentColor !important; }
+.my-n10px { margin-top: 0px !important; margin-bottom: -10px !important; }
+
+.credit-loan-card {
+  width: 185px;
+  min-height: 135px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--tblr-bg-surface);
+  border: 1px solid rgba(32, 107, 196, 0.12);
+  border-radius: 16px !important;
+  box-shadow: var(--tblr-shadow-sm);
+}
+.credit-loan-card.active {
+  background-color: var(--tblr-primary-lt);
+  border: 1.5px solid var(--tblr-primary);
+  box-shadow: 0 4px 12px rgba(32, 107, 196, 0.1);
+}
+.credit-loan-card-add {
+  width: 185px;
+  min-height: 135px;
+  border-radius: 16px !important;
+  background-color: transparent;
+  border: 1.5px dashed rgba(32, 107, 196, 0.25);
+  color: var(--tblr-primary);
+  cursor: pointer;
+}
+.credit-progress-bar {
+  height: 6px !important;
+  border-radius: 10px !important;
+}
+.h-42 { height: 42px !important; }
+.bg-surface-secondary { background-color: var(--tblr-bg-surface-secondary) !important; }
+.w-120 { width: 120px !important; }
+.w-150 { width: 150px !important; }
+.text-13 { font-size: 13px !important; }
+

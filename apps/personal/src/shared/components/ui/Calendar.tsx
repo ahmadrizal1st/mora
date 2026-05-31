@@ -17,16 +17,7 @@ export function Calendar({
 }: CalendarProps) {
   return (
     <>
-      <style>{`
-        .fc-daygrid-day-frame {
-          aspect-ratio: 1 / 1;
-          display: flex !important;
-          flex-direction: column !important;
-        }
-        .fc-daygrid-day-events {
-          flex-grow: 1;
-        }
-      `}</style>
+
       <FullCalendar
         plugins={[dayGridPlugin]}
         initialView={initialView}

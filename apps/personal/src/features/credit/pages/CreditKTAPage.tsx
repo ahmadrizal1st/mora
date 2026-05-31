@@ -54,7 +54,7 @@ export function CreditKTAPage() {
   return (
     <div>
       {/* Loan Selector - Horizontal Tiles */}
-      <div className="d-flex flex-nowrap overflow-x-auto gap-3 pb-3 mb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="d-flex flex-nowrap overflow-x-auto gap-3 pb-3 mb-4 hide-scrollbar">
         {loans.map(l => {
           const lPct = l.credit!.limit > 0 ? Math.round((Math.max(0, l.credit!.limit - l.credit!.total_amount) / l.credit!.limit) * 100) : 0;
           const isActive = activeLoanId === l.id;
@@ -64,45 +64,30 @@ export function CreditKTAPage() {
           return (
             <div 
               key={l.id} 
-              className="flex-shrink-0 card transition-all cursor-pointer"
-              style={{ 
-                width: '185px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                backgroundColor: isActive ? 'var(--tblr-primary-lt)' : 'var(--tblr-bg-surface)',
-                border: isActive ? '1.5px solid var(--tblr-primary)' : '1px solid rgba(32, 107, 196, 0.12)',
-                borderRadius: '16px',
-                boxShadow: isActive ? '0 4px 12px rgba(32, 107, 196, 0.1)' : 'var(--tblr-shadow-sm)'
-              }}
+              className={`flex-shrink-0 card credit-loan-card ${isActive ? 'active' : ''}`}
               onClick={() => setSelectedId(l.id)}
             >
-              <div className="card-body p-3 d-flex flex-column justify-content-between" style={{ minHeight: '135px' }}>
+              <div className="card-body p-3 d-flex flex-column justify-content-between">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <div className="fw-bold text-truncate" style={{ fontSize: '11px', color: isActive ? 'var(--tblr-primary)' : 'inherit' }}>
+                  <div className={`fw-bold text-truncate text-11 ${isActive ? 'text-primary' : ''}`}>
                     {l.name}
                   </div>
                   <div 
-                    className="d-flex align-items-center justify-content-center shadow-sm" 
-                    style={{ 
-                      width: '28px', 
-                      height: '28px', 
-                      backgroundColor: themeColor, 
-                      color: 'white',
-                      borderRadius: '10px' 
-                    }}
+                    className="d-flex align-items-center justify-content-center shadow-sm w-28 text-white" 
+                    style={{ backgroundColor: themeColor, borderRadius: '10px' }}
                   >
                     <Icon icon="building-bank" size={14} />
                   </div>
                 </div>
 
                 <div>
-                  <div className="text-muted mb-1" style={{ fontSize: '10px' }}>Sisa Saldo</div>
-                  <div className="h3 fw-bold mb-0" style={{ fontSize: '18px' }}>
+                  <div className="text-muted mb-1 text-10">Sisa Saldo</div>
+                  <div className="h3 fw-bold mb-0 text-18">
                     {new Intl.NumberFormat('id-ID').format(l.credit!.total_amount).replace('Rp', '')}
                   </div>
                 </div>
 
-                <div className="mt-2 d-flex align-items-center gap-1" style={{ fontSize: '10px' }}>
+                <div className="mt-2 d-flex align-items-center gap-1 text-10">
                   <Icon 
                     icon={lDaysLeft !== null && lDaysLeft <= 5 ? 'alert-triangle' : 'trending-down'} 
                     size={12} 
@@ -119,21 +104,12 @@ export function CreditKTAPage() {
 
         {/* Add Account Placeholder */}
         <div 
-          className="flex-shrink-0 card d-flex align-items-center justify-content-center text-muted shadow-none"
-          style={{ 
-            width: '185px', 
-            borderRadius: '16px', 
-            backgroundColor: 'transparent', 
-            minHeight: '135px',
-            border: '1.5px dashed rgba(32, 107, 196, 0.25)',
-            color: 'var(--tblr-primary)',
-            cursor: 'pointer'
-          }}
+          className="flex-shrink-0 card d-flex align-items-center justify-content-center text-muted shadow-none credit-loan-card-add"
           onClick={() => openFormForType('kta')}
         >
           <div className="text-center opacity-75">
             <Icon icon="plus" size={20} className="mb-1" />
-            <div style={{ fontSize: '11px', fontWeight: 500 }}>Tambah Pinjaman</div>
+            <div className="text-11 fw-medium">Tambah Pinjaman</div>
           </div>
         </div>
       </div>
@@ -144,7 +120,7 @@ export function CreditKTAPage() {
           <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '20px' }}>
             <div className="card-body p-4">
               <div className="d-flex align-items-center gap-3 mb-4">
-                <span className="avatar avatar-md bg-primary text-white rounded-3 shadow-sm" style={{ border: 'none' }}>
+                <span className="avatar avatar-md bg-primary text-white rounded-3 shadow-sm border-0">
                   <Icon icon="building-bank" size={24} />
                 </span>
                 <div>
@@ -177,7 +153,7 @@ export function CreditKTAPage() {
                   <span className="text-secondary small fw-medium">Progress Pelunasan</span>
                   <span className="fw-bold small">{paidPct}%</span>
                 </div>
-                <div className="progress progress-sm" style={{ height: '6px', borderRadius: '10px' }}>
+                <div className="progress progress-sm credit-progress-bar">
                   <div 
                     className="progress-bar bg-primary" 
                     style={{ width: `${paidPct}%` }} 
@@ -196,20 +172,12 @@ export function CreditKTAPage() {
 
               <div className="d-grid gap-2">
                 <button 
-                  className="btn text-white w-100 position-relative overflow-hidden d-flex align-items-center justify-content-center border-0 px-0 shadow-sm"
-                  style={{ 
-                    borderRadius: '50px', 
-                    height: '42px', 
-                    backgroundColor: 'var(--tblr-primary)',
-                    fontWeight: 700,
-                    fontSize: '13px'
-                  }}
+                  className="btn text-white w-100 position-relative overflow-hidden d-flex align-items-center justify-content-center border-0 px-0 shadow-sm rounded-pill h-42 bg-primary fw-bold text-13"
                 >
                   Bayar Sekarang
                 </button>
                 <button 
-                  className="btn btn-white w-100 d-flex align-items-center justify-content-center border"
-                  style={{ borderRadius: '50px', height: '42px', fontWeight: 600, fontSize: '13px' }}
+                  className="btn btn-white w-100 d-flex align-items-center justify-content-center border rounded-pill h-42 fw-semibold text-13"
                 >
                   <Icon icon="history" size={16} className="me-2 opacity-50" />
                   Riwayat Pembayaran
@@ -220,7 +188,7 @@ export function CreditKTAPage() {
         </div>
 
         <div className="col-12 col-lg-8 d-none d-lg-block">
-          <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '20px' }}>
+          <div className="card border-0 shadow-sm h-100 overflow-hidden credit-kta-card">
             <div className="card-header border-0 pb-0 px-4 pt-4">
               <h3 className="card-title fw-bold">Proyeksi Pelunasan</h3>
               <div className="card-actions">
@@ -268,7 +236,7 @@ export function CreditKTAPage() {
 
         {/* Row 2: Full Width Table */}
         <div className="col-12 mt-2">
-          <div className="card border-0 shadow-sm overflow-hidden" style={{ borderRadius: '20px' }}>
+          <div className="card border-0 shadow-sm overflow-hidden credit-kta-card">
             <div className="card-header border-0 pb-0">
               <h3 className="card-title fw-bold">Jadwal Angsuran</h3>
               <div className="card-actions">
@@ -280,11 +248,11 @@ export function CreditKTAPage() {
                 <table className="table table-vcenter card-table table-hover">
                   <thead>
                     <tr>
-                      <th className="text-secondary small fw-bold px-4 py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', width: '120px' }}>Bulan</th>
-                      <th className="text-secondary small fw-bold py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)' }}>Keterangan</th>
-                      <th className="text-secondary small fw-bold text-end py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', width: '150px' }}>Pokok</th>
-                      <th className="text-secondary small fw-bold text-end py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', width: '150px' }}>Bunga</th>
-                      <th className="text-secondary small fw-bold text-end px-4 py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', width: '150px' }}>Total Tagihan</th>
+                      <th className="text-secondary small fw-bold px-4 py-2 bg-surface-secondary w-120">Bulan</th>
+                      <th className="text-secondary small fw-bold py-2 bg-surface-secondary">Keterangan</th>
+                      <th className="text-secondary small fw-bold text-end py-2 bg-surface-secondary w-150">Pokok</th>
+                      <th className="text-secondary small fw-bold text-end py-2 bg-surface-secondary w-150">Bunga</th>
+                      <th className="text-secondary small fw-bold text-end px-4 py-2 bg-surface-secondary w-150">Total Tagihan</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -315,7 +283,7 @@ export function CreditKTAPage() {
                       </div>
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="text-muted small">Mei 2026 • Terjadwal</div>
-                        <div className="text-secondary small" style={{ fontSize: '10px' }}>
+                        <div className="text-secondary small text-10">
                           P: {fmt(credit.installment_amount * 0.75).replace('Rp ', '')} | B: {fmt(credit.installment_amount * 0.25).replace('Rp ', '')}
                         </div>
                       </div>

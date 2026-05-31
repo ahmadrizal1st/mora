@@ -704,26 +704,11 @@ export default function TrackerPhotoPage() {
   };
 
   return (
-    <div className="page d-flex flex-column" style={{ position: 'fixed', inset: 0, width: '100vw', height: '100dvh', overflow: 'hidden', backgroundColor: 'var(--tblr-bg-surface)' }}>
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        .btn-circular {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(var(--tblr-body-color-rgb), 0.05);
-          border: 1px solid var(--tblr-border-color);
-          color: var(--tblr-body-color);
-          padding: 0;
-          transition: all 0.2s ease;
-        }
-      `}} />
+    <div className="page d-flex flex-column scanner-page-container">
+
 
       {/* TOP HEADER BAR */}
-      <div style={{ flexShrink: 0, background: 'var(--tblr-bg-surface)', zIndex: 110, padding: '1rem', paddingTop: 'calc(1rem + env(safe-area-inset-top))', borderBottom: '1px solid var(--tblr-border-color)' }}>
+      <div className="scanner-top-bar">
         <div className="d-flex align-items-center w-100 gap-3">
           <Button 
             element="button"
@@ -734,7 +719,7 @@ export default function TrackerPhotoPage() {
             iconOnly 
           />
 
-          <h2 className="mb-0 fw-bold h3" style={{ color: 'var(--tblr-body-color)' }}>
+          <h2 className="mb-0 fw-bold h3 text-body">
             {mode === 'live' ? 'Scan' : mode === 'captured' ? 'Sesuaikan' : 'Hasil'}
           </h2>
 
@@ -751,7 +736,7 @@ export default function TrackerPhotoPage() {
                     size="md"
                     iconOnly
                   />
-                  <div className={`dropdown-menu dropdown-menu-end shadow-sm ${isSettingsOpen ? 'show' : ''}`} style={{ width: '240px', position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem' }}>
+                  <div className={`dropdown-menu dropdown-menu-end shadow-sm scanner-dropdown-menu ${isSettingsOpen ? 'show' : ''}`}>
                     <div className="dropdown-header">PENGATURAN</div>
                     <label className="dropdown-item d-flex align-items-center">
                       <span className="me-2">Auto crop</span>
@@ -761,7 +746,7 @@ export default function TrackerPhotoPage() {
                     </label>
                     <label className="dropdown-item d-flex align-items-center">
                       <span className="me-2">Kamera</span>
-                      <div className="ms-auto" style={{ width: '110px' }}>
+                      <div className="ms-auto scanner-select-col">
                         <select className="form-select form-select-sm" value={cameraFacing} onChange={(e) => { setCameraFacing(e.target.value as 'environment' | 'user'); setIsSettingsOpen(false); }}>
                           <option value="environment">Belakang</option>
                           <option value="user">Depan</option>
@@ -770,7 +755,7 @@ export default function TrackerPhotoPage() {
                     </label>
                     <label className="dropdown-item d-flex align-items-center">
                       <span className="me-2">Format Output</span>
-                      <div className="ms-auto" style={{ width: '110px' }}>
+                      <div className="ms-auto scanner-select-col">
                         <select className="form-select form-select-sm" value={outputFormat} onChange={(e) => { setOutputFormat(e.target.value as 'png' | 'jpeg'); setIsSettingsOpen(false); }}>
                           <option value="jpeg">JPEG</option>
                           <option value="png">PNG</option>
@@ -806,27 +791,26 @@ export default function TrackerPhotoPage() {
 
       {/* TOP PROGRESS LOADER (Standalone below header) */}
       {autoCropTimeLeft !== null && (
-        <div className="progress progress-xs" style={{ height: '4px', borderRadius: 0, background: 'rgba(var(--tblr-body-color-rgb), 0.05)', zIndex: 120, flexShrink: 0 }}>
+        <div className="progress progress-xs scanner-progress-bar-container">
           <div
-            className="progress-bar"
+            className="progress-bar bg-orange"
             style={{
               width: `${(autoCropTimeLeft / 3) * 100}%`,
-              transition: 'width 1s linear',
-              backgroundColor: '#f76707'
+              transition: 'width 1s linear'
             }}
           />
         </div>
       )}
 
       {/* CAMERA / IMAGE VIEWPORT (FILLS MIDDLE) */}
-      <div style={{ flex: 1, backgroundColor: '#000', position: 'relative', overflow: 'hidden' }}>
+      <div className="scanner-viewport">
         <div ref={wrapperRef} className="w-100 h-100 position-relative">
 
           {/* LAYERS */}
-          {shutterActive && <div className="position-absolute top-0 start-0 w-100 h-100" style={{ background: 'var(--tblr-bg-surface)', zIndex: 50, pointerEvents: 'none' }} />}
+          {shutterActive && <div className="position-absolute top-0 start-0 w-100 h-100 scanner-shutter-overlay" />}
 
           {isProcessing && (
-            <div className="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center gap-3" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', zIndex: 30 }}>
+            <div className="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center gap-3 scanner-processing-overlay">
               <div className="spinner-border text-primary" role="status" />
               <div className="text-white small fw-bold">{processingLabel}</div>
             </div>
@@ -834,48 +818,28 @@ export default function TrackerPhotoPage() {
 
           {mode === 'live' && (
             <>
-              <video ref={videoRef} autoPlay playsInline muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <canvas ref={liveOverlayRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none', zIndex: 10 }} />
+              <video ref={videoRef} autoPlay playsInline muted className="scanner-video-layer" />
+              <canvas ref={liveOverlayRef} className="scanner-canvas-overlay" />
             </>
           )}
 
           {mode === 'captured' && capturedData && (
             <canvas
               ref={capturedCanvasRef}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                touchAction: 'none',
-                cursor: 'crosshair',
-                zIndex: 10,
-                display: 'block',
-                backgroundColor: '#000'
-              }}
+              className="scanner-captured-canvas"
             />
           )}
 
           {mode === 'result' && resultImage && (
-            <div style={{ position: 'absolute', inset: 0, backgroundColor: '#000', zIndex: 10 }}>
-              <img src={resultImage} alt="Scanned Result" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+            <div className="scanner-result-overlay">
+              <img src={resultImage} alt="Scanned Result" className="scanner-result-img" />
             </div>
           )}
         </div>
       </div>
 
       {/* BOTTOM CONTROLS */}
-      <div className="w-100" style={{
-        flexShrink: 0,
-        background: 'var(--tblr-bg-surface)',
-        borderTop: '1px solid var(--tblr-border-color)',
-        zIndex: 100,
-        padding: '1rem 1.25rem calc(1rem + env(safe-area-inset-bottom))',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.75rem'
-      }}>
+      <div className="w-100 scanner-bottom-bar d-flex flex-column gap-3 px-3">
         <div className="mb-0">
           {mode === 'live' && liveDetected && (
             <div className="text-center mb-2">

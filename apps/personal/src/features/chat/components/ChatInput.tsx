@@ -54,22 +54,10 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
 
   return (
     <>
-      <style>{`
-        .chat-input-textarea:focus {
-          box-shadow: none !important;
-          outline: none !important;
-          border-color: transparent !important;
-        }
-        @keyframes waveformAnim {
-          0% { transform: scaleY(0.2); opacity: 0.5; }
-          100% { transform: scaleY(1); opacity: 1; }
-        }
-      `}</style>
       <div className="p-2 bg-white dark:bg-dark-card">
       <form
         onSubmit={handleSubmit}
-        className="d-flex align-items-end gap-2 position-relative bg-light dark:bg-dark px-3 py-2"
-        style={{ minHeight: '52px', borderRadius: '16px' }}
+        className="d-flex align-items-end gap-2 position-relative bg-light dark:bg-dark px-3 py-2 chat-input-textarea"
       >
         {isRecording ? (
           <VoiceRecorder 
@@ -85,14 +73,13 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
             <div className="dropdown dropup flex-shrink-0">
           <button 
             type="button" 
-            className="btn btn-icon btn-sm rounded-circle text-muted bg-transparent border-0" 
+            className="btn btn-icon btn-sm rounded-circle text-muted bg-transparent border-0 w-32" 
             data-bs-toggle="dropdown"
             aria-expanded="false"
-            style={{ width: '32px', height: '32px' }}
           >
             <Icon icon="plus" size={20} />
           </button>
-          <ul className="dropdown-menu shadow border border-light dark:border-dark rounded-4 py-2 mb-2 bg-white dark:bg-dark-card" style={{ minWidth: '240px' }}>
+          <ul className="dropdown-menu shadow border border-light dark:border-dark rounded-4 py-2 mb-2 bg-white dark:bg-dark-card min-w-240">
             <li>
               <button type="button" className="dropdown-item d-flex align-items-center gap-2 py-2">
                 <Icon icon="paperclip" size={18} className="text-muted" />
@@ -113,7 +100,7 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
                   <Icon icon="photo" size={18} className="text-muted" />
                   <div>
                     <div className="text-body fw-medium">Create image</div>
-                    <div className="text-muted small" style={{ fontSize: '11px' }}>0 images left until 7:24 PM</div>
+                    <div className="text-muted small text-11">0 images left until 7:24 PM</div>
                   </div>
                 </div>
               </button>
@@ -168,8 +155,7 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
         <div className="d-flex align-items-center gap-1 flex-shrink-0">
           <button 
             type="button" 
-            className="btn btn-icon btn-sm text-muted bg-transparent border-0 rounded-circle hover-bg-light" 
-            style={{ width: '32px', height: '32px' }}
+            className="btn btn-icon btn-sm text-muted bg-transparent border-0 rounded-circle hover-bg-light w-32"
             title="Voice Record"
             onClick={() => setIsRecording(true)}
           >
@@ -179,16 +165,14 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
             <button
               type="submit"
               disabled={isTyping}
-              className="btn btn-icon btn-sm rounded-circle border-0 shadow-sm"
-              style={{ width: '32px', height: '32px', backgroundColor: '#ffffff', color: '#000000' }}
+              className="btn btn-icon btn-sm rounded-circle border-0 shadow-sm w-32 bg-white text-dark"
             >
               <Icon icon="arrow-up" size={18} />
             </button>
           ) : (
             <button 
               type="button" 
-              className="btn btn-icon btn-sm rounded-circle border-0 shadow-sm" 
-              style={{ width: '32px', height: '32px', backgroundColor: '#ffffff', color: '#000000' }}
+              className="btn btn-icon btn-sm rounded-circle border-0 shadow-sm w-32 bg-white text-dark"
               title="Voice Mode"
             >
               <Icon icon="headphones" size={18} />

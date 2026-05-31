@@ -252,14 +252,6 @@ export default function TrackerAudioPage() {
           </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes pulse-red {
-          0%   { box-shadow: 0 0 0 0 rgba(214, 57, 57, 0.4); }
-          70%  { box-shadow: 0 0 0 20px rgba(214, 57, 57, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(214, 57, 57, 0); }
-        }
-      `}</style>
     </BaseLayout>
   );
 }

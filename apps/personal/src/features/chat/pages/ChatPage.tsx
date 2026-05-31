@@ -59,15 +59,15 @@ export default function ChatPage() {
 
 
   return (
-    <div className="d-flex w-100 bg-light dark:bg-dark" style={{ height: '100dvh', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+    <div className="d-flex w-100 bg-light dark:bg-dark chat-page-container">
       <ChatHistoryDrawer 
         isOpen={isDrawerOpen} 
         onToggle={() => setIsDrawerOpen(!isDrawerOpen)} 
       />
 
-      <div className="flex-grow-1 d-flex flex-column h-100 position-relative" style={{ minWidth: 0 }}>
+      <div className="flex-grow-1 d-flex flex-column h-100 position-relative min-w-0">
         {/* Header */}
-        <div className="bg-transparent px-3 py-3 d-flex align-items-center gap-3 position-absolute w-100" style={{ zIndex: 10, top: 0, left: 0, right: 0 }}>
+        <div className="bg-transparent px-3 py-3 d-flex align-items-center gap-3 position-absolute w-100 chat-header-bar">
           {/* On mobile, show floating toggle when closed */}
           {!isDrawerOpen && (
             <Button 
@@ -94,13 +94,13 @@ export default function ChatPage() {
         {/* Main Area */}
         <div className="flex-grow-1 d-flex flex-column pt-5 mt-4 overflow-hidden">
           {currentMessages.length === 0 ? (
-            <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center px-3" style={{ paddingBottom: '10vh' }}>
-              <h2 className="fw-medium text-body mb-4 d-flex align-items-center gap-2" style={{ fontFamily: 'serif' }}>
+            <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center px-3 chat-welcome-container">
+              <h2 className="fw-medium text-body mb-4 d-flex align-items-center gap-2 font-serif">
                 <Icon icon="sparkles" size={32} className="text-warning" />
                 How can I help you today?
               </h2>
-              <div className="w-100" style={{ maxWidth: '768px' }}>
-                <div className="bg-white dark:bg-dark-card shadow-sm overflow-hidden border border-light dark:border-dark" style={{ borderRadius: '24px' }}>
+              <div className="w-100 max-w-768">
+                <div className="bg-white dark:bg-dark-card shadow-sm overflow-hidden border border-light dark:border-dark chat-welcome-card">
                   <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} />
                 </div>
               </div>
@@ -121,26 +121,25 @@ export default function ChatPage() {
               <div 
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
-                className="flex-grow-1 overflow-auto p-3 p-md-4 custom-scrollbar" 
-                style={{ scrollbarWidth: 'thin' }}
+                className="flex-grow-1 overflow-auto p-3 p-md-4 custom-scrollbar chat-scrollbar-thin" 
               >
-                <div className="mx-auto w-100 d-flex flex-column" style={{ maxWidth: '768px' }}>
+                <div className="mx-auto w-100 d-flex flex-column max-w-768">
                   {currentMessages.map(msg => (
                     <ChatMessageBubble key={msg.id} message={msg} />
                   ))}
                   
                   {isTyping && (
                     <div className="d-flex justify-content-start mb-4 align-items-start">
-                      <div className="flex-shrink-0 me-3 mt-1" style={{ alignSelf: 'flex-start' }}>
-                        <div className="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center text-primary" style={{ width: '32px', height: '32px' }}>
+                      <div className="flex-shrink-0 me-3 mt-1 align-self-start">
+                        <div className="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center text-primary w-32">
                           <Icon icon="robot" size={20} />
                         </div>
                       </div>
                       <div className="pt-2 d-flex align-items-center">
                         <div className="typing-indicator d-flex gap-1 align-items-center h-100">
-                          <span className="bg-secondary rounded-circle" style={{ width: '6px', height: '6px', animation: 'blink 1.4s infinite both', animationDelay: '0s' }}></span>
-                          <span className="bg-secondary rounded-circle" style={{ width: '6px', height: '6px', animation: 'blink 1.4s infinite both', animationDelay: '0.2s' }}></span>
-                          <span className="bg-secondary rounded-circle" style={{ width: '6px', height: '6px', animation: 'blink 1.4s infinite both', animationDelay: '0.4s' }}></span>
+                          <span className="bg-secondary rounded-circle typing-dot"></span>
+                          <span className="bg-secondary rounded-circle typing-dot"></span>
+                          <span className="bg-secondary rounded-circle typing-dot"></span>
                         </div>
                       </div>
                     </div>
@@ -173,14 +172,6 @@ export default function ChatPage() {
           )}
         </div>
       </div>
-
-      <style>{`
-        @keyframes blink {
-          0% { opacity: 0.3; transform: scale(0.8); }
-          20% { opacity: 1; transform: scale(1.2); }
-          100% { opacity: 0.3; transform: scale(0.8); }
-        }
-      `}</style>
     </div>
   )
 }

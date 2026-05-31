@@ -1,4 +1,5 @@
 import { clsx } from 'clsx'
+import { useState, useEffect } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Button } from '@/shared/components/ui/Button'
 import { Link, useNavigate, useLocation } from '@tanstack/react-router'
@@ -14,6 +15,14 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
   const location = useLocation()
   const currentPath = location.pathname
   const { sessions, activeSessionId, loadSession, createNewSession } = useChatStore()
+  
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false)
+  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const isNavActive = (path: string) => currentPath === path || currentPath.startsWith(path + '/')
 
@@ -27,7 +36,7 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
   const handleSessionClick = (id: string) => {
     loadSession(id)
     navigate({ to: '/ai/chat/$sessionId', params: { sessionId: id } })
-    if (window.innerWidth < 768) {
+    if (isMobile) {
       onToggle()
     }
   }
@@ -35,7 +44,7 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
   const handleNewSession = () => {
     createNewSession()
     navigate({ to: '/ai/chat/' })
-    if (window.innerWidth < 768) {
+    if (isMobile) {
       onToggle()
     }
   }
@@ -53,10 +62,16 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
 
       {/* Drawer Container */}
       <div 
-        className={clsx(
-          'bg-white dark:bg-dark-card border-end border-light dark:border-dark h-100 flex-shrink-0 chat-sidebar-drawer d-flex flex-column',
-          isOpen ? 'drawer-open' : 'drawer-closed'
-        )}
+        className="bg-white dark:bg-dark-card border-end border-light dark:border-dark h-100 flex-shrink-0 d-flex flex-column"
+        style={{
+          position: isMobile ? 'fixed' : 'relative',
+          top: 0,
+          left: 0,
+          zIndex: isMobile ? 1045 : 1,
+          width: isMobile ? '280px' : (isOpen ? '280px' : '64px'),
+          transform: isMobile ? (isOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none',
+          transition: 'transform 0.3s ease, width 0.3s ease'
+        }}
       >
         {!isOpen ? (
           <div className="d-flex flex-column align-items-center py-3 h-100 gap-1 w-100 bg-white dark:bg-dark-card d-none d-md-flex">
@@ -103,7 +118,7 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
                   className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-primary transition-colors d-md-none" 
                   onClick={onToggle}
                 >
-                  <Icon icon="x" size={20} />
+                  <Icon icon="layout-sidebar" size={20} />
                 </button>
               </div>
             </div>
@@ -178,39 +193,6 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
         )}
       </div>
 
-      <style>{`
-        .chat-sidebar-drawer {
-          position: fixed !important;
-          top: 0;
-          left: 0;
-          height: 100%;
-          width: 280px;
-          z-index: 1045 !important;
-          transition: transform 0.3s ease !important;
-        }
-        .chat-sidebar-drawer.drawer-open {
-          transform: translateX(0) !important;
-        }
-        .chat-sidebar-drawer.drawer-closed {
-          transform: translateX(-100%) !important;
-        }
-
-        @media (min-width: 768px) {
-          .chat-sidebar-drawer {
-            position: relative !important;
-            z-index: 1 !important;
-            transform: translateX(0) !important;
-            transition: width 0.3s ease !important;
-          }
-          .chat-sidebar-drawer.drawer-open {
-            width: 280px !important;
-          }
-          .chat-sidebar-drawer.drawer-closed {
-            width: 64px !important;
-            transform: translateX(0) !important;
-          }
-        }
-      `}</style>
     </>
   )
 }

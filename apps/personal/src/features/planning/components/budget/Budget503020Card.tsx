@@ -88,20 +88,7 @@ export function Budget503020Card() {
 
         {/* Concentric Radial Progress Chart */}
         <div className="position-relative my-1 d-flex align-items-center justify-content-center w-100">
-          <style>{`
-            .concentric-chart-svg {
-              width: 100%;
-              height: auto;
-              max-width: 250px;
-              display: block;
-              transition: all 0.2s ease-in-out;
-            }
-            @media (min-width: 992px) {
-              .concentric-chart-svg {
-                max-width: 185px;
-              }
-            }
-          `}</style>
+
           <svg className="concentric-chart-svg" viewBox={`0 0 ${size} ${size}`}>
             <defs>
               <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">

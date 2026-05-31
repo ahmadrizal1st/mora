@@ -159,14 +159,6 @@ export const TransactionInvoice = ({
           <span>Unduh PDF</span>
         </button>
       </div>
-
-      <style>{`
-        @media (min-width: 992px) {
-          .invoice-container-desktop {
-            min-height: auto !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

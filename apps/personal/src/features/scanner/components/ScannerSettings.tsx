@@ -47,7 +47,7 @@ export const ScannerSettings: React.FC<ScannerSettingsProps> = ({
             <div className="col">
               <div className="fw-bold">Kamera</div>
             </div>
-            <div className="col-auto" style={{ minWidth: '120px' }}>
+            <div className="col-auto scanner-settings-col">
               <Select
                 value={cameraFacing}
                 placement="end"
@@ -65,7 +65,7 @@ export const ScannerSettings: React.FC<ScannerSettingsProps> = ({
             <div className="col">
               <div className="fw-bold">Format Output</div>
             </div>
-            <div className="col-auto" style={{ minWidth: '120px' }}>
+            <div className="col-auto scanner-settings-col">
               <Select
                 value={outputFormat}
                 placement="end"

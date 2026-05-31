@@ -13,30 +13,7 @@ interface WelcomeCardProps {
 
 const GoodInfoIllustration = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="200" fill="none" viewBox="0 0 800 600">
-    <style>{`
-      :where(.theme-dark, [data-theme="dark"]) .tblr-illustrations-good-info-a {
-        fill: black;
-        opacity: 0.07;
-      }
-      :where(.theme-dark, [data-theme="dark"]) .tblr-illustrations-good-info-b {
-        fill: #1D2535;
-      }
-      :where(.theme-dark, [data-theme="dark"]) .tblr-illustrations-good-info-c {
-        fill: #454C5E;
-      }
-      @media (prefers-color-scheme: dark) {
-        .tblr-illustrations-good-info-a {
-          fill: black;
-          opacity: 0.07;
-        }
-        .tblr-illustrations-good-info-b {
-          fill: #1D2535;
-        }
-        .tblr-illustrations-good-info-c {
-          fill: #454C5E;
-        }
-      }
-    `}</style>
+
     <path d="M125.93 300.392C125.93 346.056 174.224 379.274 195.614 416.213C217.61 454.339 222.991 512.425 260.996 534.543C297.935 555.933 350.519 532.034 396.183 532.034C441.848 532.034 494.432 555.945 531.371 534.543C569.376 512.547 574.757 454.339 596.753 416.213C618.143 379.274 666.437 346.165 666.437 300.392C666.437 254.618 618.034 221.509 596.753 184.57C574.757 146.444 569.376 88.2364 531.371 66.2405C494.432 44.8504 441.848 68.7491 396.183 68.7491C350.519 68.7491 297.935 44.8383 260.996 66.2405C222.87 88.2364 217.61 146.444 195.614 184.57C174.224 221.618 125.93 254.727 125.93 300.392Z" fill="#066FD1" style={{ fill: 'var(--tblr-illustrations-primary, var(--tblr-primary, #066FD1))' }} opacity="0.02" className="tblr-illustrations-good-info-a" />
     <path d="M349.061 413.013C349.679 413.886 350.237 414.831 350.673 415.776C350.891 416.31 351.061 416.916 351.231 417.509C352.6 422.927 350.285 428.247 346.08 429.277C342.287 430.222 338.288 427.447 336.494 423.048C336.276 422.515 336.046 421.981 335.949 421.436C335.852 420.891 335.743 420.345 335.646 419.8C335.112 415.001 337.306 410.614 341.099 409.656C343.911 408.784 346.965 410.274 349.061 413.001V413.013Z" fill="#FFCB9D" style={{ fill: 'var(--tblr-illustrations-skin, #FFCB9D)' }} />
     <path d="M349.061 413.013C349.679 413.886 350.237 414.831 350.673 415.776C345.801 417.849 341.002 420.212 336.494 423.048C336.276 422.515 336.046 421.981 335.949 421.436C335.852 420.891 335.743 420.345 335.646 419.8C335.112 415.001 337.306 410.614 341.099 409.656C343.911 408.784 346.965 410.274 349.061 413.001V413.013Z" fill="black" opacity="0.1" />

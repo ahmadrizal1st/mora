@@ -11,11 +11,10 @@ export const ScannerStatusAlert: React.FC<ScannerStatusAlertProps> = ({
 }) => {
   return (
     <div
-      className={`alert m-0 ${statusType === 'ok' ? 'alert-success' :
+      className={`alert m-0 scanner-status-alert ${statusType === 'ok' ? 'alert-success' :
           statusType === 'warn' ? 'alert-warning' :
             statusType === 'error' ? 'alert-danger' : 'alert-info'
         }`}
-      style={{ padding: '0.75rem 1rem' }}
     >
       <div className="d-flex align-items-center overflow-hidden" title={statusMsg}>
         <div

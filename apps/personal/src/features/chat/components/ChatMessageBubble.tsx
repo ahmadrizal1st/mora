@@ -23,25 +23,24 @@ const CodeBlock = ({ className, children, ...props }: any) => {
 
   return (
     <div 
-      className="rounded-3 my-3 position-relative"
-      style={{ backgroundColor: '#212121', border: '1px solid rgba(255,255,255,0.1)' }}
+      className="rounded-3 my-3 position-relative chat-bubble-code-block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="d-flex align-items-center justify-content-between px-3 pt-2 pb-1" style={{ fontSize: '12px', color: '#888' }}>
+      <div className="d-flex align-items-center justify-content-between px-3 pt-2 pb-1 text-12 text-muted">
         <span>{language}</span>
         <button 
           type="button" 
           onClick={handleCopy}
-          className="bg-transparent border-0 p-0 d-flex align-items-center justify-content-center"
-          style={{ opacity: (isHovered || copied) ? 1 : 0, transition: 'opacity 0.2s', color: '#888', width: '20px', height: '20px', cursor: 'pointer' }}
+          className="bg-transparent border-0 p-0 d-flex align-items-center justify-content-center text-muted cursor-pointer w-20"
+          style={{ opacity: (isHovered || copied) ? 1 : 0, transition: 'opacity 0.2s' }}
           title="Copy code"
         >
           <Icon icon={copied ? "check" : "copy"} size={16} />
         </button>
       </div>
       <div className="px-3 pb-3 pt-1 overflow-auto">
-        <code className={className} style={{ fontFamily: 'monospace', fontSize: '14px', color: '#e5e5e5', backgroundColor: 'transparent', padding: 0 }} {...props}>
+        <code className={clsx(className, "chat-bubble-code-text")} {...props}>
           {children}
         </code>
       </div>
@@ -89,23 +88,23 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
     const total = message.variants.length;
     
     return (
-      <div className="d-flex align-items-center gap-1 mx-1 text-muted" style={{ fontSize: '12px' }}>
+      <div className="d-flex align-items-center gap-1 mx-1 text-muted text-12">
         <button 
           type="button" 
           onClick={() => switchVariant(message.id, 'prev')}
           disabled={current <= 1}
-          className="btn btn-icon btn-sm text-muted bg-transparent border-0 p-0" 
-          style={{ width: '20px', height: '20px', opacity: current <= 1 ? 0.3 : 1 }}
+          className="text-muted bg-transparent border-0 p-0 d-flex align-items-center justify-content-center w-20" 
+          style={{ opacity: current <= 1 ? 0.3 : 1 }}
         >
           <Icon icon="chevron-left" size={14} />
         </button>
-        <span style={{ userSelect: 'none', margin: '0 2px' }}>{current} / {total}</span>
+        <span className="user-select-none mx-1">{current} / {total}</span>
         <button 
           type="button" 
           onClick={() => switchVariant(message.id, 'next')}
           disabled={current >= total}
-          className="btn btn-icon btn-sm text-muted bg-transparent border-0 p-0" 
-          style={{ width: '20px', height: '20px', opacity: current >= total ? 0.3 : 1 }}
+          className="text-muted bg-transparent border-0 p-0 d-flex align-items-center justify-content-center w-20" 
+          style={{ opacity: current >= total ? 0.3 : 1 }}
         >
           <Icon icon="chevron-right" size={14} />
         </button>
@@ -133,14 +132,13 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
         }}
       >
         {isUser ? (
-          <div className="d-flex flex-column align-items-end" style={{ width: '100%' }}>
+          <div className="d-flex flex-column align-items-end w-100">
             {isEditing ? (
               <div 
                 className="p-3 rounded-4 bg-dark dark:bg-light text-white dark:text-dark shadow-sm w-100"
               >
                 <div 
-                  className="border border-primary rounded-3 px-3 py-2 mb-3"
-                  style={{ backgroundColor: 'rgba(128, 128, 128, 0.1)' }}
+                  className="border border-primary rounded-3 px-3 py-2 mb-3 chat-bubble-reply-wrapper"
                 >
                   <textarea 
                     ref={textareaRef}
@@ -160,7 +158,7 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                   />
                 </div>
                 <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3">
-                  <div className="d-flex gap-2" style={{ fontSize: '13px', lineHeight: '1.4', opacity: 0.7 }}>
+                  <div className="d-flex gap-2 text-13 opacity-75" style={{ lineHeight: '1.4' }}>
                     <Icon icon="info-circle" size={16} className="flex-shrink-0 mt-1 mt-sm-0" />
                     <span>
                       Editing this message will create a new conversation branch. You can switch between branches using the arrow navigation buttons.
@@ -168,15 +166,13 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                   </div>
                   <div className="d-flex gap-2 flex-shrink-0 align-self-end align-self-sm-auto">
                     <button 
-                      className="btn btn-sm border-0 px-3 py-2 fw-medium rounded-3" 
-                      style={{ backgroundColor: 'rgba(128, 128, 128, 0.25)', color: 'inherit', fontSize: '14px' }} 
+                      className="btn btn-sm border-0 px-3 py-2 fw-medium rounded-3 chat-bubble-reply-user" 
                       onClick={() => { setIsEditing(false); setEditValue(message.content) }}
                     >
                       Cancel
                     </button>
                     <button 
-                      className="btn btn-sm border-0 px-3 py-2 fw-medium rounded-3" 
-                      style={{ backgroundColor: 'var(--bs-body-bg)', color: 'var(--bs-body-color)', fontSize: '14px' }}
+                      className="btn btn-sm border-0 px-3 py-2 fw-medium rounded-3 chat-bubble-reply-ai"
                       onClick={handleSaveEdit}
                     >
                       Save
@@ -186,8 +182,7 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
               </div>
             ) : (
               <div 
-                className="px-3 py-2 rounded-4 bg-dark dark:bg-light text-white dark:text-dark shadow-sm"
-                style={{ whiteSpace: 'pre-wrap', borderBottomRightRadius: '4px' }}
+                className="px-3 py-2 rounded-4 bg-dark dark:bg-light text-white dark:text-dark shadow-sm chat-bubble-text"
               >
                 {message.content}
               </div>
@@ -195,16 +190,15 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
             
             {!isEditing && (
               <div 
-                className="d-flex align-items-center gap-1 mt-1 text-muted"
-                style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.2s', fontSize: '12px', minHeight: '24px' }}
+                className="d-flex align-items-center gap-1 mt-1 text-muted text-12 min-h-24"
+                style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.2s' }}
               >
                 <span className="me-2">Today</span>
                 {renderVariantSwitcher()}
                 <button 
                   type="button" 
                   onClick={() => setIsEditing(true)}
-                  className="btn btn-icon btn-sm text-muted bg-transparent border-0 hover-bg-light p-0" 
-                  style={{ width: '26px', height: '26px' }} 
+                  className="text-muted bg-transparent border-0 p-1 hover-text-primary transition-colors d-flex align-items-center justify-content-center w-26" 
                   title="Edit"
                 >
                   <Icon icon="pencil" size={14} />
@@ -212,8 +206,7 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                 <button 
                   type="button" 
                   onClick={handleCopy}
-                  className="btn btn-icon btn-sm text-muted bg-transparent border-0 hover-bg-light p-0" 
-                  style={{ width: '26px', height: '26px' }} 
+                  className="text-muted bg-transparent border-0 p-1 hover-text-primary transition-colors d-flex align-items-center justify-content-center w-26" 
                   title="Copy"
                 >
                   <Icon icon={copied ? "check" : "copy"} size={14} className={copied ? "text-success" : ""} />
@@ -224,10 +217,10 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
         ) : (
           <>
             {message.isGenerating ? (
-              <div className="typing-indicator d-flex gap-1 align-items-center pt-2 pb-1" style={{ minHeight: '30px' }}>
-                <span className="bg-secondary rounded-circle" style={{ width: '6px', height: '6px', animation: 'blink 1.4s infinite both', animationDelay: '0s' }}></span>
-                <span className="bg-secondary rounded-circle" style={{ width: '6px', height: '6px', animation: 'blink 1.4s infinite both', animationDelay: '0.2s' }}></span>
-                <span className="bg-secondary rounded-circle" style={{ width: '6px', height: '6px', animation: 'blink 1.4s infinite both', animationDelay: '0.4s' }}></span>
+              <div className="typing-indicator d-flex gap-1 align-items-center pt-2 pb-1 min-h-30">
+                <span className="bg-secondary rounded-circle typing-dot"></span>
+                <span className="bg-secondary rounded-circle typing-dot"></span>
+                <span className="bg-secondary rounded-circle typing-dot"></span>
               </div>
             ) : (
               <ReactMarkdown 
@@ -243,7 +236,7 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                     }
                     
                     return (
-                      <code className="rounded px-1 py-0.5" style={{ backgroundColor: 'rgba(128,128,128,0.2)', color: '#e65f00', fontSize: '0.875em' }} {...props}>
+                      <code className="rounded px-1 py-0.5 chat-bubble-inline-code" {...props}>
                         {children}
                       </code>
                     )
@@ -259,8 +252,7 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                 <button 
                   type="button" 
                   onClick={handleCopy}
-                  className="btn btn-icon btn-sm text-muted bg-transparent border-0 hover-bg-light" 
-                  style={{ width: '28px', height: '28px' }} 
+                  className="text-muted bg-transparent border-0 p-1 hover-text-primary transition-colors d-flex align-items-center justify-content-center w-28" 
                   title="Copy"
                 >
                   <Icon icon={copied ? "check" : "copy"} size={16} className={copied ? "text-success" : ""} />
@@ -268,8 +260,7 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                 <button 
                   type="button" 
                   onClick={() => setFeedback(f => f === 'up' ? null : 'up')}
-                  className={`btn btn-icon btn-sm bg-transparent border-0 hover-bg-light ${feedback === 'up' ? 'text-primary' : 'text-muted'}`}
-                  style={{ width: '28px', height: '28px' }} 
+                  className={`bg-transparent border-0 p-1 transition-colors d-flex align-items-center justify-content-center w-28 ${feedback === 'up' ? 'text-primary' : 'text-muted hover-text-primary'}`}
                   title="Good response"
                 >
                   <Icon icon="thumb-up" size={16} />
@@ -277,8 +268,7 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                 <button 
                   type="button"
                   onClick={() => setFeedback(f => f === 'down' ? null : 'down')}
-                  className={`btn btn-icon btn-sm bg-transparent border-0 hover-bg-light ${feedback === 'down' ? 'text-danger' : 'text-muted'}`}
-                  style={{ width: '28px', height: '28px' }} 
+                  className={`bg-transparent border-0 p-1 transition-colors d-flex align-items-center justify-content-center w-28 ${feedback === 'down' ? 'text-danger' : 'text-muted hover-text-danger'}`}
                   title="Bad response"
                 >
                   <Icon icon="thumb-down" size={16} />
@@ -286,8 +276,7 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                 <button 
                   type="button" 
                   onClick={() => retryMessage(message.id)}
-                  className="btn btn-icon btn-sm text-muted bg-transparent border-0 hover-bg-light" 
-                  style={{ width: '28px', height: '28px' }} 
+                  className="text-muted bg-transparent border-0 p-1 hover-text-primary transition-colors d-flex align-items-center justify-content-center w-28" 
                   title="Regenerate"
                 >
                   <Icon icon="refresh" size={16} />

@@ -50,7 +50,7 @@ export function CreditPaylaterPage() {
     <div>
 
       {/* Provider Selector - Horizontal Tiles */}
-      <div className="d-flex flex-nowrap overflow-x-auto gap-3 pb-3 mb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="d-flex flex-nowrap overflow-x-auto gap-3 pb-3 mb-4 hide-scrollbar">
         {providers.map(p => {
           const pPct = p.credit!.limit > 0 ? Math.round((p.credit!.total_amount / p.credit!.limit) * 100) : 0;
           const isActive = activeProviderId === p.id;
@@ -60,45 +60,30 @@ export function CreditPaylaterPage() {
           return (
             <div 
               key={p.id} 
-              className="flex-shrink-0 card transition-all cursor-pointer"
-              style={{ 
-                width: '185px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                backgroundColor: isActive ? 'var(--tblr-primary-lt)' : 'var(--tblr-bg-surface)',
-                border: isActive ? '1.5px solid var(--tblr-primary)' : '1px solid rgba(32, 107, 196, 0.12)',
-                borderRadius: '16px',
-                boxShadow: isActive ? '0 4px 12px rgba(32, 107, 196, 0.1)' : 'var(--tblr-shadow-sm)'
-              }}
+              className={`flex-shrink-0 card credit-loan-card ${isActive ? 'active' : ''}`}
               onClick={() => setSelectedId(p.id)}
             >
-              <div className="card-body p-3 d-flex flex-column justify-content-between" style={{ minHeight: '135px' }}>
+              <div className="card-body p-3 d-flex flex-column justify-content-between">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <div className="fw-bold text-truncate" style={{ fontSize: '11px', color: isActive ? 'var(--tblr-primary)' : 'inherit' }}>
+                  <div className={`fw-bold text-truncate text-11 ${isActive ? 'text-primary' : ''}`}>
                     {p.name}
                   </div>
                   <div 
-                    className="d-flex align-items-center justify-content-center shadow-sm" 
-                    style={{ 
-                      width: '28px', 
-                      height: '28px', 
-                      backgroundColor: themeColor, 
-                      color: 'white',
-                      borderRadius: '10px' 
-                    }}
+                    className="d-flex align-items-center justify-content-center shadow-sm w-28 text-white" 
+                    style={{ backgroundColor: themeColor, borderRadius: '10px' }}
                   >
                     <Icon icon="device-mobile" size={14} />
                   </div>
                 </div>
 
                 <div>
-                  <div className="text-muted mb-1" style={{ fontSize: '10px' }}>Saldo terpakai</div>
-                  <div className="h3 fw-bold mb-0" style={{ fontSize: '18px' }}>
+                  <div className="text-muted mb-1 text-10">Saldo terpakai</div>
+                  <div className="h3 fw-bold mb-0 text-18">
                     {new Intl.NumberFormat('id-ID').format(p.credit!.total_amount).replace('Rp', '')}
                   </div>
                 </div>
 
-                <div className="mt-2 d-flex align-items-center gap-1" style={{ fontSize: '10px' }}>
+                <div className="mt-2 d-flex align-items-center gap-1 text-10">
                   <Icon 
                     icon={pDaysLeft !== null && pDaysLeft <= 5 ? 'alert-triangle' : 'trending-down'} 
                     size={12} 
@@ -115,21 +100,12 @@ export function CreditPaylaterPage() {
 
         {/* Add Account Placeholder */}
         <div 
-          className="flex-shrink-0 card d-flex align-items-center justify-content-center text-muted shadow-none"
-          style={{ 
-            width: '185px', 
-            borderRadius: '16px', 
-            backgroundColor: 'transparent', 
-            minHeight: '135px',
-            border: '1.5px dashed rgba(32, 107, 196, 0.25)',
-            color: 'var(--tblr-primary)',
-            cursor: 'pointer'
-          }}
+          className="flex-shrink-0 card d-flex align-items-center justify-content-center text-muted shadow-none credit-loan-card-add"
           onClick={() => openFormForType('paylater')}
         >
           <div className="text-center opacity-75">
             <Icon icon="plus" size={20} className="mb-1" />
-            <div style={{ fontSize: '11px', fontWeight: 500 }}>Tambah Paylater</div>
+            <div className="text-11 fw-medium">Tambah Paylater</div>
           </div>
         </div>
       </div>
@@ -138,10 +114,10 @@ export function CreditPaylaterPage() {
       <div className="row g-3">
         {/* Row 1: Info + Chart */}
         <div className="col-12 col-lg-4">
-          <div className="card border-0 shadow-sm h-100 overflow-hidden" style={{ borderRadius: '20px' }}>
+          <div className="card border-0 shadow-sm h-100 overflow-hidden credit-kta-card">
             <div className="card-body p-4">
               <div className="d-flex align-items-center gap-3 mb-4">
-                <span className="avatar avatar-md text-white rounded-3 shadow-sm" style={{ backgroundColor: prov.color || 'var(--tblr-primary)', border: 'none' }}>
+                <span className="avatar avatar-md text-white rounded-3 shadow-sm border-0" style={{ backgroundColor: prov.color || 'var(--tblr-primary)' }}>
                   <Icon icon="credit-card" size={24} />
                 </span>
                 <div>
@@ -174,7 +150,7 @@ export function CreditPaylaterPage() {
                   <span className="text-secondary small fw-medium">Utilisasi Limit</span>
                   <span className="fw-bold small">{usedPct}%</span>
                 </div>
-                <div className="progress progress-sm" style={{ height: '6px', borderRadius: '10px' }}>
+                <div className="progress progress-sm credit-progress-bar">
                   <div 
                     className={`progress-bar bg-${usedPct > 80 ? 'danger' : usedPct > 50 ? 'warning' : 'primary'}`} 
                     style={{ width: `${usedPct}%` }} 
@@ -193,14 +169,8 @@ export function CreditPaylaterPage() {
 
               <div className="d-grid gap-2">
                 <button 
-                  className="btn text-white w-100 position-relative overflow-hidden d-flex align-items-center justify-content-center border-0 px-0 shadow-sm"
-                  style={{ 
-                    borderRadius: '50px', 
-                    height: '42px', 
-                    backgroundColor: prov.color || 'var(--tblr-primary)',
-                    fontWeight: 700,
-                    fontSize: '13px'
-                  }}
+                  className="btn text-white w-100 position-relative overflow-hidden d-flex align-items-center justify-content-center border-0 px-0 shadow-sm rounded-pill h-42 text-13 fw-bold"
+                  style={{ backgroundColor: prov.color || 'var(--tblr-primary)' }}
                 >
                   Bayar Sekarang
                 </button>
@@ -280,7 +250,7 @@ export function CreditPaylaterPage() {
 
         {/* Row 2: Full Width Table */}
         <div className="col-12 mt-2">
-          <div className="card border-0 shadow-sm overflow-hidden" style={{ borderRadius: '20px' }}>
+          <div className="card border-0 shadow-sm overflow-hidden credit-kta-card">
             <div className="card-header border-0 pb-0">
               <h3 className="card-title fw-bold">Transaksi Terbaru</h3>
               <div className="card-actions">
@@ -292,11 +262,11 @@ export function CreditPaylaterPage() {
                 <table className="table table-vcenter card-table table-hover">
                   <thead>
                     <tr>
-                      <th className="text-secondary small fw-bold px-4 py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', width: '120px' }}>Tanggal</th>
-                      <th className="text-secondary small fw-bold py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)' }}>Keterangan</th>
-                      <th className="text-secondary small fw-bold py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', width: '150px' }}>Kategori</th>
-                      <th className="text-secondary small fw-bold text-end py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', width: '150px' }}>Nominal</th>
-                      <th className="text-secondary small fw-bold text-center px-4 py-2" style={{ backgroundColor: 'var(--tblr-bg-surface-secondary)', width: '120px' }}>Status</th>
+                      <th className="text-secondary small fw-bold px-4 py-2 bg-surface-secondary w-120">Tanggal</th>
+                      <th className="text-secondary small fw-bold py-2 bg-surface-secondary">Keterangan</th>
+                      <th className="text-secondary small fw-bold py-2 bg-surface-secondary w-150">Kategori</th>
+                      <th className="text-secondary small fw-bold text-end py-2 bg-surface-secondary w-150">Nominal</th>
+                      <th className="text-secondary small fw-bold text-center px-4 py-2 bg-surface-secondary w-120">Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -318,13 +288,11 @@ export function CreditPaylaterPage() {
                           </td>
                           <td className="py-3">
                             <span 
-                              className="badge badge-outline"
+                              className="badge badge-outline text-10 px-2 py-1"
                               style={{ 
                                 borderColor: `${t.color}40`, 
                                 color: t.color, 
-                                backgroundColor: `${t.color}08`,
-                                fontSize: '10px',
-                                padding: '2px 8px'
+                                backgroundColor: `${t.color}08`
                               }}
                             >
                               {t.category}
@@ -334,7 +302,7 @@ export function CreditPaylaterPage() {
                             <div className="fw-bold text-danger">-{fmt(Math.abs(t.amount)).replace('Rp ', '')}</div>
                           </td>
                           <td className="text-center">
-                            <span className="badge bg-success-lt text-success border-0 px-2 py-1" style={{ fontSize: '10px' }}>Selesai</span>
+                            <span className="badge bg-success-lt text-success border-0 px-2 py-1 text-10">Selesai</span>
                           </td>
                         </tr>
                       );
@@ -361,19 +329,18 @@ export function CreditPaylaterPage() {
                           <div className="d-flex align-items-center gap-2">
                             <div className="text-muted small">{formattedDate}</div>
                             <span 
-                              className="badge badge-outline"
+                              className="badge badge-outline text-9"
                               style={{ 
                                 borderColor: `${t.color}40`, 
                                 color: t.color, 
                                 backgroundColor: `${t.color}08`,
-                                fontSize: '9px',
                                 padding: '2px 6px'
                               }}
                             >
                               {t.category}
                             </span>
                           </div>
-                          <span className="badge bg-success-lt text-success border-0 px-2 py-1" style={{ fontSize: '9px' }}>Selesai</span>
+                          <span className="badge bg-success-lt text-success border-0 px-2 py-1 text-9">Selesai</span>
                         </div>
                       </div>
                     );
@@ -385,26 +352,7 @@ export function CreditPaylaterPage() {
         </div>
       </div>
 
-      <style>{`
-        .table-responsive {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-        .table-responsive::-webkit-scrollbar {
-          display: none;
-        }
-        .card-table thead th {
-          border-top: 1px solid var(--tblr-border-color);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-        .card-table tbody tr {
-          transition: background-color 0.2s ease;
-        }
-        .card-table tbody tr:last-child td {
-          border-bottom: none !important;
-        }
-      `}</style>
+
     </div>
   );
 }
