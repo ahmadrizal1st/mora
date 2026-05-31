@@ -12,7 +12,12 @@ export function BottomNav() {
   const { openMethodModal } = useTransactionModalStore()
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  if (!isAuthenticated || currentPath.startsWith('/tracker') || currentPath.startsWith('/ai/chat')) return null
+  const isAllowedPath = currentPath === '/' || 
+    currentPath.startsWith('/dashboard') || 
+    currentPath.startsWith('/activity') || 
+    currentPath.startsWith('/planning')
+
+  if (!isAuthenticated || !isAllowedPath) return null
 
   const navItems = [
     { label: 'Home', icon: 'home', href: '/dashboard' },

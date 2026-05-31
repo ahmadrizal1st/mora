@@ -1,489 +1,183 @@
 import React, { useState } from 'react';
-import { Icon, Button } from '@/shared/components/ui';
+import { 
+  IconReceipt, IconCalendarEvent, IconCategory, IconWallet, 
+  IconBuildingStore, IconArrowLeft, IconDownload, IconShare, IconPencil,
+} from '@tabler/icons-react';
 import type { Transaction } from '../types/transaction.types';
 
-interface TransactionInvoiceProps {
+export interface TransactionInvoiceProps {
   transaction: Transaction;
   onClose: () => void;
-  onEdit?: (tx: Transaction) => void;
+  onEdit?: (transaction: Transaction) => void;
   formatCurrency: (amount: number) => string;
-  formatDate: (date: string, type?: 'date' | 'full') => string;
+  formatDate: (date: string, format?: 'date' | 'time' | 'full') => string;
 }
 
-export const TransactionInvoice: React.FC<TransactionInvoiceProps> = ({
+export const TransactionInvoice = ({
   transaction,
   onClose,
   onEdit,
   formatCurrency,
   formatDate,
-}) => {
-  const [showDetails, setShowDetails] = useState(true);
+}: TransactionInvoiceProps) => {
+  const [isNotesExpanded, setIsNotesExpanded] = useState(false);
+
   const amountStr = formatCurrency(transaction.amount);
-  const merchantName = transaction.merchant || (transaction.type === 'transfer' ? 'Transfer Dana' : 'Umum');
   const txFullDate = formatDate(transaction.tx_date, 'full');
+  
+  const merchantName = (transaction.dynamic_fields?.merchant_name as string) || transaction.merchant || (transaction.type === 'transfer' ? 'Transfer Dana' : 'Umum');
   const referenceNo = (transaction.dynamic_fields?.ref_no as string) || `REF-${transaction.id.substring(0, 8).toUpperCase()}`;
 
-  // Resolve Category Icon
-  const categoryIcon = transaction.category?.icon || 'check';
+  const notes = transaction.notes || '';
+  const isLongNotes = notes.length > 80;
+  const displayNotes = isNotesExpanded || !isLongNotes ? notes : notes.slice(0, 80) + '...';
 
   return (
-    <div className="invoice-container">
-      <div className="invoice-wrapper animate-in">
-        {/* Header */}
-        <header className="invoice-header">
-          <button className="btn-header-action" onClick={onClose} type="button">
-            <Icon icon="chevron-left" size={24} />
-          </button>
-          {onEdit ? (
-            <button className="btn-header-action" onClick={() => onEdit(transaction)} type="button">
-              <Icon icon="pencil" size={20} />
+    <div className="d-flex flex-column text-body p-3 py-lg-5 px-lg-3 align-items-center invoice-container-desktop" style={{ backgroundColor: '#ff7a00', minHeight: '100vh', width: '100%' }}>
+      {/* Header */}
+      <div className="position-relative d-flex align-items-center justify-content-between pt-2 pb-4 w-100" style={{ maxWidth: 600 }}>
+        <button className="bg-transparent text-white d-flex align-items-center justify-content-center p-0" onClick={onClose} style={{ width: 44, height: 44, borderRadius: 14, border: '1.5px solid rgba(255, 255, 255, 0.4)' }}>
+          <IconArrowLeft color="white" stroke={2.5} />
+        </button>
+        <h1 className="position-absolute start-50 translate-middle-x text-white fw-semibold m-0 text-nowrap" style={{ fontSize: 18 }}>Detail Transaksi</h1>
+        <div className="d-flex align-items-center">
+          {onEdit && (
+            <button className="bg-transparent text-white d-flex align-items-center justify-content-center p-0 me-2" onClick={() => onEdit(transaction)} style={{ width: 44, height: 44, borderRadius: 14, border: '1.5px solid rgba(255, 255, 255, 0.4)' }}>
+              <IconPencil color="white" size={20} stroke={2.5} />
             </button>
-          ) : (
-            <div style={{ width: '40px' }} />
           )}
-        </header>
+          <button className="bg-transparent text-white d-flex align-items-center justify-content-center p-0" style={{ width: 44, height: 44, borderRadius: 14, border: '1.5px solid rgba(255, 255, 255, 0.4)' }}>
+            <IconShare color="white" size={24} stroke={2.5} />
+          </button>
+        </div>
+      </div>
 
-        {/* Receipt Card Content */}
-        <div className="receipt-body">
-          <div className="watermark-pattern" />
-          
-          {/* Status Header */}
-          <section className="status-header text-center">
-            <div className="status-icon-box mx-auto">
-               <Icon icon={categoryIcon as string} size={36} color="white" stroke={2.5} />
-            </div>
-            <h2 className="status-text mt-4">
-              {transaction.type === 'income' ? 'Transfer Berhasil' : 'Pembayaran Berhasil'}
-            </h2>
-            <p className="text-secondary small fw-bold opacity-75">{txFullDate}</p>
-          </section>
-
-          {/* Amount Display */}
-          <section className="amount-hero-box text-center">
-            <span className="amount-label">TOTAL TRANSAKSI</span>
-            <h1 className="amount-value">{amountStr}</h1>
-          </section>
-
-          {/* Details Table */}
-          <section className="details-card w-100">
-            <div className="detail-item py-3">
-              <span className="label">Penerima / Merchant</span>
-              <span className="value fw-bold text-dark">{merchantName}</span>
-            </div>
-            
-            <div className="detail-item py-3">
-              <span className="label">Sumber Dana</span>
-              <div className="value fw-bold text-dark d-flex align-items-center justify-content-end gap-2">
-                <span className="status-dot" style={{ background: transaction.account?.color || '#fd7e14' }} />
-                {transaction.account?.name}
-              </div>
-            </div>
-
-            <div className="detail-item py-3 border-bottom-0">
-              <span className="label">Nomor Referensi</span>
-              <span className="value fw-bold text-dark font-monospace">{referenceNo}</span>
-            </div>
-
-            {/* Expanded Details */}
-            <div className={`collapse-content ${showDetails ? 'show' : ''}`}>
-              <div className="detail-item py-3 border-top">
-                <span className="label">Kategori</span>
-                <span className="value fw-bold text-dark">{transaction.category?.name || 'General'}</span>
-              </div>
-              <div className="detail-item py-3">
-                <span className="label">Metode Transaksi</span>
-                <span className="value fw-bold text-dark text-capitalize">{transaction.type}</span>
-              </div>
-              
-              {transaction.notes && (
-                <div className="notes-wrapper mt-3">
-                  <div className="notes-divider">
-                    <span className="small text-uppercase fw-bold opacity-30 tracking-widest">Catatan</span>
-                  </div>
-                  <div className="notes-content p-3 bg-light rounded-3">
-                    <span className="text-dark small lh-base d-block">{transaction.notes}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <button 
-              className="btn-view-toggle mt-4" 
-              onClick={() => setShowDetails(!showDetails)}
-              type="button"
-            >
-              <span>{showDetails ? 'Sembunyikan Detail' : 'Lihat Detail Selengkapnya'}</span>
-              <Icon icon={showDetails ? 'chevron-up' : 'chevron-down'} size={14} />
-            </button>
-          </section>
-
-          {/* Verification Badge */}
-          <div className="verification-badge mt-5">
-            <Icon icon="shield-check" size={16} />
-            <span>TRANSAKSI AMAN TERVERIFIKASI</span>
+      {/* Main Card */}
+      <div className="position-relative d-flex flex-column flex-grow-1 mt-5 w-100" style={{ maxWidth: 600, filter: 'drop-shadow(0px 10px 20px rgba(0,0,0,0.1))' }}>
+        {/* Top Floating Icon */}
+        <div className="position-absolute start-50 translate-middle-x rounded-circle d-flex align-items-center justify-content-center z-2" style={{ top: -45, width: 90, height: 90, backgroundColor: '#ff7a00', boxShadow: '0 0 0 10px white' }}>
+          <div>
+            <img src="/static/illustrations/icons/approve.png" alt="Verified" className="rounded-circle" style={{ width: 100, height: 100, objectFit: 'contain' }} />
           </div>
-
-          {/* Serrated Edge Decoration */}
-          <div className="serrated-bottom" />
         </div>
 
-        <footer className="invoice-footer p-4 border-top bg-surface">
-          <div className="d-flex flex-column gap-3 w-100">
-            <Button 
-              block 
-              color="primary" 
-              size="lg"
-              onClick={onClose}
-              element="button"
-            >
-              Selesai
-            </Button>
-            <div className="d-flex gap-3">
-              <Button 
-                block 
-                icon="share"
-                size="lg"
-                element="button"
-              >
-                Bagikan
-              </Button>
-              <Button 
-                block 
-                icon="download"
-                size="lg"
-                element="button"
-              >
-                Unduh
-              </Button>
+        <div className="d-flex flex-column flex-grow-1">
+          <div className="bg-white px-4" style={{ paddingTop: 64, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+            <h2 className="text-center fw-bold text-dark mb-2" style={{ fontSize: 22 }}>Transaksi Berhasil</h2>
+            <p className="text-center text-secondary mb-3" style={{ fontSize: 14 }}>Detail transaksi Anda telah dicatat.</p>
+
+            <div className="d-flex align-items-center my-3">
+              <div className="flex-grow-1" style={{ borderTop: '1px dashed #ffce9e' }}></div>
+            </div>
+
+            <div className="d-flex flex-column gap-2">
+              <InfoItem icon={<IconReceipt size={20} color="#ff7a00" />} label="No. Referensi" value={referenceNo} />
+              <InfoItem icon={<IconCalendarEvent size={20} color="#ff7a00" />} label="Tanggal" value={txFullDate} />
+              <InfoItem icon={<IconCategory size={20} color="#ff7a00" />} label="Kategori" value={transaction.category?.name || 'Umum'} />
+              <InfoItem icon={<IconWallet size={20} color="#ff7a00" />} label="Metode" value={transaction.type === 'income' ? 'Pemasukan' : transaction.type === 'expense' ? 'Pengeluaran' : 'Transfer'} />
             </div>
           </div>
-        </footer>
 
-        <style>{`
-        :root {
-          --mora-primary: #ff6b00;
-          --mora-primary-soft: #fff4ed;
-          --mora-success: #22c55e;
-          --mora-success-soft: #f0fdf4;
-          --mora-text-dark: #1e293b;
-          --mora-text-muted: #64748b;
-          --mora-border: #f1f5f9;
-        }
+          {/* Semicircle Cutouts and Divider */}
+          <div className="d-flex align-items-center px-4" style={{ paddingBottom: 16, paddingTop: 16, backgroundImage: 'radial-gradient(circle at 0px 50%, transparent 12px, white 12.5px), radial-gradient(circle at 100% 50%, transparent 12px, white 12.5px)', backgroundPosition: 'left center, right center', backgroundSize: '51% 100%, 51% 100%', backgroundRepeat: 'no-repeat', backgroundColor: 'transparent' }}>
+            <div className="flex-grow-1" style={{ borderTop: '1px dashed #ffce9e' }}></div>
+          </div>
 
-        [data-bs-theme="dark"] {
-          --mora-primary-soft: rgba(255, 107, 0, 0.1);
-          --mora-success-soft: rgba(34, 197, 94, 0.1);
-          --mora-text-dark: #f1f5f9;
-          --mora-text-muted: #94a3b8;
-          --mora-border: rgba(255, 255, 255, 0.08);
-        }
+          <div className="bg-white px-4 pb-2 flex-grow-1">
+            <div className="mb-3">
+              <h3 className="fw-bolder text-dark mb-3" style={{ fontSize: 15 }}>Informasi Pembayaran</h3>
+              <div className="d-flex align-items-start gap-3">
+                <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 44, height: 44, background: '#fff0e0' }}>
+                  <IconBuildingStore size={24} color="#ff7a00" />
+                </div>
+                <div>
+                  <strong className="d-block fw-bold text-dark mb-1" style={{ fontSize: 14 }}>{merchantName}</strong>
+                  <p className="text-secondary m-0" style={{ fontSize: 12, lineHeight: 1.4 }}>Sumber Dana: {transaction.account?.name || '-'}</p>
+                  {notes && (
+                    <div className="mt-1">
+                      <p className="text-secondary m-0" style={{ fontSize: 12, lineHeight: 1.4 }}>
+                        Catatan: {displayNotes}
+                      </p>
+                      {isLongNotes && (
+                        <button 
+                          className="btn btn-link p-0 text-decoration-none mt-1 border-0 bg-transparent fw-semibold" 
+                          style={{ fontSize: 12, color: '#ff7a00' }}
+                          onClick={() => setIsNotesExpanded(!isNotesExpanded)}
+                        >
+                          {isNotesExpanded ? 'Tampilkan lebih sedikit' : 'Baca selengkapnya'}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
 
-        .invoice-container {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.85);
-          backdrop-filter: blur(12px);
-          z-index: 9999;
-          overflow-y: auto;
-          overscroll-behavior: contain;
-          font-family: 'Inter', -apple-system, sans-serif;
-          -webkit-overflow-scrolling: touch;
-          padding: 2rem 1rem; /* Desktop padding */
-        }
+            <div className="mt-3">
+              <table className="w-100" style={{ borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr>
+                    <th className="fw-semibold text-muted py-2 px-2 text-start" style={{ backgroundColor: '#fff5ec', borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}>Item</th>
+                    <th className="fw-semibold text-muted py-2 px-2 text-center" style={{ backgroundColor: '#fff5ec' }}>Qty</th>
+                    <th className="fw-semibold text-muted py-2 px-2 text-end" style={{ backgroundColor: '#fff5ec', borderTopRightRadius: 8, borderBottomRightRadius: 8 }}>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="text-dark fw-medium py-3 px-2 text-start" style={{ borderBottom: '1px solid white' }}>{merchantName}</td>
+                    <td className="text-dark fw-medium py-3 px-2 text-center" style={{ borderBottom: '1px solid white' }}>1</td>
+                    <td className="text-dark fw-medium py-3 px-2 text-end" style={{ borderBottom: '1px solid white' }}>{amountStr}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-        .invoice-wrapper {
-          width: 100%;
-          max-width: 480px;
-          background: var(--tblr-bg-surface);
-          display: flex;
-          flex-direction: column;
-          position: relative;
-          box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7);
-          border-radius: 24px;
-          overflow: hidden;
-          margin: 0 auto;
-          min-height: auto;
-        }
+            <div className="mt-3" style={{ paddingLeft: '30%' }}>
+              <div className="d-flex justify-content-between mb-2 text-secondary" style={{ fontSize: 13 }}>
+                <span>Subtotal</span>
+                <span className="fw-semibold text-dark">{amountStr}</span>
+              </div>
+              <div className="d-flex align-items-center my-3">
+                <div className="flex-grow-1" style={{ borderTop: '1px solid #ffce9e' }}></div>
+              </div>
+              <div className="d-flex justify-content-between align-items-center mt-2">
+                <span className="fw-bolder text-dark" style={{ fontSize: 14 }}>Total Transaksi</span>
+                <span className="fw-bolder" style={{ fontSize: 20, color: '#ff7a00' }}>{amountStr}</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        @media (max-width: 576px) {
-          .invoice-container {
-            padding: 0;
-            background: var(--tblr-bg-surface); /* Responsive background on mobile */
+        {/* Zigzag Bottom Edge */}
+        <div className="w-100" style={{ height: 16, backgroundColor: 'transparent', backgroundImage: 'radial-gradient(circle at 50% 100%, transparent 12px, white 12.5px)', backgroundSize: '40px 16px', backgroundPosition: 'bottom', backgroundRepeat: 'repeat-x' }}></div>
+      </div>
+
+      {/* Bottom Button */}
+      <div className="mt-4 w-100" style={{ maxWidth: 600 }}>
+        <button className="btn w-100 d-flex align-items-center justify-content-center gap-2 text-white fw-semibold shadow-sm" style={{ background: '#ff7a00', border: '1px solid rgba(255,255,255,0.4)', borderRadius: 12, padding: 16, fontSize: 16 }}>
+          <IconDownload size={20} stroke={2.5} />
+          <span>Unduh PDF</span>
+        </button>
+      </div>
+
+      <style>{`
+        @media (min-width: 992px) {
+          .invoice-container-desktop {
+            min-height: auto !important;
           }
-          .invoice-wrapper {
-            max-width: 100%;
-            border-radius: 0;
-            box-shadow: none;
-            min-height: 100vh;
-            margin: 0;
-          }
-          .serrated-bottom {
-            display: none; /* Hide serrated edge on full-screen mobile */
-          }
-        }
-
-        .invoice-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 1rem 1.25rem;
-          background: var(--tblr-bg-surface);
-          border-bottom: 1px solid var(--mora-border);
-        }
-
-        .btn-header-action {
-          background: none;
-          border: none;
-          outline: none !important;
-          box-shadow: none !important;
-          color: var(--mora-primary);
-          padding: 8px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: transform 0.2s;
-        }
-
-        .branding-name {
-          font-size: 1.1rem;
-          color: var(--mora-primary);
-          letter-spacing: -0.5px;
-        }
-
-        .receipt-body {
-          flex: 1;
-          padding: 2.5rem 1.5rem 4rem;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          position: relative;
-        }
-
-        .watermark-pattern {
-          position: absolute;
-          inset: -100%;
-          width: 300%;
-          height: 300%;
-          opacity: 0.05;
-          pointer-events: none;
-          background-image: url("/logo/logo-nobg-fill.png");
-          background-repeat: repeat;
-          background-size: 100px auto;
-          filter: sepia(100%) saturate(1200%) hue-rotate(350deg) brightness(95%);
-          transform: rotate(-25deg);
-          transform-origin: center;
-          z-index: 0;
-        }
-
-        .status-header {
-          position: relative;
-          z-index: 1;
-          width: 100%;
-        }
-
-        .status-icon-box {
-          background: var(--mora-success);
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 10px 20px rgba(34, 197, 94, 0.25);
-          border: 6px solid var(--mora-success-soft);
-        }
-
-        .status-text {
-          font-weight: 800;
-          font-size: 1.5rem;
-          color: var(--mora-text-dark);
-          letter-spacing: -0.5px;
-        }
-
-        .amount-hero-box {
-          position: relative;
-          z-index: 1;
-          background: var(--mora-primary-soft);
-          border-radius: 20px;
-          padding: 1.75rem;
-          margin: 2rem 0;
-          width: 100%;
-          border: 1px solid rgba(255, 107, 0, 0.1);
-        }
-
-        .amount-label {
-          display: block;
-          color: var(--mora-primary);
-          font-size: 0.8rem;
-          font-weight: 800;
-          letter-spacing: 1.5px;
-          margin-bottom: 0.75rem;
-          opacity: 0.7;
-        }
-
-        .amount-value {
-          color: var(--mora-primary);
-          font-weight: 900;
-          font-size: 3rem;
-          margin: 0;
-          letter-spacing: -1.5px;
-        }
-
-        .details-card {
-          position: relative;
-          z-index: 1;
-        }
-
-        .detail-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 1px solid var(--mora-border);
-        }
-
-        .detail-item .label {
-          color: var(--mora-text-muted);
-          font-size: 0.9rem;
-          font-weight: 500;
-        }
-
-        .detail-item .value {
-          color: var(--mora-text-dark);
-          text-align: right;
-        }
-
-        .notes-wrapper {
-          width: 100%;
-        }
-
-        .notes-divider {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 0.75rem;
-          position: relative;
-        }
-        .notes-divider::before, .notes-divider::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: var(--mora-border);
-          margin: 0 1rem;
-        }
-
-        .notes-content {
-          text-align: left;
-          word-break: break-word;
-          white-space: pre-wrap;
-          background: var(--tblr-bg-surface-secondary) !important;
-        }
-
-        .btn-view-toggle {
-          width: 100%;
-          background: none;
-          border: none;
-          outline: none !important;
-          box-shadow: none !important;
-          color: var(--mora-primary);
-          font-weight: 800;
-          font-size: 0.85rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          cursor: pointer;
-        }
-
-        .collapse-content {
-          max-height: 0;
-          overflow: hidden;
-          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-          opacity: 0;
-        }
-        .collapse-content.show {
-          max-height: 1200px;
-          opacity: 1;
-        }
-
-        .verification-badge {
-          position: relative;
-          z-index: 1;
-          background: var(--mora-success-soft);
-          padding: 0.75rem 1.5rem;
-          border-radius: 40px;
-          display: flex;
-          align-items: center;
-          gap: 0.6rem;
-          color: var(--mora-success);
-          font-weight: 800;
-          font-size: 0.75rem;
-          letter-spacing: 0.5px;
-          border: 1px solid rgba(34, 197, 94, 0.1);
-        }
-
-        .serrated-bottom {
-          height: 12px;
-          width: 100%;
-          background: var(--tblr-bg-surface);
-          position: absolute;
-          bottom: -12px;
-          left: 0;
-          background-image: radial-gradient(circle, transparent 70%, var(--tblr-bg-surface) 70%);
-          background-size: 16px 16px;
-          background-position: 0 -8px;
-        }
-
-        .btn-action-outline {
-          width: 52px;
-          height: 52px;
-          border-radius: 14px;
-          border: 2px solid var(--tblr-border-color);
-          background: var(--tblr-bg-surface);
-          color: var(--mora-text-muted);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          outline: none !important;
-          transition: all 0.2s;
-        }
-        .btn-action-outline:hover { border-color: var(--mora-primary); color: var(--mora-primary); }
-
-        .btn-action-primary {
-          background: var(--mora-primary);
-          color: #fff;
-          border: none;
-          border-radius: 14px;
-          font-weight: 900;
-          font-size: 1.05rem;
-          cursor: pointer;
-          transition: all 0.2s;
-          outline: none !important;
-          box-shadow: 0 8px 20px rgba(255, 107, 0, 0.2);
-        }
-        .btn-action-primary:active { transform: scale(0.98); }
-
-        .animate-in {
-          animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-      </div>
     </div>
   );
 };
 
-
-
-
-
-
-
+const InfoItem = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) => (
+  <div className="d-flex align-items-center">
+    <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3" style={{ width: 40, height: 40, background: '#fff0e0' }}>
+      {icon}
+    </div>
+    <span className="text-secondary flex-grow-1" style={{ fontSize: 13 }}>{label}</span>
+    <span className="text-body fw-medium mx-2">:</span>
+    <span className="fw-bold text-dark" style={{ fontSize: 13, flex: 1.5, wordBreak: 'break-all' }}>{value}</span>
+  </div>
+);
