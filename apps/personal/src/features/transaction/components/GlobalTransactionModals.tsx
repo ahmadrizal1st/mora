@@ -11,7 +11,6 @@ export const GlobalTransactionModals: FC = () => {
   const { 
     closeForm, 
     editingTransaction, 
-    openForm,
     txToDelete,
     setTxToDelete
   } = useTransactionModalStore();

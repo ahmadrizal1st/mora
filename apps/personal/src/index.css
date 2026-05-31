@@ -885,3 +885,17 @@ button[role="tab"]:focus-visible {
     width: 100%;
   }
 }
+
+/* Hide scrollbar utility aliases */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fix for ColorPicker appearing behind modal */
+#clr-picker, .clr-picker {
+  z-index: 1060 !important;
+}

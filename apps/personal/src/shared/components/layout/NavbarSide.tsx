@@ -1,4 +1,6 @@
 import { clsx } from 'clsx'
+import { Link } from '@tanstack/react-router'
+import { Icon } from '../ui/Icon'
 import { NavbarSideTheme } from './NavbarSideTheme'
 import { NavbarSideNotifications } from './NavbarSideNotifications'
 import { NavbarSideLanguage } from './NavbarSideLanguage'
@@ -33,6 +35,18 @@ export function NavbarSide({
 
   return (
     <div className={classes}>
+      <div className={clsx('nav-item me-2 d-flex align-items-center', responsiveClass)}>
+        <Link 
+          to="/ai/chat/" 
+          className="btn btn-primary btn-icon rounded-circle shadow-sm" 
+          aria-label="Open Chat Assistant"
+          style={{ width: '36px', height: '36px' }}
+          title="Mora AI Chatbot"
+        >
+          <Icon icon="message-chatbot" size={20} />
+        </Link>
+      </div>
+
       {showNotifications && (
         <NavbarSideNotifications />
       )}

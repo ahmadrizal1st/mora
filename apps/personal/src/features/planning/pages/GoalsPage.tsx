@@ -1,4 +1,4 @@
-import { useState, useMemo, useContext } from 'react';
+import { useState, useMemo, useContext, useEffect } from 'react';
 import { Link } from '@tanstack/react-router';
 import { MOCK_GOALS_DATA } from '../data/mockPlanningData';
 import { GoalsOverviewCard } from '../components/goals/GoalsOverviewCard';
@@ -58,8 +58,21 @@ export function GoalsPage() {
     });
   }, [goals, modalStatusFilter, modalTargetFilter]);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="row row-cards g-3 tab-content-anim">
+    <div 
+      className="row row-cards g-3"
+      style={{
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? 'translateY(0)' : 'translateY(10px)',
+        transition: 'all 0.4s ease-out'
+      }}
+    >
       {/* ROW 1: Header Analytics */}
       <div className="col-lg-4">
         <div className="h-100">
@@ -287,7 +300,7 @@ export function GoalsPage() {
         <div className="d-flex flex-column gap-3 h-100">
           <div className="card border-0 flex-grow-1 d-none d-lg-block" style={{ borderRadius: '16px' }}>
             <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0">
-              <h4 className="card-title fw-bold m-0 d-flex align-items-center gap-2 text-ls-sm">
+              <h4 className="card-title fw-bold m-0 d-flex align-items-center gap-2" style={{ letterSpacing: '0.025em' }}>
                 <Icon icon="timeline" size="sm" className="text-orange" />
                 Journey Milestones
               </h4>
@@ -511,11 +524,6 @@ export function GoalsPage() {
           )}
         </div>
       </Modal>
-
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
     </div>
   );
 }

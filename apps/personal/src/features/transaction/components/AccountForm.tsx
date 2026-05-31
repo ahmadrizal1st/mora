@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type { Account, Provider } from '../types/transaction.types';
+import type { Account } from '../types/transaction.types';
 import { useCurrencies } from '../hooks/useLookups';
 import { useProviders } from '../hooks/useProviders';
 import { Button, Select, Icon } from '@/shared/components/ui';

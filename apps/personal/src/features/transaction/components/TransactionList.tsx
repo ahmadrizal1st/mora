@@ -60,17 +60,17 @@ export const TransactionList: FC<TransactionListProps> = ({
   }
 
   return (
-    <div className="transaction-history-list bg-surface">
+    <div className="bg-surface rounded-0 overflow-hidden">
       {monthKeys.map((month, monthIndex) => (
-        <div key={month} className="month-group mb-4">
-          <div className="month-header px-3 px-md-4 py-3 bg-body-tertiary d-flex align-items-center gap-2">
-            <div className="month-indicator" />
+        <div key={month} className="mb-4">
+          <div className="px-3 px-md-4 py-3 bg-body-tertiary d-flex align-items-center gap-2">
+            <div style={{ width: 4, height: 16, backgroundColor: 'var(--mora-primary)', borderRadius: 4 }} />
             <span className="fw-black text-body text-uppercase tracking-wider" style={{ fontSize: '0.85rem', opacity: 0.8 }}>
               {month}
             </span>
           </div>
           
-          <div className="transaction-rows">
+          <div>
             {groupedByMonth[month].map((tx, txIndex) => {
               const txDate = new Date(tx.tx_date);
               const day = txDate.getDate();
@@ -85,37 +85,37 @@ export const TransactionList: FC<TransactionListProps> = ({
                       ? lastElementRef
                       : undefined
                   }
-                  className="transaction-row d-flex align-items-center py-3 px-3 px-md-4 border-bottom position-relative"
+                  className="d-flex align-items-center py-3 px-3 px-md-4 border-bottom position-relative"
                   onClick={(e) => onEdit(tx, e as unknown as MouseEvent)}
                   style={{ cursor: 'pointer' }}
                 >
                   {/* Unique Date Leaf Column */}
-                  <div className="date-leaf me-2 me-md-4 text-center">
-                    <div className="day-name">{dayName}</div>
-                    <div className="day-num">{day < 10 ? `0${day}` : day}</div>
-                    <div className="month-label">{monthShort}</div>
+                  <div className="me-2 me-md-4 text-center border rounded-0 px-1 py-1 bg-surface-secondary" style={{ minWidth: 54 }}>
+                    <div className="text-uppercase fw-bolder text-secondary" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>{dayName}</div>
+                    <div className="fw-black" style={{ fontSize: '1.4rem', color: 'var(--mora-primary)', lineHeight: 1.1 }}>{day < 10 ? `0${day}` : day}</div>
+                    <div className="fw-bold text-secondary opacity-75" style={{ fontSize: '0.65rem' }}>{monthShort}</div>
                   </div>
 
                   {/* Info Column */}
-                  <div className="flex-grow-1 min-width-0">
+                  <div className="flex-grow-1" style={{ minWidth: 0 }}>
                     <div className="d-flex justify-content-between align-items-start">
                       <div>
-                        <h4 className="merchant-name fw-bold mb-0 text-truncate">
+                        <h4 className="fw-bold mb-0 text-truncate text-body" style={{ fontSize: '1rem', letterSpacing: '-0.2px' }}>
                           {tx.merchant || 'Transaksi Mora'}
                         </h4>
-                        <div className="category-tag small opacity-60">
+                        <div className="small fw-medium text-secondary opacity-75">
                           {tx.category?.name || 'Umum'}
                         </div>
                       </div>
                       <div className="text-end">
-                        <div className={`amount-display fw-black ${
+                        <div className={`fw-black ${
                           tx.type === 'expense' ? 'text-danger' : 
                           tx.type === 'income' ? 'text-success' : 
                           'text-body'
-                        }`}>
+                        }`} style={{ fontSize: '1.1rem', letterSpacing: '-0.5px' }}>
                           {tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : ''}{formatCurrency(tx.amount)}
                         </div>
-                        <div className="tx-status-pill">
+                        <div className="d-inline-flex align-items-center fw-bolder text-success text-uppercase mt-1" style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: 6, backgroundColor: 'var(--tblr-success-lt)' }}>
                           <Icon icon="circle-check-filled" size={12} className="me-1" />
                           <span>Selesai</span>
                         </div>
@@ -124,7 +124,7 @@ export const TransactionList: FC<TransactionListProps> = ({
                   </div>
 
                   {/* Action Column */}
-                  <div className="ms-3 opacity-20">
+                  <div className="ms-3 opacity-25">
                     <Icon icon="chevron-right" size={18} />
                   </div>
                 </div>
@@ -146,81 +146,6 @@ export const TransactionList: FC<TransactionListProps> = ({
           Semua transaksi telah dimuat
         </div>
       )}
-
-      <style>{`
-        .transaction-history-list {
-          border-radius: 0;
-          overflow: hidden;
-        }
-        
-        .month-indicator {
-          width: 4px;
-          height: 16px;
-          background: var(--mora-primary);
-          border-radius: 4px;
-        }
-
-        .transaction-row {
-          border-bottom: 1px solid var(--tblr-border-color);
-        }
-
-        /* Unique Date Leaf */
-        .date-leaf {
-          min-width: 54px;
-          background: var(--tblr-bg-surface-secondary);
-          border-radius: 0;
-          padding: 6px 4px;
-          border: 1px solid var(--tblr-border-color);
-        }
-        .date-leaf .day-name {
-          font-size: 0.65rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          color: var(--tblr-secondary);
-          letter-spacing: 0.5px;
-        }
-        .date-leaf .day-num {
-          font-size: 1.4rem;
-          font-weight: 900;
-          color: var(--mora-primary);
-          line-height: 1.1;
-        }
-        .date-leaf .month-label {
-          font-size: 0.65rem;
-          font-weight: 700;
-          color: var(--tblr-secondary);
-          opacity: 0.7;
-        }
-
-        .merchant-name {
-          color: var(--tblr-body-color);
-          font-size: 1rem;
-          letter-spacing: -0.2px;
-        }
-        
-        .amount-display {
-          font-size: 1.1rem;
-          letter-spacing: -0.5px;
-        }
-
-        .tx-status-pill {
-          display: inline-flex;
-          align-items: center;
-          font-size: 0.65rem;
-          font-weight: 800;
-          color: var(--tblr-success);
-          background: var(--tblr-success-lt);
-          padding: 2px 8px;
-          border-radius: 6px;
-          text-transform: uppercase;
-          margin-top: 4px;
-        }
-
-        .category-tag {
-          font-weight: 500;
-          color: var(--tblr-secondary);
-        }
-      `}</style>
     </div>
   );
 };

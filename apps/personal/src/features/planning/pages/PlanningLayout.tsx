@@ -7,7 +7,6 @@ import { Icon, MonthPicker, Modal, ModalHeader, Button } from '@/shared/componen
 import { MOCK_BUDGET_DATA, MOCK_GOALS_DATA, MOCK_SUBSCRIPTIONS_DATA } from '../data/mockPlanningData';
 import type { Goal, GoalsData, SubscriptionsData } from '../types';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
-import './PlanningPage.css';
 
 export const PlanningContext = React.createContext<any>(null);
 

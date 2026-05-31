@@ -1,5 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { clsx } from 'clsx';
+import { useState, useMemo, useEffect } from 'react';
 import BaseLayout from '@/shared/layouts/BaseLayout';
 import { SummaryMetricCard } from '../components/SummaryMetricCard';
 import { AccountCard } from '../components/AccountCard';
@@ -13,7 +12,6 @@ import { AccountStatsCard } from '../components/AccountStatsCard';
 import { Icon } from '@/shared/components/ui/Icon';
 import { AddAccountModal } from '../components/AddAccountModal';
 import { BUDGET_DATA } from '../data/mockData';
-import './AccountsPage.css';
 
 export function AccountsPage() {
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
@@ -46,7 +44,7 @@ export function AccountsPage() {
   return (
     <BaseLayout pageTitle="Detail Akun & Mutasi">
       {/* ACCOUNT SELECTION CAROUSEL */}
-      <div className="d-flex align-items-stretch overflow-auto gap-3 pb-3 mb-4 accounts-carousel-track">
+      <div className="d-flex align-items-stretch overflow-auto gap-3 pb-3 mb-4 no-scrollbar">
         {BUDGET_DATA.map((acc, idx) => (
           <AccountCard
             key={idx}

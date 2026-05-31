@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { MOCK_BUDGET_DATA } from '../data/mockPlanningData';
 import { BudgetOverviewCard } from '../components/budget/BudgetOverviewCard';
 import { BudgetCategoryItem } from '../components/budget/BudgetCategoryItem';
@@ -11,14 +12,27 @@ import { Icon } from '@/shared/components/ui/Icon';
 import { formatCurrency } from '@/shared/utils/currencyUtils';
 
 export function BudgetPage() {
+  const [mounted, setMounted] = useState(false);
   const { categories, totalBudget, spent, safeToSpendPerDay } = MOCK_BUDGET_DATA;
   
   const needs = categories.filter(c => c.type === 'needs');
   const wants = categories.filter(c => c.type === 'wants');
   const savings = categories.filter(c => c.type === 'savings');
 
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="row row-cards g-3 tab-content-anim">
+    <div 
+      className="row row-cards g-3"
+      style={{
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? 'translateY(0)' : 'translateY(10px)',
+        transition: 'all 0.4s ease-out'
+      }}
+    >
       {/* LEVEL 1: High-Level Analytics Row */}
       <div className="col-lg-8 d-none d-lg-block">
         <div className="h-100">
@@ -64,7 +78,7 @@ export function BudgetPage() {
                   <div className="avatar avatar-xs rounded bg-primary text-white shadow-sm">
                     <Icon icon="home" size="xs" />
                   </div>
-                  <h4 className="fw-bold m-0 small text-uppercase text-ls-sm">Needs (50%) 🏠</h4>
+                  <h4 className="fw-bold m-0 small text-uppercase" style={{ letterSpacing: '0.025em' }}>Needs (50%) 🏠</h4>
                 </div>
                 <div className="text-end">
                   <div className="small text-muted" style={{ fontSize: '10px' }}>Terpakai: <span className="text-body fw-bold">{formatCurrency(needs.reduce((a, b) => a + b.spent, 0))}</span> / {formatCurrency(needs.reduce((a, b) => a + b.limit, 0))}</div>
@@ -85,7 +99,7 @@ export function BudgetPage() {
                   <div className="avatar avatar-xs rounded bg-warning text-white shadow-sm">
                     <Icon icon="star" size="xs" />
                   </div>
-                  <h4 className="fw-bold m-0 small text-uppercase text-ls-sm">Wants (30%) ⭐</h4>
+                  <h4 className="fw-bold m-0 small text-uppercase" style={{ letterSpacing: '0.025em' }}>Wants (30%) ⭐</h4>
                 </div>
                 <div className="text-end">
                   <div className="small text-muted" style={{ fontSize: '10px' }}>Terpakai: <span className="text-body fw-bold">{formatCurrency(wants.reduce((a, b) => a + b.spent, 0))}</span> / {formatCurrency(wants.reduce((a, b) => a + b.limit, 0))}</div>
@@ -106,7 +120,7 @@ export function BudgetPage() {
                   <div className="avatar avatar-xs rounded bg-success text-white shadow-sm">
                     <Icon icon="pig-money" size="xs" />
                   </div>
-                  <h4 className="fw-bold m-0 small text-uppercase text-ls-sm">Savings (20%) 💰</h4>
+                  <h4 className="fw-bold m-0 small text-uppercase" style={{ letterSpacing: '0.025em' }}>Savings (20%) 💰</h4>
                 </div>
                 <div className="text-end">
                   <div className="small text-muted" style={{ fontSize: '10px' }}>Terpakai: <span className="text-body fw-bold">{formatCurrency(savings.reduce((a, b) => a + b.spent, 0))}</span> / {formatCurrency(savings.reduce((a, b) => a + b.limit, 0))}</div>

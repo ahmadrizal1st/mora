@@ -117,8 +117,8 @@ export function SavingsHealthCard() {
             
             {/* Custom Centered Score */}
             <div className="position-absolute w-100 text-center" style={{ top: '50%', transform: 'translateY(-50%)' }}>
-              <div className="display-3 fw-bold metric-value lh-1" style={{ color: activeColor }}>{score}</div>
-              <div className="text-muted small mt-2">Score updated today</div>
+              <div className="display-3 fw-bold lh-1" style={{ color: activeColor, fontFeatureSettings: '"tnum" 1', letterSpacing: '-0.02em' }}>{score}</div>
+              <div className="text-muted fw-semibold small mt-1">out of 850</div>
             </div>
 
             {/* White Bubble Indicator - Appears after animation */}

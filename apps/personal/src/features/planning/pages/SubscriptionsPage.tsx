@@ -27,6 +27,12 @@ export function SubscriptionsPage() {
   const { totalMonthly, paidThisMonth, subscriptions } = data;
   const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredSubscriptions = useMemo(() => {
     return subscriptions.filter((sub: any) => {
@@ -37,7 +43,13 @@ export function SubscriptionsPage() {
   }, [subscriptions, selectedCategory, searchQuery]);
 
   return (
-    <div className="tab-content-anim">
+    <div 
+      style={{
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? 'translateY(0)' : 'translateY(10px)',
+        transition: 'all 0.4s ease-out'
+      }}
+    >
       {/* HEADER: Search & Filters */}
       <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
         <div className="input-icon" style={{ minWidth: '320px' }}>

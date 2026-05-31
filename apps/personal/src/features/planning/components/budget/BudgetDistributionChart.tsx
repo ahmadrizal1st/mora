@@ -85,9 +85,9 @@ export function BudgetDistributionChart() {
 
       <div className="card-body p-4 d-flex flex-column">
 
-        <div className="d-flex align-items-center justify-content-between mb-2">
-          <h4 className="fw-bold m-0 text-secondary text-uppercase small text-ls-sm">Allocation</h4>
-          <Icon icon="chart-pie" size="xs" className="text-muted" />
+        <div className="d-flex align-items-center justify-content-between mb-3">
+          <h4 className="fw-bold m-0 text-secondary text-uppercase small" style={{ letterSpacing: '0.025em' }}>Allocation</h4>
+          <span className="badge bg-secondary-lt text-secondary border-0">100% Total</span>
         </div>
         <div className="flex-fill d-flex align-items-center justify-content-center mt-n3">
           <div style={{ width: '100%' }}>

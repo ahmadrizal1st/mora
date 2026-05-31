@@ -433,56 +433,22 @@ export const TransactionListPage: FC = () => {
         </div>
       </Modal>
 
-      <style>{`
-        .modal-fullscreen .modal-content {
-          border-radius: 0 !important;
-        }
-
-        .fab-button {
-          position: fixed;
-          bottom: 2rem;
-          right: 2rem;
-          width: 72px;
-          height: 72px;
-          border-radius: 50%;
-          background: #f76707;
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 12px 24px -6px rgba(247, 103, 7, 0.5);
-          border: none;
-          z-index: 1020;
-          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          cursor: pointer;
-        }
-
-        .fab-button:hover {
-          box-shadow: 0 16px 32px -8px rgba(247, 103, 7, 0.6);
-          background: #ff7b1a;
-        }
-
-        .fab-button:active {
-          opacity: 0.8;
-        }
-
-
-        @media (max-width: 767.98px) {
-          .fab-button {
-            display: none;
-          }
-        }
-      `}</style>
-
       <button 
-        className="fab-button" 
+        className="btn btn-primary rounded-circle position-fixed shadow-lg d-none d-md-flex align-items-center justify-content-center p-0" 
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
         onContextMenu={handleContextMenu}
         style={{ 
+          bottom: 32,
+          right: 32,
+          width: 72,
+          height: 72,
+          zIndex: 1020,
           touchAction: 'none',
-          display: isMethodModalOpen ? 'none' : undefined
+          display: isMethodModalOpen ? 'none' : undefined,
+          backgroundColor: '#f76707',
+          border: 'none'
         }}
         aria-label="Tambah Transaksi"
       >

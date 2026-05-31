@@ -124,20 +124,7 @@ export default function BaseLayout({
         {!hideFooter && <Footer />}
       </div>
 
-      {/* Chatbot FAB */}
-      <div 
-        className="position-fixed d-none d-md-block" 
-        style={{ bottom: '2rem', right: '2rem', zIndex: 1050 }}
-      >
-        <Link 
-          to="/ai/chat/" 
-          className="btn btn-primary btn-icon rounded-circle shadow-lg d-flex align-items-center justify-content-center transition-colors"
-          style={{ width: '60px', height: '60px' }}
-          title="Open Chat Assistant"
-        >
-          <Icon icon="message-chatbot" size={32} />
-        </Link>
-      </div>
+      {/* Chatbot FAB removed and moved to NavbarSide */}
     </div>
   )
 }

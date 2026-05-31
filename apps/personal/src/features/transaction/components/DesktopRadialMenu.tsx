@@ -1,5 +1,4 @@
 import { type FC, useEffect, useState, useRef, useCallback } from 'react';
-import { clsx } from 'clsx';
 import { Icon } from '@/shared/components/ui/Icon';
 import { useNavigate } from '@tanstack/react-router';
 import { useTransactionModalStore } from '../store/useTransactionModalStore';
@@ -114,14 +113,15 @@ export const DesktopRadialMenu: FC = () => {
 
   return (
     <div 
-      className={clsx(
-        "fixed-top w-100 h-100 align-items-center justify-content-center radial-menu-backdrop d-none d-md-flex",
-        isAnimating ? "active" : ""
-      )}
+      className="fixed-top w-100 h-100 align-items-center justify-content-center d-none d-md-flex"
       style={{ 
         zIndex: 2000, 
         pointerEvents: isMethodModalOpen ? 'auto' : 'none',
-        display: shouldDisplay ? undefined : 'none'
+        display: shouldDisplay ? undefined : 'none',
+        backgroundColor: isAnimating ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0)',
+        opacity: isAnimating ? 1 : 0,
+        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        touchAction: 'none'
       }}
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) closeMethodModal();
@@ -132,7 +132,7 @@ export const DesktopRadialMenu: FC = () => {
         className="position-absolute w-100 h-100"
         style={{ bottom: 0, right: 0 }}
       >
-        <div className="radial-menu-container position-absolute" style={{ width: '400px', height: '400px', bottom: 0, right: 0 }}>
+        <div className="position-absolute" style={{ width: '400px', height: '400px', bottom: 0, right: 0 }}>
           {TRACKER_METHODS.map((method, index) => {
             const total = TRACKER_METHODS.length;
             // All items horizontal to the left
@@ -149,10 +149,7 @@ export const DesktopRadialMenu: FC = () => {
               <div
                 key={method.id}
                 ref={el => buttonRefs.current[method.id] = el}
-                className={clsx(
-                  "position-absolute d-flex align-items-center justify-content-center radial-menu-item",
-                  isAnimating ? "active" : ""
-                )}
+                className="position-absolute d-flex align-items-center justify-content-center"
                 style={{
                   right: `calc(38px - ${x}px)`,
                   bottom: `calc(38px + ${y}px)`, // Centered with button (32px + 36px - 30px = 38px)
@@ -160,7 +157,13 @@ export const DesktopRadialMenu: FC = () => {
                   zIndex: isActive ? 10 : 1,
                   width: '60px',
                   height: '60px',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transform: isAnimating ? 'scale(1)' : 'scale(0)',
+                  opacity: isAnimating ? 1 : 0,
+                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  outline: 'none',
+                  WebkitTapHighlightColor: 'transparent',
+                  userSelect: 'none'
                 }}
                 onPointerDown={(e) => {
                   e.stopPropagation();
@@ -173,13 +176,14 @@ export const DesktopRadialMenu: FC = () => {
                 }}
               >
                 <div
-                  className="rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center transition-all"
+                  className="rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center"
                   style={{ 
                     width: '100%', 
                     height: '100%', 
                     backgroundColor: isActive ? method.bgColor : 'var(--tblr-bg-surface)',
                     cursor: 'pointer',
-                    boxShadow: isActive ? `0 8px 16px ${method.bgColor}44` : '0 4px 12px rgba(0,0,0,0.1)'
+                    boxShadow: isActive ? `0 8px 16px ${method.bgColor}44` : '0 4px 12px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease-in-out'
                   }}
                 >
                   <Icon 
@@ -196,10 +200,7 @@ export const DesktopRadialMenu: FC = () => {
 
         <div 
           ref={closeButtonRef}
-          className={clsx(
-            "position-absolute p-0 radial-menu-close",
-            isAnimating ? "active" : ""
-          )}
+          className="position-absolute p-0"
           style={{ 
             width: '72px', 
             height: '72px', 
@@ -207,8 +208,6 @@ export const DesktopRadialMenu: FC = () => {
             right: '32px',
             borderRadius: '50%',
             boxShadow: 'none',
-            outline: 'none',
-            border: 'none',
             display: 'grid',
             placeItems: 'center',
             backgroundColor: activeId === 'close' ? '#d9480f' : '#f76707',
@@ -216,7 +215,13 @@ export const DesktopRadialMenu: FC = () => {
             cursor: 'pointer',
             border: 'none',
             zIndex: 2001,
-            lineHeight: 1
+            lineHeight: 1,
+            transform: isAnimating ? 'scale(1) rotate(45deg)' : 'scale(0.5) rotate(0deg)',
+            opacity: isAnimating ? 1 : 0,
+            transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            outline: 'none',
+            WebkitTapHighlightColor: 'transparent',
+            userSelect: 'none'
           }}
         >
           <div className="d-flex align-items-center justify-content-center" style={{ width: '100%', height: '100%' }}>
@@ -224,44 +229,6 @@ export const DesktopRadialMenu: FC = () => {
           </div>
         </div>
       </div>
-
-      <style>{`
-        .radial-menu-backdrop {
-          background-color: rgba(0, 0, 0, 0);
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          opacity: 0;
-        }
-        .radial-menu-backdrop.active {
-          background-color: rgba(0, 0, 0, 0.6);
-          opacity: 1;
-        }
-        .radial-menu-item {
-          transform: scale(0);
-          opacity: 0;
-          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .radial-menu-item.active {
-          transform: scale(1);
-          opacity: 1;
-        }
-        .radial-menu-close {
-          transform: scale(0.5) rotate(0deg);
-          opacity: 0;
-          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .radial-menu-close.active {
-          transform: scale(1) rotate(45deg);
-          opacity: 1;
-        }
-        .transition-all {
-          transition: all 0.2s ease-in-out;
-        }
-        .radial-menu-item, .radial-menu-close, .radial-menu-item *, .radial-menu-close * {
-          outline: none !important;
-          -webkit-tap-highlight-color: transparent !important;
-          user-select: none !important;
-        }
-      `}</style>
     </div>
   );
 };
