@@ -13,14 +13,10 @@ interface NavbarSideUserProps {
   dark?: boolean
 }
 
-export function NavbarSideUser({
-  hideUsername,
-  dark,
-}: NavbarSideUserProps) {
+export function NavbarSideUser({ hideUsername, dark }: NavbarSideUserProps) {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
-  
-  // Use first person from data as default "Andrew Forbist"
+
   const defaultPerson = peopleData[0]
 
   const person: Person = {
@@ -34,8 +30,7 @@ export function NavbarSideUser({
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault()
     await logout()
-    
-    // If mobile (typically < 768px), go to Welcome page, else go to Sign In
+
     const isMobile = window.innerWidth < 768
     navigate({ to: isMobile ? '/' : '/sign-in' })
   }

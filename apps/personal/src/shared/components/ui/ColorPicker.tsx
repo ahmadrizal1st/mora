@@ -31,9 +31,9 @@ export function ColorPicker({
     let active = true
 
     const swatches = [
-      ...colorsData.base.map(c => c.value),
-      ...colorsData.light.map(c => c.value),
-      ...colorsData.social.map(c => c.value)
+      ...colorsData.base.map((c) => c.value),
+      ...colorsData.light.map((c) => c.value),
+      ...colorsData.social.map((c) => c.value),
     ]
 
     import('@melloware/coloris').then(({ default: Coloris }) => {
@@ -69,12 +69,12 @@ export function ColorPicker({
   }, [alpha, format, swatchesOnly, onChange])
 
   return (
-    <div 
-      className={clsx('clr-field', className)} 
+    <div
+      className={clsx('clr-field', className)}
       style={{ color: currentValue, position: 'relative', display: 'block' }}
     >
-      <button 
-        type="button" 
+      <button
+        type="button"
         aria-labelledby="clr-open-label"
         style={{
           width: '1.25rem',
@@ -87,7 +87,7 @@ export function ColorPicker({
           position: 'absolute',
           padding: 0,
           margin: 0,
-          backgroundColor: 'currentColor'
+          backgroundColor: 'currentColor',
         }}
       />
       <input

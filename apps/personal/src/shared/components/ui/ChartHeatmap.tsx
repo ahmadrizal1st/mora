@@ -44,7 +44,8 @@ export function ChartHeatmap({
     if (!chartRef.current) return
 
     const resolveColor = (name: string) =>
-      getComputedStyle(document.documentElement).getPropertyValue(`--tblr-${name}`).trim() || '#206bc4'
+      getComputedStyle(document.documentElement).getPropertyValue(`--tblr-${name}`).trim() ||
+      '#206bc4'
 
     const opts: ApexOptions = {
       chart: {
@@ -71,10 +72,10 @@ export function ChartHeatmap({
                 enableShades: !noShades,
                 colorScale: {
                   ranges: [
-                    { from: 0,  to: 20,  name: 'Low',     color: resolveColor('green')  },
-                    { from: 21, to: 50,  name: 'Medium',  color: resolveColor('blue')   },
-                    { from: 51, to: 75,  name: 'High',    color: resolveColor('yellow') },
-                    { from: 76, to: 100, name: 'Extreme', color: resolveColor('red')    },
+                    { from: 0, to: 20, name: 'Low', color: resolveColor('green') },
+                    { from: 21, to: 50, name: 'Medium', color: resolveColor('blue') },
+                    { from: 51, to: 75, name: 'High', color: resolveColor('yellow') },
+                    { from: 76, to: 100, name: 'Extreme', color: resolveColor('red') },
                   ],
                 },
               },

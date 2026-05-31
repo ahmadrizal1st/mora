@@ -143,25 +143,21 @@ export function Button({
   if (dismiss) extraProps['data-bs-dismiss'] = 'modal'
   if (iconOnly) extraProps['aria-label'] = typeof text === 'string' ? text : 'Button'
 
-  // Generate TanStack Router link props if 'to' is provided
   const linkProps = useLinkProps({
     to: (to || '') as string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     params: params as any,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     search: search as any,
     hash,
     disabled,
   })
 
-  // Only apply routing props when 'to' is explicitly passed
   const routingProps = to ? linkProps : {}
 
   const content = (
     <>
-      {spinner && (
-        <Spinner size="sm" className={spinnerClass} element="span" />
-      )}
+      {spinner && <Spinner size="sm" className={spinnerClass} element="span" />}
       {icon && (
         <Icon
           icon={icon}
@@ -178,12 +174,7 @@ export function Button({
         </>
       )}
       {iconEnd && hasContent && (
-        <Icon
-          icon={iconEnd}
-          size={iconSize}
-          stroke={strokeWidth}
-          className="ms-2 icon-end"
-        />
+        <Icon icon={iconEnd} size={iconSize} stroke={strokeWidth} className="ms-2 icon-end" />
       )}
     </>
   )
@@ -196,7 +187,7 @@ export function Button({
       {...(routingProps as any)}
       onClick={(e: React.MouseEvent<HTMLElement>) => {
         if ((routingProps as any).onClick) {
-          (routingProps as any).onClick(e)
+          ;(routingProps as any).onClick(e)
         }
         handleOnClick(e)
       }}

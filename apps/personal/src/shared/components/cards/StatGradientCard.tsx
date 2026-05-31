@@ -1,11 +1,11 @@
-import { Avatar } from '../ui/Avatar';
+import { Avatar } from '../ui/Avatar'
 
 interface StatGradientCardProps {
-  title?: string;
-  value?: string;
-  color?: string;
-  icon?: string;
-  progress?: number;
+  title?: string
+  value?: string
+  color?: string
+  icon?: string
+  progress?: number
 }
 
 export function StatGradientCard({
@@ -34,5 +34,5 @@ export function StatGradientCard({
         </div>
       </div>
     </div>
-  );
+  )
 }

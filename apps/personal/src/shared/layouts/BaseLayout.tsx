@@ -70,7 +70,10 @@ export default function BaseLayout({
   flush = false,
 }: BaseLayoutProps) {
   const location = useLocation()
-  const isDashboard = location.pathname === '/dashboard' || location.pathname === '/' || location.pathname === '/dashboard-crypto'
+  const isDashboard =
+    location.pathname === '/dashboard' ||
+    location.pathname === '/' ||
+    location.pathname === '/dashboard-crypto'
 
   const containerClasses = clsx(
     containerFlushMobile ? 'container-xl px-0 px-md-3' : 'container-xl',
@@ -80,9 +83,7 @@ export default function BaseLayout({
 
   return (
     <div className={clsx('page', isDashboard && 'mobile-page-gradient')} dir={dir}>
-      {sidebar && (
-        <Sidebar dark={sidebarDark} end={sidebarEnd} />
-      )}
+      {sidebar && <Sidebar dark={sidebarDark} end={sidebarEnd} />}
 
       {!hideTopbar && (
         <Navbar
@@ -96,7 +97,14 @@ export default function BaseLayout({
         />
       )}
 
-      <div className={clsx('page-wrapper', wrapperFull && 'page-wrapper-full', 'mobile-bottom-nav-gap', isDashboard && 'mobile-layout-wrapper')}>
+      <div
+        className={clsx(
+          'page-wrapper',
+          wrapperFull && 'page-wrapper-full',
+          'mobile-bottom-nav-gap',
+          isDashboard && 'mobile-layout-wrapper'
+        )}
+      >
         {(pageTitle || pagePretitle || pageActions) && (
           <PageHeader
             title={pageTitle}
@@ -106,25 +114,20 @@ export default function BaseLayout({
             actions={pageActions}
             showBackButton={showBackButton}
             containerClass={containerFlushMobile ? 'px-2 px-md-2' : undefined}
-            className={clsx((navbarOverlap && navbarDark) && 'text-white', pageHeaderClass)}
+            className={clsx(navbarOverlap && navbarDark && 'text-white', pageHeaderClass)}
           />
         )}
-
 
         <main id="content" className={clsx('page-body', bodyClass, flush && 'pt-0')}>
           {wrapperFull || noContainer ? (
             children
           ) : (
-            <div className={containerClasses}>
-              {children}
-            </div>
+            <div className={containerClasses}>{children}</div>
           )}
         </main>
 
         {!hideFooter && <Footer />}
       </div>
-
-      {/* Chatbot FAB removed and moved to NavbarSide */}
     </div>
   )
 }

@@ -1,19 +1,11 @@
-import { Chart } from '@/shared/components/ui/Chart';
-import { Icon } from '@/shared/components/ui/Icon';
-import { MOCK_BUDGET_DATA } from '../../data/mockPlanningData';
+import { Chart } from '@/shared/components/ui/Chart'
+import { Icon } from '@/shared/components/ui/Icon'
+import { MOCK_BUDGET_DATA } from '../../data/mockPlanningData'
 
 export function BudgetDistributionChart() {
-  const { totalBudget } = MOCK_BUDGET_DATA;
-  
-  // Custom colors to match the reference image
-  const colors = [
-    '#4E5D78', // Other (Dark Blue/Grey)
-    '#7c6fff', // Bills (Purple)
-    '#FF8A65', // Entertainment (Orange/Coral)
-    '#E24B4A', // Health (Red)
-    '#4FC3F7', // Education (Light Blue)
-    '#D4E157'  // Clothes (Lime/Mustard)
-  ];
+  const { totalBudget } = MOCK_BUDGET_DATA
+
+  const colors = ['#4E5D78', '#7c6fff', '#FF8A65', '#E24B4A', '#4FC3F7', '#D4E157']
 
   const chartData = {
     type: 'donut' as const,
@@ -24,22 +16,22 @@ export function BudgetDistributionChart() {
       { name: 'Entertainment', data: [totalBudget * 0.15], color: colors[2] },
       { name: 'Health', data: [totalBudget * 0.1], color: colors[3] },
       { name: 'Education', data: [totalBudget * 0.2], color: colors[4] },
-      { name: 'Clothes', data: [totalBudget * 0.1], color: colors[5] }
+      { name: 'Clothes', data: [totalBudget * 0.1], color: colors[5] },
     ],
     extend: {
-      stroke: { 
-        show: true, 
-        width: 6, 
-        colors: ['var(--tblr-bg-surface)'] // Gaps between segments
+      stroke: {
+        show: true,
+        width: 6,
+        colors: ['var(--tblr-bg-surface)'],
       },
-      legend: { 
+      legend: {
         show: true,
         position: 'right',
         fontSize: '11px',
         fontWeight: 600,
         fontFamily: 'inherit',
         markers: { radius: 4, width: 10, height: 10 },
-        itemMargin: { vertical: 4 }
+        itemMargin: { vertical: 4 },
       },
       dataLabels: { enabled: false },
       plotOptions: {
@@ -48,20 +40,21 @@ export function BudgetDistributionChart() {
             size: '75%',
             labels: {
               show: true,
-              name: { 
-                show: true, 
-                fontSize: '11px', 
-                fontWeight: 600, 
+              name: {
+                show: true,
+                fontSize: '11px',
+                fontWeight: 600,
                 color: 'var(--tblr-secondary)',
-                offsetY: -5
+                offsetY: -5,
               },
-              value: { 
-                show: true, 
-                fontSize: '18px', 
-                fontWeight: 800, 
+              value: {
+                show: true,
+                fontSize: '18px',
+                fontWeight: 800,
                 color: 'var(--tblr-body-color)',
                 offsetY: 10,
-                formatter: (val: string) => `${Math.round(Number(val) / 1000).toLocaleString()}.000`
+                formatter: (val: string) =>
+                  `${Math.round(Number(val) / 1000).toLocaleString()}.000`,
               },
               total: {
                 show: true,
@@ -70,23 +63,26 @@ export function BudgetDistributionChart() {
                 fontWeight: 600,
                 color: 'var(--tblr-secondary)',
                 formatter: () => {
-                  return 'Rp ' + Math.round(totalBudget / 1000).toLocaleString() + '.000';
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  };
+                  return 'Rp ' + Math.round(totalBudget / 1000).toLocaleString() + '.000'
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  }
 
   return (
     <div className="card shadow-sm border-0" style={{ borderRadius: '16px' }}>
-
       <div className="card-body p-4 d-flex flex-column">
-
         <div className="d-flex align-items-center justify-content-between mb-3">
-          <h4 className="fw-bold m-0 text-secondary text-uppercase small" style={{ letterSpacing: '0.025em' }}>Allocation</h4>
+          <h4
+            className="fw-bold m-0 text-secondary text-uppercase small"
+            style={{ letterSpacing: '0.025em' }}
+          >
+            Allocation
+          </h4>
           <span className="badge bg-secondary-lt text-secondary border-0">100% Total</span>
         </div>
         <div className="flex-fill d-flex align-items-center justify-content-center mt-n3">
@@ -96,8 +92,5 @@ export function BudgetDistributionChart() {
         </div>
       </div>
     </div>
-  );
+  )
 }
-
-
-

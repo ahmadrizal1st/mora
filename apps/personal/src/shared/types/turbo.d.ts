@@ -1,1 +1,1 @@
-declare module '@hotwired/turbo';
+declare module '@hotwired/turbo'

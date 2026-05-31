@@ -1,11 +1,10 @@
-// src/components/cards/SuccessMessage.tsx
-import { Icon } from '../ui/Icon';
-import { Button } from '../ui/Button';
+import { Icon } from '../ui/Icon'
+import { Button } from '../ui/Button'
 
 interface SuccessMessageProps {
-  title?: string;
-  message?: string;
-  onContinue?: () => void;
+  title?: string
+  message?: string
+  onContinue?: () => void
 }
 
 export function SuccessMessageCard({
@@ -26,5 +25,5 @@ export function SuccessMessageCard({
         </div>
       </div>
     </div>
-  );
+  )
 }

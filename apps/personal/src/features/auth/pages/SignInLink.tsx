@@ -1,4 +1,3 @@
-// src/features/auth/pages/SignInLink.tsx
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import SingleLayout from '@/shared/layouts/SingleLayout'
@@ -16,14 +15,17 @@ export default function SignInLink() {
     e.preventDefault()
     setError(null)
 
-    magicLinkMutation.mutate({ email }, {
-      onSuccess: () => {
-        setIsSent(true)
-      },
-      onError: (err: AxiosError) => {
-        setError(getApiErrorMessage(err, 'Failed to send magic link.'))
+    magicLinkMutation.mutate(
+      { email },
+      {
+        onSuccess: () => {
+          setIsSent(true)
+        },
+        onError: (err: AxiosError) => {
+          setError(getApiErrorMessage(err, 'Failed to send magic link.'))
+        },
       }
-    })
+    )
   }
 
   if (isSent) {
@@ -38,8 +40,13 @@ export default function SignInLink() {
             </p>
           </div>
           <div className="text-center text-secondary mt-3">
-            Can't see the email? Please check the spam folder.<br />
-            Wrong email? Please <a href="#" onClick={() => setIsSent(false)}>re-enter your address</a>.
+            Can't see the email? Please check the spam folder.
+            <br />
+            Wrong email? Please{' '}
+            <a href="#" onClick={() => setIsSent(false)}>
+              re-enter your address
+            </a>
+            .
           </div>
         </div>
       </SingleLayout>
@@ -75,8 +82,8 @@ export default function SignInLink() {
             </div>
 
             <div className="form-footer">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="btn btn-primary w-100"
                 disabled={magicLinkMutation.isPending}
               >
@@ -93,4 +100,3 @@ export default function SignInLink() {
     </SingleLayout>
   )
 }
-

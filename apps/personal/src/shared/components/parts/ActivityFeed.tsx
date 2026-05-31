@@ -1,4 +1,3 @@
-// src/components/parts/ActivityFeed.tsx
 import { Avatar } from '../ui/Avatar'
 
 interface ActivityItem {

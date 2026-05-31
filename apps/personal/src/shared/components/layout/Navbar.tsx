@@ -28,26 +28,38 @@ interface MenuSection {
   children?: Record<string, MenuChild>
 }
 
-const navigationData: NavItem[] = Object.values(menuData as Record<string, MenuSection>).map((section) => ({
-  label: section.title,
-  icon: section.icon,
-  href: section.url ? `/${section.url.replace('.html', '').replace(/^index$/, 'dashboard').replace(/\/index$/, '')}` : '#',
-  dropdown: !!section.children,
-  columns: section.columns,
-  items: section.children
-    ? Object.values(section.children).map((child) => ({
-      label: child.title,
-      href: child.url ? `/${child.url.replace('.html', '').replace(/^index$/, 'dashboard').replace(/\/index$/, '')}` : '#',
-      badge: child.badge,
-      items: child.children
-        ? Object.values(child.children).map((sub) => ({
-          label: sub.title,
-          href: sub.url ? `/${sub.url.replace('.html', '').replace(/\/index$/, '')}` : '#',
+const navigationData: NavItem[] = Object.values(menuData as Record<string, MenuSection>).map(
+  (section) => ({
+    label: section.title,
+    icon: section.icon,
+    href: section.url
+      ? `/${section.url
+          .replace('.html', '')
+          .replace(/^index$/, 'dashboard')
+          .replace(/\/index$/, '')}`
+      : '#',
+    dropdown: !!section.children,
+    columns: section.columns,
+    items: section.children
+      ? Object.values(section.children).map((child) => ({
+          label: child.title,
+          href: child.url
+            ? `/${child.url
+                .replace('.html', '')
+                .replace(/^index$/, 'dashboard')
+                .replace(/\/index$/, '')}`
+            : '#',
+          badge: child.badge,
+          items: child.children
+            ? Object.values(child.children).map((sub) => ({
+                label: sub.title,
+                href: sub.url ? `/${sub.url.replace('.html', '').replace(/\/index$/, '')}` : '#',
+              }))
+            : undefined,
         }))
-        : undefined,
-    }))
-    : undefined,
-}))
+      : undefined,
+  })
+)
 
 interface NavbarProps {
   breakpoint?: string
@@ -170,17 +182,19 @@ export function Navbar({
               </nav>
 
               {!hideSearch && (
-                <div className={clsx(
-                  'ms-md-auto',
-                  'ps-md-4',
-                  'py-2',
-                  'py-md-0',
-                  'me-md-4',
-                  'order-first',
-                  'order-md-last',
-                  'flex-grow-1',
-                  !fluidSearch && 'flex-md-grow-0'
-                )}>
+                <div
+                  className={clsx(
+                    'ms-md-auto',
+                    'ps-md-4',
+                    'py-2',
+                    'py-md-0',
+                    'me-md-4',
+                    'order-first',
+                    'order-md-last',
+                    'flex-grow-1',
+                    !fluidSearch && 'flex-md-grow-0'
+                  )}
+                >
                   <form action="./" method="get" autoComplete="off" noValidate>
                     <div className="input-icon">
                       <span className="input-icon-addon">
@@ -211,27 +225,13 @@ export function Navbar({
             <div className="row flex-column flex-md-row flex-fill align-items-center">
               <div className="col">
                 <nav aria-label="Primary">
-                  <NavbarMenu items={navigationData} hideIcons={hideIcons} longTitles={longTitles} />
+                  <NavbarMenu
+                    items={navigationData}
+                    hideIcons={hideIcons}
+                    longTitles={longTitles}
+                  />
                 </nav>
               </div>
-
-              {/* {!hideSearch && (
-                <div className="col-2 d-none d-xxl-block">
-                  <form action="./" method="get" autoComplete="off" noValidate>
-                    <div className="input-icon">
-                      <span className="input-icon-addon">
-                        <Icon icon="search" />
-                      </span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Search…"
-                        aria-label="Search"
-                      />
-                    </div>
-                  </form>
-                </div>
-              )} */}
 
               <div className="col col-md-auto">
                 <ul className="navbar-nav">

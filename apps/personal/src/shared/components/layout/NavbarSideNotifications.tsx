@@ -13,14 +13,13 @@ export function NavbarSideNotifications({ className }: NavbarSideNotificationsPr
   const { data: countData } = useQuery({
     queryKey: ['notifications', 'unread-count'],
     queryFn: () => notificationApi.getUnreadCount(),
-    refetchInterval: 15000, // Poll every 15 seconds
+    refetchInterval: 15000,
   })
 
   const unreadCount = countData?.unread_count ?? 0
 
   return (
     <div className={clsx('nav-item dropdown', className)}>
-      {/* Desktop: Dropdown Trigger */}
       <a
         href="#"
         className="nav-link px-0 d-none d-md-flex"
@@ -33,13 +32,15 @@ export function NavbarSideNotifications({ className }: NavbarSideNotificationsPr
         {unreadCount > 0 && <span className="badge badge-dot bg-red" />}
       </a>
 
-      {/* Mobile: Link to Page */}
       <Link to="/notifications" className="nav-link px-0 d-md-none" aria-label="Show notifications">
         <Icon icon="bell" />
         {unreadCount > 0 && <span className="badge badge-dot bg-red" />}
       </Link>
 
-      <div className="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card" style={{ width: '600px', maxWidth: '100vw' }}>
+      <div
+        className="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card"
+        style={{ width: '600px', maxWidth: '100vw' }}
+      >
         <NavbarNotifications />
       </div>
     </div>

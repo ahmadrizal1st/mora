@@ -41,9 +41,7 @@ export function Carousel({
   interval = 5000,
   className,
 }: CarouselProps) {
-  const filteredPhotos = photos
-    .filter((p) => p.horizontal !== false)
-    .slice(offset, offset + limit)
+  const filteredPhotos = photos.filter((p) => p.horizontal !== false).slice(offset, offset + limit)
 
   const carouselId = `carousel-${id}`
 
@@ -69,7 +67,11 @@ export function Carousel({
               data-bs-target={`#${carouselId}`}
               data-bs-slide-to={i}
               className={clsx(indicatorsThumbRatio && 'ratio ratio-4x3', i === 0 && 'active')}
-              style={indicatorsThumb ? { backgroundImage: `url(/static/photos/${photo.file})` } : undefined}
+              style={
+                indicatorsThumb
+                  ? { backgroundImage: `url(/static/photos/${photo.file})` }
+                  : undefined
+              }
             />
           ))}
         </div>

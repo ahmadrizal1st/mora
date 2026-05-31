@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { clsx } from 'clsx'
 
 const OPTIONS = ['Last 7 days', 'Last 30 days', 'Last 3 months'] as const
-type Option = typeof OPTIONS[number]
+type Option = (typeof OPTIONS)[number]
 
 interface DropdownDaysProps {
   id?: string

@@ -39,16 +39,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ]
 
     const pathname = location.pathname
-    const isPublicPath = publicPaths.includes(pathname) || pathname === '/' || pathname.startsWith('/error-')
+    const isPublicPath =
+      publicPaths.includes(pathname) || pathname === '/' || pathname.startsWith('/error-')
 
     const { isAuthenticated, _hasHydrated } = context.auth
 
-    // Jika belum hydrated, jangan lakukan apa-apa
     if (!_hasHydrated) return
 
-    // JANGAN REDIRECT jika ini adalah path publik atau path root '/'
     if (!isAuthenticated && !isPublicPath) {
-      throw redirect({ 
+      throw redirect({
         to: '/sign-in',
         search: {
           redirect: pathname,
@@ -56,7 +55,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       })
     }
 
-    // Jika sudah login tapi mencoba ke halaman login/welcome, lempar ke dashboard
     const guestOnlyPaths = ['/', '/sign-in', '/sign-up', '/forgot-password', '/reset-password']
     if (isAuthenticated && guestOnlyPaths.includes(pathname)) {
       throw redirect({ to: '/dashboard' })

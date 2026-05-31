@@ -1,11 +1,13 @@
-import { Icon } from '@/shared/components/ui/Icon';
+import { Icon } from '@/shared/components/ui/Icon'
 
 export function AccountSettingsCard() {
   return (
     <div className="card shadow-sm border-0 h-100">
       <div className="card-body p-3">
-        <div className="text-secondary text-uppercase fw-semibold fs-5 mb-3">Account Security & Limits</div>
-        
+        <div className="text-secondary text-uppercase fw-semibold fs-5 mb-3">
+          Account Security & Limits
+        </div>
+
         <div className="list-group list-group-flush">
           <div className="list-group-item px-0 border-0 py-2">
             <div className="d-flex justify-content-between align-items-center">
@@ -16,7 +18,7 @@ export function AccountSettingsCard() {
               <span className="badge bg-success-lt">Terlindungi</span>
             </div>
           </div>
-          
+
           <div className="list-group-item px-0 border-0 py-2">
             <div className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center gap-2">
@@ -39,5 +41,5 @@ export function AccountSettingsCard() {
         </div>
       </div>
     </div>
-  );
+  )
 }

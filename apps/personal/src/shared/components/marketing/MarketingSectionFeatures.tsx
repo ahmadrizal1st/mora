@@ -6,28 +6,29 @@ interface MarketingSectionFeaturesProps {
 }
 
 export function MarketingSectionFeatures({ background, className }: MarketingSectionFeaturesProps) {
-  const sectionClasses = [
-    'section',
-    background && `section-${background}`,
-    className
-  ].filter(Boolean).join(' ')
+  const sectionClasses = ['section', background && `section-${background}`, className]
+    .filter(Boolean)
+    .join(' ')
 
   const features = [
     {
       icon: 'devices',
       title: 'Mobile-optimized',
-      description: 'Our email templates are fully responsive, so you can be sure they will look great on any device and screen size.'
+      description:
+        'Our email templates are fully responsive, so you can be sure they will look great on any device and screen size.',
     },
     {
       icon: 'mailbox',
       title: 'Compatible with 90+ email clients',
-      description: 'Tested across 90+ email clients and devices, Tabler emails will help you make your email communication professional and reliable.'
+      description:
+        'Tested across 90+ email clients and devices, Tabler emails will help you make your email communication professional and reliable.',
     },
     {
       icon: 'palette',
       title: 'Unique, minimal design',
-      description: 'Draw recipients’ attention with beautiful, minimal email designs based on Bootstrap and Material Design principles.'
-    }
+      description:
+        'Draw recipients’ attention with beautiful, minimal email designs based on Bootstrap and Material Design principles.',
+    },
   ]
 
   return (

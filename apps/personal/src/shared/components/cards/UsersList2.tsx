@@ -21,11 +21,11 @@ export function UsersList2({
   className = '',
 }: UsersList2Props) {
   const [displayPeople] = useState(() =>
-    people.slice(offset, offset + limit).map(person => ({
+    people.slice(offset, offset + limit).map((person) => ({
       ...person,
-      daysAgo: Math.floor(Math.random() * 6) + 1
+      daysAgo: Math.floor(Math.random() * 6) + 1,
     }))
-  );
+  )
 
   return (
     <div className={`card ${className}`}>

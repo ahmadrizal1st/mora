@@ -1,4 +1,3 @@
-// src/shared/components/cards/charts/index.ts
 export { SummaryChartCard } from './SummaryChartCard'
 export { MetricAreaChartCard } from './MetricAreaChartCard'
 export { ComparisonChartCard } from './ComparisonChartCard'

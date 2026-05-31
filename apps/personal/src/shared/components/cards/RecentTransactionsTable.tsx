@@ -1,18 +1,18 @@
 interface InvoiceRow {
-  id?: string;
-  subject: string;
-  client: string;
-  vatNo?: string;
-  date?: string;
-  status: string;
-  statusColor?: string;
-  price: string;
+  id?: string
+  subject: string
+  client: string
+  vatNo?: string
+  date?: string
+  status: string
+  statusColor?: string
+  price: string
 }
 
 interface RecentTransactionsTableProps {
-  invoices?: InvoiceRow[];
-  hideHeader?: boolean;
-  hideFooter?: boolean;
+  invoices?: InvoiceRow[]
+  hideHeader?: boolean
+  hideFooter?: boolean
 }
 
 export function RecentTransactionsTable({
@@ -21,13 +21,13 @@ export function RecentTransactionsTable({
   hideFooter = false,
 }: RecentTransactionsTableProps) {
   return (
-    <div className={hideHeader && hideFooter ? "" : "card"}>
+    <div className={hideHeader && hideFooter ? '' : 'card'}>
       {!hideHeader && (
         <div className="card-header">
           <h3 className="card-title">Recent Transactions</h3>
         </div>
       )}
-      
+
       <div className="table-responsive">
         <table className="table table-vcenter card-table text-nowrap">
           <thead>
@@ -44,11 +44,19 @@ export function RecentTransactionsTable({
           <tbody>
             {invoices.map((inv, i) => (
               <tr key={i} className="text-mobile-xs">
-                <td><span className="text-secondary">{inv.id?.slice(-3) || (i + 1).toString().padStart(3, '0')}</span></td>
-                <td className="text-truncate" style={{ maxWidth: '120px' }}>
-                  <a href="#" className="text-reset fw-medium">{inv.subject}</a>
+                <td>
+                  <span className="text-secondary">
+                    {inv.id?.slice(-3) || (i + 1).toString().padStart(3, '0')}
+                  </span>
                 </td>
-                <td className="text-truncate" style={{ maxWidth: '100px' }}>{inv.client}</td>
+                <td className="text-truncate" style={{ maxWidth: '120px' }}>
+                  <a href="#" className="text-reset fw-medium">
+                    {inv.subject}
+                  </a>
+                </td>
+                <td className="text-truncate" style={{ maxWidth: '100px' }}>
+                  {inv.client}
+                </td>
                 <td className="d-none d-md-table-cell text-secondary">{inv.vatNo || '-'}</td>
                 <td className="d-none d-md-table-cell text-secondary">{inv.date}</td>
                 <td className="d-none d-sm-table-cell">
@@ -74,5 +82,5 @@ export function RecentTransactionsTable({
         </div>
       )}
     </div>
-  );
+  )
 }

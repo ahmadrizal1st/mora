@@ -1,32 +1,30 @@
-import { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Button, Icon, Dropzone } from '@/shared/components/ui';
-import { useUploadDocument } from '../hooks/useTracker';
+import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import { Button, Icon, Dropzone } from '@/shared/components/ui'
+import { useUploadDocument } from '../hooks/useTracker'
 
 export default function TrackerFilePage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const uploadMutation = useUploadDocument();
+  const [files, setFiles] = useState<File[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const uploadMutation = useUploadDocument()
 
   const handleProcess = async () => {
-    if (files.length === 0) return;
-    setError(null);
+    if (files.length === 0) return
+    setError(null)
     try {
-      // Parallel upload all files
       await Promise.all(
-        files.map(file => uploadMutation.mutateAsync({ file, docType: 'expense' }))
-      );
-      
-      // Delay to let user see success message
+        files.map((file) => uploadMutation.mutateAsync({ file, docType: 'expense' }))
+      )
+
       setTimeout(() => {
-        navigate({ to: '/transactions' });
-      }, 2000);
+        navigate({ to: '/transactions' })
+      }, 2000)
     } catch {
-      setError('Gagal mengunggah dokumen. Silakan coba lagi.');
+      setError('Gagal mengunggah dokumen. Silakan coba lagi.')
     }
-  };
+  }
 
   return (
     <BaseLayout
@@ -45,7 +43,7 @@ export default function TrackerFilePage() {
                 text="Klik atau drag file ke sini"
                 description="PDF, DOCX, XLSX, CSV — Maks. 10 MB"
                 acceptedFiles=".pdf,.docx,.xlsx,.csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
-                onAddedFile={(f) => setFiles(prev => [...prev, f])}
+                onAddedFile={(f) => setFiles((prev) => [...prev, f])}
                 multiple
                 custom
               />
@@ -55,12 +53,19 @@ export default function TrackerFilePage() {
                   <div className="text-muted small mb-2">{files.length} file dipilih:</div>
                   <div className="list-group list-group-flush border rounded">
                     {files.map((f, i) => (
-                      <div key={i} className="list-group-item d-flex justify-content-between align-items-center py-2">
+                      <div
+                        key={i}
+                        className="list-group-item d-flex justify-content-between align-items-center py-2"
+                      >
                         <div className="d-flex align-items-center">
                           <Icon icon="file-description" size={16} className="text-secondary me-2" />
-                          <span className="small text-truncate" style={{ maxWidth: '200px' }}>{f.name}</span>
+                          <span className="small text-truncate" style={{ maxWidth: '200px' }}>
+                            {f.name}
+                          </span>
                         </div>
-                        <span className="badge bg-light text-dark fw-normal">{(f.size / 1024).toFixed(0)} KB</span>
+                        <span className="badge bg-light text-dark fw-normal">
+                          {(f.size / 1024).toFixed(0)} KB
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -70,7 +75,9 @@ export default function TrackerFilePage() {
               {error && (
                 <div className="alert alert-danger" role="alert">
                   <div className="d-flex">
-                    <div><Icon icon="alert-circle" className="alert-icon me-2" /></div>
+                    <div>
+                      <Icon icon="alert-circle" className="alert-icon me-2" />
+                    </div>
                     <div>{error}</div>
                   </div>
                 </div>
@@ -79,7 +86,9 @@ export default function TrackerFilePage() {
               {uploadMutation.isSuccess && (
                 <div className="alert alert-success" role="alert">
                   <div className="d-flex">
-                    <div><Icon icon="check" className="alert-icon me-2" /></div>
+                    <div>
+                      <Icon icon="check" className="alert-icon me-2" />
+                    </div>
                     <div>Berhasil! Dokumen sedang dianalisis.</div>
                   </div>
                 </div>
@@ -88,7 +97,9 @@ export default function TrackerFilePage() {
             <div className="card-footer text-end">
               <div className="btn-list">
                 <Button
-                  text={uploadMutation.isPending ? 'Menganalisis...' : `Import ${files.length} File`}
+                  text={
+                    uploadMutation.isPending ? 'Menganalisis...' : `Import ${files.length} File`
+                  }
                   color="primary"
                   loading={uploadMutation.isPending}
                   disabled={files.length === 0 || uploadMutation.isPending}
@@ -128,5 +139,5 @@ export default function TrackerFilePage() {
         </div>
       </div>
     </BaseLayout>
-  );
+  )
 }

@@ -12,13 +12,21 @@ interface SignUpCardProps {
   fieldErrors?: Record<string, string[]>
 }
 
-/** Inline field-level error message with icon */
 function FieldError({ messages }: { messages?: string[] }) {
   if (!messages?.length) return null
   return (
     <p className="field-error-msg">
-      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="12" cy="12" r="10" />
         <line x1="12" y1="8" x2="12" y2="12" />
         <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -61,12 +69,9 @@ export function SignUpCard({
         <div className="card-body">
           <h2 className="h2 text-center mb-4">{title}</h2>
 
-          {error && (
-            <ErrorAlert message={error} fieldErrors={fieldErrors} />
-          )}
+          {error && <ErrorAlert message={error} fieldErrors={fieldErrors} />}
 
           <form onSubmit={handleSubmit} autoComplete="off" noValidate>
-            {/* Name */}
             <div className="mb-3">
               <label className="form-label">Name</label>
               <input
@@ -82,7 +87,6 @@ export function SignUpCard({
               <FieldError messages={fieldErrors?.name} />
             </div>
 
-            {/* Email */}
             <div className="mb-3">
               <label className="form-label">Email address</label>
               <input
@@ -98,10 +102,11 @@ export function SignUpCard({
               <FieldError messages={fieldErrors?.email} />
             </div>
 
-            {/* Password */}
             <div className="mb-3">
               <label className="form-label">Password</label>
-              <div className={`input-group input-group-flat ${fieldErrors?.password ? 'is-invalid' : ''}`}>
+              <div
+                className={`input-group input-group-flat ${fieldErrors?.password ? 'is-invalid' : ''}`}
+              >
                 <input
                   type={showPassword ? 'text' : 'password'}
                   className={`form-control ${fieldErrors?.password ? 'is-invalid' : ''}`}
@@ -129,10 +134,11 @@ export function SignUpCard({
               <FieldError messages={fieldErrors?.password} />
             </div>
 
-            {/* Confirm Password */}
             <div className="mb-3">
               <label className="form-label">Confirm Password</label>
-              <div className={`input-group input-group-flat ${fieldErrors?.password_confirmation ? 'is-invalid' : ''}`}>
+              <div
+                className={`input-group input-group-flat ${fieldErrors?.password_confirmation ? 'is-invalid' : ''}`}
+              >
                 <input
                   type={showPasswordConfirmation ? 'text' : 'password'}
                   className={`form-control ${fieldErrors?.password_confirmation ? 'is-invalid' : ''}`}
@@ -160,7 +166,6 @@ export function SignUpCard({
               <FieldError messages={fieldErrors?.password_confirmation} />
             </div>
 
-            {/* Agree */}
             <div className="mb-3">
               <label className="form-check">
                 <input
@@ -172,13 +177,20 @@ export function SignUpCard({
                 />
                 <span className="form-check-label">
                   Agree to the{' '}
-                  <a href="#" tabIndex={-1}>terms and policy</a>.
+                  <a href="#" tabIndex={-1}>
+                    terms and policy
+                  </a>
+                  .
                 </span>
               </label>
             </div>
 
             <div className="form-footer">
-              <button type="submit" className="btn btn-primary w-100" disabled={isLoading || !agree}>
+              <button
+                type="submit"
+                className="btn btn-primary w-100"
+                disabled={isLoading || !agree}
+              >
                 {isLoading ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -195,7 +207,9 @@ export function SignUpCard({
 
       <div className="text-center text-secondary mt-3">
         Already have an account?{' '}
-        <Link to="/sign-in" className="fw-medium">Sign in</Link>
+        <Link to="/sign-in" className="fw-medium">
+          Sign in
+        </Link>
       </div>
     </>
   )

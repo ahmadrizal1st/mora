@@ -18,9 +18,15 @@ export interface AccordionProps {
 }
 
 const defaultItems: AccordionItem[] = [
-  { question: 'What is Tabler?', answer: 'Tabler is a free and open-source HTML Dashboard UI Kit.' },
+  {
+    question: 'What is Tabler?',
+    answer: 'Tabler is a free and open-source HTML Dashboard UI Kit.',
+  },
   { question: 'Is Tabler free?', answer: 'Yes, Tabler is completely free and open-source.' },
-  { question: 'How to install Tabler?', answer: 'You can install Tabler via npm or download from GitHub.' },
+  {
+    question: 'How to install Tabler?',
+    answer: 'You can install Tabler via npm or download from GitHub.',
+  },
   { question: 'Does Tabler support RTL?', answer: 'Yes, Tabler has full RTL support.' },
 ]
 
@@ -67,7 +73,12 @@ export function Accordion({
 
                 {item.question}
 
-                <div className={clsx('accordion-button-toggle', toggleIcon === 'plus' && 'accordion-button-toggle-plus')}>
+                <div
+                  className={clsx(
+                    'accordion-button-toggle',
+                    toggleIcon === 'plus' && 'accordion-button-toggle-plus'
+                  )}
+                >
                   <Icon icon={toggleIcon} />
                 </div>
               </button>
@@ -78,9 +89,7 @@ export function Accordion({
               className={clsx('accordion-collapse', 'collapse', isFirst && 'show')}
               data-bs-parent={`#accordion-${id}`}
             >
-              <div className="accordion-body">
-                {item.answer}
-              </div>
+              <div className="accordion-body">{item.answer}</div>
             </div>
           </div>
         )

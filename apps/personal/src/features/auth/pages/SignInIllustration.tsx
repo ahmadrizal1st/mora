@@ -1,4 +1,3 @@
-// src/features/auth/pages/SignInIllustration.tsx
 import { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { NavbarLogo } from '@/shared/components/layout/NavbarLogo'
@@ -12,7 +11,7 @@ import type { SignInFormData } from '@/features/auth/components/SignInForm'
 import { useNavigate } from '@tanstack/react-router'
 
 export default function SignInIllustration() {
-  const loginWithGoogle = useAuthStore(s => s.loginWithGoogle)
+  const loginWithGoogle = useAuthStore((s) => s.loginWithGoogle)
   const navigate = useNavigate()
   const signInMutation = useSignInMutation()
 
@@ -27,7 +26,7 @@ export default function SignInIllustration() {
     onError: (err) => {
       const responseData = err.response?.data as { message?: string } | undefined
       setError(responseData?.message || 'Google login failed.')
-    }
+    },
   })
 
   const handleLogin = (data: SignInFormData) => {
@@ -35,10 +34,12 @@ export default function SignInIllustration() {
     setFieldErrors(undefined)
     signInMutation.mutate(data, {
       onError: (err) => {
-        const responseData = err.response?.data as { message?: string, errors?: Record<string, string[]> } | undefined
+        const responseData = err.response?.data as
+          | { message?: string; errors?: Record<string, string[]> }
+          | undefined
         setError(responseData?.message || 'Login failed. Please check your credentials.')
         setFieldErrors(responseData?.errors)
-      }
+      },
     })
   }
 
@@ -57,8 +58,8 @@ export default function SignInIllustration() {
             <div className="text-center mb-4">
               <NavbarLogo />
             </div>
-            <SignInCard 
-              showHeader={true} 
+            <SignInCard
+              showHeader={true}
               onSubmit={handleLogin}
               onGoogleSuccess={handleGoogleSuccess}
               isLoading={signInMutation.isPending || googleSignInMutation.isPending}

@@ -1,4 +1,3 @@
-// src/pages/SignUp.tsx
 import React, { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { SignUpCard } from '@/shared/components/cards/SignUpCard'
@@ -27,7 +26,9 @@ export default function SignUp() {
       let errors: Record<string, string[]> | undefined = undefined
 
       if (axios.isAxiosError(err)) {
-        const responseData = err.response?.data as { message?: string; errors?: Record<string, string[]> } | undefined
+        const responseData = err.response?.data as
+          | { message?: string; errors?: Record<string, string[]> }
+          | undefined
         message = responseData?.message || message
         errors = responseData?.errors
       } else if (err instanceof Error) {
@@ -43,11 +44,11 @@ export default function SignUp() {
 
   return (
     <SingleLayout>
-      <SignUpCard 
-        onSubmit={handleRegister} 
-        isLoading={isLoading} 
-        error={error} 
-        fieldErrors={fieldErrors} 
+      <SignUpCard
+        onSubmit={handleRegister}
+        isLoading={isLoading}
+        error={error}
+        fieldErrors={fieldErrors}
       />
     </SingleLayout>
   )

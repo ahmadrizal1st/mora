@@ -14,11 +14,14 @@ interface IconProps {
 
 function toPascalCase(name: string): string {
   if (!name || typeof name !== 'string') return ''
-  
-  return 'Icon' + name
-    .split('-')
-    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('')
+
+  return (
+    'Icon' +
+    name
+      .split('-')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('')
+  )
 }
 
 export function Icon({ icon, className, color, size, inline, filled, stroke, style }: IconProps) {
@@ -33,7 +36,14 @@ export function Icon({ icon, className, color, size, inline, filled, stroke, sty
     (TablerIcons as unknown as Record<string, React.ElementType>)[icon]
 
   if (!IconComponent) {
-    const alternateName = 'Icon' + icon.split('-').map(p => p.toLowerCase() === 'x' ? 'X' : p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('')
+    const alternateName =
+      'Icon' +
+      icon
+        .split('-')
+        .map((p) =>
+          p.toLowerCase() === 'x' ? 'X' : p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()
+        )
+        .join('')
     IconComponent = (TablerIcons as unknown as Record<string, React.ElementType>)[alternateName]
   }
 
@@ -49,14 +59,17 @@ export function Icon({ icon, className, color, size, inline, filled, stroke, sty
           fontSize: '0.8em',
           textAlign: 'center',
           lineHeight: '1',
-          opacity: 0.5
+          opacity: 0.5,
         }}
         title={`Missing icon: ${icon}`}
-      >?</span>
+      >
+        ?
+      </span>
     )
   }
 
-  const isBuiltInSize = typeof size === 'string' && ['xxs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'].includes(size)
+  const isBuiltInSize =
+    typeof size === 'string' && ['xxs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'].includes(size)
 
   const classes = clsx(
     'icon',
@@ -84,11 +97,11 @@ export function Icon({ icon, className, color, size, inline, filled, stroke, sty
       size={normalizedSize}
       stroke={stroke}
       strokeWidth={stroke}
-      style={{ 
+      style={{
         strokeWidth: stroke,
         width: typeof normalizedSize === 'number' ? `${normalizedSize}px` : undefined,
         height: typeof normalizedSize === 'number' ? `${normalizedSize}px` : undefined,
-        ...style 
+        ...style,
       }}
       aria-hidden="true"
       focusable={false}

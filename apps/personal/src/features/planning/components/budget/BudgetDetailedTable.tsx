@@ -1,10 +1,10 @@
-import React from 'react';
-import { MOCK_BUDGET_DATA } from '../../data/mockPlanningData';
-import { formatCurrency } from '@/shared/utils/currencyUtils';
-import { Icon } from '@/shared/components/ui/Icon';
+import React from 'react'
+import { MOCK_BUDGET_DATA } from '../../data/mockPlanningData'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { Icon } from '@/shared/components/ui/Icon'
 
 export function BudgetDetailedTable() {
-  const { categories } = MOCK_BUDGET_DATA;
+  const { categories } = MOCK_BUDGET_DATA
 
   return (
     <div className="card shadow-sm border-0" style={{ borderRadius: '12px' }}>
@@ -28,17 +28,22 @@ export function BudgetDetailedTable() {
           </thead>
           <tbody>
             {categories.map((cat) => {
-              const remaining = cat.limit - cat.spent;
-              const isOver = remaining < 0;
-              const percentage = Math.min(Math.round((cat.spent / cat.limit) * 100), 100);
-              
+              const remaining = cat.limit - cat.spent
+              const isOver = remaining < 0
+              const percentage = Math.min(Math.round((cat.spent / cat.limit) * 100), 100)
+
               return (
                 <tr key={cat.id}>
                   <td>
                     <div className="d-flex align-items-center gap-2">
-                      <div 
-                        className={`d-flex align-items-center justify-content-center bg-${cat.color}-lt text-${cat.color}`} 
-                        style={{ width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0 }}
+                      <div
+                        className={`d-flex align-items-center justify-content-center bg-${cat.color}-lt text-${cat.color}`}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '10px',
+                          flexShrink: 0,
+                        }}
                       >
                         <Icon icon={cat.icon as any} size="sm" />
                       </div>
@@ -53,8 +58,8 @@ export function BudgetDetailedTable() {
                   <td>
                     <div className="d-flex align-items-center gap-2" style={{ minWidth: '120px' }}>
                       <div className="progress progress-xs flex-fill" style={{ height: '6px' }}>
-                        <div 
-                          className={`progress-bar bg-${isOver ? 'danger' : 'primary'}`} 
+                        <div
+                          className={`progress-bar bg-${isOver ? 'danger' : 'primary'}`}
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
@@ -66,17 +71,18 @@ export function BudgetDetailedTable() {
                     {isOver && <span className="ms-1 small">over</span>}
                   </td>
                   <td>
-                    <span className={`badge bg-${isOver ? 'danger' : 'success'}-lt text-${isOver ? 'danger' : 'success'} border-0`}>
+                    <span
+                      className={`badge bg-${isOver ? 'danger' : 'success'}-lt text-${isOver ? 'danger' : 'success'} border-0`}
+                    >
                       {isOver ? 'Over' : 'Safe'}
                     </span>
                   </td>
                 </tr>
-              );
+              )
             })}
           </tbody>
-
         </table>
       </div>
     </div>
-  );
+  )
 }

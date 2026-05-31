@@ -1,7 +1,4 @@
-// src/components/cards/SmallStatsCard.tsx
-// Matches shared/includes/cards/small-stats.html exactly
 import { Icon } from '../ui/Icon'
-
 
 interface SmallStatsCardProps {
   icon?: string
@@ -23,7 +20,9 @@ export function SmallStatsCard({
   const avatarClass = [
     icon && color ? `bg-${color}${lt ? '-lt' : ' text-white'}` : '',
     'avatar avatar-square',
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <div className={`card card-sm${className ? ` ${className}` : ''}`}>

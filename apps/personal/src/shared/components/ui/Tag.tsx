@@ -69,11 +69,7 @@ export function Tag({
       {status && <Badge color={status} className="tag-status badge-dot" text="" />}
       {legend && <span className={clsx('legend', `bg-${legend}`)} />}
       {checkbox && (
-        <input
-          type="checkbox"
-          className="form-check-input tag-check"
-          defaultChecked={checked}
-        />
+        <input type="checkbox" className="form-check-input tag-check" defaultChecked={checked} />
       )}
       {text || children}
       {badge !== undefined && (
@@ -95,7 +91,7 @@ export function Tag({
   )
 
   const classes = clsx(
-    'tag', 
+    'tag',
     active && 'tag-active',
     rounded && 'tag-rounded',
     color && !color.startsWith('#') && `bg-${color}-lt`,
@@ -107,7 +103,7 @@ export function Tag({
     backgroundColor: color && color.startsWith('#') ? (active ? color : `${color}22`) : undefined,
     color: color && color.startsWith('#') ? (active ? '#fff' : color) : undefined,
     borderColor: color && color.startsWith('#') ? color : undefined,
-    cursor: onClick ? 'pointer' : undefined
+    cursor: onClick ? 'pointer' : undefined,
   }
   if (href) {
     return (

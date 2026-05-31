@@ -3,13 +3,53 @@ export const MOCK_BUDGET_DATA = {
   spent: 6500000,
   safeToSpendPerDay: 150000,
   categories: [
-    { id: '1', name: 'Groceries 🛒', limit: 2000000, spent: 1500000, type: 'needs', icon: 'shopping-cart', color: 'green' },
-    { id: '2', name: 'Transportasi 🚗', limit: 1000000, spent: 1200000, type: 'needs', icon: 'car', color: 'red' },
-    { id: '3', name: 'Hiburan 🎮', limit: 1000000, spent: 300000, type: 'wants', icon: 'device-tv', color: 'yellow' },
-    { id: '4', name: 'Makan Luar 🍳', limit: 1500000, spent: 1400000, type: 'wants', icon: 'tools-kitchen-2', color: 'orange' },
-    { id: '5', name: 'Investasi 📈', limit: 2000000, spent: 2000000, type: 'savings', icon: 'chart-line', color: 'teal' },
-  ]
-};
+    {
+      id: '1',
+      name: 'Groceries 🛒',
+      limit: 2000000,
+      spent: 1500000,
+      type: 'needs',
+      icon: 'shopping-cart',
+      color: 'green',
+    },
+    {
+      id: '2',
+      name: 'Transportasi 🚗',
+      limit: 1000000,
+      spent: 1200000,
+      type: 'needs',
+      icon: 'car',
+      color: 'red',
+    },
+    {
+      id: '3',
+      name: 'Hiburan 🎮',
+      limit: 1000000,
+      spent: 300000,
+      type: 'wants',
+      icon: 'device-tv',
+      color: 'yellow',
+    },
+    {
+      id: '4',
+      name: 'Makan Luar 🍳',
+      limit: 1500000,
+      spent: 1400000,
+      type: 'wants',
+      icon: 'tools-kitchen-2',
+      color: 'orange',
+    },
+    {
+      id: '5',
+      name: 'Investasi 📈',
+      limit: 2000000,
+      spent: 2000000,
+      type: 'savings',
+      icon: 'chart-line',
+      color: 'teal',
+    },
+  ],
+}
 
 export const MOCK_GOALS_DATA = {
   totalSaved: 45000000,
@@ -24,7 +64,8 @@ export const MOCK_GOALS_DATA = {
       monthlyDeposit: 5000000,
       icon: 'home',
       color: '#ff6b00',
-      imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=800&auto=format&fit=crop'
+      imageUrl:
+        'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=800&auto=format&fit=crop',
     },
     {
       id: '2',
@@ -35,7 +76,8 @@ export const MOCK_GOALS_DATA = {
       monthlyDeposit: 1000000,
       icon: 'device-laptop',
       color: '#ff6b00',
-      imageUrl: 'https://images.unsplash.com/photo-1517336712461-481bf771df4b?q=80&w=800&auto=format&fit=crop'
+      imageUrl:
+        'https://images.unsplash.com/photo-1517336712461-481bf771df4b?q=80&w=800&auto=format&fit=crop',
     },
     {
       id: '3',
@@ -46,22 +88,55 @@ export const MOCK_GOALS_DATA = {
       monthlyDeposit: 1500000,
       icon: 'plane',
       color: '#ff6b00',
-      imageUrl: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop'
-    }
+      imageUrl:
+        'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop',
+    },
   ],
   milestones: [
     { date: 'Nov 26', label: 'DP Rumah Tercapai', type: 'achievement' },
-    { date: 'Jan 27', label: 'Liburan Jepang', type: 'target' }
-  ]
-};
+    { date: 'Jan 27', label: 'Liburan Jepang', type: 'target' },
+  ],
+}
 
 export const MOCK_SUBSCRIPTIONS_DATA = {
   totalMonthly: 1250000,
   paidThisMonth: 450000,
   subscriptions: [
-    { id: '1', name: 'Netflix Premium', amount: 186000, dueDate: '2026-05-15', status: 'upcoming', icon: 'brand-netflix', color: '#e50914' },
-    { id: '2', name: 'PLN Token', amount: 300000, dueDate: '2026-05-17', status: 'upcoming', icon: 'bolt', color: '#f5a623' },
-    { id: '3', name: 'Indihome', amount: 450000, dueDate: '2026-05-22', status: 'unpaid', icon: 'world', color: '#5b9ef7' },
-    { id: '4', name: 'Spotify', amount: 54000, dueDate: '2026-05-02', status: 'paid', icon: 'brand-spotify', color: '#1ed760' }
-  ]
-};
+    {
+      id: '1',
+      name: 'Netflix Premium',
+      amount: 186000,
+      dueDate: '2026-05-15',
+      status: 'upcoming',
+      icon: 'brand-netflix',
+      color: '#e50914',
+    },
+    {
+      id: '2',
+      name: 'PLN Token',
+      amount: 300000,
+      dueDate: '2026-05-17',
+      status: 'upcoming',
+      icon: 'bolt',
+      color: '#f5a623',
+    },
+    {
+      id: '3',
+      name: 'Indihome',
+      amount: 450000,
+      dueDate: '2026-05-22',
+      status: 'unpaid',
+      icon: 'world',
+      color: '#5b9ef7',
+    },
+    {
+      id: '4',
+      name: 'Spotify',
+      amount: 54000,
+      dueDate: '2026-05-02',
+      status: 'paid',
+      icon: 'brand-spotify',
+      color: '#1ed760',
+    },
+  ],
+}

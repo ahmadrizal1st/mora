@@ -15,35 +15,36 @@ interface MarketingSectionFeaturesDetailedProps {
   features?: FeatureDetail[]
 }
 
-export function MarketingSectionFeaturesDetailed({ 
-  background, 
-  className, 
+export function MarketingSectionFeaturesDetailed({
+  background,
+  className,
   reverse = false,
-  title = "Everything you need to deploy your app",
-  description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  title = 'Everything you need to deploy your app',
+  description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
   features = [
     {
       icon: 'tools',
       title: 'Designed with users in mind',
-      description: 'Tabler is fully responsive and compatible with all modern browsers. Thanks to its modern, user-friendly design you can create a fully functional interface that users will love.'
+      description:
+        'Tabler is fully responsive and compatible with all modern browsers. Thanks to its modern, user-friendly design you can create a fully functional interface that users will love.',
     },
     {
       icon: 'brand-bootstrap',
       title: 'Built for developers',
-      description: 'Having in mind what it takes to write high-quality code, we want to help you speed up the development process and keep your code clean.'
+      description:
+        'Having in mind what it takes to write high-quality code, we want to help you speed up the development process and keep your code clean.',
     },
     {
       icon: 'paint',
       title: 'Fully customizable',
-      description: 'You can easily customize the UI elements to make them fit the needs of your project. And don’t worry if you don’t have much experience - Tabler is easy to get started!'
-    }
-  ]
+      description:
+        'You can easily customize the UI elements to make them fit the needs of your project. And don’t worry if you don’t have much experience - Tabler is easy to get started!',
+    },
+  ],
 }: MarketingSectionFeaturesDetailedProps) {
-  const sectionClasses = [
-    'section',
-    background && `section-${background}`,
-    className
-  ].filter(Boolean).join(' ')
+  const sectionClasses = ['section', background && `section-${background}`, className]
+    .filter(Boolean)
+    .join(' ')
 
   const content = (
     <div className="col-lg-6">
@@ -68,7 +69,12 @@ export function MarketingSectionFeaturesDetailed({
   const image = (
     <div className="col-lg-6 mb-3 mb-lg-0">
       <div className="card shadow-sm border-0 overflow-hidden rounded-3">
-        <img src="/static/marketing/feature-detailed.png" alt="Feature" className="img-fluid" style={{ minHeight: '400px', objectFit: 'cover' }} />
+        <img
+          src="/static/marketing/feature-detailed.png"
+          alt="Feature"
+          className="img-fluid"
+          style={{ minHeight: '400px', objectFit: 'cover' }}
+        />
       </div>
     </div>
   )

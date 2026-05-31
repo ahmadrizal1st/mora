@@ -5,14 +5,9 @@ interface ErrorAlertProps {
   fieldErrors?: Record<string, string[]> | null
 }
 
-/**
- * Displays the primary error message. If there are additional field errors,
- * shows a hoverable badge with a tooltip listing all the extra errors.
- */
 export function ErrorAlert({ message, fieldErrors }: ErrorAlertProps) {
   const [tooltipVisible, setTooltipVisible] = useState(false)
 
-  // Flatten all field errors into a deduplicated list, excluding the primary message
   const allFieldMessages = fieldErrors
     ? Object.values(fieldErrors)
         .flat()
@@ -24,20 +19,26 @@ export function ErrorAlert({ message, fieldErrors }: ErrorAlertProps) {
   return (
     <div className="error-alert-wrapper" role="alert" aria-live="polite">
       <div className="error-alert">
-        {/* Icon */}
         <span className="error-alert__icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
         </span>
 
-        {/* Main message */}
         <span className="error-alert__message">{message}</span>
 
-        {/* More errors badge with tooltip */}
         {extraCount > 0 && (
           <span
             className={`error-alert__badge ${tooltipVisible ? 'error-alert__badge--active' : ''}`}
@@ -51,8 +52,6 @@ export function ErrorAlert({ message, fieldErrors }: ErrorAlertProps) {
             aria-expanded={tooltipVisible}
           >
             +{extraCount} more
-
-            {/* Tooltip */}
             {tooltipVisible && (
               <div className="error-alert__tooltip" role="tooltip">
                 <div className="error-alert__tooltip-arrow" />

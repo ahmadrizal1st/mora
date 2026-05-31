@@ -8,12 +8,7 @@ interface AvatarUploadProps {
   src?: string
 }
 
-export function AvatarUpload({
-  size,
-  className,
-  onChange,
-  src,
-}: AvatarUploadProps) {
+export function AvatarUpload({ size, className, onChange, src }: AvatarUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const classes = [
@@ -21,7 +16,9 @@ export function AvatarUpload({
     !src ? 'avatar-upload' : 'border-0',
     size ? `avatar-${size}` : '',
     className,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -44,9 +41,9 @@ export function AvatarUpload({
         className="d-none"
         accept="image/*"
       />
-      <a 
-        href="#" 
-        className={classes} 
+      <a
+        href="#"
+        className={classes}
         onClick={handleClick}
         style={src ? { backgroundImage: `url(${src})`, backgroundSize: 'cover' } : {}}
       >

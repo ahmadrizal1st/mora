@@ -43,7 +43,7 @@ export function Range({
       if (!active || !el) return
 
       if ('noUiSlider' in el) {
-        (el as unknown as { noUiSlider: { destroy: () => void } }).noUiSlider.destroy()
+        ;(el as unknown as { noUiSlider: { destroy: () => void } }).noUiSlider.destroy()
       }
 
       let connectOption: boolean | boolean[] | 'lower' | 'upper' = connect ?? false
@@ -108,7 +108,7 @@ export function Range({
       if (picker) {
         picker.destroy()
       } else if (el && 'noUiSlider' in el) {
-        (el as unknown as { noUiSlider: { destroy: () => void } }).noUiSlider.destroy()
+        ;(el as unknown as { noUiSlider: { destroy: () => void } }).noUiSlider.destroy()
       }
     }
   }, [min, max, step, connect, isMulti, parsedValues, color, className])

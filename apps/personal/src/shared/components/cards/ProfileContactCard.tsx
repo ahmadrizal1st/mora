@@ -1,21 +1,21 @@
-import { Icon } from '../ui/Icon';
-import { Avatar } from '../ui/Avatar';
+import { Icon } from '../ui/Icon'
+import { Avatar } from '../ui/Avatar'
 
 interface Person {
-  full_name?: string;
-  job_title?: string;
-  photo?: string;
+  full_name?: string
+  job_title?: string
+  photo?: string
 }
 
 interface ProfileContactCardProps {
-  person?: Person;
-  name?: string;
-  jobTitle?: string;
-  color?: string;
-  avatarSrc?: string;
-  onMessage?: () => void;
-  onPhone?: () => void;
-  onEmail?: () => void;
+  person?: Person
+  name?: string
+  jobTitle?: string
+  color?: string
+  avatarSrc?: string
+  onMessage?: () => void
+  onPhone?: () => void
+  onEmail?: () => void
 }
 
 export function ProfileContactCard({
@@ -25,8 +25,8 @@ export function ProfileContactCard({
   color = 'yellow',
   avatarSrc,
 }: ProfileContactCardProps) {
-  const resolvedName = person?.full_name || name;
-  const resolvedJobTitle = person?.job_title || jobTitle;
+  const resolvedName = person?.full_name || name
+  const resolvedJobTitle = person?.job_title || jobTitle
 
   return (
     <div className={`card card-gradient card-gradient-${color}`}>
@@ -49,17 +49,35 @@ export function ProfileContactCard({
         <div className="h1 mt-4 mb-1">{resolvedName}</div>
         <div className="text-secondary">{resolvedJobTitle}</div>
         <div className="btn-list justify-content-center mt-3">
-          <a href="#" className="btn btn-icon" title="Message" data-bs-toggle="tooltip" data-bs-placement="top">
+          <a
+            href="#"
+            className="btn btn-icon"
+            title="Message"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+          >
             <Icon icon="message" />
           </a>
-          <a href="#" className="btn btn-icon" title="Phone" data-bs-toggle="tooltip" data-bs-placement="top">
+          <a
+            href="#"
+            className="btn btn-icon"
+            title="Phone"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+          >
             <Icon icon="phone" />
           </a>
-          <a href="#" className="btn btn-icon" title="Email" data-bs-toggle="tooltip" data-bs-placement="top">
+          <a
+            href="#"
+            className="btn btn-icon"
+            title="Email"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+          >
             <Icon icon="mail" />
           </a>
         </div>
       </div>
     </div>
-  );
+  )
 }

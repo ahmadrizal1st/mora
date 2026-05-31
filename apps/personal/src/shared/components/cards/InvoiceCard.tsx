@@ -1,5 +1,3 @@
-// src/components/cards/InvoiceCard.tsx
-
 interface InvoiceItem {
   no: number
   name: string
@@ -21,9 +19,30 @@ interface InvoiceCardProps {
 }
 
 const defaultItems: InvoiceItem[] = [
-  { no: 1, name: 'Logo Creation', description: 'Logo and business cards design', qty: 1, unit: '$1.800,00', amount: '$1.800,00' },
-  { no: 2, name: 'Online Store Design & Development', description: 'Design/Development for all popular modern browsers', qty: 1, unit: '$20.000,00', amount: '$20.000,00' },
-  { no: 3, name: 'App Design', description: 'Promotional mobile application', qty: 1, unit: '$3.200,00', amount: '$3.200,00' },
+  {
+    no: 1,
+    name: 'Logo Creation',
+    description: 'Logo and business cards design',
+    qty: 1,
+    unit: '$1.800,00',
+    amount: '$1.800,00',
+  },
+  {
+    no: 2,
+    name: 'Online Store Design & Development',
+    description: 'Design/Development for all popular modern browsers',
+    qty: 1,
+    unit: '$20.000,00',
+    amount: '$20.000,00',
+  },
+  {
+    no: 3,
+    name: 'App Design',
+    description: 'Promotional mobile application',
+    qty: 1,
+    unit: '$3.200,00',
+    amount: '$3.200,00',
+  },
 ]
 
 export function InvoiceCard({
@@ -41,18 +60,24 @@ export function InvoiceCard({
           <div className="col-6">
             <p className="h3">Company</p>
             <address>
-              Street Address<br />
-              State, City<br />
-              Region, Postal Code<br />
+              Street Address
+              <br />
+              State, City
+              <br />
+              Region, Postal Code
+              <br />
               ltd@example.com
             </address>
           </div>
           <div className="col-6 text-end">
             <p className="h3">Client</p>
             <address>
-              Street Address<br />
-              State, City<br />
-              Region, Postal Code<br />
+              Street Address
+              <br />
+              State, City
+              <br />
+              Region, Postal Code
+              <br />
               ctr@example.com
             </address>
           </div>
@@ -66,13 +91,19 @@ export function InvoiceCard({
             <tr>
               <th className="text-center" style={{ width: '1%' }} />
               <th>Product</th>
-              <th className="text-center" style={{ width: '1%' }}>Qnt</th>
-              <th className="text-end" style={{ width: '1%' }}>Unit</th>
-              <th className="text-end" style={{ width: '1%' }}>Amount</th>
+              <th className="text-center" style={{ width: '1%' }}>
+                Qnt
+              </th>
+              <th className="text-end" style={{ width: '1%' }}>
+                Unit
+              </th>
+              <th className="text-end" style={{ width: '1%' }}>
+                Amount
+              </th>
             </tr>
           </thead>
           <tbody>
-            {items.map(item => (
+            {items.map((item) => (
               <tr key={item.no}>
                 <td className="text-center">{item.no}</td>
                 <td>
@@ -85,19 +116,27 @@ export function InvoiceCard({
               </tr>
             ))}
             <tr>
-              <td colSpan={4} className="strong text-end">Subtotal</td>
+              <td colSpan={4} className="strong text-end">
+                Subtotal
+              </td>
               <td className="text-end">{subtotal}</td>
             </tr>
             <tr>
-              <td colSpan={4} className="strong text-end">Vat Rate</td>
+              <td colSpan={4} className="strong text-end">
+                Vat Rate
+              </td>
               <td className="text-end">{vatRate}</td>
             </tr>
             <tr>
-              <td colSpan={4} className="strong text-end">Vat Due</td>
+              <td colSpan={4} className="strong text-end">
+                Vat Due
+              </td>
               <td className="text-end">{vatDue}</td>
             </tr>
             <tr>
-              <td colSpan={4} className="fw-semibold text-uppercase text-end">Total Due</td>
+              <td colSpan={4} className="fw-semibold text-uppercase text-end">
+                Total Due
+              </td>
               <td className="fw-semibold text-end">{total}</td>
             </tr>
           </tbody>

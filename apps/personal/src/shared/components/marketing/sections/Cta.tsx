@@ -1,15 +1,14 @@
-// src/components/marketing/sections/Cta.tsx
-import { IconChevronRight } from '@tabler/icons-react';
+import { IconChevronRight } from '@tabler/icons-react'
 
 interface CtaProps {
-  background?: string;
-  className?: string;
+  background?: string
+  className?: string
 }
 
 export function Cta({ background, className = '' }: CtaProps) {
   const sectionClass = ['section', background ? `section-${background}` : '', className]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
   return (
     <section className={sectionClass}>
@@ -20,9 +19,9 @@ export function Cta({ background, className = '' }: CtaProps) {
           available for use immediately.
         </h3>
         <p className="text-secondary">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt, ipsa? Voluptates sunt, ipsum
-          esse quis obcaecati atque placeat consectetur beatae, tenetur ducimus iure minima expedita
-          recusandae doloribus nam. Pariatur, facilis?
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt, ipsa? Voluptates sunt,
+          ipsum esse quis obcaecati atque placeat consectetur beatae, tenetur ducimus iure minima
+          expedita recusandae doloribus nam. Pariatur, facilis?
         </p>
         <div className="btn-list justify-content-center mt-6">
           <a href="#" className="btn btn-primary">
@@ -34,7 +33,7 @@ export function Cta({ background, className = '' }: CtaProps) {
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-export default Cta;
+export default Cta

@@ -9,29 +9,26 @@ import { ChatInput } from '../components/ChatInput'
 
 export default function ChatPage() {
   const navigate = useNavigate()
-  // sessionId is only present on the /ai/chat/:sessionId route
+
   const params = useParams({ strict: false }) as { sessionId?: string }
   const urlSessionId = params?.sessionId
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
-  const { messages, activeSessionId, isTyping, sendMessage, loadSession, createNewSession } = useChatStore()
+  const { messages, activeSessionId, isTyping, sendMessage, loadSession, createNewSession } =
+    useChatStore()
 
-  // Sync URL → store on mount / when URL changes
   useEffect(() => {
     if (urlSessionId) {
-      // Load a specific session from the URL
       loadSession(urlSessionId)
     } else {
-      // /ai/chat/ means new chat
       createNewSession()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlSessionId])
 
   const handleSendMessage = (content: string) => {
-    const isNew = !activeSessionId || !(messages[activeSessionId]?.length)
+    const isNew = !activeSessionId || !messages[activeSessionId]?.length
     sendMessage(content)
-    // After the first message, navigate to the session URL
+
     if (isNew && activeSessionId) {
       navigate({ to: '/ai/chat/$sessionId', params: { sessionId: activeSessionId } })
     }
@@ -57,20 +54,14 @@ export default function ChatPage() {
     scrollToBottom()
   }, [currentMessages, isTyping])
 
-
   return (
     <div className="d-flex w-100 bg-light dark:bg-dark chat-page-container">
-      <ChatHistoryDrawer 
-        isOpen={isDrawerOpen} 
-        onToggle={() => setIsDrawerOpen(!isDrawerOpen)} 
-      />
+      <ChatHistoryDrawer isOpen={isDrawerOpen} onToggle={() => setIsDrawerOpen(!isDrawerOpen)} />
 
       <div className="flex-grow-1 d-flex flex-column h-100 position-relative min-w-0">
-        {/* Header */}
         <div className="bg-transparent px-3 py-3 d-flex align-items-center gap-3 position-absolute w-100 chat-header-bar">
-          {/* On mobile, show floating toggle when closed */}
           {!isDrawerOpen && (
-            <Button 
+            <Button
               iconOnly
               ghost
               size="md"
@@ -91,7 +82,6 @@ export default function ChatPage() {
           />
         </div>
 
-        {/* Main Area */}
         <div className="flex-grow-1 d-flex flex-column pt-5 mt-4 overflow-hidden">
           {currentMessages.length === 0 ? (
             <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center px-3 chat-welcome-container">
@@ -118,16 +108,16 @@ export default function ChatPage() {
             </div>
           ) : (
             <>
-              <div 
+              <div
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
-                className="flex-grow-1 overflow-auto p-3 p-md-4 custom-scrollbar chat-scrollbar-thin" 
+                className="flex-grow-1 overflow-auto p-3 p-md-4 custom-scrollbar chat-scrollbar-thin"
               >
                 <div className="mx-auto w-100 d-flex flex-column max-w-768">
-                  {currentMessages.map(msg => (
+                  {currentMessages.map((msg) => (
                     <ChatMessageBubble key={msg.id} message={msg} />
                   ))}
-                  
+
                   {isTyping && (
                     <div className="d-flex justify-content-start mb-4 align-items-start">
                       <div className="flex-shrink-0 me-3 mt-1 align-self-start">
@@ -147,11 +137,14 @@ export default function ChatPage() {
                   <div ref={messagesEndRef} />
                 </div>
               </div>
-              
+
               <div className="mt-auto px-3 pb-2 pt-2 bg-transparent position-relative">
                 {showScrollButton && (
-                  <div className="position-absolute w-100 d-flex justify-content-center" style={{ top: '-46px', left: 0, zIndex: 100 }}>
-                    <Button 
+                  <div
+                    className="position-absolute w-100 d-flex justify-content-center"
+                    style={{ top: '-46px', left: 0, zIndex: 100 }}
+                  >
+                    <Button
                       onClick={scrollToBottom}
                       iconOnly
                       icon="arrow-down"
@@ -161,11 +154,16 @@ export default function ChatPage() {
                     />
                   </div>
                 )}
-                <div className="mx-auto w-100 bg-white dark:bg-dark-card shadow overflow-hidden border border-light dark:border-dark" style={{ maxWidth: '768px', borderRadius: '24px' }}>
+                <div
+                  className="mx-auto w-100 bg-white dark:bg-dark-card shadow overflow-hidden border border-light dark:border-dark"
+                  style={{ maxWidth: '768px', borderRadius: '24px' }}
+                >
                   <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} />
                 </div>
                 <div className="text-center mt-2 mb-1">
-                  <small className="text-muted" style={{ fontSize: '12px' }}>Mora AI can make mistakes. Please double-check responses.</small>
+                  <small className="text-muted" style={{ fontSize: '12px' }}>
+                    Mora AI can make mistakes. Please double-check responses.
+                  </small>
                 </div>
               </div>
             </>

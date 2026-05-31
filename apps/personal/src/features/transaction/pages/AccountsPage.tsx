@@ -1,79 +1,78 @@
-import React, { useState, useMemo } from 'react';
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Icon, Button, Modal, ModalHeader, Spinner } from '@/shared/components/ui';
-import { useAccounts, useCreateAccount, useUpdateAccount, useDeleteAccount } from '../hooks/useAccounts';
-import { AccountForm, type AccountFormValues } from '../components/AccountForm';
-import { type Account } from '../types/transaction.types';
-import { AccountCard } from '../components/AccountCard';
-import { AccountsSummaryChart } from '../components/AccountsSummaryChart';
-import { getApiErrorMessage } from '@/shared/utils/errorUtils';
+import React, { useState, useMemo } from 'react'
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import { Icon, Button, Modal, ModalHeader, Spinner } from '@/shared/components/ui'
+import {
+  useAccounts,
+  useCreateAccount,
+  useUpdateAccount,
+  useDeleteAccount,
+} from '../hooks/useAccounts'
+import { AccountForm, type AccountFormValues } from '../components/AccountForm'
+import { type Account } from '../types/transaction.types'
+import { AccountCard } from '../components/AccountCard'
+import { AccountsSummaryChart } from '../components/AccountsSummaryChart'
+import { getApiErrorMessage } from '@/shared/utils/errorUtils'
 
 export const AccountsPage: React.FC = () => {
-  const [isBalanceHidden, setIsBalanceHidden] = useState(false);
-  const [showArchived, setShowArchived] = useState(false);
-  const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day');
-  const { data: response, isLoading } = useAccounts({ 
+  const [isBalanceHidden, setIsBalanceHidden] = useState(false)
+  const [showArchived, setShowArchived] = useState(false)
+  const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day')
+  const { data: response, isLoading } = useAccounts({
     group_by: groupBy,
-    'filter[is_archived]': showArchived ? '1' : '0'
-  });
+    'filter[is_archived]': showArchived ? '1' : '0',
+  })
 
-  // Group accounts by type
   const groupedAccounts = useMemo(() => {
-    const groups: Record<string, Account[]> = {};
-    const accs = response?.data ?? [];
-    accs.forEach(acc => {
-      const type = acc.account_type || 'other';
-      if (!groups[type]) groups[type] = [];
-      groups[type].push(acc);
-    });
-    return groups;
-  }, [response?.data]);
+    const groups: Record<string, Account[]> = {}
+    const accs = response?.data ?? []
+    accs.forEach((acc) => {
+      const type = acc.account_type || 'other'
+      if (!groups[type]) groups[type] = []
+      groups[type].push(acc)
+    })
+    return groups
+  }, [response?.data])
 
   const typeLabels: Record<string, string> = {
-    'bank': 'Rekening Bank',
+    bank: 'Rekening Bank',
     'e-wallet': 'E-Wallet & Digital',
-    'cash': 'Tunai / Dompet',
-    'investment': 'Investasi',
-    'credit': 'Kartu Kredit',
-    'saving': 'Tabungan',
-    'loan': 'Pinjaman',
-    'other': 'Lainnya'
-  };
+    cash: 'Tunai / Dompet',
+    investment: 'Investasi',
+    credit: 'Kartu Kredit',
+    saving: 'Tabungan',
+    loan: 'Pinjaman',
+    other: 'Lainnya',
+  }
 
-  // Stabilize accounts reference for other hooks
-  const accounts: Account[] = useMemo(() => response?.data ?? [], [response?.data]);
+  const accounts: Account[] = useMemo(() => response?.data ?? [], [response?.data])
 
-  // Account filter state: null = all selected
-  const [selectedAccountIds, setSelectedAccountIds] = useState<Set<string> | null>(null);
+  const [selectedAccountIds, setSelectedAccountIds] = useState<Set<string> | null>(null)
 
-  // Accounts that have balance history
   const accountsWithHistory = useMemo(
     () => accounts.filter((acc) => acc.history?.balance?.length),
     [accounts]
-  );
+  )
 
-  // Effective selected IDs
   const effectiveSelected = useMemo(() => {
-    if (selectedAccountIds === null) return new Set(accountsWithHistory.map((a) => a.id));
-    return selectedAccountIds;
-  }, [selectedAccountIds, accountsWithHistory]);
+    if (selectedAccountIds === null) return new Set(accountsWithHistory.map((a) => a.id))
+    return selectedAccountIds
+  }, [selectedAccountIds, accountsWithHistory])
 
   const toggleAccount = (id: string) => {
-    const current = effectiveSelected;
-    const next = new Set(current);
+    const current = effectiveSelected
+    const next = new Set(current)
     if (next.has(id)) {
-      next.delete(id);
+      next.delete(id)
     } else {
-      next.add(id);
+      next.add(id)
     }
     if (next.size === accountsWithHistory.length) {
-      setSelectedAccountIds(null);
+      setSelectedAccountIds(null)
     } else {
-      setSelectedAccountIds(next);
+      setSelectedAccountIds(next)
     }
-  };
+  }
 
-  // Filtered chart series
   const chartSeries = useMemo(
     () =>
       accountsWithHistory
@@ -84,70 +83,69 @@ export const AccountsPage: React.FC = () => {
           data: acc.history!.balance,
         })),
     [accountsWithHistory, effectiveSelected]
-  );
+  )
 
-  const chartLabels = accounts[0]?.history?.labels || [];
+  const chartLabels = accounts[0]?.history?.labels || []
 
-  // Total wealth of selected accounts only
   const totalWealth = useMemo(
     () =>
       accounts
         .filter((acc: Account) => effectiveSelected.has(acc.id))
         .reduce((sum: number, acc: Account) => sum + (acc.balance ?? 0), 0),
     [accounts, effectiveSelected]
-  );
+  )
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalView, setModalView] = useState<'form' | 'delete-confirm'>('form');
-  const [editingAccount, setEditingAccount] = useState<Account | undefined>(undefined);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalView, setModalView] = useState<'form' | 'delete-confirm'>('form')
+  const [editingAccount, setEditingAccount] = useState<Account | undefined>(undefined)
 
-  const createMutation = useCreateAccount();
-  const updateMutation = useUpdateAccount();
-  const deleteMutation = useDeleteAccount();
+  const createMutation = useCreateAccount()
+  const updateMutation = useUpdateAccount()
+  const deleteMutation = useDeleteAccount()
 
   const handleCreate = async (data: AccountFormValues) => {
     try {
-      await createMutation.mutateAsync(data);
-      setIsModalOpen(false);
+      await createMutation.mutateAsync(data)
+      setIsModalOpen(false)
     } catch (error: unknown) {
-      alert(getApiErrorMessage(error, 'Gagal membuat akun baru.'));
+      alert(getApiErrorMessage(error, 'Gagal membuat akun baru.'))
     }
-  };
+  }
 
   const handleUpdate = async (data: AccountFormValues) => {
-    if (!editingAccount) return;
+    if (!editingAccount) return
     try {
-      await updateMutation.mutateAsync({ id: editingAccount.id, data });
-      setIsModalOpen(false);
-      setEditingAccount(undefined);
+      await updateMutation.mutateAsync({ id: editingAccount.id, data })
+      setIsModalOpen(false)
+      setEditingAccount(undefined)
     } catch (error: unknown) {
-      alert(getApiErrorMessage(error, 'Gagal memperbarui akun.'));
+      alert(getApiErrorMessage(error, 'Gagal memperbarui akun.'))
     }
-  };
+  }
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteMutation.mutateAsync(id);
-      setIsModalOpen(false);
-      setEditingAccount(undefined);
+      await deleteMutation.mutateAsync(id)
+      setIsModalOpen(false)
+      setEditingAccount(undefined)
     } catch (error: unknown) {
-      alert(getApiErrorMessage(error, 'Gagal menghapus akun.'));
+      alert(getApiErrorMessage(error, 'Gagal menghapus akun.'))
     }
-  };
+  }
 
   const openEdit = (account: Account) => {
-    setEditingAccount(account);
-    setModalView('form');
-    setIsModalOpen(true);
-  };
+    setEditingAccount(account)
+    setModalView('form')
+    setIsModalOpen(true)
+  }
 
   return (
     <BaseLayout
-      pageTitle={showArchived ? "Arsip Akun" : "Kelola Akun & Saldo"}
+      pageTitle={showArchived ? 'Arsip Akun' : 'Kelola Akun & Saldo'}
       pageActions={
         <div className="d-flex gap-2">
           <Button
-            color={showArchived ? "warning" : "ghost-secondary"}
+            color={showArchived ? 'warning' : 'ghost-secondary'}
             onClick={() => setShowArchived(!showArchived)}
             className="px-3"
             title={showArchived ? 'Lihat Akun Aktif' : 'Lihat Arsip'}
@@ -166,8 +164,8 @@ export const AccountsPage: React.FC = () => {
             <Button
               color="primary"
               onClick={() => {
-                setEditingAccount(undefined);
-                setIsModalOpen(true);
+                setEditingAccount(undefined)
+                setIsModalOpen(true)
               }}
               className="px-4 fw-bold"
             >
@@ -201,9 +199,9 @@ export const AccountsPage: React.FC = () => {
                   <div className="row g-4">
                     {typeAccounts.map((account) => (
                       <div key={account.id} className="col-sm-6 col-lg-4">
-                        <AccountCard 
-                          account={account} 
-                          onEdit={(acc) => openEdit(acc)} 
+                        <AccountCard
+                          account={account}
+                          onEdit={(acc) => openEdit(acc)}
                           isBalanceHidden={isBalanceHidden}
                         />
                       </div>
@@ -215,7 +213,10 @@ export const AccountsPage: React.FC = () => {
           </div>
         )}
 
-        <div className="card shadow-sm border-0 mb-4 overflow-hidden" style={{ borderRadius: '1rem' }}>
+        <div
+          className="card shadow-sm border-0 mb-4 overflow-hidden"
+          style={{ borderRadius: '1rem' }}
+        >
           <div className="card-body p-0">
             <AccountsSummaryChart
               accountsWithHistory={accountsWithHistory}
@@ -241,9 +242,9 @@ export const AccountsPage: React.FC = () => {
                   : 'Tambah Akun Baru'
             }
             onClose={() => {
-              setIsModalOpen(false);
-              setEditingAccount(undefined);
-              setModalView('form');
+              setIsModalOpen(false)
+              setEditingAccount(undefined)
+              setModalView('form')
             }}
           />
           <div className="modal-body">
@@ -270,14 +271,16 @@ export const AccountsPage: React.FC = () => {
                 {(editingAccount?.transactions_count || 0) +
                   (editingAccount?.incoming_transfers_count || 0) >
                   0 && (
-                    <div className="bg-danger-lt p-3 rounded text-start border border-danger-subtle mb-3">
-                      <div className="small text-danger fw-bold mb-1">SISTEM MEMBLOKIR PENGHAPUSAN:</div>
-                      <div className="small">
-                        Anda tidak dapat menghapus akun yang masih memiliki data transaksi. Silakan
-                        hapus atau pindahkan transaksi terkait terlebih dahulu.
-                      </div>
+                  <div className="bg-danger-lt p-3 rounded text-start border border-danger-subtle mb-3">
+                    <div className="small text-danger fw-bold mb-1">
+                      SISTEM MEMBLOKIR PENGHAPUSAN:
                     </div>
-                  )}
+                    <div className="small">
+                      Anda tidak dapat menghapus akun yang masih memiliki data transaksi. Silakan
+                      hapus atau pindahkan transaksi terkait terlebih dahulu.
+                    </div>
+                  </div>
+                )}
 
                 <div className="d-flex gap-2">
                   <Button className="flex-fill" onClick={() => setModalView('form')}>
@@ -289,7 +292,7 @@ export const AccountsPage: React.FC = () => {
                     onClick={() => editingAccount && handleDelete(editingAccount.id)}
                     disabled={
                       (editingAccount?.transactions_count || 0) +
-                      (editingAccount?.incoming_transfers_count || 0) >
+                        (editingAccount?.incoming_transfers_count || 0) >
                       0
                     }
                     loading={deleteMutation.isPending}
@@ -303,5 +306,5 @@ export const AccountsPage: React.FC = () => {
         </Modal>
       </div>
     </BaseLayout>
-  );
-};
+  )
+}

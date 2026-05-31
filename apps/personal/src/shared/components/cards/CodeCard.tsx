@@ -1,5 +1,3 @@
-// src/components/cards/CodeCard.tsx
-
 interface CodeCardProps {
   title?: string
   code?: string
@@ -23,7 +21,9 @@ export function CodeCard({
         <h3 className="card-title">{title}</h3>
       </div>
       <div className="card-code">
-        <pre><code className={`language-${language}`}>{code}</code></pre>
+        <pre>
+          <code className={`language-${language}`}>{code}</code>
+        </pre>
       </div>
     </div>
   )

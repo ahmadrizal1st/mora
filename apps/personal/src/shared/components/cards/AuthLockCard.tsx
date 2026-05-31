@@ -1,19 +1,16 @@
-import { useState } from 'react';
-import { Avatar } from '../ui/Avatar';
-import { Button } from '../ui/Button';
-import { type Person } from '@/shared/types/common.types';
+import { useState } from 'react'
+import { Avatar } from '../ui/Avatar'
+import { Button } from '../ui/Button'
+import { type Person } from '@/shared/types/common.types'
 
 interface AuthLockCardProps {
-  person?: Person;
-  onUnlock?: (password: string) => void;
+  person?: Person
+  onUnlock?: (password: string) => void
 }
 
-export function AuthLockCard({
-  person,
-  onUnlock,
-}: AuthLockCardProps) {
-  const [password, setPassword] = useState('');
-  const name = person?.full_name || 'Paige Turner';
+export function AuthLockCard({ person, onUnlock }: AuthLockCardProps) {
+  const [password, setPassword] = useState('')
+  const name = person?.full_name || 'Paige Turner'
 
   return (
     <form
@@ -21,8 +18,8 @@ export function AuthLockCard({
       action="."
       method="get"
       onSubmit={(e) => {
-        e.preventDefault();
-        onUnlock?.(password);
+        e.preventDefault()
+        onUnlock?.(password)
       }}
       autoComplete="off"
       noValidate
@@ -60,5 +57,5 @@ export function AuthLockCard({
         </div>
       </div>
     </form>
-  );
+  )
 }

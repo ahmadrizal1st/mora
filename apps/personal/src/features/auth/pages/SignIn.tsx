@@ -1,4 +1,3 @@
-// src/pages/SignIn.tsx
 import { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { SignInCard } from '@/shared/components/cards/SignInCard'
@@ -10,7 +9,7 @@ import type { SignInFormData } from '@/features/auth/components/SignInForm'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 
 export default function SignIn() {
-  const loginWithGoogle = useAuthStore(s => s.loginWithGoogle)
+  const loginWithGoogle = useAuthStore((s) => s.loginWithGoogle)
   const navigate = useNavigate()
   const { redirect } = useSearch({ from: '/sign-in' })
   const signInMutation = useSignInMutation(redirect)
@@ -32,7 +31,7 @@ export default function SignIn() {
     onError: (err) => {
       const responseData = err.response?.data as { message?: string } | undefined
       setError(responseData?.message || 'Google login failed.')
-    }
+    },
   })
 
   const handleLogin = (data: SignInFormData) => {
@@ -40,10 +39,12 @@ export default function SignIn() {
     setFieldErrors(undefined)
     signInMutation.mutate(data, {
       onError: (err) => {
-        const responseData = err.response?.data as { message?: string, errors?: Record<string, string[]> } | undefined
+        const responseData = err.response?.data as
+          | { message?: string; errors?: Record<string, string[]> }
+          | undefined
         setError(responseData?.message || 'Login failed. Please check your credentials.')
         setFieldErrors(responseData?.errors)
-      }
+      },
     })
   }
 

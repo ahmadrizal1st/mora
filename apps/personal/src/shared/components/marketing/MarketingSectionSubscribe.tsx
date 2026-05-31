@@ -5,19 +5,22 @@ interface MarketingSectionSubscribeProps {
   className?: string
 }
 
-export function MarketingSectionSubscribe({ background, className }: MarketingSectionSubscribeProps) {
-  const sectionClasses = [
-    'section',
-    background && `section-${background}`,
-    className
-  ].filter(Boolean).join(' ')
+export function MarketingSectionSubscribe({
+  background,
+  className,
+}: MarketingSectionSubscribeProps) {
+  const sectionClasses = ['section', background && `section-${background}`, className]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <section className={sectionClasses}>
       <div className="container">
         <div className="section-header mb-6">
           <h2 className="section-title">Subscribe on our newsletter</h2>
-          <p className="section-description">Get daily news on upcoming offers from many suppliers all over the world</p>
+          <p className="section-description">
+            Get daily news on upcoming offers from many suppliers all over the world
+          </p>
         </div>
       </div>
 

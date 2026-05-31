@@ -10,8 +10,8 @@ export interface DropzoneProps {
   description?: string
   custom?: boolean
   className?: string
-  acceptedFiles?: string // Contoh: "image/*,application/pdf"
-  onAddedFile?: (file: File) => void // Tetap simpan ini agar fungsi tracker jalan
+  acceptedFiles?: string
+  onAddedFile?: (file: File) => void
   disabled?: boolean
 }
 
@@ -33,7 +33,7 @@ export function Dropzone({
     if (!dropzoneRef.current) return
 
     let active = true
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     let dz: any = null
 
     import('dropzone').then(({ default: DropzoneLib }) => {
@@ -45,33 +45,28 @@ export function Dropzone({
         url: action,
         uploadMultiple: multiple,
         acceptedFiles: acceptedFiles,
-        dictDefaultMessage: custom ? "" : text,
+        dictDefaultMessage: custom ? '' : text,
         autoProcessQueue: false,
         clickable: !disabled,
-        init: function() {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          this.on("addedfile", (file: any) => {
-            // Callback ke parent
-            if (onAddedFile) onAddedFile(file);
+        init: function () {
+          this.on('addedfile', (file: any) => {
+            if (onAddedFile) onAddedFile(file)
 
-            // Simulasi progress agar loader bergerak
             setTimeout(() => {
-              this.emit("uploadprogress", file, 100, 1024);
-              this.emit("success", file, "Success", null);
-              this.emit("complete", file);
-            }, 500);
-          });
+              this.emit('uploadprogress', file, 100, 1024)
+              this.emit('success', file, 'Success', null)
+              this.emit('complete', file)
+            }, 500)
+          })
 
-          // Handle error (e.g. invalid file type)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          this.on("error", (file: any, message: string) => {
-            console.error("Dropzone Error:", message);
-            // Optionally remove the file if it's invalid
+          this.on('error', (file: any, message: string) => {
+            console.error('Dropzone Error:', message)
+
             if (message.includes("You can't upload files of this type")) {
-              setTimeout(() => this.removeFile(file), 2000);
+              setTimeout(() => this.removeFile(file), 2000)
             }
-          });
-        }
+          })
+        },
       })
     })
 
@@ -81,15 +76,10 @@ export function Dropzone({
         dz.destroy()
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, multiple, custom, text, acceptedFiles, disabled])
 
   return (
-    <div
-      ref={dropzoneRef}
-      id={id}
-      className={clsx('dropzone', 'dz-clickable', className)}
-    >
+    <div ref={dropzoneRef} id={id} className={clsx('dropzone', 'dz-clickable', className)}>
       <div className="dz-default dz-message">
         {custom ? (
           <div>

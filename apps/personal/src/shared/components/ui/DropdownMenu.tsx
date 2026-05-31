@@ -93,7 +93,11 @@ export function DropdownMenu({
         const trimmed = item.trim()
         if (trimmed === '|') return <div key={i} className="dropdown-divider" />
         if (trimmed.startsWith('h:')) {
-          return <h3 key={i} className="dropdown-header">{trimmed.replace('h:', '')}</h3>
+          return (
+            <h3 key={i} className="dropdown-header">
+              {trimmed.replace('h:', '')}
+            </h3>
+          )
         }
         if (trimmed.startsWith('a:')) {
           return (
@@ -104,7 +108,12 @@ export function DropdownMenu({
         }
         if (trimmed.startsWith('d:')) {
           return (
-            <a key={i} href="#" className="dropdown-item text-danger" onClick={() => setIsOpen(false)}>
+            <a
+              key={i}
+              href="#"
+              className="dropdown-item text-danger"
+              onClick={() => setIsOpen(false)}
+            >
               {trimmed.replace('d:', '')}
             </a>
           )
@@ -120,11 +129,8 @@ export function DropdownMenu({
     if (check || radio) {
       return [1, 2, 3].map((i) => (
         <label key={i} className="dropdown-item">
-          <input
-            className="form-check-input m-0 me-2"
-            type={radio ? 'radio' : 'checkbox'}
-          />{' '}
-          Option {i}
+          <input className="form-check-input m-0 me-2" type={radio ? 'radio' : 'checkbox'} /> Option{' '}
+          {i}
         </label>
       ))
     }
@@ -167,7 +173,12 @@ export function DropdownMenu({
     if (items) {
       return items.map((item, i) => {
         if (item.divider) return <div key={i} className="dropdown-divider" />
-        if (item.header) return <h3 key={i} className="dropdown-header">{item.label}</h3>
+        if (item.header)
+          return (
+            <h3 key={i} className="dropdown-header">
+              {item.label}
+            </h3>
+          )
         return (
           <a
             key={i}
@@ -237,7 +248,18 @@ export function DropdownMenu({
     return (
       <div
         className={menuClasses}
-        style={show ? { position: 'relative', display: 'block', visibility: 'visible', opacity: 1, zIndex: 1, marginBottom: '1rem' } : {}}
+        style={
+          show
+            ? {
+                position: 'relative',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1,
+                zIndex: 1,
+                marginBottom: '1rem',
+              }
+            : {}
+        }
         {...(dark ? { 'data-bs-theme': 'dark' } : {})}
       >
         {renderMenuItems()}
@@ -251,15 +273,12 @@ export function DropdownMenu({
         type="button"
         className="btn dropdown-toggle align-text-top"
         data-bs-toggle="dropdown"
-        onClick={() => setIsOpen(prev => !prev)}
+        onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
       >
         Actions
       </button>
-      <div
-        className={menuClasses}
-        {...(dark ? { 'data-bs-theme': 'dark' } : {})}
-      >
+      <div className={menuClasses} {...(dark ? { 'data-bs-theme': 'dark' } : {})}>
         {renderMenuItems()}
       </div>
     </div>

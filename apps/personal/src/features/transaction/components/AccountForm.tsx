@@ -1,12 +1,12 @@
-import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import type { Account } from '../types/transaction.types';
-import { useCurrencies } from '../hooks/useLookups';
-import { useProviders } from '../hooks/useProviders';
-import { Button, Select, Icon } from '@/shared/components/ui';
-import { AsyncSelect } from '@/shared/components/ui/Select/AsyncSelect';
+import React from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import type { Account } from '../types/transaction.types'
+import { useCurrencies } from '../hooks/useLookups'
+import { useProviders } from '../hooks/useProviders'
+import { Button, Select, Icon } from '@/shared/components/ui'
+import { AsyncSelect } from '@/shared/components/ui/Select/AsyncSelect'
 
 const accountSchema = z.object({
   name: z.string().min(1, 'Nama akun wajib diisi'),
@@ -15,22 +15,22 @@ const accountSchema = z.object({
   provider_id: z.string().optional().nullable(),
   color: z.string(),
   is_archived: z.boolean().optional(),
-});
+})
 
-export type AccountFormValues = z.infer<typeof accountSchema>;
+export type AccountFormValues = z.infer<typeof accountSchema>
 
 interface AccountFormProps {
-  initialData?: Partial<Account>;
-  onSubmit: (data: AccountFormValues) => void;
-  onDelete?: () => void;
-  isLoading?: boolean;
+  initialData?: Partial<Account>
+  onSubmit: (data: AccountFormValues) => void
+  onDelete?: () => void
+  isLoading?: boolean
 }
 
 export const AccountForm: React.FC<AccountFormProps> = ({
   initialData,
   onSubmit,
   onDelete,
-  isLoading
+  isLoading,
 }) => {
   const {
     register,
@@ -39,21 +39,24 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     reset,
     setValue,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm<AccountFormValues>({
     resolver: zodResolver(accountSchema),
-    defaultValues: React.useMemo(() => ({
-      name: initialData?.name || '',
-      account_type: initialData?.account_type || 'bank',
-      currency_id: initialData?.currency_id || '',
-      provider_id: initialData?.provider_id || null,
-      color: initialData?.color || '#206bc4',
-      is_archived: initialData?.is_archived || false,
-    }), [initialData]),
-  });
+    defaultValues: React.useMemo(
+      () => ({
+        name: initialData?.name || '',
+        account_type: initialData?.account_type || 'bank',
+        currency_id: initialData?.currency_id || '',
+        provider_id: initialData?.provider_id || null,
+        color: initialData?.color || '#206bc4',
+        is_archived: initialData?.is_archived || false,
+      }),
+      [initialData]
+    ),
+  })
 
-  const { data: providers = [] } = useProviders();
-  const { data: currencies = [] } = useCurrencies();
+  const { data: providers = [] } = useProviders()
+  const { data: currencies = [] } = useCurrencies()
 
   React.useEffect(() => {
     if (initialData) {
@@ -64,32 +67,35 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         provider_id: initialData.provider_id || null,
         color: initialData.color || '#206bc4',
         is_archived: initialData.is_archived || false,
-      });
+      })
     }
-  }, [initialData, reset]);
+  }, [initialData, reset])
 
-  const selectedProviderId = watch('provider_id');
+  const selectedProviderId = watch('provider_id')
 
   const handleProviderChange = (provider: any | null) => {
     if (provider) {
-      setValue('provider_id', provider.id);
-      setValue('name', provider.name);
-      setValue('account_type', provider.type === 'bank' ? 'bank' : provider.type === 'ewallet' ? 'e-wallet' : 'investment');
-      if (provider.color) setValue('color', provider.color);
+      setValue('provider_id', provider.id)
+      setValue('name', provider.name)
+      setValue(
+        'account_type',
+        provider.type === 'bank' ? 'bank' : provider.type === 'ewallet' ? 'e-wallet' : 'investment'
+      )
+      if (provider.color) setValue('color', provider.color)
     } else {
-      setValue('provider_id', null);
+      setValue('provider_id', null)
     }
-  };
+  }
 
   const loadProviderOptions = async (inputValue: string) => {
     return providers
-      .filter(p => p.name.toLowerCase().includes(inputValue.toLowerCase()))
-      .map(p => ({
+      .filter((p) => p.name.toLowerCase().includes(inputValue.toLowerCase()))
+      .map((p) => ({
         ...p,
         value: p.id,
         label: p.name,
-      }));
-  };
+      }))
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="account-form">
@@ -98,10 +104,12 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         <AsyncSelect<any>
           loadOptions={loadProviderOptions}
           onChange={handleProviderChange}
-          value={providers.find(p => p.id === selectedProviderId) || null}
+          value={providers.find((p) => p.id === selectedProviderId) || null}
           placeholder="Cari BCA, Mandiri, GoPay..."
         />
-        <div className="form-hint mt-1">Atau masukkan nama manual di bawah jika tidak ditemukan.</div>
+        <div className="form-hint mt-1">
+          Atau masukkan nama manual di bawah jika tidak ditemukan.
+        </div>
       </div>
 
       <div className="mb-3">
@@ -147,9 +155,9 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               <Select
                 value={field.value}
                 onChange={field.onChange}
-                options={currencies.map(c => ({
+                options={currencies.map((c) => ({
                   value: c.id,
-                  label: `${c.code} - ${c.name}`
+                  label: `${c.code} - ${c.name}`,
                 }))}
                 placeholder="Pilih Mata Uang"
                 error={errors.currency_id?.message}
@@ -172,11 +180,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       {initialData?.id && (
         <div className="mb-3">
           <label className="form-check form-switch">
-            <input 
-              className="form-check-input" 
-              type="checkbox" 
-              {...register('is_archived')} 
-            />
+            <input className="form-check-input" type="checkbox" {...register('is_archived')} />
             <span className="form-check-label">Arsipkan Akun Ini</span>
           </label>
           <div className="form-hint">
@@ -201,17 +205,12 @@ export const AccountForm: React.FC<AccountFormProps> = ({
           )}
         </div>
         <div className="d-flex gap-2">
-            <Button
-              type="submit"
-              color="primary"
-              loading={isLoading}
-              className="px-4 fw-bold"
-            >
+          <Button type="submit" color="primary" loading={isLoading} className="px-4 fw-bold">
             {!isLoading && <Icon icon="check" className="me-1" />}
             {initialData?.id ? 'Simpan Perubahan' : 'Buat Akun'}
           </Button>
         </div>
       </div>
     </form>
-  );
-};
+  )
+}

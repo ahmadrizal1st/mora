@@ -1,4 +1,3 @@
-// src/components/ui/InputIcon.tsx
 import { Icon } from './Icon'
 import { Spinner } from './Spinner'
 
@@ -40,10 +39,7 @@ export function InputIcon({
 }: InputIconProps) {
   const addon = (
     <span className={`input-icon-addon${iconClass ? ` ${iconClass}` : ''}`}>
-      {loader
-        ? <Spinner className="text-secondary" size="sm" />
-        : <Icon icon={icon} />
-      }
+      {loader ? <Spinner className="text-secondary" size="sm" /> : <Icon icon={icon} />}
     </span>
   )
 
@@ -62,7 +58,9 @@ export function InputIcon({
           light ? 'form-control-light' : '',
           rounded ? 'form-control-rounded' : '',
           inputClass,
-        ].filter(Boolean).join(' ')}
+        ]
+          .filter(Boolean)
+          .join(' ')}
         placeholder={placeholder}
         aria-label={ariaLabel}
         readOnly={readonly}

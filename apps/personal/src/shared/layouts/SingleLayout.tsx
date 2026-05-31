@@ -1,4 +1,3 @@
-// src/layouts/SingleLayout.tsx
 import { NavbarLogo } from '../components/layout/NavbarLogo'
 
 interface SingleLayoutProps {
@@ -17,15 +16,14 @@ export default function SingleLayout({
   return (
     <div className="page sticky-footer">
       <div className={`flex-fill d-flex flex-column ${centered ? 'justify-content-center' : ''}`}>
-      <div className={`container container-${containerSize} py-5`}>
-        {!hideLogo && (
-          <div className="text-center mb-4">
-            <NavbarLogo
-              showTitle />
-          </div>
-        )}
-        {children}
-      </div>
+        <div className={`container container-${containerSize} py-5`}>
+          {!hideLogo && (
+            <div className="text-center mb-4">
+              <NavbarLogo showTitle />
+            </div>
+          )}
+          {children}
+        </div>
       </div>
     </div>
   )

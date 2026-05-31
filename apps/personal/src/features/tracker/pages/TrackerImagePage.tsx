@@ -1,31 +1,29 @@
-import { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Button, Icon, Dropzone } from '@/shared/components/ui';
-import { useUploadDocument } from '../hooks/useTracker';
-import { getApiErrorMessage } from '@/shared/utils/errorUtils';
+import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import { Button, Icon, Dropzone } from '@/shared/components/ui'
+import { useUploadDocument } from '../hooks/useTracker'
+import { getApiErrorMessage } from '@/shared/utils/errorUtils'
 
 export default function TrackerImagePage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const uploadMutation = useUploadDocument();
+  const [files, setFiles] = useState<File[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const uploadMutation = useUploadDocument()
 
   const handleProcess = async () => {
-    if (files.length === 0) return;
-    setError(null);
+    if (files.length === 0) return
+    setError(null)
     try {
-      // Process all files in parallel
       await Promise.all(
-        files.map(file => uploadMutation.mutateAsync({ file, docType: 'expense' }))
-      );
-      
-      // Success! Navigate to transactions after processing
-      navigate({ to: '/transactions' });
+        files.map((file) => uploadMutation.mutateAsync({ file, docType: 'expense' }))
+      )
+
+      navigate({ to: '/transactions' })
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Gagal mengunggah gambar. Silakan coba lagi.'));
+      setError(getApiErrorMessage(err, 'Gagal mengunggah gambar. Silakan coba lagi.'))
     }
-  };
+  }
 
   return (
     <BaseLayout
@@ -44,7 +42,7 @@ export default function TrackerImagePage() {
                 text="Klik atau drag gambar ke sini"
                 description="JPG, PNG, WebP — Maks. 5 MB"
                 acceptedFiles="image/jpeg,image/png,image/webp"
-                onAddedFile={(f) => setFiles(prev => [...prev, f])}
+                onAddedFile={(f) => setFiles((prev) => [...prev, f])}
                 multiple
                 custom
               />
@@ -54,12 +52,19 @@ export default function TrackerImagePage() {
                   <div className="text-muted small mb-2">{files.length} gambar dipilih:</div>
                   <div className="list-group list-group-flush border rounded">
                     {files.map((f, i) => (
-                      <div key={i} className="list-group-item d-flex justify-content-between align-items-center py-2">
+                      <div
+                        key={i}
+                        className="list-group-item d-flex justify-content-between align-items-center py-2"
+                      >
                         <div className="d-flex align-items-center">
                           <Icon icon="photo" size={16} className="text-secondary me-2" />
-                          <span className="small text-truncate" style={{ maxWidth: '200px' }}>{f.name}</span>
+                          <span className="small text-truncate" style={{ maxWidth: '200px' }}>
+                            {f.name}
+                          </span>
                         </div>
-                        <span className="badge bg-light text-dark fw-normal">{(f.size / 1024).toFixed(0)} KB</span>
+                        <span className="badge bg-light text-dark fw-normal">
+                          {(f.size / 1024).toFixed(0)} KB
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -69,7 +74,9 @@ export default function TrackerImagePage() {
               {error && (
                 <div className="alert alert-danger" role="alert">
                   <div className="d-flex">
-                    <div><Icon icon="alert-circle" className="alert-icon me-2" /></div>
+                    <div>
+                      <Icon icon="alert-circle" className="alert-icon me-2" />
+                    </div>
                     <div>{error}</div>
                   </div>
                 </div>
@@ -78,7 +85,9 @@ export default function TrackerImagePage() {
               {uploadMutation.isSuccess && (
                 <div className="alert alert-success" role="alert">
                   <div className="d-flex">
-                    <div><Icon icon="check" className="alert-icon me-2" /></div>
+                    <div>
+                      <Icon icon="check" className="alert-icon me-2" />
+                    </div>
                     <div>Berhasil! Transaksi sedang diproses AI.</div>
                   </div>
                 </div>
@@ -87,7 +96,9 @@ export default function TrackerImagePage() {
             <div className="card-footer text-end">
               <div className="btn-list">
                 <Button
-                  text={uploadMutation.isPending ? 'Mengekstrak Teks...' : `Scan ${files.length} Gambar`}
+                  text={
+                    uploadMutation.isPending ? 'Mengekstrak Teks...' : `Scan ${files.length} Gambar`
+                  }
                   color="primary"
                   loading={uploadMutation.isPending}
                   disabled={files.length === 0 || uploadMutation.isPending}
@@ -126,5 +137,5 @@ export default function TrackerImagePage() {
         </div>
       </div>
     </BaseLayout>
-  );
+  )
 }

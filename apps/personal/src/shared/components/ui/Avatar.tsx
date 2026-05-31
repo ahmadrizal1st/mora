@@ -35,7 +35,7 @@ function getInitials(name: string): string {
   return name
     .split(' ')
     .filter(Boolean)
-    .map(n => n[0])
+    .map((n) => n[0])
     .slice(0, 2)
     .join('')
     .toUpperCase()
@@ -52,7 +52,6 @@ function resolveAvatarUrl(url?: string): string | undefined {
     path = path.slice(1)
   }
 
-  // Remove tabler/ prefix if present to normalize
   if (path.startsWith('tabler/')) {
     path = path.slice(7)
   }

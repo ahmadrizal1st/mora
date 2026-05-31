@@ -67,7 +67,8 @@ export function Toast({
         {children ??
           (cookies ? (
             <>
-              🍪&nbsp;Our site uses cookies. By continuing to use our site, you agree to our Cookie Policy.
+              🍪&nbsp;Our site uses cookies. By continuing to use our site, you agree to our Cookie
+              Policy.
               <div className="mt-2 pt-2 border-top">
                 <a
                   href="#"

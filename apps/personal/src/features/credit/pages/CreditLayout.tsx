@@ -1,23 +1,31 @@
-import { useState } from 'react';
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Button, Icon, Modal, ModalHeader, Select, Datepicker, AutosizeTextarea } from '@/shared/components/ui';
-import { useAccounts } from '@/features/transaction/hooks/useAccounts';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react'
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import {
+  Button,
+  Icon,
+  Modal,
+  ModalHeader,
+  Select,
+  Datepicker,
+  AutosizeTextarea,
+} from '@/shared/components/ui'
+import { useAccounts } from '@/features/transaction/hooks/useAccounts'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { CreditHeroBanner } from '../components/CreditHeroBanner';
-import type { Account } from '@/features/transaction/types/transaction.types';
+import { CreditHeroBanner } from '../components/CreditHeroBanner'
+import type { Account } from '@/features/transaction/types/transaction.types'
 
-import { Outlet } from '@tanstack/react-router';
-import { CreditSegmentedNav } from '../components/shared/CreditSegmentedNav';
-import { CreditLayoutContext } from '../context/CreditLayoutContext';
+import { Outlet } from '@tanstack/react-router'
+import { CreditSegmentedNav } from '../components/shared/CreditSegmentedNav'
+import { CreditLayoutContext } from '../context/CreditLayoutContext'
 
 export default function CreditLayout() {
-  const queryClient = useQueryClient();
-  const { data: accountsResponse } = useAccounts();
-  const accounts = accountsResponse?.data || [];
+  const queryClient = useQueryClient()
+  const { data: accountsResponse } = useAccounts()
+  const accounts = accountsResponse?.data || []
 
-  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     credit_type: 'credit_card' as 'credit_card' | 'kta' | 'kpr' | 'paylater' | 'other',
     limit: 0,
@@ -28,26 +36,25 @@ export default function CreditLayout() {
     billing_cycle_day: 0,
     minimum_payment: 0,
     due_date: '',
-    notes: ''
-  });
+    notes: '',
+  })
 
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      // Simulation delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      if (!selectedAccount) throw new Error('Account not selected');
+      await new Promise((resolve) => setTimeout(resolve, 800))
 
-      const stored = localStorage.getItem('visatamora_credits');
-      let credits: Account[] = [];
+      if (!selectedAccount) throw new Error('Account not selected')
+
+      const stored = localStorage.getItem('visatamora_credits')
+      let credits: Account[] = []
       if (stored) {
         try {
-          credits = JSON.parse(stored);
+          credits = JSON.parse(stored)
         } catch (e) {}
       }
 
-      const existingIndex = credits.findIndex(c => c.id === selectedAccount.id);
-      
+      const existingIndex = credits.findIndex((c) => c.id === selectedAccount.id)
+
       const updatedCredit = {
         credit_type: data.credit_type,
         limit: data.limit,
@@ -58,60 +65,61 @@ export default function CreditLayout() {
         billing_cycle_day: data.billing_cycle_day,
         minimum_payment: data.minimum_payment,
         due_date: data.due_date,
-        notes: data.notes
-      };
+        notes: data.notes,
+      }
 
       if (existingIndex >= 0) {
         credits[existingIndex] = {
           ...credits[existingIndex],
           balance: -data.total_amount,
-          credit: updatedCredit
-        };
+          credit: updatedCredit,
+        }
       } else {
         const newAcc: Account = {
           id: selectedAccount.id,
           name: selectedAccount.name,
-          account_type: (data.credit_type === 'kta' || data.credit_type === 'kpr') ? 'loan' : 'credit',
+          account_type:
+            data.credit_type === 'kta' || data.credit_type === 'kpr' ? 'loan' : 'credit',
           balance: -data.total_amount,
           currency: selectedAccount.currency || 'IDR',
           provider: selectedAccount.provider || { name: 'Bank' },
           color: selectedAccount.color || '#206bc4',
-          credit: updatedCredit
-        };
-        credits.push(newAcc);
+          credit: updatedCredit,
+        }
+        credits.push(newAcc)
       }
 
-      localStorage.setItem('visatamora_credits', JSON.stringify(credits));
-      return { success: true, data };
+      localStorage.setItem('visatamora_credits', JSON.stringify(credits))
+      return { success: true, data }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['credits'] });
-      setIsModalOpen(false);
-      setSelectedAccount(null);
-    }
-  });
+      queryClient.invalidateQueries({ queryKey: ['credits'] })
+      setIsModalOpen(false)
+      setSelectedAccount(null)
+    },
+  })
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const stored = localStorage.getItem('visatamora_credits');
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      const stored = localStorage.getItem('visatamora_credits')
       if (stored) {
         try {
-          let credits: Account[] = JSON.parse(stored);
-          credits = credits.filter(c => c.id !== id);
-          localStorage.setItem('visatamora_credits', JSON.stringify(credits));
+          let credits: Account[] = JSON.parse(stored)
+          credits = credits.filter((c) => c.id !== id)
+          localStorage.setItem('visatamora_credits', JSON.stringify(credits))
         } catch (e) {}
       }
-      return { success: true };
+      return { success: true }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['credits'] });
-    }
-  });
+      queryClient.invalidateQueries({ queryKey: ['credits'] })
+    },
+  })
 
   const openForm = (account: Account) => {
-    setSelectedAccount(account);
+    setSelectedAccount(account)
     if (account.credit) {
       setFormData({
         credit_type: account.credit.credit_type || 'credit_card',
@@ -123,27 +131,27 @@ export default function CreditLayout() {
         billing_cycle_day: account.credit.billing_cycle_day || 0,
         minimum_payment: account.credit.minimum_payment || 0,
         due_date: account.credit.due_date ? account.credit.due_date.split('T')[0] : '',
-        notes: account.credit.notes || ''
-      });
+        notes: account.credit.notes || '',
+      })
     } else {
-      setFormData({ 
-        credit_type: 'credit_card', 
-        limit: 0, 
-        total_amount: 0, 
-        installment_amount: 0, 
-        interest_rate: 0, 
-        tenor_months: 0, 
-        billing_cycle_day: 0, 
-        minimum_payment: 0, 
-        due_date: '', 
-        notes: '' 
-      });
+      setFormData({
+        credit_type: 'credit_card',
+        limit: 0,
+        total_amount: 0,
+        installment_amount: 0,
+        interest_rate: 0,
+        tenor_months: 0,
+        billing_cycle_day: 0,
+        minimum_payment: 0,
+        due_date: '',
+        notes: '',
+      })
     }
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   const openFormForType = (type: 'credit_card' | 'kta' | 'kpr' | 'paylater') => {
-    setSelectedAccount(null);
+    setSelectedAccount(null)
     setFormData({
       credit_type: type,
       limit: 0,
@@ -154,29 +162,24 @@ export default function CreditLayout() {
       billing_cycle_day: 0,
       minimum_payment: 0,
       due_date: '',
-      notes: ''
-    });
-    setIsModalOpen(true);
-  };
+      notes: '',
+    })
+    setIsModalOpen(true)
+  }
 
   const accountOptions = accounts.map((acc: Account) => ({
     value: acc.id,
     label: acc.name,
-    color: acc.color
-  }));
+    color: acc.color,
+  }))
 
   return (
-    <BaseLayout
-      pageTitle="Manajemen Kredit & Pinjaman"
-    >
+    <BaseLayout pageTitle="Manajemen Kredit & Pinjaman">
       <div className="container-xl pt-3 pb-5">
-        {/* Hero Banner — always visible */}
         <CreditHeroBanner />
 
-        {/* Tab Navigation — Exact Segmented Control from Image */}
         <CreditSegmentedNav />
 
-        {/* Tab Content */}
         <div>
           <CreditLayoutContext.Provider value={{ openFormForType }}>
             <Outlet />
@@ -184,14 +187,20 @@ export default function CreditLayout() {
         </div>
       </div>
 
-      {/* Add/Edit Credit Modal */}
       <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} size="lg">
         <ModalHeader
-          title={selectedAccount ? `Profil Kredit: ${selectedAccount.name}` : 'Tambah Profil Kredit Baru'}
+          title={
+            selectedAccount ? `Profil Kredit: ${selectedAccount.name}` : 'Tambah Profil Kredit Baru'
+          }
           onClose={() => setIsModalOpen(false)}
         />
         <div className="modal-body pt-4">
-          <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(formData); }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              mutation.mutate(formData)
+            }}
+          >
             {!selectedAccount && (
               <div className="row mb-3">
                 <div className="col-md-12">
@@ -201,9 +210,9 @@ export default function CreditLayout() {
                     placeholder="Pilih rekening untuk profil kredit ini"
                     showSearch={true}
                     onChange={(val) => {
-                      const acc = accounts.find((a: Account) => a.id === val);
+                      const acc = accounts.find((a: Account) => a.id === val)
                       if (acc) {
-                        setSelectedAccount(acc);
+                        setSelectedAccount(acc)
                         if (acc.credit) {
                           setFormData({
                             credit_type: acc.credit.credit_type || formData.credit_type,
@@ -215,8 +224,8 @@ export default function CreditLayout() {
                             billing_cycle_day: acc.credit.billing_cycle_day || 0,
                             minimum_payment: acc.credit.minimum_payment || 0,
                             due_date: acc.credit.due_date ? acc.credit.due_date.split('T')[0] : '',
-                            notes: acc.credit.notes || ''
-                          });
+                            notes: acc.credit.notes || '',
+                          })
                         }
                       }
                     }}
@@ -239,12 +248,10 @@ export default function CreditLayout() {
                       name="credit_type"
                       value={item.value}
                       checked={formData.credit_type === item.value}
-                      onChange={() => setFormData({...formData, credit_type: item.value as any})}
+                      onChange={() => setFormData({ ...formData, credit_type: item.value as any })}
                       className="form-selectgroup-input"
                     />
-                    <span className="form-selectgroup-label">
-                      {item.label}
-                    </span>
+                    <span className="form-selectgroup-label">{item.label}</span>
                   </label>
                 ))}
               </div>
@@ -259,7 +266,9 @@ export default function CreditLayout() {
                     step="0.01"
                     className="form-control"
                     value={formData.interest_rate}
-                    onChange={e => setFormData({...formData, interest_rate: parseFloat(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, interest_rate: parseFloat(e.target.value) || 0 })
+                    }
                   />
                   <span className="input-group-text">%</span>
                 </div>
@@ -275,7 +284,9 @@ export default function CreditLayout() {
                     type="number"
                     className="form-control"
                     value={formData.limit}
-                    onChange={e => setFormData({...formData, limit: parseInt(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, limit: parseInt(e.target.value) || 0 })
+                    }
                   />
                 </div>
               </div>
@@ -287,7 +298,9 @@ export default function CreditLayout() {
                     type="number"
                     className="form-control"
                     value={formData.total_amount}
-                    onChange={e => setFormData({...formData, total_amount: parseInt(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, total_amount: parseInt(e.target.value) || 0 })
+                    }
                   />
                 </div>
               </div>
@@ -302,7 +315,12 @@ export default function CreditLayout() {
                     type="number"
                     className="form-control"
                     value={formData.installment_amount}
-                    onChange={e => setFormData({...formData, installment_amount: parseInt(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        installment_amount: parseInt(e.target.value) || 0,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -310,7 +328,7 @@ export default function CreditLayout() {
                 <label className="form-label">Tenggat Waktu (Jatuh Tempo)</label>
                 <Datepicker
                   value={formData.due_date}
-                  onChange={(val) => setFormData({...formData, due_date: val})}
+                  onChange={(val) => setFormData({ ...formData, due_date: val })}
                   layout="icon"
                 />
               </div>
@@ -324,7 +342,9 @@ export default function CreditLayout() {
                     type="number"
                     className="form-control"
                     value={formData.tenor_months}
-                    onChange={e => setFormData({...formData, tenor_months: parseInt(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tenor_months: parseInt(e.target.value) || 0 })
+                    }
                   />
                 </div>
               </div>
@@ -340,7 +360,9 @@ export default function CreditLayout() {
                     max="31"
                     className="form-control"
                     value={formData.billing_cycle_day}
-                    onChange={e => setFormData({...formData, billing_cycle_day: parseInt(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, billing_cycle_day: parseInt(e.target.value) || 0 })
+                    }
                   />
                 </div>
                 <div className="col-md-6 mb-3">
@@ -351,7 +373,9 @@ export default function CreditLayout() {
                       type="number"
                       className="form-control"
                       value={formData.minimum_payment}
-                      onChange={e => setFormData({...formData, minimum_payment: parseInt(e.target.value) || 0})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, minimum_payment: parseInt(e.target.value) || 0 })
+                      }
                     />
                   </div>
                 </div>
@@ -364,7 +388,9 @@ export default function CreditLayout() {
                 className="form-control"
                 rows={3}
                 value={formData.notes}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({...formData, notes: e.target.value})}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 placeholder="Misal: Cicilan rumah ke-12"
               />
             </div>
@@ -372,14 +398,16 @@ export default function CreditLayout() {
             <div className="mt-4 d-flex justify-content-between">
               <div>
                 {selectedAccount?.credit && (
-                  <Button 
-                    element="button" 
-                    type="button" 
-                    color="ghost-danger" 
+                  <Button
+                    element="button"
+                    type="button"
+                    color="ghost-danger"
                     onClick={() => {
-                      if (window.confirm('Hapus profil kredit ini? Semua data terkait akan hilang.')) {
-                        deleteMutation.mutate(selectedAccount.id);
-                        setIsModalOpen(false);
+                      if (
+                        window.confirm('Hapus profil kredit ini? Semua data terkait akan hilang.')
+                      ) {
+                        deleteMutation.mutate(selectedAccount.id)
+                        setIsModalOpen(false)
                       }
                     }}
                     loading={deleteMutation.isPending}
@@ -390,13 +418,30 @@ export default function CreditLayout() {
                 )}
               </div>
               <div className="d-flex gap-2">
-                <Button element="button" type="button" link className="text-muted" onClick={() => setIsModalOpen(false)}>Batal</Button>
-                <Button element="button" type="submit" color="primary" icon="check" loading={mutation.isPending} disabled={!selectedAccount}>Simpan Profil</Button>
+                <Button
+                  element="button"
+                  type="button"
+                  link
+                  className="text-muted"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Batal
+                </Button>
+                <Button
+                  element="button"
+                  type="submit"
+                  color="primary"
+                  icon="check"
+                  loading={mutation.isPending}
+                  disabled={!selectedAccount}
+                >
+                  Simpan Profil
+                </Button>
               </div>
             </div>
           </form>
         </div>
       </Modal>
     </BaseLayout>
-  );
+  )
 }

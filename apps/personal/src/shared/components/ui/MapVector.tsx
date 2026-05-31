@@ -122,7 +122,21 @@ export function MapVector({
         }
       }
     }
-  }, [mapId, mapType, backgroundColor, markers, lines, series, regionStyle, zoomOnScroll, zoomButtons, labels, lineStyle, markerLabelStyle, markerStyle])
+  }, [
+    mapId,
+    mapType,
+    backgroundColor,
+    markers,
+    lines,
+    series,
+    regionStyle,
+    zoomOnScroll,
+    zoomButtons,
+    labels,
+    lineStyle,
+    markerLabelStyle,
+    markerStyle,
+  ])
 
   return (
     <div className={clsx('ratio', `ratio-${ratio}`, className)}>

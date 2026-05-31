@@ -1,11 +1,5 @@
 import BaseLayout from '@/shared/layouts/BaseLayout'
-import { 
-  Avatar, 
-  Button, 
-  Icon, 
-  Timeline, 
-  TimelineItem,
-} from '@/shared/components/ui'
+import { Avatar, Button, Icon, Timeline, TimelineItem } from '@/shared/components/ui'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 
 export default function ProfilePage() {
@@ -19,7 +13,6 @@ export default function ProfilePage() {
 
   return (
     <BaseLayout flush noContainer bodyClass="p-0">
-      {/* Profile Page Header */}
       <div className="page-header pt-0 m-0 border-0">
         <div className="d-flex justify-content-between align-items-center d-md-none mt-0 mb-3 px-3 pt-3">
           <Button icon="plus" iconOnly ghost size="md" className="p-0 text-secondary" />
@@ -28,29 +21,26 @@ export default function ProfilePage() {
         <div className="container-xl">
           <div className="row g-3 align-items-center flex-column flex-md-row text-center text-md-start">
             <div className="col-auto">
-              <Avatar
-                person={person}
-                size="xl"
-                shape="rounded"
-              />
+              <Avatar person={person} size="xl" shape="rounded" />
             </div>
             <div className="col">
               <h1 className="fw-bold m-0">{person.full_name}</h1>
               <div className="my-2 text-secondary">
-                Premium Member. Membentuk masa depan finansial yang sehat melalui alokasi aset cerdas dan anggaran disiplin.
+                Premium Member. Membentuk masa depan finansial yang sehat melalui alokasi aset
+                cerdas dan anggaran disiplin.
               </div>
               <div className="list-inline list-inline-dots text-secondary justify-content-center justify-content-md-start">
                 <div className="list-inline-item">
-                  <Icon icon="shield-check" className="text-success" />
-                  {' '}Akun Terverifikasi
+                  <Icon icon="shield-check" className="text-success" /> Akun Terverifikasi
                 </div>
                 <div className="list-inline-item">
-                  <Icon icon="mail" />
-                  {' '}<a href={`mailto:${person.email}`} className="text-reset">{person.email}</a>
+                  <Icon icon="mail" />{' '}
+                  <a href={`mailto:${person.email}`} className="text-reset">
+                    {person.email}
+                  </a>
                 </div>
                 <div className="list-inline-item d-none d-sm-inline-block">
-                  <Icon icon="flame" className="text-danger" />
-                  {' '}12 Hari Beruntun
+                  <Icon icon="flame" className="text-danger" /> 12 Hari Beruntun
                 </div>
               </div>
             </div>
@@ -58,7 +48,12 @@ export default function ProfilePage() {
               <div className="btn-list justify-content-center justify-content-md-start">
                 <Button icon="dots" iconOnly />
                 <Button icon="settings" iconOnly />
-                <Button icon="edit" color="primary" text="Edit Profil" className="flex-fill flex-md-grow-0" />
+                <Button
+                  icon="edit"
+                  color="primary"
+                  text="Edit Profil"
+                  className="flex-fill flex-md-grow-0"
+                />
               </div>
             </div>
           </div>
@@ -68,7 +63,6 @@ export default function ProfilePage() {
       <div className="page-body">
         <div className="container-xl">
           <div className="row g-3">
-            {/* Left Column: Timeline */}
             <div className="col">
               <Timeline>
                 <TimelineItem
@@ -106,35 +100,38 @@ export default function ProfilePage() {
                   iconBg="blue"
                 >
                   <div className="avatar-list mt-3">
-                    <span 
-                      className="avatar rounded bg-white border" 
-                      style={{ 
-                        backgroundImage: 'url(https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg)', 
-                        backgroundSize: '75%', 
-                        backgroundPosition: 'center', 
-                        backgroundRepeat: 'no-repeat'
-                      }} 
-                      title="BCA" 
+                    <span
+                      className="avatar rounded bg-white border"
+                      style={{
+                        backgroundImage:
+                          'url(https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg)',
+                        backgroundSize: '75%',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                      }}
+                      title="BCA"
                     />
-                    <span 
-                      className="avatar rounded bg-white border" 
-                      style={{ 
-                        backgroundImage: 'url(https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg)', 
-                        backgroundSize: '75%', 
-                        backgroundPosition: 'center', 
-                        backgroundRepeat: 'no-repeat'
-                      }} 
-                      title="Mandiri" 
+                    <span
+                      className="avatar rounded bg-white border"
+                      style={{
+                        backgroundImage:
+                          'url(https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg)',
+                        backgroundSize: '75%',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                      }}
+                      title="Mandiri"
                     />
-                    <span 
-                      className="avatar rounded bg-white border" 
-                      style={{ 
-                        backgroundImage: 'url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Gopay_logo.svg/1280px-Gopay_logo.svg.png)', 
-                        backgroundSize: '75%', 
-                        backgroundPosition: 'center', 
-                        backgroundRepeat: 'no-repeat'
-                      }} 
-                      title="GoPay" 
+                    <span
+                      className="avatar rounded bg-white border"
+                      style={{
+                        backgroundImage:
+                          'url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Gopay_logo.svg/1280px-Gopay_logo.svg.png)',
+                        backgroundSize: '75%',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                      }}
+                      title="GoPay"
                     />
                   </div>
                 </TimelineItem>
@@ -150,21 +147,27 @@ export default function ProfilePage() {
                         <div className="p-3 bg-body-tertiary rounded text-center">
                           <Icon icon="pig-money" className="text-success mb-1" size="md" />
                           <div className="small fw-bold">Smart Saver</div>
-                          <div className="text-muted" style={{ fontSize: '9px' }}>+100 XP</div>
+                          <div className="text-muted" style={{ fontSize: '9px' }}>
+                            +100 XP
+                          </div>
                         </div>
                       </div>
                       <div className="col-4">
                         <div className="p-3 bg-body-tertiary rounded text-center">
                           <Icon icon="target-arrow" className="text-primary mb-1" size="md" />
                           <div className="small fw-bold">Budget Master</div>
-                          <div className="text-muted" style={{ fontSize: '9px' }}>+150 XP</div>
+                          <div className="text-muted" style={{ fontSize: '9px' }}>
+                            +150 XP
+                          </div>
                         </div>
                       </div>
                       <div className="col-4">
                         <div className="p-3 bg-body-tertiary rounded text-center">
                           <Icon icon="shield-check" className="text-warning mb-1" size="md" />
                           <div className="small fw-bold">Safe Guard</div>
-                          <div className="text-muted" style={{ fontSize: '9px' }}>+50 XP</div>
+                          <div className="text-muted" style={{ fontSize: '9px' }}>
+                            +50 XP
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -180,7 +183,6 @@ export default function ProfilePage() {
               </Timeline>
             </div>
 
-            {/* Right Column: Financial Info & Summary */}
             <div className="col-lg-4">
               <div className="row row-cards">
                 <div className="col-12">
@@ -220,8 +222,15 @@ export default function ProfilePage() {
                     <div className="card-body">
                       <h2 className="card-title">Ikhtisar Keuangan</h2>
                       <div>
-                        <p className="text-secondary" style={{ fontSize: '13px', lineHeight: '1.6' }}>
-                          Profil keuangan Anda dianalisis secara otomatis berdasarkan aktivitas transaksi, perencanaan anggaran bulanan, dan kedisiplinan pembayaran kredit. Tingkatkan skor kredit dengan membayar tagihan tepat waktu dan raih kebebasan finansial dengan disiplin menabung pada menu target finansial.
+                        <p
+                          className="text-secondary"
+                          style={{ fontSize: '13px', lineHeight: '1.6' }}
+                        >
+                          Profil keuangan Anda dianalisis secara otomatis berdasarkan aktivitas
+                          transaksi, perencanaan anggaran bulanan, dan kedisiplinan pembayaran
+                          kredit. Tingkatkan skor kredit dengan membayar tagihan tepat waktu dan
+                          raih kebebasan finansial dengan disiplin menabung pada menu target
+                          finansial.
                         </p>
                       </div>
                     </div>

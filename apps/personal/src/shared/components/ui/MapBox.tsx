@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
 import mapboxgl from 'mapbox-gl'
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 type MapInstance = any
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 type MapErrorEvent = { error: any }
 import site from '../../data/site.json'
 
@@ -60,7 +60,6 @@ export function MapBox({
       })
 
       if (typeof window !== 'undefined') {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const win = window as unknown as { tabler_map: Record<string, any> }
         win.tabler_map = win.tabler_map || {}
         win.tabler_map[id] = map
@@ -101,7 +100,6 @@ export function MapBox({
       if (resizeObserver) resizeObserver.disconnect()
       if (map) map.remove()
       if (typeof window !== 'undefined') {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const win = window as unknown as { tabler_map: Record<string, any> }
         if (win.tabler_map) {
           delete win.tabler_map[id]

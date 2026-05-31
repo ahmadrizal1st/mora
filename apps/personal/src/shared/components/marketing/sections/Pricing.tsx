@@ -1,5 +1,3 @@
-// src/components/marketing/sections/Pricing.tsx
-
 import { Icon } from '../../ui/Icon'
 
 interface PricingFeature {
@@ -84,9 +82,7 @@ export function Pricing({ background, className = '', plans = defaultPlans }: Pr
               )}
               <h4 className="pricing-title">{plan.title}</h4>
               <div className="pricing-price">
-                {plan.currency && (
-                  <span className="pricing-price-currency">{plan.currency}</span>
-                )}
+                {plan.currency && <span className="pricing-price-currency">{plan.currency}</span>}
                 {plan.price}
                 <div className="pricing-price-description">
                   {plan.priceUnit && <div>{plan.priceUnit}</div>}

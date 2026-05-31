@@ -21,7 +21,7 @@ export interface TableProps {
   mobile?: boolean
   card?: boolean
   striped?: boolean
-  stripped?: boolean // Backward compatibility
+  stripped?: boolean
   nowrap?: boolean
   avatars?: boolean
   buttons?: boolean
@@ -131,7 +131,15 @@ export function Table({
                     <DropdownMenu right />
                   </div>
                 ) : (
-                  <a href="#" onClick={(e) => { e.preventDefault(); onEdit?.(person); }}>Edit</a>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      onEdit?.(person)
+                    }}
+                  >
+                    Edit
+                  </a>
                 )}
               </td>
             </tr>

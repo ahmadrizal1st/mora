@@ -1,8 +1,6 @@
-// src/components/marketing/sections/Counters.tsx
-
 interface CountersProps {
-  background?: string;
-  className?: string;
+  background?: string
+  className?: string
 }
 
 const stats = [
@@ -10,12 +8,12 @@ const stats = [
   { value: '12', label: 'years in business' },
   { value: '2,5k+', label: 'copies sold' },
   { value: '99%', label: 'happy customers' },
-];
+]
 
 export function Counters({ background, className = '' }: CountersProps) {
   const sectionClass = ['section', background ? `section-${background}` : '', className]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
   return (
     <section className={sectionClass}>
@@ -32,7 +30,7 @@ export function Counters({ background, className = '' }: CountersProps) {
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-export default Counters;
+export default Counters

@@ -1,21 +1,19 @@
-// src/components/ui/ButtonGroup.tsx
 import React from 'react'
 import { Icon } from './Icon'
 
 export interface ButtonGroupProps {
-  /** Text labels for buttons */
   items?: string[]
-  /** Icon names for icon-only buttons */
+
   icons?: string[]
   id?: string
-  /** Use radio inputs */
+
   radio?: boolean
   vertical?: boolean
   fluid?: boolean
-  /** Show a dropdown at the end */
+
   dropdown?: boolean
   className?: string
-  /** Index of the button to be selected by default */
+
   selectedIndex?: number
 }
 
@@ -112,7 +110,9 @@ export function ButtonGroup({
           </button>
           <div className="dropdown-menu dropdown-menu-end">
             {['Option 4', 'Option 5', 'Option 6'].map((opt) => (
-              <a key={opt} className="dropdown-item" href="#">{opt}</a>
+              <a key={opt} className="dropdown-item" href="#">
+                {opt}
+              </a>
             ))}
           </div>
         </div>

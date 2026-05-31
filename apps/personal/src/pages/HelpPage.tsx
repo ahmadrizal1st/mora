@@ -8,42 +8,50 @@ export default function HelpPage() {
   const faqs = [
     {
       question: 'Bagaimana cara menghubungkan rekening bank saya?',
-      answer: 'Anda dapat pergi ke halaman Pengaturan > Aplikasi Terhubung, lalu klik Hubungkan Bank. Pilih bank Anda dan masukkan detail keamanan Anda. Proses enkripsi bank kami memastikan data Anda selalu aman dan terlindungi.'
+      answer:
+        'Anda dapat pergi ke halaman Pengaturan > Aplikasi Terhubung, lalu klik Hubungkan Bank. Pilih bank Anda dan masukkan detail keamanan Anda. Proses enkripsi bank kami memastikan data Anda selalu aman dan terlindungi.',
     },
     {
       question: 'Apakah data keuangan saya aman di Visatamora?',
-      answer: 'Sangat aman. Visatamora menggunakan enkripsi enk-ke-enk tingkat militer (AES-256) serta autentikasi dua faktor (2FA) untuk memastikan data keuangan, transaksi, dan data pribadi Anda tidak dapat diakses oleh pihak luar.'
+      answer:
+        'Sangat aman. Visatamora menggunakan enkripsi enk-ke-enk tingkat militer (AES-256) serta autentikasi dua faktor (2FA) untuk memastikan data keuangan, transaksi, dan data pribadi Anda tidak dapat diakses oleh pihak luar.',
     },
     {
       question: 'Bagaimana cara menarik dana investasi dari portofolio?',
-      answer: 'Untuk menarik dana investasi, navigasikan ke menu Wealth > Portofolio, klik tombol Penarikan. Tentukan jumlah dana yang ingin Anda tarik ke rekening utama Anda. Proses transfer biasanya memakan waktu 1-3 hari kerja bergantung pada jenis aset.'
+      answer:
+        'Untuk menarik dana investasi, navigasikan ke menu Wealth > Portofolio, klik tombol Penarikan. Tentukan jumlah dana yang ingin Anda tarik ke rekening utama Anda. Proses transfer biasanya memakan waktu 1-3 hari kerja bergantung pada jenis aset.',
     },
     {
       question: 'Bagaimana cara mengganti kata sandi atau email akun?',
-      answer: 'Anda dapat mengganti kata sandi atau email langsung dari halaman Pengaturan & Privasi di bawah tab "Akun Saya" untuk email, dan tab "Privasi & Keamanan" untuk perubahan kata sandi.'
-    }
+      answer:
+        'Anda dapat mengganti kata sandi atau email langsung dari halaman Pengaturan & Privasi di bawah tab "Akun Saya" untuk email, dan tab "Privasi & Keamanan" untuk perubahan kata sandi.',
+    },
   ]
 
-  const filteredFaqs = faqs.filter(faq => 
-    faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredFaqs = faqs.filter(
+    (faq) =>
+      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
-    <BaseLayout 
-      pageTitle="Pusat Bantuan & Dukungan" 
-      pagePretitle="Support"
-      containerFlushMobile
-    >
+    <BaseLayout pageTitle="Pusat Bantuan & Dukungan" pagePretitle="Support" containerFlushMobile>
       <div className="container-xl">
-        {/* Top Hero Banner */}
-        <div className="card card-md mb-4 bg-primary text-white" style={{
-          backgroundImage: 'radial-gradient(circle at 100% 0%, rgba(255,255,255,0.08) 0%, transparent 80%)'
-        }}>
+        <div
+          className="card card-md mb-4 bg-primary text-white"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 100% 0%, rgba(255,255,255,0.08) 0%, transparent 80%)',
+          }}
+        >
           <div className="card-body text-center py-5">
             <h1 className="display-6 mb-3 text-white">Ada yang bisa kami bantu?</h1>
-            <p className="fs-3 mx-auto mb-4 text-white text-opacity-75" style={{ maxWidth: '32rem' }}>
-              Cari panduan, FAQ, atau hubungi langsung tim bantuan kami yang siap melayani Anda 24/7.
+            <p
+              className="fs-3 mx-auto mb-4 text-white text-opacity-75"
+              style={{ maxWidth: '32rem' }}
+            >
+              Cari panduan, FAQ, atau hubungi langsung tim bantuan kami yang siap melayani Anda
+              24/7.
             </p>
             <div className="mx-auto" style={{ maxWidth: '500px' }}>
               <InputIcon
@@ -58,7 +66,6 @@ export default function HelpPage() {
           </div>
         </div>
 
-        {/* Quick Helper Category Cards */}
         <div className="row row-cards mb-4">
           <div className="col-md-6 col-lg-3">
             <div className="card h-100">
@@ -67,7 +74,10 @@ export default function HelpPage() {
                   <Icon icon="user" />
                 </span>
                 <h3 className="card-title">Akun & Profil</h3>
-                <p className="text-secondary small">Kelola pendaftaran, ganti kata sandi, verifikasi data diri (KYC), dan pengaturan profil keamanan.</p>
+                <p className="text-secondary small">
+                  Kelola pendaftaran, ganti kata sandi, verifikasi data diri (KYC), dan pengaturan
+                  profil keamanan.
+                </p>
               </div>
             </div>
           </div>
@@ -78,7 +88,10 @@ export default function HelpPage() {
                   <Icon icon="credit-card" />
                 </span>
                 <h3 className="card-title">Transaksi & Pembayaran</h3>
-                <p className="text-secondary small">Panduan tentang transfer dana, pembayaran tagihan, penarikan investasi, dan e-wallet.</p>
+                <p className="text-secondary small">
+                  Panduan tentang transfer dana, pembayaran tagihan, penarikan investasi, dan
+                  e-wallet.
+                </p>
               </div>
             </div>
           </div>
@@ -89,7 +102,10 @@ export default function HelpPage() {
                   <Icon icon="chart-pie" />
                 </span>
                 <h3 className="card-title">Keuangan & Wealth</h3>
-                <p className="text-secondary small">Informasi tentang pengelolaan aset, portofolio saham, reksadana, dan analisis finansial premium Anda.</p>
+                <p className="text-secondary small">
+                  Informasi tentang pengelolaan aset, portofolio saham, reksadana, dan analisis
+                  finansial premium Anda.
+                </p>
               </div>
             </div>
           </div>
@@ -100,14 +116,16 @@ export default function HelpPage() {
                   <Icon icon="shield" />
                 </span>
                 <h3 className="card-title">Kemanan & Kebijakan</h3>
-                <p className="text-secondary small">Pelajari enkripsi data kami, kebijakan privasi, serta langkah pencegahan kejahatan siber.</p>
+                <p className="text-secondary small">
+                  Pelajari enkripsi data kami, kebijakan privasi, serta langkah pencegahan kejahatan
+                  siber.
+                </p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="row g-4">
-          {/* FAQ Section */}
           <div className="col-lg-7">
             <div className="card">
               <div className="card-header d-flex justify-content-between align-items-center">
@@ -118,11 +136,7 @@ export default function HelpPage() {
               </div>
               <div className="card-body">
                 {filteredFaqs.length > 0 ? (
-                  <Accordion 
-                    id="faq-accordion" 
-                    type="flush" 
-                    items={filteredFaqs} 
-                  />
+                  <Accordion id="faq-accordion" type="flush" items={filteredFaqs} />
                 ) : (
                   <div className="text-center py-5 text-secondary">
                     <Icon icon="search" className="mb-2 text-muted" style={{ fontSize: '2rem' }} />
@@ -133,7 +147,6 @@ export default function HelpPage() {
             </div>
           </div>
 
-          {/* Contact Support Ticket */}
           <div className="col-lg-5">
             <div className="card">
               <div className="card-header">
@@ -141,19 +154,36 @@ export default function HelpPage() {
               </div>
               <div className="card-body">
                 <p className="text-secondary small mb-4">
-                  Tidak menemukan jawaban yang Anda cari? Silakan isi formulir di bawah ini, tim support kami akan membalas dalam waktu kurang dari 1 jam.
+                  Tidak menemukan jawaban yang Anda cari? Silakan isi formulir di bawah ini, tim
+                  support kami akan membalas dalam waktu kurang dari 1 jam.
                 </p>
                 <form onSubmit={(e) => e.preventDefault()} className="row g-3">
                   <div className="col-12">
-                    <label className="form-label" htmlFor="ticket-name">Nama Lengkap</label>
-                    <input type="text" className="form-control" id="ticket-name" placeholder="Masukkan nama lengkap Anda" />
+                    <label className="form-label" htmlFor="ticket-name">
+                      Nama Lengkap
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="ticket-name"
+                      placeholder="Masukkan nama lengkap Anda"
+                    />
                   </div>
                   <div className="col-12">
-                    <label className="form-label" htmlFor="ticket-email">Alamat Email</label>
-                    <input type="email" className="form-control" id="ticket-email" placeholder="nama@email.com" />
+                    <label className="form-label" htmlFor="ticket-email">
+                      Alamat Email
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="ticket-email"
+                      placeholder="nama@email.com"
+                    />
                   </div>
                   <div className="col-12">
-                    <label className="form-label" htmlFor="ticket-category">Kategori Masalah</label>
+                    <label className="form-label" htmlFor="ticket-category">
+                      Kategori Masalah
+                    </label>
                     <select className="form-select" id="ticket-category">
                       <option>Pilih kategori...</option>
                       <option>Keamanan Akun & Login</option>
@@ -164,8 +194,15 @@ export default function HelpPage() {
                     </select>
                   </div>
                   <div className="col-12">
-                    <label className="form-label" htmlFor="ticket-message">Pesan / Deskripsi Masalah</label>
-                    <textarea className="form-control" id="ticket-message" rows={4} placeholder="Tuliskan sedetail mungkin kendala yang Anda alami..."></textarea>
+                    <label className="form-label" htmlFor="ticket-message">
+                      Pesan / Deskripsi Masalah
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="ticket-message"
+                      rows={4}
+                      placeholder="Tuliskan sedetail mungkin kendala yang Anda alami..."
+                    ></textarea>
                   </div>
                   <div className="col-12 mt-4">
                     <Button text="Kirim Tiket Bantuan" color="primary" className="w-100" />
@@ -174,18 +211,23 @@ export default function HelpPage() {
               </div>
             </div>
 
-            {/* Direct Instant Support options */}
             <div className="card mt-3 border-0 bg-primary-lt">
               <div className="card-body">
                 <h4 className="m-0 mb-2">Butuh Respon Instan?</h4>
                 <div className="row g-2">
                   <div className="col-6">
-                    <a href="https://wa.me/#" className="btn btn-white w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+                    <a
+                      href="https://wa.me/#"
+                      className="btn btn-white w-100 py-2 d-flex align-items-center justify-content-center gap-2"
+                    >
                       <Icon icon="message" /> WhatsApp Chat
                     </a>
                   </div>
                   <div className="col-6">
-                    <a href="mailto:support@visatamora.com" className="btn btn-white w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+                    <a
+                      href="mailto:support@visatamora.com"
+                      className="btn btn-white w-100 py-2 d-flex align-items-center justify-content-center gap-2"
+                    >
                       <Icon icon="mail" /> Kirim Email
                     </a>
                   </div>

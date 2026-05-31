@@ -1,5 +1,3 @@
-// src/components/cards/tables/ProgressBgTable.tsx
-
 interface UrlItem {
   uri: string
   bounce: number

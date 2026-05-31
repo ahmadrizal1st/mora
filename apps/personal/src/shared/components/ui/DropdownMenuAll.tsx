@@ -10,11 +10,7 @@ export interface DropdownMenuAllProps {
   className?: string
 }
 
-export function DropdownMenuAll({
-  show,
-  people = [],
-  className,
-}: DropdownMenuAllProps) {
+export function DropdownMenuAll({ show, people = [], className }: DropdownMenuAllProps) {
   return (
     <div className={clsx('dropdown-menu', show && 'dropdown-menu-demo', className)}>
       <h6 className="dropdown-header">Dropdown header</h6>
@@ -64,11 +60,7 @@ export function DropdownMenuAll({
 
       {people.slice(0, 3).map((person) => (
         <a key={person.id} href="#" className="dropdown-item">
-          <Avatar
-            size="xs"
-            person={person}
-            className="rounded me-2"
-          />
+          <Avatar size="xs" person={person} className="rounded me-2" />
           {person.full_name}
         </a>
       ))}

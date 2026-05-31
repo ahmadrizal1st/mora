@@ -63,11 +63,12 @@ export function AdvancedTable({
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
     if (!q) return people
-    return people.filter((p) =>
-      p.full_name.toLowerCase().includes(q) ||
-      (p.city ?? '').toLowerCase().includes(q) ||
-      (p.category ?? '').toLowerCase().includes(q) ||
-      (p.tags ?? []).some((t) => t.toLowerCase().includes(q))
+    return people.filter(
+      (p) =>
+        p.full_name.toLowerCase().includes(q) ||
+        (p.city ?? '').toLowerCase().includes(q) ||
+        (p.category ?? '').toLowerCase().includes(q) ||
+        (p.tags ?? []).some((t) => t.toLowerCase().includes(q))
     )
   }, [people, search])
 
@@ -76,7 +77,7 @@ export function AdvancedTable({
     return [...filtered].sort((a, b) => {
       let va = ''
       let vb = ''
-      
+
       switch (sortKey) {
         case 'sort-name':
           va = a.full_name
@@ -103,7 +104,7 @@ export function AdvancedTable({
           vb = b.category ?? ''
           break
       }
-      
+
       return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va)
     })
   }, [filtered, sortKey, sortAsc])
@@ -160,7 +161,10 @@ export function AdvancedTable({
                     placeholder={searchPlaceholder}
                     autoComplete="off"
                     value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                    onChange={(e) => {
+                      setSearch(e.target.value)
+                      setPage(1)
+                    }}
                   />
                   <span className="input-group-text">
                     <kbd>ctrl + K</kbd>
@@ -225,7 +229,9 @@ export function AdvancedTable({
                       <td className="sort-tags">
                         <div className="badges-list">
                           {(person.tags ?? []).map((tag, ti) => (
-                            <span key={ti} className="badge">{tag}</span>
+                            <span key={ti} className="badge">
+                              {tag}
+                            </span>
                           ))}
                         </div>
                       </td>
@@ -256,7 +262,10 @@ export function AdvancedTable({
                   <button
                     key={n}
                     className={clsx('dropdown-item', perPage === n && 'active')}
-                    onClick={() => { setPerPage(n); setPage(1); }}
+                    onClick={() => {
+                      setPerPage(n)
+                      setPage(1)
+                    }}
                   >
                     {n} records
                   </button>

@@ -1,4 +1,3 @@
-// src/shared/components/cards/ResetPasswordCard.tsx
 import React from 'react'
 
 interface ResetPasswordCardProps {
@@ -7,11 +6,7 @@ interface ResetPasswordCardProps {
   error?: string | null
 }
 
-export function ResetPasswordCard({
-  onSubmit,
-  isLoading,
-  error
-}: ResetPasswordCardProps) {
+export function ResetPasswordCard({ onSubmit, isLoading, error }: ResetPasswordCardProps) {
   const [password, setPassword] = React.useState('')
   const [passwordConfirmation, setPasswordConfirmation] = React.useState('')
 
@@ -25,9 +20,7 @@ export function ResetPasswordCard({
       <div className="card-body">
         <h2 className="card-title text-center mb-4">Reset password</h2>
 
-        <p className="text-secondary mb-4">
-          Please enter your new password below.
-        </p>
+        <p className="text-secondary mb-4">Please enter your new password below.</p>
 
         {error && (
           <div className="alert alert-danger" role="alert">
@@ -61,11 +54,7 @@ export function ResetPasswordCard({
           </div>
 
           <div className="form-footer">
-            <button 
-              type="submit" 
-              className="btn btn-primary w-100"
-              disabled={isLoading}
-            >
+            <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
               {isLoading ? 'Resetting...' : 'Reset Password'}
             </button>
           </div>

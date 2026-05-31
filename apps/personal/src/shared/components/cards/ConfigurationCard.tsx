@@ -1,4 +1,3 @@
-// src/components/cards/ConfigurationCard.tsx
 import { Icon } from '../ui/Icon'
 import { Flag } from '../ui/Flag'
 

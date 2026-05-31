@@ -1,4 +1,3 @@
-// src/components/cards/UserCard.tsx
 import { Avatar } from '../ui/Avatar'
 
 import type { Person } from '@/shared/types/common.types'

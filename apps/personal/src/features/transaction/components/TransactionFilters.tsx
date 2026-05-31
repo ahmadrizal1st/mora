@@ -1,54 +1,67 @@
-import React, { useMemo } from 'react';
-import type { TransactionFilters, TransactionType } from '../types/transaction.types';
-import { useCategories, useStatuses, useTags } from '../hooks/useLookups';
-import { useAccounts } from '../hooks/useAccounts';
-import { Icon, Button, Select, Datepicker } from '@/shared/components/ui';
+import React, { useMemo } from 'react'
+import type { TransactionFilters, TransactionType } from '../types/transaction.types'
+import { useCategories, useStatuses, useTags } from '../hooks/useLookups'
+import { useAccounts } from '../hooks/useAccounts'
+import { Icon, Button, Select, Datepicker } from '@/shared/components/ui'
 
 interface TransactionFiltersProps {
-  filters: TransactionFilters;
-  onChange: (filters: TransactionFilters) => void;
-  onClear: () => void;
+  filters: TransactionFilters
+  onChange: (filters: TransactionFilters) => void
+  onClear: () => void
 }
 
 export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   filters,
   onChange,
-  onClear
+  onClear,
 }) => {
-  const { data: response } = useAccounts();
-  const accounts = useMemo(() => response?.data || [], [response?.data]);
-  const { data: categories = [] } = useCategories();
-  const { data: statuses = [] } = useStatuses();
-  const { data: tags = [] } = useTags();
+  const { data: response } = useAccounts()
+  const accounts = useMemo(() => response?.data || [], [response?.data])
+  const { data: categories = [] } = useCategories()
+  const { data: statuses = [] } = useStatuses()
+  const { data: tags = [] } = useTags()
 
-  const handleFilterChange = <K extends keyof TransactionFilters>(key: K, value: TransactionFilters[K]) => {
-    onChange({ ...filters, [key]: value, page: 1 });
-  };
+  const handleFilterChange = <K extends keyof TransactionFilters>(
+    key: K,
+    value: TransactionFilters[K]
+  ) => {
+    onChange({ ...filters, [key]: value, page: 1 })
+  }
 
-  const accountOptions = useMemo(() => [
-    { value: '', label: 'Semua Akun' },
-    ...accounts.map(a => ({ value: a.id, label: a.name }))
-  ], [accounts]);
+  const accountOptions = useMemo(
+    () => [
+      { value: '', label: 'Semua Akun' },
+      ...accounts.map((a) => ({ value: a.id, label: a.name })),
+    ],
+    [accounts]
+  )
 
-  const categoryOptions = useMemo(() => [
-    { value: '', label: 'Semua Kategori' },
-    ...categories.map(c => ({ value: c.id, label: c.name, color: c.color }))
-  ], [categories]);
+  const categoryOptions = useMemo(
+    () => [
+      { value: '', label: 'Semua Kategori' },
+      ...categories.map((c) => ({ value: c.id, label: c.name, color: c.color })),
+    ],
+    [categories]
+  )
 
-  const statusOptions = useMemo(() => [
-    { value: '', label: 'Semua Status' },
-    ...statuses.map(s => ({ value: s.id, label: s.name }))
-  ], [statuses]);
+  const statusOptions = useMemo(
+    () => [
+      { value: '', label: 'Semua Status' },
+      ...statuses.map((s) => ({ value: s.id, label: s.name })),
+    ],
+    [statuses]
+  )
 
-  const tagOptions = useMemo(() => 
-    tags.map(t => ({ value: t.id, label: t.name, color: t.color }))
-  , [tags]);
+  const tagOptions = useMemo(
+    () => tags.map((t) => ({ value: t.id, label: t.name, color: t.color })),
+    [tags]
+  )
 
   const typeOptions = [
     { value: '', label: 'Semua Tipe' },
     { value: 'income', label: 'Pemasukan' },
     { value: 'expense', label: 'Pengeluaran' },
-  ];
+  ]
 
   const perPageOptions = [
     { value: 10, label: '10 Baris' },
@@ -56,7 +69,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
     { value: 25, label: '25 Baris' },
     { value: 50, label: '50 Baris' },
     { value: 100, label: '100 Baris' },
-  ];
+  ]
 
   return (
     <div className="card mb-0 mb-md-3 border-0 shadow-sm">
@@ -85,7 +98,9 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             <Select
               options={typeOptions}
               value={filters.type || ''}
-              onChange={(val) => handleFilterChange('type', (val || undefined) as TransactionType | undefined)}
+              onChange={(val) =>
+                handleFilterChange('type', (val || undefined) as TransactionType | undefined)
+              }
               placeholder="Semua Tipe"
               showSearch={false}
             />
@@ -117,7 +132,9 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
               multiple
               options={tagOptions}
               value={filters.tag_ids || []}
-              onChange={(vals) => handleFilterChange('tag_ids', Array.isArray(vals) ? vals.map(String) : [])}
+              onChange={(vals) =>
+                handleFilterChange('tag_ids', Array.isArray(vals) ? vals.map(String) : [])
+              }
               placeholder="Filter by tags..."
             />
           </div>
@@ -153,7 +170,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
               showSearch={false}
             />
           </div>
-          
+
           <div className="col-md-4 col-lg-2">
             <label className="form-label">Baris</label>
             <Select
@@ -165,18 +182,12 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
           </div>
 
           <div className="col-md-4 col-lg-3 d-flex align-items-end">
-            <Button
-              element="button"
-              onClick={onClear}
-              white
-              block
-              icon="rotate-clockwise"
-            >
+            <Button element="button" onClick={onClear} white block icon="rotate-clockwise">
               Reset
             </Button>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

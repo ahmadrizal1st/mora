@@ -1,4 +1,3 @@
-// src/components/cards/StoreProductCard.tsx
 import { Icon } from '../ui/Icon'
 
 interface Product {
@@ -20,11 +19,7 @@ export function StoreProductCard({ product }: StoreProductCardProps) {
     <div className="card">
       <div className="card-body">
         <div className="mb-4 text-center">
-          <img
-            src={`/static/products/${product.image}`}
-            alt={product.name}
-            className="img-fluid"
-          />
+          <img src={`/static/products/${product.image}`} alt={product.name} className="img-fluid" />
         </div>
         <h4 className="card-title">
           <a href="#">{product.name}</a>

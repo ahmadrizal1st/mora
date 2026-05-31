@@ -1,4 +1,3 @@
-// src/components/cards/ProjectSummary.tsx
 import { Avatar } from '../ui/Avatar'
 
 import type { Person } from '@/shared/types/common.types'
@@ -33,13 +32,7 @@ export function ProjectSummary({
   return (
     <div className="card">
       <div className="card-body p-4 py-5 text-center">
-        <Avatar
-          size="xl"
-          placeholder="W"
-          className="mb-4"
-          color={projectColor}
-          shape="rounded"
-        />
+        <Avatar size="xl" placeholder="W" className="mb-4" color={projectColor} shape="rounded" />
         <h3 className="mb-0">{title}</h3>
         <p className="text-secondary">Due to: {date}</p>
         <p className="mb-3">

@@ -1,24 +1,21 @@
-import React from 'react';
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Empty, Button, Icon } from '@/shared/components/ui';
-import { useNavigate } from '@tanstack/react-router';
+import React from 'react'
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import { Empty, Button, Icon } from '@/shared/components/ui'
+import { useNavigate } from '@tanstack/react-router'
 
 export function ComingSoonPage({ title }: { title: string }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
-    <BaseLayout 
-      pageTitle={title}
-      pagePretitle="COMING SOON"
-    >
+    <BaseLayout pageTitle={title} pagePretitle="COMING SOON">
       <div className="card border-0 shadow-sm">
         <div className="card-body py-5 text-center">
-          <Empty 
+          <Empty
             title="Feature Coming Soon"
             description={`We are working hard to bring you the ${title} feature. Stay tuned!`}
             icon="rocket"
             action={
-              <Button 
+              <Button
                 onClick={() => navigate({ to: '/dashboard' })}
                 color="primary"
                 text="Back to Dashboard"
@@ -29,5 +26,5 @@ export function ComingSoonPage({ title }: { title: string }) {
         </div>
       </div>
     </BaseLayout>
-  );
+  )
 }

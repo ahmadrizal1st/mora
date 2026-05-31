@@ -43,10 +43,7 @@ export function Typed({
 }: TypedProps) {
   const spanRef = useRef<HTMLSpanElement>(null)
 
-  const stringsArray =
-    typeof strings === 'string'
-      ? strings.split('|')
-      : strings
+  const stringsArray = typeof strings === 'string' ? strings.split('|') : strings
 
   useEffect(() => {
     if (!spanRef.current || !window.Typed) return
@@ -62,7 +59,6 @@ export function Typed({
     })
 
     return () => {
-      // If Typed.js has a destroy method, we use it for cleanup
       if (typed && typeof typed.destroy === 'function') {
         typed.destroy()
       }
@@ -70,11 +66,7 @@ export function Typed({
   }, [id, stringsArray, typeSpeed, backSpeed, backDelay, startDelay, loop])
 
   return (
-    <span
-      ref={spanRef}
-      id={id}
-      className={clsx('text-primary', className)}
-    >
+    <span ref={spanRef} id={id} className={clsx('text-primary', className)}>
       {stringsArray[0]}
     </span>
   )

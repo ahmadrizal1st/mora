@@ -14,20 +14,12 @@ export interface BreadcrumbProps {
 }
 
 export function Breadcrumb({
-  items = [
-    { label: 'Home', href: '/' },
-    { label: 'Library', href: '#' },
-    { label: 'Data' },
-  ],
+  items = [{ label: 'Home', href: '/' }, { label: 'Library', href: '#' }, { label: 'Data' }],
   separator,
   homeIcon,
   className,
 }: BreadcrumbProps) {
-  const olClasses = clsx(
-    'breadcrumb',
-    separator && `breadcrumb-${separator}`,
-    className
-  )
+  const olClasses = clsx('breadcrumb', separator && `breadcrumb-${separator}`, className)
 
   return (
     <nav aria-label="Breadcrumb">

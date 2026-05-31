@@ -1,9 +1,8 @@
 import { Link, useLocation } from '@tanstack/react-router'
 
-
 export function MarketingNavbar() {
   const location = useLocation()
-  
+
   const navItems = [
     { title: 'Home', path: '/marketing' },
     { title: 'Testimonials', path: '/marketing/testimonials' },
@@ -18,7 +17,13 @@ export function MarketingNavbar() {
     <header className="navbar navbar-expand-lg navbar-transparent py-3">
       <div className="container">
         <Link to="/" className="navbar-brand navbar-brand-autodark pe-0 pe-md-3">
-          <img src="/static/logo.svg" width="110" height="32" alt="Tabler" className="navbar-brand-image" />
+          <img
+            src="/static/logo.svg"
+            width="110"
+            height="32"
+            alt="Tabler"
+            className="navbar-brand-image"
+          />
         </Link>
         <button
           className="navbar-toggler"
@@ -36,8 +41,8 @@ export function MarketingNavbar() {
             <ul className="navbar-nav ms-auto">
               {navItems.map((item) => (
                 <li key={item.path} className="nav-item">
-                  <Link 
-                    className={`nav-link ${location.pathname === item.path ? 'active' : ''}`} 
+                  <Link
+                    className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
                     to={item.path}
                   >
                     <span className="nav-link-title">{item.title}</span>
@@ -45,7 +50,9 @@ export function MarketingNavbar() {
                 </li>
               ))}
               <li className="nav-item ms-lg-4">
-                <Link to="/" className="btn btn-primary">Buy now</Link>
+                <Link to="/" className="btn btn-primary">
+                  Buy now
+                </Link>
               </li>
             </ul>
           </nav>

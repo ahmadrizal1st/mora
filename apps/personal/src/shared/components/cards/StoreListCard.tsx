@@ -1,14 +1,14 @@
 interface StoreItem {
-  name: string; 
-  price: string; 
-  imageSrc?: string; 
-  reviews?: number; 
-  offers?: number; 
-  isNew?: boolean;
+  name: string
+  price: string
+  imageSrc?: string
+  reviews?: number
+  offers?: number
+  isNew?: boolean
 }
 
-interface StoreListCardProps { 
-  items?: StoreItem[] 
+interface StoreListCardProps {
+  items?: StoreItem[]
 }
 
 export function StoreListCard({
@@ -26,9 +26,11 @@ export function StoreListCard({
           {items.map((item, i) => (
             <tr key={i}>
               <td>
-                {item.imageSrc
-                  ? <img src={item.imageSrc} alt="" className="h-16" />
-                  : <div style={{ width: 40, height: 40, background: '#f0f0f0', borderRadius: 4 }} />}
+                {item.imageSrc ? (
+                  <img src={item.imageSrc} alt="" className="h-16" />
+                ) : (
+                  <div style={{ width: 40, height: 40, background: '#f0f0f0', borderRadius: 4 }} />
+                )}
               </td>
               <td>
                 {item.name}
@@ -40,11 +42,13 @@ export function StoreListCard({
               <td className="text-end text-secondary d-none d-md-table-cell text-nowrap">
                 {item.offers ?? 0} offers
               </td>
-              <td className="text-end"><strong>{item.price}</strong></td>
+              <td className="text-end">
+                <strong>{item.price}</strong>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-  );
+  )
 }

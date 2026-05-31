@@ -1,12 +1,12 @@
 interface ProjectSummaryCardProps {
-  title?: string;
-  dueDate?: string;
-  stage?: string;
-  stageColor?: string;
-  projectColor?: string;
-  percentage?: number;
-  percentageColor?: string;
-  avatarCount?: number;
+  title?: string
+  dueDate?: string
+  stage?: string
+  stageColor?: string
+  projectColor?: string
+  percentage?: number
+  percentageColor?: string
+  avatarCount?: number
 }
 
 export function ProjectSummaryCard({
@@ -30,8 +30,11 @@ export function ProjectSummaryCard({
         </p>
         <div className="avatar-list avatar-list-stacked">
           {Array.from({ length: avatarCount }).map((_, i) => (
-            <span key={i} className="avatar avatar-sm"
-              style={{ background: `hsl(${i * 80},60%,60%)` }}>
+            <span
+              key={i}
+              className="avatar avatar-sm"
+              style={{ background: `hsl(${i * 80},60%,60%)` }}
+            >
               {String.fromCharCode(65 + i)}
             </span>
           ))}
@@ -41,5 +44,5 @@ export function ProjectSummaryCard({
         <div className={`progress-bar bg-${percentageColor}`} style={{ width: `${percentage}%` }} />
       </div>
     </div>
-  );
+  )
 }

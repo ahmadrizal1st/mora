@@ -1,24 +1,12 @@
-import React from 'react';
-import { useForm, Controller, useWatch, type FieldError } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import type {
-  Transaction
-} from '../types/transaction.types';
-import {
-  useCategories,
-  useCurrencies,
-  useTags,
-} from '../hooks/useLookups';
-import { useAccounts } from '../hooks/useAccounts';
-import {
-  Button,
-  Select,
-  Icon,
-  AutosizeTextarea,
-  Datepicker,
-} from '@/shared/components/ui';
-import { ErrorAlert } from '@/shared/components/ui/ErrorAlert';
+import React from 'react'
+import { useForm, Controller, useWatch, type FieldError } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import type { Transaction } from '../types/transaction.types'
+import { useCategories, useCurrencies, useTags } from '../hooks/useLookups'
+import { useAccounts } from '../hooks/useAccounts'
+import { Button, Select, Icon, AutosizeTextarea, Datepicker } from '@/shared/components/ui'
+import { ErrorAlert } from '@/shared/components/ui/ErrorAlert'
 
 const transactionSchema = z.object({
   type: z.enum(['income', 'expense']),
@@ -30,29 +18,29 @@ const transactionSchema = z.object({
   merchant: z.string().optional(),
   notes: z.string().optional(),
   tag_ids: z.array(z.string()),
-});
+})
 
-export type TransactionFormValues = z.infer<typeof transactionSchema>;
+export type TransactionFormValues = z.infer<typeof transactionSchema>
 
 interface TransactionFormProps {
-  initialData?: Partial<Transaction>;
-  onSubmit: (data: TransactionFormValues) => void;
-  isLoading?: boolean;
-  onCancel?: () => void;
+  initialData?: Partial<Transaction>
+  onSubmit: (data: TransactionFormValues) => void
+  isLoading?: boolean
+  onCancel?: () => void
 }
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
   initialData,
   onSubmit,
   isLoading,
-  onCancel
+  onCancel,
 }) => {
   const {
     register,
     handleSubmit,
     control,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
@@ -64,11 +52,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       tx_date: initialData?.tx_date || new Date().toISOString().split('T')[0],
       merchant: initialData?.merchant || '',
       notes: initialData?.notes || '',
-      tag_ids: initialData?.tags?.map(t => t.id) || [],
+      tag_ids: initialData?.tags?.map((t) => t.id) || [],
     },
-  });
+  })
 
-  // Sync form state when initialData changes
   React.useEffect(() => {
     if (initialData) {
       reset({
@@ -80,8 +67,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         tx_date: initialData.tx_date || new Date().toISOString().split('T')[0],
         merchant: initialData.merchant || '',
         notes: initialData.notes || '',
-        tag_ids: initialData.tags?.map(t => t.id) || [],
-      });
+        tag_ids: initialData.tags?.map((t) => t.id) || [],
+      })
     } else {
       reset({
         type: 'expense',
@@ -93,58 +80,55 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         merchant: '',
         notes: '',
         tag_ids: [],
-      });
+      })
     }
-  }, [initialData, reset]);
+  }, [initialData, reset])
 
   const type = useWatch({
     control,
     name: 'type',
     defaultValue: (initialData?.type === 'income' ? 'income' : 'expense') as 'income' | 'expense',
-  });
-  const { data: categories = [] } = useCategories(type);
-    const { data: response } = useAccounts();
-  const accounts = response?.data || [];
-  const { data: currencies = [] } = useCurrencies();
-  const { data: tags = [] } = useTags();
+  })
+  const { data: categories = [] } = useCategories(type)
+  const { data: response } = useAccounts()
+  const accounts = response?.data || []
+  const { data: currencies = [] } = useCurrencies()
+  const { data: tags = [] } = useTags()
 
   const currencyOptions = React.useMemo(() => {
-    // Current data might not have the default IDR in the currencies list if it's handled separately
-    const options = currencies.map(c => ({
+    const options = currencies.map((c) => ({
       value: c.id,
-      label: c.code
-    }));
-    
-    // Ensure IDR is always an option if not present
-    if (!options.find(o => o.label === 'IDR')) {
-      options.unshift({ value: '0', label: 'IDR' });
-    }
-    
-    return options;
-  }, [currencies]);
+      label: c.code,
+    }))
 
-  // Format React Hook Form errors for the ErrorAlert component
+    if (!options.find((o) => o.label === 'IDR')) {
+      options.unshift({ value: '0', label: 'IDR' })
+    }
+
+    return options
+  }, [currencies])
+
   const getFieldErrors = () => {
-    if (Object.keys(errors).length === 0) return null;
-    const formatted: Record<string, string[]> = {};
+    if (Object.keys(errors).length === 0) return null
+    const formatted: Record<string, string[]> = {}
     Object.entries(errors).forEach(([key, err]) => {
       if (err && typeof err === 'object' && 'message' in err) {
-        const error = err as FieldError;
+        const error = err as FieldError
         if (typeof error.message === 'string') {
-          formatted[key] = [error.message];
+          formatted[key] = [error.message]
         }
       }
-    });
-    return formatted;
-  };
+    })
+    return formatted
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="transaction-form">
       {Object.keys(errors).length > 0 && (
         <div className="mb-4">
-          <ErrorAlert 
-            message="Validasi Gagal: Silakan lengkapi data yang diwajibkan." 
-            fieldErrors={getFieldErrors()} 
+          <ErrorAlert
+            message="Validasi Gagal: Silakan lengkapi data yang diwajibkan."
+            fieldErrors={getFieldErrors()}
           />
         </div>
       )}
@@ -213,7 +197,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               />
             )}
           />
-          {errors.tx_date && <div className="invalid-feedback d-block">{errors.tx_date.message}</div>}
+          {errors.tx_date && (
+            <div className="invalid-feedback d-block">{errors.tx_date.message}</div>
+          )}
         </div>
       </div>
 
@@ -227,9 +213,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               <Select
                 value={field.value}
                 onChange={field.onChange}
-                options={accounts.map(a => ({
+                options={accounts.map((a) => ({
                   value: a.id,
-                  label: `${a.name} (${a.currency?.code || 'IDR'})`
+                  label: `${a.name} (${a.currency?.code || 'IDR'})`,
                 }))}
                 placeholder="Pilih Akun"
                 error={errors.account_id?.message}
@@ -247,11 +233,11 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               <Select
                 value={field.value || ''}
                 onChange={field.onChange}
-                options={categories.map(c => ({
+                options={categories.map((c) => ({
                   value: c.id,
                   label: c.name,
                   icon: c.icon,
-                  color: c.color
+                  color: c.color,
                 }))}
                 placeholder="Pilih Kategori"
                 error={errors.category_id?.message}
@@ -262,20 +248,20 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       </div>
 
       <div className="row">
-          <div className="col-md-6 mb-3">
-            <label className="form-label">Merchant / Penerima</label>
-            <div className="input-icon">
-              <span className="input-icon-addon">
-                <Icon icon="building-store" size={18} />
-              </span>
-              <input
-                type="text"
-                {...register('merchant')}
-                className="form-control"
-                placeholder="Misal: Starbucks, Tokopedia, dll"
-              />
-            </div>
+        <div className="col-md-6 mb-3">
+          <label className="form-label">Merchant / Penerima</label>
+          <div className="input-icon">
+            <span className="input-icon-addon">
+              <Icon icon="building-store" size={18} />
+            </span>
+            <input
+              type="text"
+              {...register('merchant')}
+              className="form-control"
+              placeholder="Misal: Starbucks, Tokopedia, dll"
+            />
           </div>
+        </div>
       </div>
 
       <div className="mb-3">
@@ -288,10 +274,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               multiple
               value={field.value}
               onChange={field.onChange}
-              options={tags.map(t => ({
+              options={tags.map((t) => ({
                 value: t.id,
                 label: t.name,
-                color: t.color
+                color: t.color,
               }))}
               placeholder="Pilih tags..."
             />
@@ -310,13 +296,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
       <div className="mt-4 d-flex justify-content-end gap-2">
         {onCancel ? (
-          <Button 
-            element="button" 
-            type="button" 
-            link 
-            className="text-muted" 
-            onClick={onCancel}
-          >
+          <Button element="button" type="button" link className="text-muted" onClick={onCancel}>
             Batal
           </Button>
         ) : (
@@ -324,16 +304,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             Batal
           </Button>
         )}
-        <Button
-          element="button"
-          type="submit"
-          color="primary"
-          loading={isLoading}
-          icon="check"
-        >
+        <Button element="button" type="submit" color="primary" loading={isLoading} icon="check">
           {initialData?.id ? 'Simpan Perubahan' : 'Simpan Transaksi'}
         </Button>
       </div>
     </form>
-  );
-};
+  )
+}

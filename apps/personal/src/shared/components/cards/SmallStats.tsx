@@ -1,4 +1,3 @@
-// src/components/cards/SmallStats.tsx
 import { useId } from 'react'
 import { Avatar } from '../ui/Avatar'
 import { Icon } from '../ui/Icon'
@@ -15,24 +14,24 @@ interface Person {
 
 interface SmallStatsProps {
   id?: string
-  // Layout
+
   lt?: boolean
   chartPosition?: 'left' | 'right'
-  // Chart
+
   chartType?: 'line' | 'bar' | 'donut'
   chartData?: string
-  // Icon
+
   icon?: string
   smallIcon?: string
   color?: string
-  // Content
+
   title?: string
   description?: string
   descriptionValue?: string
   descriptionValueColor?: string
   trending?: number
   button?: string
-  // Person
+
   person?: Person
   className?: string
 }
@@ -61,11 +60,7 @@ export function SmallStats({
   const showChartRight = chartData && chartPosition === 'right'
   const hasPerson = !!person
 
-  const cardClass = [
-    'card',
-    'card-sm',
-    className,
-  ].filter(Boolean).join(' ')
+  const cardClass = ['card', 'card-sm', className].filter(Boolean).join(' ')
 
   return (
     <div className={cardClass}>
@@ -73,7 +68,9 @@ export function SmallStats({
         <div className="row align-items-center">
           {icon ? (
             <div className="col-auto">
-              <span className={`avatar avatar-square ${color ? `bg-${color}${lt ? '-lt' : ' text-white'}` : ''}`}>
+              <span
+                className={`avatar avatar-square ${color ? `bg-${color}${lt ? '-lt' : ' text-white'}` : ''}`}
+              >
                 <Icon icon={icon} />
               </span>
             </div>
@@ -87,39 +84,33 @@ export function SmallStats({
                 id={resolvedChartId}
                 type={chartType}
                 color={color}
-                data={chartData ? chartData.split(',').map(n => parseFloat(n.trim())) : []}
+                data={chartData ? chartData.split(',').map((n) => parseFloat(n.trim())) : []}
                 height={2.5}
                 small={true}
               />
             </div>
           ) : null}
 
-          {/* Middle: text content */}
           <div className="col">
             <div className="fw-medium">
               {title}
-              {smallIcon && (
-                <Icon icon={smallIcon} color={color} className="icon-sm ms-1" />
-              )}
+              {smallIcon && <Icon icon={smallIcon} color={color} className="icon-sm ms-1" />}
               {descriptionValue && (
                 <span className={`float-end fw-medium text-${descriptionValueColor}`}>
                   {descriptionValue}
                 </span>
               )}
             </div>
-            <div className="text-secondary">
-              {description}
-            </div>
+            <div className="text-secondary">{description}</div>
           </div>
 
-          {/* Right: chart OR trending OR button */}
           {showChartRight && (
             <div className="col-auto">
               <ChartSparkline
                 id={resolvedChartId}
                 type={chartType}
                 color={color}
-                data={chartData ? chartData.split(',').map(n => parseFloat(n.trim())) : []}
+                data={chartData ? chartData.split(',').map((n) => parseFloat(n.trim())) : []}
                 height={2.5}
                 small={true}
               />

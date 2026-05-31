@@ -1,20 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
-import { Icon } from '../ui/Icon';
+import { useState, useEffect, useRef } from 'react'
+import { Icon } from '../ui/Icon'
 
 interface GalleryPhotoCardProps {
-  imageSrc: string;
-  authorName?: string;
-  authorAvatarSrc?: string;
-  date?: string;
-  views?: number;
-  likes?: number;
-  liked?: boolean;
-  hideLikes?: boolean;
-  onLike?: () => void;
+  imageSrc: string
+  authorName?: string
+  authorAvatarSrc?: string
+  date?: string
+  views?: number
+  likes?: number
+  liked?: boolean
+  hideLikes?: boolean
+  onLike?: () => void
 }
 
 function getInitials(name: string): string {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 }
 
 export function GalleryPhotoCard({
@@ -28,20 +33,20 @@ export function GalleryPhotoCard({
   hideLikes = false,
   onLike,
 }: GalleryPhotoCardProps) {
-  const [isAnimate, setIsAnimate] = useState(false);
-  const prevLikedRef = useRef(liked);
+  const [isAnimate, setIsAnimate] = useState(false)
+  const prevLikedRef = useRef(liked)
 
   useEffect(() => {
     if (liked && !prevLikedRef.current) {
-      const startTimer = setTimeout(() => setIsAnimate(true), 0);
-      const endTimer = setTimeout(() => setIsAnimate(false), 300);
+      const startTimer = setTimeout(() => setIsAnimate(true), 0)
+      const endTimer = setTimeout(() => setIsAnimate(false), 300)
       return () => {
-        clearTimeout(startTimer);
-        clearTimeout(endTimer);
-      };
+        clearTimeout(startTimer)
+        clearTimeout(endTimer)
+      }
     }
-    prevLikedRef.current = liked;
-  }, [liked, setIsAnimate]);
+    prevLikedRef.current = liked
+  }, [liked, setIsAnimate])
 
   return (
     <div className="card card-sm">
@@ -50,8 +55,10 @@ export function GalleryPhotoCard({
       </a>
       <div className="card-body">
         <div className="d-flex align-items-center">
-          <span className="avatar me-3"
-            style={authorAvatarSrc ? { backgroundImage: `url(${authorAvatarSrc})` } : undefined}>
+          <span
+            className="avatar me-3"
+            style={authorAvatarSrc ? { backgroundImage: `url(${authorAvatarSrc})` } : undefined}
+          >
             {!authorAvatarSrc && getInitials(authorName)}
           </span>
           <div>
@@ -64,15 +71,18 @@ export function GalleryPhotoCard({
                 <Icon icon="eye" className="icon me-1" />
                 {views}
               </span>
-              <a 
-                href="#" 
-                className={`text-secondary${liked ? ' text-red' : ''} d-inline-flex align-items-center`} 
-                onClick={(e) => { e.preventDefault(); onLike?.(); }}
+              <a
+                href="#"
+                className={`text-secondary${liked ? ' text-red' : ''} d-inline-flex align-items-center`}
+                onClick={(e) => {
+                  e.preventDefault()
+                  onLike?.()
+                }}
               >
-                <Icon 
-                  icon="heart" 
-                  className={`icon me-1 ${isAnimate ? 'icon-pulse' : ''}`} 
-                  filled={liked} 
+                <Icon
+                  icon="heart"
+                  className={`icon me-1 ${isAnimate ? 'icon-pulse' : ''}`}
+                  filled={liked}
                 />
                 {likes}
               </a>
@@ -81,5 +91,5 @@ export function GalleryPhotoCard({
         </div>
       </div>
     </div>
-  );
+  )
 }

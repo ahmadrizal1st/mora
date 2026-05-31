@@ -1,4 +1,3 @@
-// src/layouts/SettingsLayout.tsx
 import { NavbarLogo } from '../components/layout/NavbarLogo'
 
 interface SettingsLayoutProps {
@@ -16,9 +15,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
       <div className="page-wrapper">
         <div className="page-body">
           <div className="container-xl">
-            <div className="card">
-              {children}
-            </div>
+            <div className="card">{children}</div>
           </div>
         </div>
       </div>

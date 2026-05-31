@@ -1,5 +1,5 @@
-import { Icon } from '@/shared/components/ui/Icon';
-import { Chart } from '@/shared/components/ui/Chart';
+import { Icon } from '@/shared/components/ui/Icon'
+import { Chart } from '@/shared/components/ui/Chart'
 
 export function BudgetAnalysisCard() {
   const radialChartData = {
@@ -31,26 +31,23 @@ export function BudgetAnalysisCard() {
               fontWeight: '700',
               color: 'var(--tblr-dark)',
               offsetY: 4,
-              formatter: () => 'Rp 10,0 jt'
-            }
-          }
-        }
-      }
+              formatter: () => 'Rp 10,0 jt',
+            },
+          },
+        },
+      },
     },
-    seriesName: 'Spent', // This sets the 'name' label
+    seriesName: 'Spent',
     stroke: {
       lineCap: 'butt',
-      dashArray: 4
-    }
-  };
+      dashArray: 4,
+    },
+  }
 
-  // Note: Standard Chart component expects series to be objects for some types, 
-  // but for radialBar it can be simple numbers array.
-  // We'll wrap it in the expected format if necessary, but radialBar usually just takes [number].
   const finalChartData = {
     ...radialChartData,
-    series: [{ name: 'Spent', data: [66] }] // Mapping for our specific Chart wrapper if needed
-  };
+    series: [{ name: 'Spent', data: [66] }],
+  }
 
   return (
     <div className="card shadow-sm border-0 h-100">
@@ -62,11 +59,13 @@ export function BudgetAnalysisCard() {
             </div>
             <span className="text-secondary text-uppercase fw-semibold fs-5">Analisis Budget</span>
           </div>
-          <a href="#" className="text-primary small fw-medium">Edit ›</a>
+          <a href="#" className="text-primary small fw-medium">
+            Edit ›
+          </a>
         </div>
-        
+
         <div className="text-secondary small mb-3">Pengeluaran vs Limit (Mei)</div>
-        
+
         <div className="mx-auto" style={{ height: '140px', width: '100%', marginTop: '-10px' }}>
           <Chart chartId="budgetRadialGauge" chartData={finalChartData as any} />
         </div>
@@ -78,11 +77,11 @@ export function BudgetAnalysisCard() {
         </div>
 
         <div className="mt-auto pt-2 border-top">
-           <div className="text-secondary small text-center">
-             Sisa budget <span className="text-dark fw-bold">Rp 5.0 jt</span> (Aman)
-           </div>
+          <div className="text-secondary small text-center">
+            Sisa budget <span className="text-dark fw-bold">Rp 5.0 jt</span> (Aman)
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

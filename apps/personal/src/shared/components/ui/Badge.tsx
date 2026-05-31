@@ -47,9 +47,7 @@ export function Badge({
       {icon && <Icon icon={icon} className={clsx(content && 'me-1')} />}
       {content}
       {addon && (
-        <span className={clsx('badge-addon', addonColor && `bg-${addonColor}`)}>
-          {addon}
-        </span>
+        <span className={clsx('badge-addon', addonColor && `bg-${addonColor}`)}>{addon}</span>
       )}
     </span>
   )

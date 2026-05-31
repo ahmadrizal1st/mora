@@ -1,5 +1,3 @@
-// src/components/cards/StorageUsageCard.tsx
-
 interface StorageItem {
   label: string
   color: string
@@ -32,19 +30,24 @@ export function StorageUsageCard({
           Using Storage <strong>{used} </strong>of {total}
         </p>
         <div className="progress progress-separated mb-3">
-          {items.filter(item => item.width > 0).map((item, i) => (
-            <div
-              key={i}
-              className={`progress-bar bg-${item.color}`}
-              role="progressbar"
-              style={{ width: `${item.width}%` }}
-              aria-label={item.label}
-            />
-          ))}
+          {items
+            .filter((item) => item.width > 0)
+            .map((item, i) => (
+              <div
+                key={i}
+                className={`progress-bar bg-${item.color}`}
+                role="progressbar"
+                style={{ width: `${item.width}%` }}
+                aria-label={item.label}
+              />
+            ))}
         </div>
         <div className="row">
           {items.map((item, i) => (
-            <div key={i} className={`col-auto d-flex align-items-center ${i === 0 ? 'pe-2' : i === items.length - 1 ? 'ps-2' : 'px-2'}`}>
+            <div
+              key={i}
+              className={`col-auto d-flex align-items-center ${i === 0 ? 'pe-2' : i === items.length - 1 ? 'ps-2' : 'px-2'}`}
+            >
               <span className={`legend me-2${item.color ? ` bg-${item.color}` : ''}`} />
               <span>{item.label}</span>
               {item.size && (

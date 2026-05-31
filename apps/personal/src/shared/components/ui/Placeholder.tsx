@@ -20,10 +20,7 @@ export function Placeholder({
   const width = widthProp ?? size ?? 400
   const height = heightProp ?? size ?? 200
 
-  const svgClasses = clsx(
-    border && 'w-100 border rounded',
-    className
-  )
+  const svgClasses = clsx(border && 'w-100 border rounded', className)
 
   return (
     <svg

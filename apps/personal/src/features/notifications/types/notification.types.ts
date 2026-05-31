@@ -1,19 +1,19 @@
 export interface NotificationData {
-  status: 'success' | 'error';
-  title: string;
-  message: string;
-  url?: string;
-  extra_data?: Record<string, unknown>;
+  status: 'success' | 'error'
+  title: string
+  message: string
+  url?: string
+  extra_data?: Record<string, unknown>
 }
 
 export interface Notification {
-  id: string;
-  type: string;
-  data: NotificationData;
-  read_at: string | null;
-  is_starred: boolean;
-  label?: string;
-  created_at: string;
+  id: string
+  type: string
+  data: NotificationData
+  read_at: string | null
+  is_starred: boolean
+  label?: string
+  created_at: string
 }
 
 export type NotificationFilter =
@@ -25,10 +25,10 @@ export type NotificationFilter =
   | 'saving'
   | 'credit'
   | 'expense'
-  | 'income';
+  | 'income'
 
 export interface NotificationParams {
-  page?: number;
-  per_page?: number;
-  filter?: NotificationFilter;
+  page?: number
+  per_page?: number
+  filter?: NotificationFilter
 }

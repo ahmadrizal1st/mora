@@ -1,7 +1,6 @@
-// src/components/marketing/HeroBrowser.tsx
-import { IconLock } from '@tabler/icons-react';
+import { IconLock } from '@tabler/icons-react'
 
-const PREVIEW_URL = 'https://preview.tabler.io';
+const PREVIEW_URL = 'https://preview.tabler.io'
 
 export default function HeroBrowser() {
   return (
@@ -9,13 +8,15 @@ export default function HeroBrowser() {
       <div className="container">
         <h1 className="hero-title">Develop beautiful web apps with&nbsp;Tabler</h1>
         <p className="hero-description mt-4">
-          Tabler is a free and open source web application UI kit based on Bootstrap&nbsp;5,
-          with hundreds responsive components and multiple layouts.
+          Tabler is a free and open source web application UI kit based on Bootstrap&nbsp;5, with
+          hundreds responsive components and multiple layouts.
         </p>
         <div className="my-5">
           <div className="row g-3 justify-content-center">
             <div className="col-auto">
-              <a href="#" className="btn btn-lg">See features</a>
+              <a href="#" className="btn btn-lg">
+                See features
+              </a>
             </div>
             <div className="col-auto">
               <a
@@ -67,5 +68,5 @@ export default function HeroBrowser() {
         </div>
       </div>
     </header>
-  );
+  )
 }

@@ -1,23 +1,37 @@
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router'
 
 export function PlanningSegmentedNav() {
-  const location = useLocation();
+  const location = useLocation()
   const tabs = [
-    { id: 'budget', label: 'Monthly Budget', badge: '5', badgeColor: 'azure', to: '/planning/budget' },
-    { id: 'goals', label: 'Financial Goals', badge: '3', badgeColor: 'warning', to: '/planning/goals' },
-    { id: 'subscriptions', label: 'Subscriptions', badge: '4', badgeColor: 'green', to: '/planning/subscriptions' },
-  ] as const;
+    {
+      id: 'budget',
+      label: 'Monthly Budget',
+      badge: '5',
+      badgeColor: 'azure',
+      to: '/planning/budget',
+    },
+    {
+      id: 'goals',
+      label: 'Financial Goals',
+      badge: '3',
+      badgeColor: 'warning',
+      to: '/planning/goals',
+    },
+    {
+      id: 'subscriptions',
+      label: 'Subscriptions',
+      badge: '4',
+      badgeColor: 'green',
+      to: '/planning/subscriptions',
+    },
+  ] as const
 
   return (
     <div className="w-100 mb-2">
-      <div 
-        className="d-flex w-100" 
-        style={{ borderBottom: '1px solid #e6e8eb' }}
-        role="tablist"
-      >
+      <div className="d-flex w-100" style={{ borderBottom: '1px solid #e6e8eb' }} role="tablist">
         <div className="d-flex w-100 justify-content-center">
           {tabs.map((tab) => {
-            const isActive = location.pathname.includes(tab.id);
+            const isActive = location.pathname.includes(tab.id)
             return (
               <Link
                 key={tab.id}
@@ -32,8 +46,8 @@ export function PlanningSegmentedNav() {
                   color: isActive ? '#1e293b' : '#64748b',
                   fontWeight: isActive ? '800' : '600',
                   borderBottom: isActive ? '3px solid #ff6b00' : '3px solid transparent',
-                  marginBottom: '-1px', // To overlap the container's bottom border
-                  maxWidth: '150px' // Prevent tabs from becoming too wide on huge screens
+                  marginBottom: '-1px',
+                  maxWidth: '150px',
                 }}
                 role="tab"
                 aria-selected={isActive}
@@ -49,10 +63,10 @@ export function PlanningSegmentedNav() {
                   </span>
                 )}
               </Link>
-            );
+            )
           })}
         </div>
       </div>
     </div>
-  );
+  )
 }

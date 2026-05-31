@@ -1,18 +1,17 @@
-// src/components/marketing/sections/Subscribe.tsx
-import { IconMail } from '@tabler/icons-react';
-import { useState } from 'react';
+import { IconMail } from '@tabler/icons-react'
+import { useState } from 'react'
 
 interface SubscribeProps {
-  background?: string;
-  className?: string;
+  background?: string
+  className?: string
 }
 
 export function Subscribe({ background, className = '' }: SubscribeProps) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('')
 
   const sectionClass = ['section', background ? `section-${background}` : '', className]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
   return (
     <section className={sectionClass}>
@@ -43,7 +42,7 @@ export function Subscribe({ background, className = '' }: SubscribeProps) {
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-export default Subscribe;
+export default Subscribe

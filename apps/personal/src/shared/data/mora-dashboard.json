@@ -10,43 +10,19 @@
     "incomeSeries": [
       {
         "name": "Income",
-        "data": [
-          10,
-          15,
-          12,
-          18,
-          20,
-          22,
-          25
-        ]
+        "data": [10, 15, 12, 18, 20, 22, 25]
       }
     ],
     "expenseSeries": [
       {
         "name": "Expense",
-        "data": [
-          8,
-          12,
-          10,
-          15,
-          14,
-          18,
-          16
-        ]
+        "data": [8, 12, 10, 15, 14, 18, 16]
       }
     ],
     "savingsSeries": [
       {
         "name": "Savings",
-        "data": [
-          2,
-          3,
-          2,
-          3,
-          6,
-          4,
-          9
-        ]
+        "data": [2, 3, 2, 3, 6, 4, 9]
       }
     ]
   },
@@ -84,92 +60,45 @@
     "series": [
       {
         "name": "Income",
-        "data": [
-          6000,
-          4000,
-          5000,
-          7000,
-          4500,
-          6000,
-          3000,
-          4500,
-          7200,
-          5500,
-          3500,
-          4500
-        ],
+        "data": [6000, 4000, 5000, 7000, 4500, 6000, 3000, 4500, 7200, 5500, 3500, 4500],
         "color": "teal"
       },
       {
         "name": "Expense",
         "data": [
-          -4500,
-          -6000,
-          -5800,
-          -2500,
-          -4500,
-          -3800,
-          -5500,
-          -5000,
-          -5500,
-          -4200,
-          -6300,
-          -3500
+          -4500, -6000, -5800, -2500, -4500, -3800, -5500, -5000, -5500, -4200, -6300, -3500
         ],
         "color": "lime"
       }
     ],
-    "months": [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ]
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   },
   "statistics": {
     "total": "Rp 3,500",
     "series": [
       {
         "name": "Rent & Living",
-        "data": [
-          2100
-        ],
+        "data": [2100],
         "color": "primary"
       },
       {
         "name": "Investment",
-        "data": [
-          525
-        ],
+        "data": [525],
         "color": "green"
       },
       {
         "name": "Education",
-        "data": [
-          420
-        ],
+        "data": [420],
         "color": "blue"
       },
       {
         "name": "Food & Drink",
-        "data": [
-          280
-        ],
+        "data": [280],
         "color": "orange"
       },
       {
         "name": "Entertainment",
-        "data": [
-          175
-        ],
+        "data": [175],
         "color": "red"
       }
     ]

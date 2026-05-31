@@ -17,14 +17,7 @@
   "googleMapsKey": "",
   "googleMapsDevKey": "",
   "npmPackage": "@tabler/core",
-  "cssPlugins": [
-    "flags",
-    "socials",
-    "payments",
-    "vendors",
-    "marketing",
-    "themes"
-  ],
+  "cssPlugins": ["flags", "socials", "payments", "vendors", "marketing", "themes"],
   "icons": {
     "link": "https://tabler.io/icons"
   },

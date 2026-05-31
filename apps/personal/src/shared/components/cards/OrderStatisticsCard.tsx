@@ -1,14 +1,14 @@
-interface OrderItem { 
-  title: string; 
-  subtitle: string; 
-  color: string; 
-  orders?: number 
+interface OrderItem {
+  title: string
+  subtitle: string
+  color: string
+  orders?: number
 }
 
 interface OrderStatisticsCardProps {
-  total?: string;
-  trend?: number;
-  items?: OrderItem[];
+  total?: string
+  trend?: number
+  items?: OrderItem[]
 }
 
 export function OrderStatisticsCard({
@@ -44,7 +44,9 @@ export function OrderStatisticsCard({
         <ul className="list-unstyled">
           {items.map((item, i) => (
             <li key={i} className="row g-2 align-items-center mb-2">
-              <div className="col-auto"><span className={`legend bg-${item.color}`} /></div>
+              <div className="col-auto">
+                <span className={`legend bg-${item.color}`} />
+              </div>
               <div className="col">
                 {item.title}
                 <div className="fs-6 text-secondary">{item.subtitle}</div>
@@ -59,5 +61,5 @@ export function OrderStatisticsCard({
         </ul>
       </div>
     </div>
-  );
+  )
 }

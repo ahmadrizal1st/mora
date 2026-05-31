@@ -1,14 +1,14 @@
 import api from '@/shared/api/client'
-import type { 
-  LoginCredentials, 
-  RegisterCredentials, 
-  AuthResponse, 
+import type {
+  LoginCredentials,
+  RegisterCredentials,
+  AuthResponse,
   User,
   ForgotPasswordCredentials,
   ResetPasswordCredentials,
   Verify2FACredentials,
   MagicLinkCredentials,
-  PhoneCredentials
+  PhoneCredentials,
 } from '../types/auth.types'
 
 export const AuthService = {
@@ -54,7 +54,6 @@ export const AuthService = {
   },
 
   async lockSession(): Promise<void> {
-    // This could also be a local clear/suspend, but let's call API if it exists
     await api.post('security/lock')
   },
 

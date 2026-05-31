@@ -7,7 +7,6 @@ import { Chart, type ChartData } from '@/shared/components/ui/Chart'
 import { CardDropdown } from '@/shared/components/ui/CardDropdown'
 import { StatCard } from '@/shared/components/cards/StatCard'
 
-// Data
 import cryptoCurrenciesJson from '@/shared/data/crypto-currencies.json'
 import cryptoMarketsJson from '@/shared/data/crypto-markets.json'
 import cryptoOrdersJson from '@/shared/data/crypto-orders.json'
@@ -36,19 +35,22 @@ interface CryptoOrder {
 
 const cryptoCurrencies = cryptoCurrenciesJson as unknown as CryptoCurrency[]
 const cryptoMarkets = cryptoMarketsJson as unknown as CryptoMarket[]
-const cryptoOrders = cryptoOrdersJson as unknown as { sell_orders: CryptoOrder[], buy_orders: CryptoOrder[] }
+const cryptoOrders = cryptoOrdersJson as unknown as {
+  sell_orders: CryptoOrder[]
+  buy_orders: CryptoOrder[]
+}
 const chartsData = chartsDataJson as unknown as Record<string, ChartData>
 
 export default function DashboardCrypto() {
-  const btc = cryptoCurrencies.find(c => c.symbol === 'BTC')!
-  const ltc = cryptoCurrencies.find(c => c.symbol === 'LTC')!
-  const eth = cryptoCurrencies.find(c => c.symbol === 'ETH')!
-  const xmr = cryptoCurrencies.find(c => c.symbol === 'XMR')!
+  const btc = cryptoCurrencies.find((c) => c.symbol === 'BTC')!
+  const ltc = cryptoCurrencies.find((c) => c.symbol === 'LTC')!
+  const eth = cryptoCurrencies.find((c) => c.symbol === 'ETH')!
+  const xmr = cryptoCurrencies.find((c) => c.symbol === 'XMR')!
 
-  const btcBalance = 2.30
+  const btcBalance = 2.3
   const btcPriceNum = parseFloat(btc.price.replace(/[$,]/g, ''))
   const totalUsdRaw = btcPriceNum * btcBalance
-  
+
   const ltcPriceNum = parseFloat(ltc.price.replace(/[$,]/g, ''))
   const ethPriceNum = parseFloat(eth.price.replace(/[$,]/g, ''))
   const xmrPriceNum = parseFloat(xmr.price.replace(/[$,]/g, ''))
@@ -95,7 +97,9 @@ export default function DashboardCrypto() {
                 icon="currency-litecoin"
                 main={ltcBtc}
                 sub={ltc.price}
-                extra={<span className="text-muted">Volume: {ltc['volume-24h'].replace('$', '')}</span>}
+                extra={
+                  <span className="text-muted">Volume: {ltc['volume-24h'].replace('$', '')}</span>
+                }
               />
             </div>
 
@@ -105,7 +109,9 @@ export default function DashboardCrypto() {
                 icon="currency-ethereum"
                 main={ethBtc}
                 sub={eth.price}
-                extra={<span className="text-muted">Volume: {eth['volume-24h'].replace('$', '')}</span>}
+                extra={
+                  <span className="text-muted">Volume: {eth['volume-24h'].replace('$', '')}</span>
+                }
               />
             </div>
 
@@ -115,7 +121,9 @@ export default function DashboardCrypto() {
                 icon="currency-monero"
                 main={xmrBtc}
                 sub={xmr.price}
-                extra={<span className="text-muted">Volume: {xmr['volume-24h'].replace('$', '')}</span>}
+                extra={
+                  <span className="text-muted">Volume: {xmr['volume-24h'].replace('$', '')}</span>
+                }
               />
             </div>
           </div>
@@ -146,7 +154,12 @@ export default function DashboardCrypto() {
                       {cryptoMarkets.slice(0, 10).map((market, i) => (
                         <tr key={i}>
                           <td>
-                            <SwitchIcon icon="star" colorB="yellow" variant="slide-up" active={market.favorite} />
+                            <SwitchIcon
+                              icon="star"
+                              colorB="yellow"
+                              variant="slide-up"
+                              active={market.favorite}
+                            />
                           </td>
                           <td>{market.coin}</td>
                           <td>{market.price}</td>

@@ -34,9 +34,5 @@ export function Ribbon({
     className
   )
 
-  return (
-    <div className={classes}>
-      {text ? text : <Icon icon={icon} filled={iconFilled} />}
-    </div>
-  )
+  return <div className={classes}>{text ? text : <Icon icon={icon} filled={iconFilled} />}</div>
 }

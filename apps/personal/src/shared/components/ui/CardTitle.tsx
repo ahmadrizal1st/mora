@@ -10,12 +10,16 @@ export interface CardTitleProps {
   onMore?: () => void
 }
 
-export function CardTitle({ title = 'Card title', more, className, children, onMore }: CardTitleProps) {
+export function CardTitle({
+  title = 'Card title',
+  more,
+  className,
+  children,
+  onMore,
+}: CardTitleProps) {
   return (
     <div className="d-flex">
-      <h3 className={clsx('card-title', className)}>
-        {children ?? title}
-      </h3>
+      <h3 className={clsx('card-title', className)}>{children ?? title}</h3>
       {more && (
         <div className="ms-auto">
           <button
@@ -59,12 +63,7 @@ export function CardDropdown({
 }: CardDropdownProps) {
   return (
     <div className={clsx('dropdown', className)}>
-      <a
-        href="#"
-        className="btn btn-action"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-      >
+      <a href="#" className="btn btn-action" data-bs-toggle="dropdown" aria-expanded="false">
         <Icon icon={icon} />
       </a>
       <div className="dropdown-menu dropdown-menu-end">

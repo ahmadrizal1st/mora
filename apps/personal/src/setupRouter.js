@@ -25,7 +25,6 @@ routes.forEach(r => {
   fs.writeFileSync(`routes/${r.path}.tsx`, fileContent);
 });
 
-// Create index
 fs.writeFileSync('routes/index.tsx', `
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
@@ -36,7 +35,6 @@ export const Route = createFileRoute('/')({
 })
 `);
 
-// Create scanner page explicitly
 fs.writeFileSync('routes/tracker.photo.tsx', `
 import { createFileRoute } from '@tanstack/react-router'
 import ScannerPage from '@/features/scanner/pages/ScannerPage'
@@ -46,7 +44,6 @@ export const Route = createFileRoute('/tracker/photo')({
 })
 `);
 
-// Create input explicitly 
 fs.writeFileSync('routes/tracker.input.tsx', `
 import { createFileRoute } from '@tanstack/react-router'
 import TrackerInputPage from '@/features/tracker/pages/TrackerInputPage'

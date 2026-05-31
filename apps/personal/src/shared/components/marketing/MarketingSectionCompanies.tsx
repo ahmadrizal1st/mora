@@ -1,16 +1,16 @@
-
 interface MarketingSectionCompaniesProps {
   background?: 'light' | 'dark' | 'transparent'
   className?: string
   divider?: 'waves' | 'arc'
 }
 
-export function MarketingSectionCompanies({ background, className }: MarketingSectionCompaniesProps) {
-  const sectionClasses = [
-    'section',
-    background && `section-${background}`,
-    className
-  ].filter(Boolean).join(' ')
+export function MarketingSectionCompanies({
+  background,
+  className,
+}: MarketingSectionCompaniesProps) {
+  const sectionClasses = ['section', background && `section-${background}`, className]
+    .filter(Boolean)
+    .join(' ')
 
   const brands = [
     { name: 'Baremetrics', image: 'baremetrics.svg' },
@@ -32,11 +32,11 @@ export function MarketingSectionCompanies({ background, className }: MarketingSe
           {brands.map((brand) => (
             <div key={brand.name} className="col-auto">
               <a href="#" className="link-secondary">
-                <img 
-                  src={`/static/marketing/brands/${brand.image}`} 
-                  alt={brand.name} 
-                  height="30" 
-                  className="d-block mx-auto opacity-50" 
+                <img
+                  src={`/static/marketing/brands/${brand.image}`}
+                  alt={brand.name}
+                  height="30"
+                  className="d-block mx-auto opacity-50"
                   style={{ filter: 'grayscale(100%)' }}
                 />
               </a>

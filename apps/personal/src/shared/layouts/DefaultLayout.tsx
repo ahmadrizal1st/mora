@@ -1,24 +1,23 @@
-// src/layouts/DefaultLayout.tsx
 import { type ReactNode } from 'react'
 import BaseLayout from './BaseLayout'
 
 interface DefaultLayoutProps {
   children: ReactNode
-  // Page header
+
   pageTitle?: string
   pagePretitle?: string
   pageDescription?: string
   pageActions?: ReactNode
-  // Container
+
   noContainer?: boolean
   containerCentered?: boolean
   containerClass?: string
   wrapperFull?: boolean
-  // Sidebar
+
   sidebar?: boolean
   sidebarDark?: boolean
   sidebarEnd?: boolean
-  // Navbar
+
   hideTopbar?: boolean
   navbarCondensed?: boolean
   navbarOverlap?: boolean
@@ -28,7 +27,7 @@ interface DefaultLayoutProps {
   navbarSticky?: boolean
   navbarTransparent?: boolean
   navbarClass?: string
-  // RTL
+
   rtl?: boolean
   bodyClass?: string
 }

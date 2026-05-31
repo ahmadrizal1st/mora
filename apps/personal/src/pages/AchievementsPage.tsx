@@ -1,2 +1,2 @@
-import AchievementsPage from '@/features/gamification/pages/AchievementsPage';
-export default AchievementsPage;
+import AchievementsPage from '@/features/gamification/pages/AchievementsPage'
+export default AchievementsPage

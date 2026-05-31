@@ -1,10 +1,19 @@
-// src/components/layout/ThemeSettings.tsx
 import { useTheme, type ThemeConfig } from '@/shared/context/ThemeContext'
 import { Icon } from '../ui/Icon'
 
 const COLORS = [
-  'blue', 'azure', 'indigo', 'purple', 'pink', 'red',
-  'orange', 'yellow', 'lime', 'green', 'teal', 'cyan',
+  'blue',
+  'azure',
+  'indigo',
+  'purple',
+  'pink',
+  'red',
+  'orange',
+  'yellow',
+  'lime',
+  'green',
+  'teal',
+  'cyan',
 ]
 
 const FONTS = ['sans-serif', 'serif', 'monospace', 'comic']
@@ -14,7 +23,8 @@ const BASES = ['slate', 'gray', 'zinc', 'neutral', 'stone']
 const RADIUSES = ['0', '0.5', '1', '1.5', '2']
 
 export function ThemeSettings() {
-  const { config, setThemeValue, resetTheme, settingsOpen, openSettings, closeSettings } = useTheme()
+  const { config, setThemeValue, resetTheme, settingsOpen, openSettings, closeSettings } =
+    useTheme()
 
   const handleChange = (key: keyof ThemeConfig, value: string) => {
     setThemeValue(key, value)
@@ -22,7 +32,6 @@ export function ThemeSettings() {
 
   return (
     <>
-      {/* Floating settings button */}
       <div className="settings d-none d-lg-block">
         <a
           href="#"
@@ -37,15 +46,8 @@ export function ThemeSettings() {
         </a>
       </div>
 
-      {/* Offcanvas backdrop */}
-      {settingsOpen && (
-        <div
-          className="offcanvas-backdrop fade show"
-          onClick={closeSettings}
-        />
-      )}
+      {settingsOpen && <div className="offcanvas-backdrop fade show" onClick={closeSettings} />}
 
-      {/* Offcanvas sidebar */}
       <div
         className={`offcanvas offcanvas-start offcanvas-narrow${settingsOpen ? ' show' : ''}`}
         tabIndex={-1}
@@ -59,16 +61,10 @@ export function ThemeSettings() {
           <h2 className="offcanvas-title" id="offcanvas-settings-title">
             Theme Settings
           </h2>
-          <button
-            type="button"
-            className="btn-close"
-            aria-label="Close"
-            onClick={closeSettings}
-          />
+          <button type="button" className="btn-close" aria-label="Close" onClick={closeSettings} />
         </div>
         <div className="offcanvas-body d-flex flex-column">
           <div>
-            {/* Color mode */}
             <div className="mb-4">
               <label className="form-label">Color mode</label>
               <p className="form-hint">Choose the color mode for your app.</p>
@@ -91,7 +87,6 @@ export function ThemeSettings() {
               ))}
             </div>
 
-            {/* Color scheme (primary color) */}
             <div className="mb-4">
               <label className="form-label">Color scheme</label>
               <p className="form-hint">The perfect color mode for your app.</p>
@@ -114,7 +109,6 @@ export function ThemeSettings() {
               </div>
             </div>
 
-            {/* Font family */}
             <div className="mb-4">
               <label className="form-label">Font family</label>
               <p className="form-hint">Choose the font family that fits your app.</p>
@@ -137,7 +131,6 @@ export function ThemeSettings() {
               ))}
             </div>
 
-            {/* Theme base */}
             <div className="mb-4">
               <label className="form-label">Theme base</label>
               <p className="form-hint">Choose the gray shade for your app.</p>
@@ -160,7 +153,6 @@ export function ThemeSettings() {
               ))}
             </div>
 
-            {/* Corner Radius */}
             <div className="mb-4">
               <label className="form-label">Corner Radius</label>
               <p className="form-hint">Choose the border radius factor for your app.</p>
@@ -193,11 +185,7 @@ export function ThemeSettings() {
               <Icon icon="rotate" />
               Reset changes
             </button>
-            <button
-              type="button"
-              className="btn btn-primary w-100"
-              onClick={closeSettings}
-            >
+            <button type="button" className="btn btn-primary w-100" onClick={closeSettings}>
               Save
             </button>
           </div>

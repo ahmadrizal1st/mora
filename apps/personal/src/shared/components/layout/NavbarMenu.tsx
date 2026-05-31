@@ -10,13 +10,13 @@ export type { NavItem }
 const closeDropdowns = () => {
   const openMenus = document.querySelectorAll('.dropdown-menu.show')
   openMenus.forEach((menu) => menu.classList.remove('show'))
-  
+
   const openToggles = document.querySelectorAll('[data-bs-toggle="dropdown"].show')
   openToggles.forEach((toggle) => {
     toggle.classList.remove('show')
     toggle.setAttribute('aria-expanded', 'false')
   })
-  
+
   const openItems = document.querySelectorAll('.dropdown.show, .dropend.show')
   openItems.forEach((item) => item.classList.remove('show'))
 }
@@ -191,9 +191,7 @@ function NavMenuItem({ item, currentPath }: { item: NavItem; currentPath: string
             </span>
           )}
           <span className="nav-link-title">{item.label}</span>
-          {item.badge && (
-            <span className="badge badge-sm bg-red text-red-fg">{item.badge}</span>
-          )}
+          {item.badge && <span className="badge badge-sm bg-red text-red-fg">{item.badge}</span>}
         </a>
         <NavMenuDropdown
           items={item.items || []}
@@ -209,12 +207,7 @@ function NavMenuItem({ item, currentPath }: { item: NavItem; currentPath: string
   return (
     <li className={clsx('nav-item', active && 'active', item.disabled && 'disabled')}>
       {item.disabled ? (
-        <a
-          className={navLinkClasses}
-          href="#"
-          tabIndex={-1}
-          aria-disabled={true}
-        >
+        <a className={navLinkClasses} href="#" tabIndex={-1} aria-disabled={true}>
           {!item.hideIcons && (
             <span className="nav-link-icon d-md-none d-lg-inline-block">
               {item.icon && <Icon icon={item.icon} />}
@@ -228,12 +221,7 @@ function NavMenuItem({ item, currentPath }: { item: NavItem; currentPath: string
           )}
         </a>
       ) : item.href?.startsWith('http') ? (
-        <a
-          className="nav-link"
-          href={item.href}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a className="nav-link" href={item.href} target="_blank" rel="noopener noreferrer">
           {!item.hideIcons && (
             <span className="nav-link-icon d-md-none d-lg-inline-block">
               {item.icon && <Icon icon={item.icon} />}

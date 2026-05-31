@@ -1,17 +1,17 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 interface Employee {
-  name: string; 
-  department: string; 
-  progress?: number; 
-  avatarSrc?: string;
+  name: string
+  department: string
+  progress?: number
+  avatarSrc?: string
 }
 
 interface CompanyEmployeesCardProps {
-  employees?: Employee[];
+  employees?: Employee[]
 }
 
-const progressColor = (v: number) => v >= 70 ? 'success' : v >= 40 ? 'warning' : 'danger';
+const progressColor = (v: number) => (v >= 70 ? 'success' : v >= 40 ? 'warning' : 'danger')
 
 export function CompanyEmployeesCard({
   employees = [
@@ -22,12 +22,12 @@ export function CompanyEmployeesCard({
     { name: 'Eve Taylor', department: 'Finance', progress: 33 },
   ],
 }: CompanyEmployeesCardProps) {
-  const [processedEmployees] = useState(() => 
-    employees.map(emp => ({
+  const [processedEmployees] = useState(() =>
+    employees.map((emp) => ({
       ...emp,
-      pct: emp.progress ?? Math.floor(30 + Math.random() * 60)
+      pct: emp.progress ?? Math.floor(30 + Math.random() * 60),
     }))
-  );
+  )
 
   return (
     <div className="card">
@@ -39,44 +39,65 @@ export function CompanyEmployeesCard({
           <tr>
             <th colSpan={2}>Name</th>
             <th>Department</th>
-            <th colSpan={2} className="w-25">Progress</th>
+            <th colSpan={2} className="w-25">
+              Progress
+            </th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           {processedEmployees.map((emp, i) => {
-            const pct = emp.pct;
+            const pct = emp.pct
             return (
               <tr key={i}>
                 <td className="w-1">
-                  <span className="avatar"
-                    style={emp.avatarSrc ? { backgroundImage: `url(${emp.avatarSrc})` } : undefined}>
+                  <span
+                    className="avatar"
+                    style={emp.avatarSrc ? { backgroundImage: `url(${emp.avatarSrc})` } : undefined}
+                  >
                     {!emp.avatarSrc && emp.name.charAt(0)}
                   </span>
                 </td>
-                <td><a href="#" className="text-reset">{emp.name}</a></td>
+                <td>
+                  <a href="#" className="text-reset">
+                    {emp.name}
+                  </a>
+                </td>
                 <td>{emp.department}</td>
                 <td className="w-1 pe-0">{pct}%</td>
                 <td>
                   <div className="progress progress-xs">
-                    <div className={`progress-bar bg-${progressColor(pct)}`}
-                      role="progressbar" style={{ width: `${pct}%` }} />
+                    <div
+                      className={`progress-bar bg-${progressColor(pct)}`}
+                      role="progressbar"
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
                 </td>
                 <td>
                   <a href="#" className="text-secondary">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24"
-                      viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      fill="none"
+                    >
                       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" />
+                      <circle cx="5" cy="12" r="1" />
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="19" cy="12" r="1" />
                     </svg>
                   </a>
                 </td>
               </tr>
-            );
+            )
           })}
         </tbody>
       </table>
     </div>
-  );
+  )
 }

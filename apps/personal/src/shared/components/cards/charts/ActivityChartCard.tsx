@@ -1,4 +1,3 @@
-// src/components/cards/charts/ActivityChartCard.tsx
 import { Chart, type ChartData } from '../../ui/Chart'
 import { DropdownDays } from '../../ui/DropdownDays'
 import chartsData from '../../../data/charts.json'
@@ -16,7 +15,10 @@ export function ActivityChartCard() {
 
         <div className="row">
           <div className="col">
-            <Chart chartId="active-users-2" chartData={(chartsData as Record<string, unknown>)['active-users-2'] as ChartData} />
+            <Chart
+              chartId="active-users-2"
+              chartData={(chartsData as Record<string, unknown>)['active-users-2'] as ChartData}
+            />
           </div>
           <div className="col-md-auto">
             <div className="divide-y divide-y-fill">

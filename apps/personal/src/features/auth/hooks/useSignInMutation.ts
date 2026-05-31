@@ -14,7 +14,6 @@ export const useSignInMutation = (redirectPath?: string) => {
       await login(credentials)
     },
     onSuccess: () => {
-      // Redirect after successful login
       if (redirectPath) {
         window.location.href = redirectPath
       } else {

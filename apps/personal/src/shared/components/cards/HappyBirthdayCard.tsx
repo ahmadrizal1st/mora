@@ -1,10 +1,10 @@
-import { IconGift } from '@tabler/icons-react';
+import { IconGift } from '@tabler/icons-react'
 
 interface HappyBirthdayCardProps {
-  name?: string;
-  discountCode?: string;
-  discountPercent?: number;
-  onClaim?: () => void;
+  name?: string
+  discountCode?: string
+  discountPercent?: number
+  onClaim?: () => void
 }
 
 export function HappyBirthdayCard({
@@ -19,7 +19,8 @@ export function HappyBirthdayCard({
         <div className="display-5 leading-none mb-2">🍾 🎉</div>
         <h1>Happy Birthday, {name}!</h1>
         <p className="text-secondary">
-          We truly hope your day is brimming with joy, laughter, and countless moments that bring a smile to your face!
+          We truly hope your day is brimming with joy, laughter, and countless moments that bring a
+          smile to your face!
         </p>
         <p className="text-secondary">
           To celebrate your special day, here's a discount code just for you:{' '}
@@ -34,5 +35,5 @@ export function HappyBirthdayCard({
         </div>
       </div>
     </div>
-  );
+  )
 }

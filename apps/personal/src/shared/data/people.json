@@ -34,9 +34,7 @@
     "status": "VIP",
     "customer_type": "B2B",
     "payment_method": "Bank Transfer",
-    "tags": [
-      "High Volume"
-    ]
+    "tags": ["High Volume"]
   },
   {
     "id": "2",
@@ -73,9 +71,7 @@
     "status": "New",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 3,
@@ -112,11 +108,7 @@
     "status": "VIP",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "High Value",
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["High Value", "No Refunds", "Loyal"]
   },
   {
     "id": 4,
@@ -153,9 +145,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 5,
@@ -192,9 +182,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "Standard"
-    ]
+    "tags": ["Standard"]
   },
   {
     "id": 6,
@@ -231,10 +219,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 7,
@@ -271,9 +256,7 @@
     "status": "New",
     "customer_type": "B2B",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 8,
@@ -310,10 +293,7 @@
     "status": "VIP",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 9,
@@ -350,9 +330,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "Standard"
-    ]
+    "tags": ["Standard"]
   },
   {
     "id": 10,
@@ -389,9 +367,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 11,
@@ -428,10 +404,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 12,
@@ -468,9 +441,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Credit Card",
-    "tags": [
-      "Standard"
-    ]
+    "tags": ["Standard"]
   },
   {
     "id": 13,
@@ -507,9 +478,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 14,
@@ -545,10 +514,7 @@
     "status": "VIP",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 15,
@@ -585,10 +551,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Bank Transfer",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 16,
@@ -625,9 +588,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 17,
@@ -664,9 +625,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Credit Card",
-    "tags": [
-      "Standard"
-    ]
+    "tags": ["Standard"]
   },
   {
     "id": 18,
@@ -703,10 +662,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 19,
@@ -742,9 +698,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 20,
@@ -781,9 +735,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "Frequent Returns"
-    ]
+    "tags": ["Frequent Returns"]
   },
   {
     "id": 21,
@@ -820,9 +772,7 @@
     "status": "New",
     "customer_type": "B2C",
     "payment_method": "Cash on Delivery",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 22,
@@ -859,10 +809,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 23,
@@ -899,10 +846,7 @@
     "status": "VIP",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 24,
@@ -939,9 +883,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 25,
@@ -978,10 +920,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 26,
@@ -1018,10 +957,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 27,
@@ -1058,10 +994,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 28,
@@ -1098,9 +1031,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Credit Card",
-    "tags": [
-      "Standard"
-    ]
+    "tags": ["Standard"]
   },
   {
     "id": 29,
@@ -1136,9 +1067,7 @@
     "status": "New",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 30,
@@ -1175,10 +1104,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 31,
@@ -1214,10 +1140,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 32,
@@ -1254,10 +1177,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 33,
@@ -1294,9 +1214,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "Standard"
-    ]
+    "tags": ["Standard"]
   },
   {
     "id": 34,
@@ -1333,9 +1251,7 @@
     "status": "New",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 35,
@@ -1372,9 +1288,7 @@
     "status": "New",
     "customer_type": "Wholesale",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 36,
@@ -1411,10 +1325,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 37,
@@ -1451,10 +1362,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 38,
@@ -1491,10 +1399,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 39,
@@ -1531,10 +1436,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 40,
@@ -1571,10 +1473,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 41,
@@ -1611,10 +1510,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Bank Transfer",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 42,
@@ -1651,9 +1547,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Bank Transfer",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 43,
@@ -1690,9 +1584,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Bank Transfer",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 44,
@@ -1729,9 +1621,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Cash on Delivery",
-    "tags": [
-      "No Refunds"
-    ]
+    "tags": ["No Refunds"]
   },
   {
     "id": 45,
@@ -1768,9 +1658,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "Standard"
-    ]
+    "tags": ["Standard"]
   },
   {
     "id": 46,
@@ -1807,9 +1695,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "Standard"
-    ]
+    "tags": ["Standard"]
   },
   {
     "id": 47,
@@ -1846,9 +1732,7 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "Credit Card",
-    "tags": [
-      "Standard"
-    ]
+    "tags": ["Standard"]
   },
   {
     "id": 48,
@@ -1885,10 +1769,7 @@
     "status": "Regular",
     "customer_type": "B2B",
     "payment_method": "Bank Transfer",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   },
   {
     "id": 49,
@@ -1925,12 +1806,7 @@
     "status": "VIP",
     "customer_type": "B2C",
     "payment_method": "Bank Transfer",
-    "tags": [
-      "High Volume",
-      "High Value",
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["High Volume", "High Value", "No Refunds", "Loyal"]
   },
   {
     "id": 50,
@@ -1967,9 +1843,6 @@
     "status": "Regular",
     "customer_type": "B2C",
     "payment_method": "PayPal",
-    "tags": [
-      "No Refunds",
-      "Loyal"
-    ]
+    "tags": ["No Refunds", "Loyal"]
   }
 ]

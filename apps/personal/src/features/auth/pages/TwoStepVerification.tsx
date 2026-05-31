@@ -1,4 +1,3 @@
-// src/features/auth/pages/TwoStepVerification.tsx
 import { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import flags from '@/shared/data/flags.json'
@@ -26,24 +25,22 @@ export default function TwoStepVerification() {
       return
     }
 
-    sendCodeMutation.mutate({ 
-      phone, 
-      country_code: countryCode 
-    }, {
-      onError: (err: AxiosError) => {
-        setError(getApiErrorMessage(err, 'Failed to send verification code.'))
+    sendCodeMutation.mutate(
+      {
+        phone,
+        country_code: countryCode,
+      },
+      {
+        onError: (err: AxiosError) => {
+          setError(getApiErrorMessage(err, 'Failed to send verification code.'))
+        },
       }
-    })
+    )
   }
 
   return (
     <SingleLayout>
-      <form
-        className="card card-md"
-        onSubmit={handleSendCode}
-        autoComplete="off"
-        noValidate
-      >
+      <form className="card card-md" onSubmit={handleSendCode} autoComplete="off" noValidate>
         <div className="card-body">
           <h2 className="card-title text-center mb-4">2-Step Verification</h2>
 
@@ -55,8 +52,8 @@ export default function TwoStepVerification() {
 
           <div className="mb-3">
             <label className="form-label">Country</label>
-            <select 
-              className="form-select" 
+            <select
+              className="form-select"
               value={countryCode}
               onChange={(e) => setCountryCode(e.target.value)}
             >
@@ -71,13 +68,11 @@ export default function TwoStepVerification() {
           <div className="mb-4">
             <label className="form-label">Your Phone Number</label>
             <div className="input-group">
-              <span className="input-group-text">
-                {countryCode.toUpperCase()}
-              </span>
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="Enter phone number" 
+              <span className="input-group-text">{countryCode.toUpperCase()}</span>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter phone number"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
@@ -91,8 +86,8 @@ export default function TwoStepVerification() {
           </div>
 
           <div className="form-footer">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn btn-primary w-100"
               disabled={sendCodeMutation.isPending}
             >

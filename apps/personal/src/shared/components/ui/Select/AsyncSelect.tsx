@@ -1,12 +1,12 @@
-import AsyncSelectBase from 'react-select/async';
-import { type StylesConfig } from 'react-select';
+import AsyncSelectBase from 'react-select/async'
+import { type StylesConfig } from 'react-select'
 
 interface AsyncSelectProps<Option = unknown> {
-  loadOptions: (inputValue: string) => Promise<Option[]>;
-  onChange: (value: Option | null) => void;
-  value?: Option | null;
-  placeholder?: string;
-  isClearable?: boolean;
+  loadOptions: (inputValue: string) => Promise<Option[]>
+  onChange: (value: Option | null) => void
+  value?: Option | null
+  placeholder?: string
+  isClearable?: boolean
 }
 
 export function AsyncSelect<Option = unknown>({
@@ -16,7 +16,6 @@ export function AsyncSelect<Option = unknown>({
   placeholder = 'Cari...',
   isClearable = true,
 }: AsyncSelectProps<Option>) {
-  // Styling agar sesuai dengan Tabler
   const customStyles: StylesConfig<Option, false> = {
     control: (base, state) => ({
       ...base,
@@ -34,7 +33,7 @@ export function AsyncSelect<Option = unknown>({
       color: state.isSelected ? 'white' : '#1d273b',
       cursor: 'pointer',
     }),
-  };
+  }
 
   return (
     <AsyncSelectBase
@@ -49,5 +48,5 @@ export function AsyncSelect<Option = unknown>({
       noOptionsMessage={() => 'Data tidak ditemukan'}
       loadingMessage={() => 'Mencari...'}
     />
-  );
+  )
 }

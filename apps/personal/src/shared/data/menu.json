@@ -9,8 +9,8 @@
     "title": "Cashflow",
     "icon": "cash-banknote",
     "children": {
-      "transactions":  { "url": "transactions", "title": "Riwayat Transaksi" },
-      "accounts":      { "url": "accounts",    "title": "Kelola Akun" }
+      "transactions": { "url": "transactions", "title": "Riwayat Transaksi" },
+      "accounts": { "url": "accounts", "title": "Kelola Akun" }
     }
   },
 
@@ -18,11 +18,11 @@
     "title": "Credit",
     "icon": "credit-card",
     "children": {
-      "overview":     { "url": "credit/overview",     "title": "Overview" },
-      "credit-card":  { "url": "credit/credit-card",  "title": "Credit Card" },
-      "kta":          { "url": "credit/kta",           "title": "KTA / Pinjaman" },
-      "kpr":          { "url": "credit/kpr",           "title": "KPR / Mortgage" },
-      "paylater":     { "url": "credit/paylater",      "title": "Paylater" }
+      "overview": { "url": "credit/overview", "title": "Overview" },
+      "credit-card": { "url": "credit/credit-card", "title": "Credit Card" },
+      "kta": { "url": "credit/kta", "title": "KTA / Pinjaman" },
+      "kpr": { "url": "credit/kpr", "title": "KPR / Mortgage" },
+      "paylater": { "url": "credit/paylater", "title": "Paylater" }
     }
   },
 

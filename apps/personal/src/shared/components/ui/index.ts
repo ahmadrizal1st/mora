@@ -1,5 +1,3 @@
-// src/components/ui/index.ts
-
 export { Alert } from './Alert'
 export { Avatar } from './Avatar'
 export { AvatarList } from './AvatarList'
@@ -104,8 +102,6 @@ export type { ChartSparklineProps } from './ChartSparkline'
 
 export { Chat } from './Chat'
 export type { ChatProps, ChatMessage, ChatPerson } from './Chat'
-
-// DataGrid handled below
 
 export { DataGrid } from './DataGrid'
 export type { DataGridProps } from './DataGrid'

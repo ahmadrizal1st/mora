@@ -1,29 +1,28 @@
-// src/layouts/HomepageLayout.tsx
-import { type ReactNode } from 'react';
-import BaseLayout from './BaseLayout';
+import { type ReactNode } from 'react'
+import BaseLayout from './BaseLayout'
 
 interface HomepageLayoutProps {
-  children?: ReactNode;
-  pageHeader?: string;
-  title?: string;
-  pageActions?: ReactNode;
-  // Body modifiers
-  bodyClass?: string;
-  rtl?: boolean;
-  // Sidebar
-  sidebar?: boolean;
-  sidebarDark?: boolean;
-  sidebarEnd?: boolean;
-  hideTopbar?: boolean;
-  // Navbar modifiers
-  navbarDark?: boolean;
-  navbarCondensed?: boolean;
-  navbarOverlap?: boolean;
-  navbarSticky?: boolean;
-  navbarTransparent?: boolean;
-  navbarHideBrand?: boolean;
-  navbarHidePageMenu?: boolean;
-  navbarClass?: string;
+  children?: ReactNode
+  pageHeader?: string
+  title?: string
+  pageActions?: ReactNode
+
+  bodyClass?: string
+  rtl?: boolean
+
+  sidebar?: boolean
+  sidebarDark?: boolean
+  sidebarEnd?: boolean
+  hideTopbar?: boolean
+
+  navbarDark?: boolean
+  navbarCondensed?: boolean
+  navbarOverlap?: boolean
+  navbarSticky?: boolean
+  navbarTransparent?: boolean
+  navbarHideBrand?: boolean
+  navbarHidePageMenu?: boolean
+  navbarClass?: string
 }
 
 export default function HomepageLayout({
@@ -67,5 +66,5 @@ export default function HomepageLayout({
     >
       {children}
     </BaseLayout>
-  );
+  )
 }

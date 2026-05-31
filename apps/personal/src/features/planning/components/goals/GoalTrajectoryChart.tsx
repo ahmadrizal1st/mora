@@ -1,5 +1,5 @@
-import React from 'react';
-import { Chart } from '@/shared/components/ui/Chart';
+import React from 'react'
+import { Chart } from '@/shared/components/ui/Chart'
 
 export function GoalTrajectoryChart() {
   const chartData = {
@@ -7,14 +7,14 @@ export function GoalTrajectoryChart() {
     height: 12,
     series: [
       { name: 'Target', data: [20, 40, 60, 80, 100, 120], color: 'secondary' },
-      { name: 'Actual', data: [25, 45, 55, 75, 95, 105], color: 'primary' }
+      { name: 'Actual', data: [25, 45, 55, 75, 95, 105], color: 'primary' },
     ],
     categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
     extend: {
       stroke: { width: [2, 4], dashArray: [5, 0] },
-      markers: { size: 4 }
-    }
-  };
+      markers: { size: 4 },
+    },
+  }
 
   return (
     <div className="card shadow-sm border-0 h-100">
@@ -30,5 +30,5 @@ export function GoalTrajectoryChart() {
         </div>
       </div>
     </div>
-  );
+  )
 }

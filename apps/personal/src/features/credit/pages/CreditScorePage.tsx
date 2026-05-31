@@ -1,5 +1,5 @@
-import { CreditScoreDeepDive } from '../components/CreditScoreDeepDive';
+import { CreditScoreDeepDive } from '../components/CreditScoreDeepDive'
 
 export function CreditScorePage() {
-  return <CreditScoreDeepDive />;
+  return <CreditScoreDeepDive />
 }

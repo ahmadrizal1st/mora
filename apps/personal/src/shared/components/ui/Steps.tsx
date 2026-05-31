@@ -54,12 +54,7 @@ export function Steps({
 
         if (isClickable) {
           return (
-            <a
-              key={step}
-              href={item?.href ?? '#'}
-              className={linkClass}
-              {...tooltipProps}
-            >
+            <a key={step} href={item?.href ?? '#'} className={linkClass} {...tooltipProps}>
               {showTitle && (item?.label ?? `Step ${step}`)}
             </a>
           )

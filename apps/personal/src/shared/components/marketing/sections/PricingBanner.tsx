@@ -1,5 +1,3 @@
-// src/components/marketing/sections/PricingBanner.tsx
-
 import { Icon } from '../../ui/Icon'
 
 interface PricingBannerFeature {

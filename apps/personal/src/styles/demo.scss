@@ -1,7 +1,7 @@
 // src/styles/demo.scss
-$prefix: "tblr-";
+$prefix: 'tblr-';
 
-@use "highlight";
+@use 'highlight';
 
 .dropdown-menu-demo {
   display: inline-block;
@@ -34,7 +34,7 @@ $prefix: "tblr-";
 }
 
 .demo-dividers {
-  >p {
+  > p {
     opacity: 0.2;
     user-select: none;
   }
@@ -49,7 +49,7 @@ $demo-icon-size: 4rem;
   margin: 0 -2px -1px 0;
   list-style: none;
 
-  >* {
+  > * {
     flex: 1 0 $demo-icon-size;
   }
 }
@@ -66,8 +66,10 @@ $demo-icon-size: 4rem;
   aspect-ratio: 1;
   text-align: center;
   padding: 0.5rem;
-  border-right: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color);
-  border-bottom: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color);
+  border-right: var(--#{$prefix}border-width) var(--#{$prefix}border-style)
+    var(--#{$prefix}border-color);
+  border-bottom: var(--#{$prefix}border-width) var(--#{$prefix}border-style)
+    var(--#{$prefix}border-color);
   color: inherit;
   cursor: pointer;
 

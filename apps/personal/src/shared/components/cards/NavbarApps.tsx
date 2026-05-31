@@ -1,11 +1,11 @@
-// src/components/cards/NavbarApps.tsx
 import { Icon } from '../ui/Icon'
 import socialsData from '../../data/socials.json'
 
-const icons = import.meta.glob(
-  '/node_modules/@tabler/core/dist/img/social/*.svg',
-  { eager: true, query: '?url', import: 'default' }
-) as Record<string, string>
+const icons = import.meta.glob('/node_modules/@tabler/core/dist/img/social/*.svg', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>
 
 function getSocialIcon(file: string): string {
   return icons[`/node_modules/@tabler/core/dist/img/social/${file}.svg`] ?? ''
@@ -21,10 +21,7 @@ interface NavbarAppsProps {
   limit?: number
 }
 
-export function NavbarApps({
-  apps = socialsData as Social[],
-  limit = 12,
-}: NavbarAppsProps) {
+export function NavbarApps({ apps = socialsData as Social[], limit = 12 }: NavbarAppsProps) {
   const items = apps.slice(0, limit)
 
   return (

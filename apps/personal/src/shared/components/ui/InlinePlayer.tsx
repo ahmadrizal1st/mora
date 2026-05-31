@@ -9,21 +9,14 @@ export interface InlinePlayerProps {
   className?: string
 }
 
-export function InlinePlayer({
-  id,
-  type = 'youtube',
-  embedId,
-  className,
-}: InlinePlayerProps) {
+export function InlinePlayer({ id, type = 'youtube', embedId, className }: InlinePlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<Plyr | null>(null)
 
   useEffect(() => {
     if (!containerRef.current) return
 
-    playerRef.current = new Plyr(containerRef.current, {
-      // Plyr options can be added here
-    })
+    playerRef.current = new Plyr(containerRef.current, {})
 
     return () => {
       if (playerRef.current) {

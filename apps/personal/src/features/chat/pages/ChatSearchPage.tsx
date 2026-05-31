@@ -6,12 +6,11 @@ import { useChatStore } from '../store/useChatStore'
 import { ChatHistoryDrawer } from '../components/ChatHistoryDrawer'
 import clsx from 'clsx'
 
-// Simple relative time formatter
 function formatRelativeTime(dateString: string) {
   const date = new Date(dateString)
   const now = new Date()
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-  
+
   if (diffInSeconds < 60) return 'Just now'
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`
@@ -25,7 +24,7 @@ function formatRelativeTime(dateString: string) {
 export function ChatSearchPage() {
   const navigate = useNavigate()
   const { sessions, deleteSessions, loadSession } = useChatStore()
-  
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSelectionMode, setIsSelectionMode] = useState(false)
@@ -34,7 +33,7 @@ export function ChatSearchPage() {
   const filteredSessions = useMemo(() => {
     if (!searchQuery.trim()) return sessions
     const query = searchQuery.toLowerCase()
-    return sessions.filter(s => s.title.toLowerCase().includes(query))
+    return sessions.filter((s) => s.title.toLowerCase().includes(query))
   }, [sessions, searchQuery])
 
   const toggleSelectionMode = () => {
@@ -60,7 +59,7 @@ export function ChatSearchPage() {
     if (selectedIds.size === filteredSessions.length) {
       setSelectedIds(new Set())
     } else {
-      setSelectedIds(new Set(filteredSessions.map(s => s.id)))
+      setSelectedIds(new Set(filteredSessions.map((s) => s.id)))
     }
   }
 
@@ -82,17 +81,22 @@ export function ChatSearchPage() {
   }
 
   return (
-    <div className="d-flex w-100 bg-light dark:bg-dark text-body dark:text-white" style={{ height: '100dvh', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-      <ChatHistoryDrawer 
-        isOpen={isDrawerOpen} 
-        onToggle={() => setIsDrawerOpen(!isDrawerOpen)} 
-      />
+    <div
+      className="d-flex w-100 bg-light dark:bg-dark text-body dark:text-white"
+      style={{ height: '100dvh', paddingTop: 'env(safe-area-inset-top, 0px)' }}
+    >
+      <ChatHistoryDrawer isOpen={isDrawerOpen} onToggle={() => setIsDrawerOpen(!isDrawerOpen)} />
 
-      <div className="flex-grow-1 d-flex flex-column h-100 position-relative" style={{ minWidth: 0 }}>
-        {/* Global Header */}
-        <div className="bg-transparent px-3 py-3 d-flex align-items-center gap-3 position-absolute w-100" style={{ zIndex: 10, top: 0, left: 0, right: 0 }}>
+      <div
+        className="flex-grow-1 d-flex flex-column h-100 position-relative"
+        style={{ minWidth: 0 }}
+      >
+        <div
+          className="bg-transparent px-3 py-3 d-flex align-items-center gap-3 position-absolute w-100"
+          style={{ zIndex: 10, top: 0, left: 0, right: 0 }}
+        >
           {!isDrawerOpen && (
-            <Button 
+            <Button
               iconOnly
               ghost
               size="md"
@@ -113,28 +117,34 @@ export function ChatSearchPage() {
           />
         </div>
 
-        {/* Main Content Area */}
         <div className="flex-grow-1 overflow-auto custom-scrollbar pt-5 mt-4">
           <div className="mx-auto w-100 px-3 py-4" style={{ maxWidth: '800px' }}>
-            
-            {/* Title & Actions */}
             <div className="d-flex align-items-center justify-content-between mb-4">
-              <h2 className="mb-0 fw-semibold text-body dark:text-white" style={{ fontFamily: 'serif' }}>Chats</h2>
-              
+              <h2
+                className="mb-0 fw-semibold text-body dark:text-white"
+                style={{ fontFamily: 'serif' }}
+              >
+                Chats
+              </h2>
+
               <div className="d-flex align-items-center gap-2">
                 {isSelectionMode ? (
                   <>
                     <span className="text-muted small me-2">{selectedIds.size} selected</span>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       pill
                       color="dark"
                       className="bg-light dark:bg-secondary dark:bg-opacity-25 border-0 text-body dark:text-white hover-bg-secondary hover-bg-opacity-25"
                       onClick={handleSelectAll}
-                      text={selectedIds.size === filteredSessions.length && filteredSessions.length > 0 ? "Deselect all" : "Select all"}
+                      text={
+                        selectedIds.size === filteredSessions.length && filteredSessions.length > 0
+                          ? 'Deselect all'
+                          : 'Select all'
+                      }
                     />
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       pill
                       color="dark"
                       className="bg-light dark:bg-secondary dark:bg-opacity-25 border-0 text-body dark:text-white hover-bg-secondary hover-bg-opacity-25"
@@ -142,8 +152,8 @@ export function ChatSearchPage() {
                       disabled={selectedIds.size === 0}
                       text="Delete"
                     />
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       pill
                       color="dark"
                       className="bg-transparent border-0 text-body dark:text-white hover-bg-light dark:hover-bg-secondary dark:hover-bg-opacity-25"
@@ -153,16 +163,16 @@ export function ChatSearchPage() {
                   </>
                 ) : (
                   <>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       pill
                       white
                       className="text-body dark:text-white hover-bg-light dark:hover-bg-secondary dark:hover-bg-opacity-25"
                       onClick={toggleSelectionMode}
                       text="Select chats"
                     />
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       pill
                       color="primary"
                       className="fw-medium border-0 shadow-sm"
@@ -177,16 +187,15 @@ export function ChatSearchPage() {
               </div>
             </div>
 
-            {/* Search Bar */}
             <div className="mb-4">
               <div className="input-icon">
                 <span className="input-icon-addon">
                   <Icon icon="search" size={16} className="text-muted" />
                 </span>
-                <input 
-                  type="text" 
-                  className="form-control bg-white dark:bg-secondary dark:bg-opacity-25 border border-light dark:border-0 text-body dark:text-white py-2 shadow-sm dark:shadow-none" 
-                  placeholder="Search chats..." 
+                <input
+                  type="text"
+                  className="form-control bg-white dark:bg-secondary dark:bg-opacity-25 border border-light dark:border-0 text-body dark:text-white py-2 shadow-sm dark:shadow-none"
+                  placeholder="Search chats..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{ borderRadius: '50px' }}
@@ -194,7 +203,6 @@ export function ChatSearchPage() {
               </div>
             </div>
 
-            {/* List of Chats */}
             <div className="d-flex flex-column">
               {filteredSessions.length === 0 ? (
                 <div className="text-center text-muted py-5">
@@ -204,19 +212,20 @@ export function ChatSearchPage() {
                 filteredSessions.map((session, index) => {
                   const isSelected = selectedIds.has(session.id)
                   return (
-                    <div 
+                    <div
                       key={session.id}
                       className={clsx(
-                        "d-flex align-items-center gap-3 py-3 px-2 cursor-pointer transition-colors",
-                        index !== filteredSessions.length - 1 && "border-bottom border-light dark:border-secondary dark:border-opacity-25",
-                        "hover-bg-white dark:hover-bg-secondary dark:hover-bg-opacity-10 rounded-2",
-                        isSelectionMode && isSelected && "bg-primary bg-opacity-10"
+                        'd-flex align-items-center gap-3 py-3 px-2 cursor-pointer transition-colors',
+                        index !== filteredSessions.length - 1 &&
+                          'border-bottom border-light dark:border-secondary dark:border-opacity-25',
+                        'hover-bg-white dark:hover-bg-secondary dark:hover-bg-opacity-10 rounded-2',
+                        isSelectionMode && isSelected && 'bg-primary bg-opacity-10'
                       )}
                       style={{ cursor: 'pointer', minHeight: '48px' }}
                       onClick={() => handleRowClick(session.id)}
                     >
                       {isSelectionMode && (
-                        <div 
+                        <div
                           className="d-flex align-items-center justify-content-center text-muted"
                           style={{ width: '24px', height: '24px' }}
                           onClick={(e) => {
@@ -230,9 +239,12 @@ export function ChatSearchPage() {
                           )}
                         </div>
                       )}
-                      
+
                       <div className="flex-grow-1 d-flex align-items-center">
-                        <span className="text-body dark:text-white me-3 text-truncate fw-medium" style={{ fontSize: '14px', maxWidth: '70%' }}>
+                        <span
+                          className="text-body dark:text-white me-3 text-truncate fw-medium"
+                          style={{ fontSize: '14px', maxWidth: '70%' }}
+                        >
                           {session.title || 'Untitled'}
                         </span>
                         <span className="text-muted small" style={{ fontSize: '12px' }}>
@@ -244,11 +256,9 @@ export function ChatSearchPage() {
                 })
               )}
             </div>
-
           </div>
         </div>
       </div>
-      
     </div>
   )
 }

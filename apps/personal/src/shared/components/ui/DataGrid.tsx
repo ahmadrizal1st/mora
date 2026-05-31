@@ -7,11 +7,7 @@ export interface DataGridProps {
 }
 
 export function DataGrid({ children, className }: DataGridProps) {
-  return (
-    <div className={clsx('datagrid', className)}>
-      {children}
-    </div>
-  )
+  return <div className={clsx('datagrid', className)}>{children}</div>
 }
 
 export interface DataGridItemProps {
@@ -25,9 +21,7 @@ export function DataGridItem({ title, content, children, className }: DataGridIt
   return (
     <div className={clsx('datagrid-item', className)}>
       <div className="datagrid-title">{title}</div>
-      <div className="datagrid-content">
-        {content || children}
-      </div>
+      <div className="datagrid-content">{content || children}</div>
     </div>
   )
 }

@@ -33,11 +33,12 @@ const defaultErrors: Record<string, ErrorInfo> = {
     description: 'We are sorry but you have made too many requests. Please try again later',
     illustration: 'fatal-error',
   },
-  'maintenance': {
+  maintenance: {
     header: 'Under Maintenance',
-    description: 'We are sorry but the site is currently under maintenance. Please check back later',
+    description:
+      'We are sorry but the site is currently under maintenance. Please check back later',
     illustration: 'computer-fix',
-  }
+  },
 }
 
 interface ErrorLayoutProps {
@@ -51,15 +52,15 @@ interface ErrorLayoutProps {
   to?: string
 }
 
-export default function ErrorLayout({ 
-  errorCode, 
+export default function ErrorLayout({
+  errorCode,
   type,
-  errors = {}, 
+  errors = {},
   title,
   header,
   subtitle,
   illustration,
-  to = '/'
+  to = '/',
 }: ErrorLayoutProps) {
   const finalType = type || (errorCode as string) || '404'
   const errorConfig = { ...defaultErrors, ...errors }[finalType] || defaultErrors['404']

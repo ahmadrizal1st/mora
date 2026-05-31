@@ -1,7 +1,7 @@
 interface PricingCardEnterpriseProps {
-  title?: string;
-  description?: string;
-  onBook?: () => void;
+  title?: string
+  description?: string
+  onBook?: () => void
 }
 
 export function PricingCardEnterprise({
@@ -18,10 +18,12 @@ export function PricingCardEnterprise({
             <p className="m-0 text-secondary">{description}</p>
           </div>
           <div className="col-auto">
-            <button className="btn" onClick={onBook}>Book a demo</button>
+            <button className="btn" onClick={onBook}>
+              Book a demo
+            </button>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

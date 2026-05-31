@@ -5,16 +5,15 @@ import {
   type ColumnDef,
   type SortingState,
   getSortedRowModel,
-} from '@tanstack/react-table';
-import { Icon } from '../Icon';
+} from '@tanstack/react-table'
+import { Icon } from '../Icon'
 
 interface DataTableProps<TData> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  columns: ColumnDef<TData, any>[];
-  data: TData[];
-  isLoading?: boolean;
-  sorting?: SortingState;
-  onSortingChange?: (sorting: SortingState) => void;
+  columns: ColumnDef<TData, any>[]
+  data: TData[]
+  isLoading?: boolean
+  sorting?: SortingState
+  onSortingChange?: (sorting: SortingState) => void
 }
 
 export function DataTable<TData>({
@@ -32,14 +31,14 @@ export function DataTable<TData>({
     },
     onSortingChange: (updater) => {
       if (onSortingChange) {
-        const nextSorting = typeof updater === 'function' ? updater(sorting || []) : updater;
-        onSortingChange(nextSorting);
+        const nextSorting = typeof updater === 'function' ? updater(sorting || []) : updater
+        onSortingChange(nextSorting)
       }
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    manualSorting: true, // Biarkan server yang melakukan sorting
-  });
+    manualSorting: true,
+  })
 
   return (
     <div className="table-responsive">
@@ -50,7 +49,9 @@ export function DataTable<TData>({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+                  onClick={
+                    header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
+                  }
                   style={{ cursor: header.column.getCanSort() ? 'pointer' : 'default' }}
                 >
                   <div className="d-flex align-items-center">
@@ -84,9 +85,7 @@ export function DataTable<TData>({
             table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                  <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                 ))}
               </tr>
             ))
@@ -94,5 +93,5 @@ export function DataTable<TData>({
         </tbody>
       </table>
     </div>
-  );
+  )
 }

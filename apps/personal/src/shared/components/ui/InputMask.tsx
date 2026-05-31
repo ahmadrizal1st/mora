@@ -1,4 +1,3 @@
-// src/components/ui/InputMask.tsx
 import { useEffect, useRef } from 'react'
 
 interface InputMaskProps {
@@ -10,14 +9,6 @@ interface InputMaskProps {
   defaultValue?: string
 }
 
-/**
- * InputMask component — wraps IMask library for masked inputs.
- * Requires `imask` installed: npm install imask
- *
- * In the original Liquid template this used the `data-mask` attribute
- * processed by the `imask` page-lib. Here we integrate directly via the
- * IMask JS library using a useEffect hook.
- */
 export function InputMask({
   mask,
   placeholder,
@@ -31,16 +22,15 @@ export function InputMask({
   useEffect(() => {
     if (!mask || !inputRef.current) return
 
-    // Dynamically import IMask to keep it optional
-    import('imask').then(({ default: IMask }) => {
-      const maskOptions: Record<string, unknown> = { mask }
-      if (reverse) maskOptions.lazy = false
+    import('imask')
+      .then(({ default: IMask }) => {
+        const maskOptions: Record<string, unknown> = { mask }
+        if (reverse) maskOptions.lazy = false
 
-      const maskInstance = IMask(inputRef.current!, maskOptions)
-      return () => maskInstance.destroy()
-    }).catch(() => {
-      // imask not installed — inputs still render without masking
-    })
+        const maskInstance = IMask(inputRef.current!, maskOptions)
+        return () => maskInstance.destroy()
+      })
+      .catch(() => {})
   }, [mask, reverse])
 
   return (

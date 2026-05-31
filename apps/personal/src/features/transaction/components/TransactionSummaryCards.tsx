@@ -1,29 +1,33 @@
-import { MetricAreaChartCard, ComparisonChartCard, SummaryChartCard } from '@/shared/components/cards/charts';
-import type { FC } from 'react';
-import type { TransactionSummary } from '../types/transaction.types';
+import {
+  MetricAreaChartCard,
+  ComparisonChartCard,
+  SummaryChartCard,
+} from '@/shared/components/cards/charts'
+import type { FC } from 'react'
+import type { TransactionSummary } from '../types/transaction.types'
 
 interface ChartSeriesItem {
-  name: string;
-  data: number[];
-  color?: string;
+  name: string
+  data: number[]
+  color?: string
 }
 
 interface TransactionChartData {
-  incomeSeries: ChartSeriesItem[];
-  incomeLabels: string[];
-  expenseSeries: ChartSeriesItem[];
-  expenseLabels: string[];
-  countSeries: ChartSeriesItem[];
-  countLabels: string[];
-  comparisonSeries?: ChartSeriesItem[];
-  comparisonLabels?: string[];
+  incomeSeries: ChartSeriesItem[]
+  incomeLabels: string[]
+  expenseSeries: ChartSeriesItem[]
+  expenseLabels: string[]
+  countSeries: ChartSeriesItem[]
+  countLabels: string[]
+  comparisonSeries?: ChartSeriesItem[]
+  comparisonLabels?: string[]
 }
 
 interface TransactionSummaryCardsProps {
-  summary: TransactionSummary | undefined;
-  isLoading: boolean;
-  chartData: TransactionChartData;
-  formatCurrency: (amount: number) => string;
+  summary: TransactionSummary | undefined
+  isLoading: boolean
+  chartData: TransactionChartData
+  formatCurrency: (amount: number) => string
 }
 
 export const TransactionSummaryCards: FC<TransactionSummaryCardsProps> = ({
@@ -80,5 +84,5 @@ export const TransactionSummaryCards: FC<TransactionSummaryCardsProps> = ({
         />
       </div>
     </div>
-  );
-};
+  )
+}

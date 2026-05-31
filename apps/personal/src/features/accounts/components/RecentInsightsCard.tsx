@@ -1,13 +1,13 @@
-import { Icon } from '@/shared/components/ui/Icon';
+import { Icon } from '@/shared/components/ui/Icon'
 
 export function RecentInsightsCard() {
   return (
     <div className="card shadow-sm border-0 h-100">
       <div className="card-body p-3">
         <div className="text-secondary text-uppercase fw-semibold fs-5 mb-4">Recent Insights</div>
-        
+
         <div className="d-flex gap-3 align-items-start mb-4">
-          <div 
+          <div
             className="d-flex align-items-center justify-content-center bg-blue text-white shadow-sm"
             style={{ width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0 }}
           >
@@ -22,7 +22,7 @@ export function RecentInsightsCard() {
         </div>
 
         <div className="d-flex gap-3 align-items-start mb-4">
-          <div 
+          <div
             className="d-flex align-items-center justify-content-center bg-warning text-white shadow-sm"
             style={{ width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0 }}
           >
@@ -37,7 +37,7 @@ export function RecentInsightsCard() {
         </div>
 
         <div className="d-flex gap-3 align-items-start">
-          <div 
+          <div
             className="d-flex align-items-center justify-content-center bg-green text-white shadow-sm"
             style={{ width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0 }}
           >
@@ -52,5 +52,5 @@ export function RecentInsightsCard() {
         </div>
       </div>
     </div>
-  );
+  )
 }

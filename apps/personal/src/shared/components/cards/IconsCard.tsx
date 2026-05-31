@@ -1,4 +1,3 @@
-// src/components/cards/IconsCard.tsx
 import { useMemo } from 'react'
 import * as TablerIcons from '@tabler/icons-react'
 
@@ -8,7 +7,6 @@ interface IconsCardProps {
 }
 
 function pascalToKebab(name: string): string {
-  // Strip "Icon" prefix and optional "Filled" suffix
   let stripped = name.replace(/^Icon/, '')
   stripped = stripped.replace(/Filled$/, '')
   return stripped
@@ -29,7 +27,7 @@ export function IconsCard({ title, type = 'outline' }: IconsCardProps) {
 
       if (type === 'filled' && !isFilled) continue
       if (type === 'outline' && isFilled) continue
-      // Skip "Off" variants for a cleaner display
+
       if (type === 'outline' && key.endsWith('Off')) continue
 
       const Component = (TablerIcons as unknown as Record<string, React.ElementType>)[key]
@@ -64,7 +62,7 @@ export function IconsCard({ title, type = 'outline' }: IconsCardProps) {
                 <Component className="icon" size={24} strokeWidth={2} />
               </a>
             ))}
-            {/* Spacer divs for flex alignment */}
+
             {Array.from({ length: 21 }).map((_, i) => (
               <div key={`spacer-${i}`} />
             ))}

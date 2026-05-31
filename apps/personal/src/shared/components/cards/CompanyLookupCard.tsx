@@ -1,26 +1,26 @@
 interface NewsItem {
-  title: string;
-  excerpt?: string;
-  source?: string;
-  date?: string;
-  href?: string;
+  title: string
+  excerpt?: string
+  source?: string
+  date?: string
+  href?: string
 }
 
 interface CompanyField {
-  label: string;
-  value: React.ReactNode;
+  label: string
+  value: React.ReactNode
 }
 
 interface CompanyLookupCardProps {
-  domain?: string;
-  logoUrl?: string;
-  fields?: CompanyField[];
-  location?: string;
-  timezone?: string;
-  description?: string;
-  tags?: string[];
-  sideFields?: CompanyField[];
-  news?: NewsItem[];
+  domain?: string
+  logoUrl?: string
+  fields?: CompanyField[]
+  location?: string
+  timezone?: string
+  description?: string
+  tags?: string[]
+  sideFields?: CompanyField[]
+  news?: NewsItem[]
 }
 
 export function CompanyLookupCard({
@@ -36,7 +36,7 @@ export function CompanyLookupCard({
   ],
   location = '207 Boren Ave, Seattle, WA 98109, USA',
   timezone = 'America/Los_Angeles',
-  description = 'Online shopping from the earth\'s biggest selection of products.',
+  description = "Online shopping from the earth's biggest selection of products.",
   tags = ['E-Commerce', 'B2C', 'Internet', 'Technology'],
   sideFields = [
     { label: 'Industry', value: 'Internet Software & Services' },
@@ -52,7 +52,10 @@ export function CompanyLookupCard({
       <div className="card-body">
         <div className="row align-items-center mb-4">
           <div className="col-auto">
-            <div className="avatar avatar-lg rounded" style={{ backgroundImage: `url(${logoUrl})` }} />
+            <div
+              className="avatar avatar-lg rounded"
+              style={{ backgroundImage: `url(${logoUrl})` }}
+            />
           </div>
           <div className="col">
             <div className="h3 m-0 fw-normal">{domain}</div>
@@ -103,7 +106,13 @@ export function CompanyLookupCard({
               </li>
               <li>
                 <h5>Tags</h5>
-                <div>{tags.map((t, i) => <span key={i} className="tag me-1">{t}</span>)}</div>
+                <div>
+                  {tags.map((t, i) => (
+                    <span key={i} className="tag me-1">
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </li>
               {sideFields.map((f, i) => (
                 <li key={i}>
@@ -116,5 +125,5 @@ export function CompanyLookupCard({
         </div>
       </div>
     </div>
-  );
+  )
 }

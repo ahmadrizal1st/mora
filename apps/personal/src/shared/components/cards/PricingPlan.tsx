@@ -1,17 +1,17 @@
 interface PricingPlanFeature {
-  text: string;
-  available: boolean;
-  label?: string;
+  text: string
+  available: boolean
+  label?: string
 }
 
 interface PricingPlanProps {
-  tier?: string;
-  price?: string;
-  period?: string;
-  color?: string;
-  features?: PricingPlanFeature[];
-  description?: string;
-  onPurchase?: () => void;
+  tier?: string
+  price?: string
+  period?: string
+  color?: string
+  features?: PricingPlanFeature[]
+  description?: string
+  onPurchase?: () => void
 }
 
 export function PricingPlan({
@@ -41,10 +41,36 @@ export function PricingPlan({
           {features.map((f, i) => (
             <li key={i} className="d-flex gap-2">
               <div>
-                {f.available
-                  ? <svg xmlns="http://www.w3.org/2000/svg" className="icon text-success" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l5 5l10 -10" /></svg>
-                  : <svg xmlns="http://www.w3.org/2000/svg" className="icon text-secondary" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                }
+                {f.available ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon text-success"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    fill="none"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M5 12l5 5l10 -10" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon text-secondary"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    fill="none"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                )}
               </div>
               <div className={!f.available ? 'text-secondary' : ''}>
                 {f.label && <strong>{f.label} </strong>}
@@ -55,9 +81,11 @@ export function PricingPlan({
         </ul>
         <p className="mt-4 text-muted">{description}</p>
         <div className="mt-6">
-          <button className={`btn btn-${color} w-100`} onClick={onPurchase}>Purchase Now</button>
+          <button className={`btn btn-${color} w-100`} onClick={onPurchase}>
+            Purchase Now
+          </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

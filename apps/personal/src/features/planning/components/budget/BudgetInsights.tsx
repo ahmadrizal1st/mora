@@ -1,4 +1,4 @@
-import { Icon } from '@/shared/components/ui/Icon';
+import { Icon } from '@/shared/components/ui/Icon'
 
 export function BudgetInsights() {
   const insights = [
@@ -9,7 +9,7 @@ export function BudgetInsights() {
       icon: 'shopping-cart',
       color: 'primary',
       trend: '+12%',
-      trendUp: true
+      trendUp: true,
     },
     {
       title: 'Terhemat',
@@ -18,7 +18,7 @@ export function BudgetInsights() {
       icon: 'device-tv',
       color: 'success',
       trend: '-5%',
-      trendUp: false
+      trendUp: false,
     },
     {
       title: 'Overbudget',
@@ -27,7 +27,7 @@ export function BudgetInsights() {
       icon: 'car',
       color: 'danger',
       trend: '+25%',
-      trendUp: true
+      trendUp: true,
     },
     {
       title: 'Savings Goal',
@@ -36,7 +36,7 @@ export function BudgetInsights() {
       icon: 'target',
       color: 'success',
       trend: '+5%',
-      trendUp: false
+      trendUp: false,
     },
     {
       title: 'Smart Saving',
@@ -45,9 +45,9 @@ export function BudgetInsights() {
       icon: 'refresh',
       color: 'primary',
       trend: '-10%',
-      trendUp: false
-    }
-  ];
+      trendUp: false,
+    },
+  ]
 
   return (
     <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
@@ -61,9 +61,12 @@ export function BudgetInsights() {
       <div className="card-body p-0">
         <div className="list-group list-group-flush">
           {insights.map((insight, idx) => (
-            <div key={idx} className="list-group-item py-3 px-4 border-0 border-bottom hover-bg-body-tertiary transition-all cursor-pointer">
+            <div
+              key={idx}
+              className="list-group-item py-3 px-4 border-0 border-bottom hover-bg-body-tertiary transition-all cursor-pointer"
+            >
               <div className="d-flex align-items-center gap-3">
-                <div 
+                <div
                   className={`d-flex align-items-center justify-content-center bg-${insight.color}-lt text-${insight.color}`}
                   style={{ width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0 }}
                 >
@@ -71,8 +74,15 @@ export function BudgetInsights() {
                 </div>
                 <div className="flex-fill">
                   <div className="d-flex align-items-center justify-content-between mb-1">
-                    <span className="text-secondary small fw-bold text-uppercase" style={{ fontSize: '10px' }}>{insight.title}</span>
-                    <span className={`small fw-bold ${insight.trendUp ? 'text-danger' : 'text-success'} d-flex align-items-center gap-1`}>
+                    <span
+                      className="text-secondary small fw-bold text-uppercase"
+                      style={{ fontSize: '10px' }}
+                    >
+                      {insight.title}
+                    </span>
+                    <span
+                      className={`small fw-bold ${insight.trendUp ? 'text-danger' : 'text-success'} d-flex align-items-center gap-1`}
+                    >
                       <Icon icon={insight.trendUp ? 'trending-up' : 'trending-down'} size="xs" />
                       {insight.trend}
                     </span>
@@ -89,7 +99,12 @@ export function BudgetInsights() {
       </div>
       <div className="card-footer p-3 bg-body-tertiary border-0 rounded-bottom-16">
         <div className="d-flex align-items-center justify-content-between mb-2">
-          <span className="small fw-bold text-secondary text-uppercase" style={{ fontSize: '10px' }}>Month Progress</span>
+          <span
+            className="small fw-bold text-secondary text-uppercase"
+            style={{ fontSize: '10px' }}
+          >
+            Month Progress
+          </span>
           <span className="small fw-bold text-body">16 / 31 Days</span>
         </div>
         <div className="progress progress-xs" style={{ height: '6px' }}>
@@ -97,5 +112,5 @@ export function BudgetInsights() {
         </div>
       </div>
     </div>
-  );
+  )
 }

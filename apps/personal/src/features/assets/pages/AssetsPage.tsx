@@ -1,19 +1,19 @@
-import React, { useMemo } from 'react';
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { VisualStatCard } from '@/shared/components/cards/VisualStatCard';
-import { NetWorthGrowthCard } from '@/shared/components/cards/NetWorthGrowthCard';
-import { VisualTransactionsCard } from '@/shared/components/cards/VisualTransactionsCard';
-import { AssetAllocationCard } from '@/shared/components/cards/AssetAllocationCard';
-import { PortfolioTargetsCard } from '@/shared/components/cards/PortfolioTargetsCard';
-import { FinanceScoreCard } from '@/shared/components/cards/FinanceScoreCard';
-import { CardBalanceCard } from '@/shared/components/cards/CardBalanceCard';
-import { RecentActivitiesCard } from '@/shared/components/cards/RecentActivitiesCard';
-import { useAccounts } from '@/features/transaction/hooks/useAccounts';
-import { formatCurrency } from '@/shared/utils/currencyUtils';
+import React, { useMemo } from 'react'
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import { VisualStatCard } from '@/shared/components/cards/VisualStatCard'
+import { NetWorthGrowthCard } from '@/shared/components/cards/NetWorthGrowthCard'
+import { VisualTransactionsCard } from '@/shared/components/cards/VisualTransactionsCard'
+import { AssetAllocationCard } from '@/shared/components/cards/AssetAllocationCard'
+import { PortfolioTargetsCard } from '@/shared/components/cards/PortfolioTargetsCard'
+import { FinanceScoreCard } from '@/shared/components/cards/FinanceScoreCard'
+import { CardBalanceCard } from '@/shared/components/cards/CardBalanceCard'
+import { RecentActivitiesCard } from '@/shared/components/cards/RecentActivitiesCard'
+import { useAccounts } from '@/features/transaction/hooks/useAccounts'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 
 export default function AssetsPage() {
-  const { data: accountsResponse } = useAccounts();
-  const accounts = accountsResponse?.data || [];
+  const { data: accountsResponse } = useAccounts()
+  const accounts = accountsResponse?.data || []
 
   const stats = useMemo(() => {
     const totals = {
@@ -21,33 +21,31 @@ export default function AssetsPage() {
       investment: 0,
       saving: 0,
       liabilities: 0,
-    };
+    }
 
-    accounts.forEach(acc => {
-      const balance = Number(acc.balance) || 0;
+    accounts.forEach((acc) => {
+      const balance = Number(acc.balance) || 0
       if (['cash', 'bank', 'e-wallet'].includes(acc.account_type)) {
-        totals.cash += balance;
+        totals.cash += balance
       } else if (acc.account_type === 'investment') {
-        totals.investment += balance;
+        totals.investment += balance
       } else if (acc.account_type === 'saving') {
-        totals.saving += balance;
+        totals.saving += balance
       } else if (['credit', 'loan'].includes(acc.account_type)) {
-        totals.liabilities += balance;
+        totals.liabilities += balance
       }
-    });
+    })
 
-    return totals;
-  }, [accounts]);
+    return totals
+  }, [accounts])
 
-  const totalAssets = stats.cash + stats.investment + stats.saving;
-  const netWorth = totalAssets - stats.liabilities;
+  const totalAssets = stats.cash + stats.investment + stats.saving
+  const netWorth = totalAssets - stats.liabilities
   return (
     <BaseLayout pageTitle="Asset">
       <div className="row row-cards g-3">
-        {/* COLUMN 1 & 2 Combined (6/12 total width) - Used for small stats, wide chart, and table */}
         <div className="col-lg-6">
           <div className="row row-cards g-3">
-            {/* Top Stat 1: Total Aset Bersih */}
             <div className="col-md-6">
               <VisualStatCard
                 title="Total Aset Bersih"
@@ -58,7 +56,7 @@ export default function AssetsPage() {
                 isPositive={netWorth >= 0}
               />
             </div>
-            {/* Top Stat 2: Kas & Rekening */}
+
             <div className="col-md-6">
               <VisualStatCard
                 title="Kas & Rekening"
@@ -69,7 +67,7 @@ export default function AssetsPage() {
                 isPositive={true}
               />
             </div>
-            {/* Bottom Stat 1: Tabungan */}
+
             <div className="col-md-6">
               <VisualStatCard
                 title="Tabungan"
@@ -80,7 +78,7 @@ export default function AssetsPage() {
                 isPositive={true}
               />
             </div>
-            {/* Bottom Stat 2: Kewajiban */}
+
             <div className="col-md-6">
               <VisualStatCard
                 title="Total Kewajiban"
@@ -92,7 +90,6 @@ export default function AssetsPage() {
               />
             </div>
 
-            {/* Full width within the 6/12 block for responsive wide elements */}
             <div className="col-12">
               <NetWorthGrowthCard currentNetWorth={totalAssets} />
             </div>
@@ -102,7 +99,6 @@ export default function AssetsPage() {
           </div>
         </div>
 
-        {/* COLUMN 3: Asset Allocation & Targets - takes exactly 1/4 (3/12) of total screen width */}
         <div className="col-lg-3">
           <div className="row row-cards g-3">
             <div className="col-12">
@@ -114,7 +110,6 @@ export default function AssetsPage() {
           </div>
         </div>
 
-        {/* COLUMN 4: Health, Accounts, Activities - takes exactly 1/4 (3/12) of total screen width */}
         <div className="col-lg-3">
           <div className="row row-cards g-3">
             <div className="col-12">
@@ -130,5 +125,5 @@ export default function AssetsPage() {
         </div>
       </div>
     </BaseLayout>
-  );
+  )
 }

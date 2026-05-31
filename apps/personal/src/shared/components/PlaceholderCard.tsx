@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export const PlaceholderCard1: React.FC = () => (
   <div className="card placeholder-glow">
@@ -8,11 +8,16 @@ export const PlaceholderCard1: React.FC = () => (
       <div className="placeholder placeholder-xs col-10"></div>
       <div className="placeholder placeholder-xs col-11"></div>
       <div className="mt-3">
-        <a href="#" tabIndex={-1} className="btn btn-primary disabled placeholder col-4" aria-hidden="true"></a>
+        <a
+          href="#"
+          tabIndex={-1}
+          className="btn btn-primary disabled placeholder col-4"
+          aria-hidden="true"
+        ></a>
       </div>
     </div>
   </div>
-);
+)
 
 export const PlaceholderCard2: React.FC = () => (
   <div className="card">
@@ -29,7 +34,7 @@ export const PlaceholderCard2: React.FC = () => (
       </div>
     </div>
   </div>
-);
+)
 
 export const PlaceholderCard3: React.FC = () => (
   <div className="card">
@@ -45,7 +50,7 @@ export const PlaceholderCard3: React.FC = () => (
       </div>
     </div>
   </div>
-);
+)
 
 export const PlaceholderCard4: React.FC = () => (
   <div className="card">
@@ -59,7 +64,7 @@ export const PlaceholderCard4: React.FC = () => (
       </div>
     </div>
   </div>
-);
+)
 
 export const PlaceholderCard5: React.FC = () => (
   <div className="card">
@@ -72,7 +77,7 @@ export const PlaceholderCard5: React.FC = () => (
       <div className="placeholder placeholder-xs col-10"></div>
     </div>
   </div>
-);
+)
 
 export const PlaceholderCard6: React.FC = () => (
   <div className="card">
@@ -96,4 +101,4 @@ export const PlaceholderCard6: React.FC = () => (
       ))}
     </ul>
   </div>
-);
+)

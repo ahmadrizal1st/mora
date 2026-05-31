@@ -1,4 +1,3 @@
-// src/components/parts/DashboardContent.tsx
 import { useState } from 'react'
 import { Icon } from '../ui/Icon'
 import { Chart } from '../ui/Chart'
@@ -28,7 +27,6 @@ export function DashboardContent() {
 
   return (
     <div className="row g-2 g-lg-3">
-      {/* LEFT COLUMN: WALLET & SAVINGS */}
       <div className="col-lg-3">
         <div className="row g-2 g-lg-3">
           <div className="col-12">
@@ -174,7 +172,6 @@ export function DashboardContent() {
         </div>
       </div>
 
-      {/* MIDDLE COLUMN: MAIN DASHBOARD */}
       <div className="col-lg-6 d-flex flex-column gap-2 gap-lg-3">
         <MobileGridMenu />
         <div
@@ -320,7 +317,6 @@ export function DashboardContent() {
         </div>
       </div>
 
-      {/* RIGHT COLUMN: STATISTICS & ACTIVITY */}
       <div className="col-lg-3">
         <div className="row g-3">
           <div className="col-12">
@@ -338,7 +334,6 @@ export function DashboardContent() {
                 </div>
               </div>
               <div className="card-body pt-0">
-                {/* Tabs System */}
                 <div
                   className="d-flex mb-4"
                   style={{ gap: '0', borderBottom: '1px solid var(--tblr-border-color-light)' }}

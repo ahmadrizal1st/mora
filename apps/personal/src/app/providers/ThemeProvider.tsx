@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
-import { 
-  ThemeContext, 
-  type ThemeConfig, 
-  loadInitialConfig, 
-  applyToDOM, 
-  syncURL, 
-  THEME_KEYS, 
-  DEFAULTS, 
-  LS_PREFIX 
+import {
+  ThemeContext,
+  type ThemeConfig,
+  loadInitialConfig,
+  applyToDOM,
+  syncURL,
+  THEME_KEYS,
+  DEFAULTS,
+  LS_PREFIX,
 } from '@/shared/context/ThemeContext'
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -16,11 +16,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const themeKeyRef = useRef(0)
   const [themeKey, setThemeKey] = useState(0)
 
-  // Apply to DOM whenever config changes, then bump themeKey so imperative components re-init
   useEffect(() => {
     applyToDOM(config)
     syncURL(config)
-    // Use rAF to let CSS variables settle before bumping key
+
     const raf = requestAnimationFrame(() => {
       themeKeyRef.current += 1
       setThemeKey(themeKeyRef.current)
@@ -28,7 +27,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => cancelAnimationFrame(raf)
   }, [config])
 
-  // Persist to localStorage whenever config changes
   useEffect(() => {
     for (const key of THEME_KEYS) {
       if (config[key] !== DEFAULTS[key]) {
@@ -61,10 +59,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const closeSettings = useCallback(() => setSettingsOpen(false), [])
 
   return (
-    <ThemeContext.Provider value={{
-      config, themeKey, setThemeValue, resetTheme, toggleDarkMode,
-      settingsOpen, openSettings, closeSettings,
-    }}>
+    <ThemeContext.Provider
+      value={{
+        config,
+        themeKey,
+        setThemeValue,
+        resetTheme,
+        toggleDarkMode,
+        settingsOpen,
+        openSettings,
+        closeSettings,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   )

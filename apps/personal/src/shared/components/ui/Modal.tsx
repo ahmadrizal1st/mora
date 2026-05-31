@@ -53,20 +53,10 @@ export function ModalFooter({
 
   return (
     <div className="modal-footer">
-      <button
-        type="button"
-        className="btn me-auto"
-        data-bs-dismiss="modal"
-        onClick={onClose}
-      >
+      <button type="button" className="btn me-auto" data-bs-dismiss="modal" onClick={onClose}>
         {closeLabel}
       </button>
-      <button
-        type="button"
-        className="btn btn-primary"
-        data-bs-dismiss="modal"
-        onClick={onSubmit}
-      >
+      <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={onSubmit}>
         {submitLabel}
       </button>
     </div>
@@ -100,13 +90,7 @@ export function Modal({
 }: ModalProps) {
   const isShown = show || inline
 
-  const modalClasses = clsx(
-    'modal',
-    'modal-blur',
-    'fade',
-    isShown && 'show',
-    className
-  )
+  const modalClasses = clsx('modal', 'modal-blur', 'fade', isShown && 'show', className)
 
   const dialogClasses = clsx(
     'modal-dialog',
@@ -122,7 +106,6 @@ export function Modal({
   }
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Only close if the actual modal div (backdrop) was clicked, not the dialog
     if (e.target === e.currentTarget && onClose) {
       onClose()
     }
@@ -140,9 +123,7 @@ export function Modal({
       onClick={handleBackdropClick}
     >
       <div className={dialogClasses} role="document">
-        <div className="modal-content overflow-hidden">
-          {children}
-        </div>
+        <div className="modal-content overflow-hidden">{children}</div>
       </div>
     </div>
   )

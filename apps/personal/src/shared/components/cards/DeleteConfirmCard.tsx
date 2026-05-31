@@ -1,8 +1,8 @@
 interface DeleteConfirmCardProps {
-  title?: string;
-  message?: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
+  title?: string
+  message?: string
+  onConfirm?: () => void
+  onCancel?: () => void
 }
 
 export function DeleteConfirmCard({
@@ -17,10 +17,14 @@ export function DeleteConfirmCard({
         <h3 className="card-title">{title}</h3>
         <p className="text-secondary">{message}</p>
         <div className="btn-list btn-list-center justify-content-center mt-5">
-          <button className="btn btn-danger" onClick={onConfirm}>Yes, delete it</button>
-          <button className="btn" onClick={onCancel}>Cancel</button>
+          <button className="btn btn-danger" onClick={onConfirm}>
+            Yes, delete it
+          </button>
+          <button className="btn" onClick={onCancel}>
+            Cancel
+          </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

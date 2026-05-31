@@ -24,12 +24,15 @@ export function NavbarLogo({
   const logoContent = (
     <>
       {!hideLogo && (
-        <div className={clsx('d-flex align-items-center', showTitle && 'me-3')} style={{ lineHeight: 1 }}>
-          <div 
+        <div
+          className={clsx('d-flex align-items-center', showTitle && 'me-3')}
+          style={{ lineHeight: 1 }}
+        >
+          <div
             className="me-2"
-            style={{ 
-              width: 'clamp(32px, 8vw, 44px)', 
-              height: 'clamp(32px, 8vw, 44px)', 
+            style={{
+              width: 'clamp(32px, 8vw, 44px)',
+              height: 'clamp(32px, 8vw, 44px)',
               backgroundColor: 'var(--tblr-primary)',
               WebkitMaskImage: 'url("/logo/logo-nobg-fill.png")',
               maskImage: 'url("/logo/logo-nobg-fill.png")',
@@ -39,16 +42,16 @@ export function NavbarLogo({
               maskRepeat: 'no-repeat',
               WebkitMaskPosition: 'center',
               maskPosition: 'center',
-              flexShrink: 0
+              flexShrink: 0,
             }}
           />
-          <span 
-            className="h1 mb-0 fw-bold" 
-            style={{ 
-              color: 'var(--tblr-primary)', 
+          <span
+            className="h1 mb-0 fw-bold"
+            style={{
+              color: 'var(--tblr-primary)',
               letterSpacing: '-0.05rem',
               fontFamily: "'Slackey', cursive",
-              lineHeight: 1
+              lineHeight: 1,
             }}
           >
             mora
@@ -63,7 +66,9 @@ export function NavbarLogo({
   if (header) {
     return (
       <div className={linkClass}>
-        <Link to={to} aria-label="Tabler">{logoContent}</Link>
+        <Link to={to} aria-label="Tabler">
+          {logoContent}
+        </Link>
       </div>
     )
   }

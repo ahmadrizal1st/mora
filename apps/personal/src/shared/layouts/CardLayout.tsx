@@ -1,19 +1,18 @@
-// src/layouts/CardLayout.tsx
 import type { ReactNode } from 'react'
 import DefaultLayout from './DefaultLayout'
 
 interface CardLayoutProps {
   children: ReactNode
-  // Page header
+
   pageTitle?: string
   pagePretitle?: string
   pageDescription?: string
   pageActions?: ReactNode
-  // Sidebar
+
   sidebar?: boolean
   sidebarDark?: boolean
   sidebarEnd?: boolean
-  // Navbar
+
   hideTopbar?: boolean
   navbarCondensed?: boolean
   navbarOverlap?: boolean
@@ -25,10 +24,6 @@ interface CardLayoutProps {
   bodyClass?: string
 }
 
-/**
- * CardLayout wraps page content inside a Bootstrap card.
- * Equivalent to shared/layouts/card.html (layout: default)
- */
 export default function CardLayout({
   children,
   pageTitle,
@@ -68,9 +63,7 @@ export default function CardLayout({
       bodyClass={bodyClass}
     >
       <div className="card">
-        <div className="card-body">
-          {children}
-        </div>
+        <div className="card-body">{children}</div>
       </div>
     </DefaultLayout>
   )

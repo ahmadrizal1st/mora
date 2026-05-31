@@ -18,7 +18,7 @@
     "visitors": 5372,
     "revenues": 4876.12,
     "sales": 188,
-    "conversion": 3.50,
+    "conversion": 3.5,
     "bounceRate": 32.4,
     "sessionDuration": 246,
     "pagesPerSession": 4.5,
@@ -35,7 +35,7 @@
     "bounceRate": 39.1,
     "sessionDuration": 174,
     "pagesPerSession": 3.3,
-    "costPerAcquisition": 6.90,
+    "costPerAcquisition": 6.9,
     "clickThroughRate": 1.6
   },
   {
@@ -48,7 +48,7 @@
     "bounceRate": 28.9,
     "sessionDuration": 209,
     "pagesPerSession": 4.0,
-    "costPerAcquisition": 6.10,
+    "costPerAcquisition": 6.1,
     "clickThroughRate": 2.3
   },
   {
@@ -74,7 +74,7 @@
     "bounceRate": 46.8,
     "sessionDuration": 167,
     "pagesPerSession": 2.9,
-    "costPerAcquisition": 7.10,
+    "costPerAcquisition": 7.1,
     "clickThroughRate": 1.5
   },
   {
@@ -96,11 +96,11 @@
     "visitors": 3879,
     "revenues": 2824.07,
     "sales": 132,
-    "conversion": 3.40,
+    "conversion": 3.4,
     "bounceRate": 36.2,
     "sessionDuration": 195,
     "pagesPerSession": 3.7,
-    "costPerAcquisition": 6.00,
+    "costPerAcquisition": 6.0,
     "clickThroughRate": 1.7
   },
   {
@@ -113,7 +113,7 @@
     "bounceRate": 43.0,
     "sessionDuration": 181,
     "pagesPerSession": 3.2,
-    "costPerAcquisition": 6.40,
+    "costPerAcquisition": 6.4,
     "clickThroughRate": 1.8
   },
   {
@@ -126,7 +126,7 @@
     "bounceRate": 29.6,
     "sessionDuration": 204,
     "pagesPerSession": 4.1,
-    "costPerAcquisition": 5.90,
+    "costPerAcquisition": 5.9,
     "clickThroughRate": 2.2
   }
 ]

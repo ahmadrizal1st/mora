@@ -1,4 +1,3 @@
-// src/components/marketing/sections/Faq.tsx
 import type { ReactNode } from 'react'
 
 interface FaqItem {

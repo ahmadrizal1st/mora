@@ -32,12 +32,12 @@ export function PageHeader({
             {pretitle && <div className="page-pretitle">{pretitle}</div>}
             <h1 className="page-title">
               {showBackButton && (
-                <a 
-                  href="#" 
+                <a
+                  href="#"
                   className="text-reset me-2 d-md-none"
                   onClick={(e) => {
-                    e.preventDefault();
-                    window.history.back();
+                    e.preventDefault()
+                    window.history.back()
                   }}
                   aria-label="Go back"
                 >
@@ -45,7 +45,12 @@ export function PageHeader({
                 </a>
               )}
               {icon && (
-                <span className={clsx('text-reset me-2', (icon === 'arrow-left' && !showBackButton) && 'd-md-none')}>
+                <span
+                  className={clsx(
+                    'text-reset me-2',
+                    icon === 'arrow-left' && !showBackButton && 'd-md-none'
+                  )}
+                >
                   <Icon icon={icon} />
                 </span>
               )}
@@ -53,11 +58,7 @@ export function PageHeader({
             </h1>
             {description && <div className="text-secondary mt-1">{description}</div>}
           </div>
-          {actions && (
-            <div className="col-auto ms-auto d-print-none">
-              {actions}
-            </div>
-          )}
+          {actions && <div className="col-auto ms-auto d-print-none">{actions}</div>}
         </div>
       </div>
     </div>

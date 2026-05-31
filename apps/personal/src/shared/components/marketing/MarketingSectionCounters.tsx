@@ -9,11 +9,9 @@ interface MarketingSectionCountersProps {
 }
 
 export function MarketingSectionCounters({ background, className }: MarketingSectionCountersProps) {
-  const sectionClasses = [
-    'section',
-    background && `section-${background}`,
-    className
-  ].filter(Boolean).join(' ')
+  const sectionClasses = ['section', background && `section-${background}`, className]
+    .filter(Boolean)
+    .join(' ')
 
   const counters: Counter[] = [
     { number: '48', label: 'templates' },

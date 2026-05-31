@@ -46,9 +46,7 @@ export function Tasks({ data }: TasksProps) {
               {column.tasks.map((task, taskIdx) => (
                 <div key={taskIdx} className="col-12">
                   <div className="card card-sm">
-                    {task.color && (
-                      <div className={`card-status-top bg-${task.color}`} />
-                    )}
+                    {task.color && <div className={`card-status-top bg-${task.color}`} />}
 
                     {task.starred && (
                       <div className="ribbon ribbon-top ribbon-bookmark bg-yellow">
@@ -93,7 +91,10 @@ export function Tasks({ data }: TasksProps) {
 
                           {task.due_date && (
                             <div className="col-auto">
-                              <a href="#" className="link-warning text-decoration-none d-flex align-items-center gap-1">
+                              <a
+                                href="#"
+                                className="link-warning text-decoration-none d-flex align-items-center gap-1"
+                              >
                                 <Icon icon="calendar" />
                                 {task.due_date}
                               </a>
@@ -112,16 +113,22 @@ export function Tasks({ data }: TasksProps) {
 
                           {task.subtasks && (
                             <div className="col-auto">
-                              <a href="#" className="link-secondary text-decoration-none d-flex align-items-center gap-1">
+                              <a
+                                href="#"
+                                className="link-secondary text-decoration-none d-flex align-items-center gap-1"
+                              >
                                 <Icon icon="activity" />
-                                {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+                                {task.subtasks.filter((s) => s.done).length}/{task.subtasks.length}
                               </a>
                             </div>
                           )}
 
                           {task.comments && (
                             <div className="col-auto">
-                              <a href="#" className="link-secondary text-decoration-none d-flex align-items-center gap-1">
+                              <a
+                                href="#"
+                                className="link-secondary text-decoration-none d-flex align-items-center gap-1"
+                              >
                                 <Icon icon="message" /> {task.comments}
                               </a>
                             </div>

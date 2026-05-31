@@ -2,9 +2,9 @@ import { useState, useRef, useEffect, useMemo, useCallback, type ReactNode } fro
 import { clsx } from 'clsx'
 import { Icon } from './Icon'
 import { Avatar } from './Avatar'
- import selectData from '../../data/selects.json'
- import peopleData from '../../data/people.json'
- import { type Person } from '@/shared/types/common.types'
+import selectData from '../../data/selects.json'
+import peopleData from '../../data/people.json'
+import { type Person } from '@/shared/types/common.types'
 
 export interface SelectOption {
   value: string | number
@@ -35,7 +35,7 @@ export interface SelectProps {
   className?: string
   defaultValue?: string | number | (string | number)[]
   value?: string | number | (string | number)[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   onChange?: (value: any) => void
   indicator?: 'avatar' | 'flag' | 'label'
   placement?: 'start' | 'end'
@@ -78,7 +78,7 @@ export function Select({
           return (peopleData as Person[]).map((p) => ({
             value: (p.id || '').toString(),
             label: p.full_name || '',
-            avatar: p.photo
+            avatar: p.photo,
           }))
         }
         if (entry.options) {
@@ -88,17 +88,23 @@ export function Select({
               if (o && typeof o === 'object' && o.title && o.options) {
                 return {
                   title: o.title,
-                  options: (o.options as unknown[]).map((optChild) => typeof optChild === 'string' ? { value: optChild, label: optChild } : optChild as SelectOption)
+                  options: (o.options as unknown[]).map((optChild) =>
+                    typeof optChild === 'string'
+                      ? { value: optChild, label: optChild }
+                      : (optChild as SelectOption)
+                  ),
                 }
               }
-              return typeof opt === 'string' ? { value: opt, label: opt } : opt as SelectOption
+              return typeof opt === 'string' ? { value: opt, label: opt } : (opt as SelectOption)
             })
           } else {
-            return Object.entries(entry.options as Record<string, { name?: string; flag?: string; label?: string }>).map(([val, data]) => ({
+            return Object.entries(
+              entry.options as Record<string, { name?: string; flag?: string; label?: string }>
+            ).map(([val, data]) => ({
               value: val,
               label: data.name || val,
               flag: data.flag,
-              badge: data.label
+              badge: data.label,
             }))
           }
         }
@@ -106,7 +112,7 @@ export function Select({
     }
 
     if (values) {
-      return values.map(v => ({ value: v, label: v }))
+      return values.map((v) => ({ value: v, label: v }))
     }
 
     return options
@@ -136,10 +142,10 @@ export function Select({
   const [search, setSearch] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Synchronize internal state with value prop if it changes
   const [prevValue, setPrevValue] = useState(value)
   if (value !== prevValue) {
-    const next = (value !== undefined && value !== null) ? (Array.isArray(value) ? value : [value]) : []
+    const next =
+      value !== undefined && value !== null ? (Array.isArray(value) ? value : [value]) : []
     setSelected(next)
     setPrevValue(value)
   }
@@ -158,50 +164,58 @@ export function Select({
   const filteredOptions = useMemo(() => {
     const query = search.toLowerCase()
     let results = allOptions
-    
+
     if (query) {
-      results = allOptions.filter(o => o.label.toLowerCase().includes(query))
+      results = allOptions.filter((o) => o.label.toLowerCase().includes(query))
     }
 
-    // Limit to 10 for performance, but only if not grouped
-    // If query is empty, we still only show top 10 to keep dropdown light
     return results.slice(0, 10)
   }, [allOptions, search])
 
-  const toggleOption = useCallback((val: string | number) => {
-    let next: (string | number)[]
-    if (multiple) {
-      next = selected.some(s => s.toString() === val.toString()) 
-        ? selected.filter(s => s.toString() !== val.toString()) 
-        : [...selected, val]
-      setSearch('')
-      if (inputRef.current) inputRef.current.focus()
-    } else {
-      next = [val]
-      setIsOpen(false)
-      setSearch('')
-    }
-    setSelected(next)
-    if (onChange) onChange(multiple ? next : next[0])
-  }, [multiple, selected, onChange])
+  const toggleOption = useCallback(
+    (val: string | number) => {
+      let next: (string | number)[]
+      if (multiple) {
+        next = selected.some((s) => s.toString() === val.toString())
+          ? selected.filter((s) => s.toString() !== val.toString())
+          : [...selected, val]
+        setSearch('')
+        if (inputRef.current) inputRef.current.focus()
+      } else {
+        next = [val]
+        setIsOpen(false)
+        setSearch('')
+      }
+      setSelected(next)
+      if (onChange) onChange(multiple ? next : next[0])
+    },
+    [multiple, selected, onChange]
+  )
 
-  const removeValue = useCallback((val: string | number, e: React.MouseEvent) => {
-    e.stopPropagation()
-    const next = selected.filter(s => s.toString() !== val.toString())
-    setSelected(next)
-    if (onChange) onChange(multiple ? next : next[0])
-    if (inputRef.current) inputRef.current.focus()
-  }, [selected, multiple, onChange])
+  const removeValue = useCallback(
+    (val: string | number, e: React.MouseEvent) => {
+      e.stopPropagation()
+      const next = selected.filter((s) => s.toString() !== val.toString())
+      setSelected(next)
+      if (onChange) onChange(multiple ? next : next[0])
+      if (inputRef.current) inputRef.current.focus()
+    },
+    [selected, multiple, onChange]
+  )
 
   const highlightMatch = (text: string, query: string) => {
     if (!query) return text
     const parts = text.split(new RegExp(`(${query})`, 'gi'))
     return (
       <>
-        {parts.map((part, i) => 
-          part.toLowerCase() === query.toLowerCase() 
-            ? <span key={i} className="bg-yellow-lt">{part}</span> 
-            : part
+        {parts.map((part, i) =>
+          part.toLowerCase() === query.toLowerCase() ? (
+            <span key={i} className="bg-yellow-lt">
+              {part}
+            </span>
+          ) : (
+            part
+          )
         )}
       </>
     )
@@ -209,14 +223,31 @@ export function Select({
 
   const renderOptionContent = (opt: SelectOption) => (
     <div className="d-flex align-items-center w-100">
-      {(indicator === 'avatar' || opt.avatar) && opt.avatar && <Avatar src={opt.avatar} size="xs" className="me-2" />}
-      {opt.image && <img src={opt.image} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} className="me-2" />}
-      {(indicator === 'flag' || opt.flag) && opt.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>}
-      {(indicator === 'label' || opt.badge) && opt.badge && <span className="badge bg-blue-lt me-1">{opt.badge}</span>}
-      {opt.color && <span className="status-dot ms-1 me-2" style={{ backgroundColor: opt.color }}></span>}
+      {(indicator === 'avatar' || opt.avatar) && opt.avatar && (
+        <Avatar src={opt.avatar} size="xs" className="me-2" />
+      )}
+      {opt.image && (
+        <img
+          src={opt.image}
+          alt=""
+          style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+          className="me-2"
+        />
+      )}
+      {(indicator === 'flag' || opt.flag) && opt.flag && (
+        <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>
+      )}
+      {(indicator === 'label' || opt.badge) && opt.badge && (
+        <span className="badge bg-blue-lt me-1">{opt.badge}</span>
+      )}
+      {opt.color && (
+        <span className="status-dot ms-1 me-2" style={{ backgroundColor: opt.color }}></span>
+      )}
       {opt.icon && <Icon icon={opt.icon} size={14} className="me-2 text-muted" />}
       <span className="text-truncate">{highlightMatch(opt.label, search)}</span>
-      {selected.some(s => s.toString() === opt.value.toString()) && !multiple && <Icon icon="check" size={12} className="ms-auto text-primary" />}
+      {selected.some((s) => s.toString() === opt.value.toString()) && !multiple && (
+        <Icon icon="check" size={12} className="ms-auto text-primary" />
+      )}
     </div>
   )
 
@@ -224,18 +255,61 @@ export function Select({
     if (multiple) {
       return (
         <div className="d-flex flex-wrap gap-1 align-items-center w-100">
-          {selected.map(val => {
-            const opt = allOptions.find(o => o.value.toString() === val.toString())
+          {selected.map((val) => {
+            const opt = allOptions.find((o) => o.value.toString() === val.toString())
             return (
-              <span key={val} className={clsx("badge", "bg-body-tertiary", "text-body", "border", "p-1", "rounded-1", "fw-normal", "d-flex", "align-items-center")} style={{ fontSize: '0.75rem', lineHeight: '1' }}>
-                {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={opt.avatar} size="xs" className="me-1" />}
-                {opt?.image && <img src={opt.image} alt="" style={{ width: '16px', height: '16px', objectFit: 'contain' }} className="me-1" />}
-                {(indicator === 'flag' || opt?.flag) && opt?.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-1')}></span>}
-                {(indicator === 'label' || opt?.badge) && opt?.badge && <span className="badge bg-blue-lt me-1">{opt.badge}</span>}
-                {opt?.color && <span className="status-dot me-1" style={{ backgroundColor: opt.color, width: '8px', height: '8px' }}></span>}
+              <span
+                key={val}
+                className={clsx(
+                  'badge',
+                  'bg-body-tertiary',
+                  'text-body',
+                  'border',
+                  'p-1',
+                  'rounded-1',
+                  'fw-normal',
+                  'd-flex',
+                  'align-items-center'
+                )}
+                style={{ fontSize: '0.75rem', lineHeight: '1' }}
+              >
+                {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && (
+                  <Avatar src={opt.avatar} size="xs" className="me-1" />
+                )}
+                {opt?.image && (
+                  <img
+                    src={opt.image}
+                    alt=""
+                    style={{ width: '16px', height: '16px', objectFit: 'contain' }}
+                    className="me-1"
+                  />
+                )}
+                {(indicator === 'flag' || opt?.flag) && opt?.flag && (
+                  <span
+                    className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-1')}
+                  ></span>
+                )}
+                {(indicator === 'label' || opt?.badge) && opt?.badge && (
+                  <span className="badge bg-blue-lt me-1">{opt.badge}</span>
+                )}
+                {opt?.color && (
+                  <span
+                    className="status-dot me-1"
+                    style={{ backgroundColor: opt.color, width: '8px', height: '8px' }}
+                  ></span>
+                )}
                 {opt?.icon && <Icon icon={opt.icon} size={12} className="me-1" />}
                 {opt?.label || val}
-                <span className={clsx("ms-1", "cursor-pointer", "d-flex", "align-items-center", "text-muted")} onClick={(e) => removeValue(val, e)}>
+                <span
+                  className={clsx(
+                    'ms-1',
+                    'cursor-pointer',
+                    'd-flex',
+                    'align-items-center',
+                    'text-muted'
+                  )}
+                  onClick={(e) => removeValue(val, e)}
+                >
                   <Icon icon="x" size={10} />
                 </span>
               </span>
@@ -244,15 +318,27 @@ export function Select({
           <input
             ref={inputRef}
             type="text"
-            className={clsx("p-0", "m-0", "border-0", "bg-transparent", "active-input", "flex-fill")}
-            style={{ 
-              minWidth: selected.length === 0 ? '100%' : (search ? `${Math.max(search.length * 8 + 10, 30)}px` : '20px'),
+            className={clsx(
+              'p-0',
+              'm-0',
+              'border-0',
+              'bg-transparent',
+              'active-input',
+              'flex-fill'
+            )}
+            style={{
+              minWidth:
+                selected.length === 0
+                  ? '100%'
+                  : search
+                    ? `${Math.max(search.length * 8 + 10, 30)}px`
+                    : '20px',
               width: search ? 'auto' : '0',
               flex: '1 1 auto',
-              boxShadow: 'none', 
+              boxShadow: 'none',
               outline: 'none',
               height: 'auto',
-              lineHeight: 'inherit'
+              lineHeight: 'inherit',
             }}
             value={search}
             onChange={(e) => {
@@ -267,26 +353,59 @@ export function Select({
                 if (onChange) onChange(next)
               }
             }}
-            placeholder={selected.length === 0 && typeof placeholder === 'string' ? placeholder : undefined}
+            placeholder={
+              selected.length === 0 && typeof placeholder === 'string' ? placeholder : undefined
+            }
           />
         </div>
       )
     }
-    const opt = allOptions.find(o => o.value.toString() === selected[0]?.toString())
-    if (!opt && !search) return <span className={clsx(!triggerClassName?.includes('btn') && "text-muted")}>{placeholder}</span>
+    const opt = allOptions.find((o) => o.value.toString() === selected[0]?.toString())
+    if (!opt && !search)
+      return (
+        <span className={clsx(!triggerClassName?.includes('btn') && 'text-muted')}>
+          {placeholder}
+        </span>
+      )
     if (!opt && search) return null
     return (
       <div className="d-flex align-items-center overflow-hidden">
-        {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && <Avatar src={opt.avatar} size="xs" className="me-2" />}
-        {opt?.image && <img src={opt.image} alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} className="me-2" />}
-        {(indicator === 'flag' || opt?.flag) && opt?.flag && <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>}
-        {(indicator === 'label' || opt?.badge) && opt?.badge && <span className="badge bg-blue-lt me-2">{opt.badge}</span>}
-        {opt?.color && <span className="status-dot ms-1 me-2" style={{ backgroundColor: opt.color }}></span>}
+        {(indicator === 'avatar' || opt?.avatar) && opt?.avatar && (
+          <Avatar src={opt.avatar} size="xs" className="me-2" />
+        )}
+        {opt?.image && (
+          <img
+            src={opt.image}
+            alt=""
+            style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+            className="me-2"
+          />
+        )}
+        {(indicator === 'flag' || opt?.flag) && opt?.flag && (
+          <span className={clsx('flag', 'flag-xs', `flag-country-${opt.flag}`, 'me-2')}></span>
+        )}
+        {(indicator === 'label' || opt?.badge) && opt?.badge && (
+          <span className="badge bg-blue-lt me-2">{opt.badge}</span>
+        )}
+        {opt?.color && (
+          <span className="status-dot ms-1 me-2" style={{ backgroundColor: opt.color }}></span>
+        )}
         {opt?.icon && <Icon icon={opt.icon} size={14} className="me-2 text-muted" />}
         <span className="text-truncate">{opt?.label}</span>
       </div>
     )
-  }, [selected, multiple, allOptions, placeholder, indicator, search, isOpen, onChange, removeValue, triggerClassName])
+  }, [
+    selected,
+    multiple,
+    allOptions,
+    placeholder,
+    indicator,
+    search,
+    isOpen,
+    onChange,
+    removeValue,
+    triggerClassName,
+  ])
 
   const handleContainerClick = () => {
     if (disabled) return
@@ -297,12 +416,12 @@ export function Select({
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={clsx('form-select-container', 'position-relative', className)}
       id={id}
     >
-      <div 
+      <div
         className={clsx(
           'form-control',
           'd-flex',
@@ -315,66 +434,77 @@ export function Select({
           triggerClassName
         )}
         onClick={handleContainerClick}
-        style={{ 
-          minHeight: '36px', 
+        style={{
+          minHeight: '36px',
           paddingRight: '2rem',
         }}
       >
-        <div className="flex-fill d-flex align-items-center overflow-hidden">
-          {selectedDisplay}
-        </div>
+        <div className="flex-fill d-flex align-items-center overflow-hidden">{selectedDisplay}</div>
         {!multiple && (
-           <input
-             ref={inputRef}
-             type="text"
-             className="position-absolute opacity-0"
-             style={{ left: 0, top: 0, width: '100%', height: '100%', cursor: 'pointer' }}
-             value={search}
-             onChange={(e) => {
-               setSearch(e.target.value)
-               if (!isOpen) setIsOpen(true)
-             }}
-             onKeyDown={(e) => {
-               if (e.key === 'Backspace' && !search && !multiple) {
-                 setSelected([])
-               }
-             }}
-           />
+          <input
+            ref={inputRef}
+            type="text"
+            className="position-absolute opacity-0"
+            style={{ left: 0, top: 0, width: '100%', height: '100%', cursor: 'pointer' }}
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              if (!isOpen) setIsOpen(true)
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Backspace' && !search && !multiple) {
+                setSelected([])
+              }
+            }}
+          />
         )}
-        <div 
-          className="position-absolute" 
-          style={{ right: '0.5rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
+        <div
+          className="position-absolute"
+          style={{
+            right: '0.5rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            pointerEvents: 'none',
+          }}
         >
-          <Icon icon="chevron-down" size={16} className={clsx(triggerClassName?.includes('btn') ? 'text-inherit' : 'text-muted', 'transition-transform', isOpen && 'rotate-180')} />
+          <Icon
+            icon="chevron-down"
+            size={16}
+            className={clsx(
+              triggerClassName?.includes('btn') ? 'text-inherit' : 'text-muted',
+              'transition-transform',
+              isOpen && 'rotate-180'
+            )}
+          />
         </div>
       </div>
 
       {isOpen && (
-        <div 
+        <div
           className={clsx(
-            "dropdown-menu", 
-            "show", 
-            placement === 'start' && "w-100", 
-            placement === 'end' && "dropdown-menu-end",
-            "mt-1", 
-            "shadow-sm", 
-            "overflow-auto"
-          )} 
-          style={{ 
-            maxHeight: multiple ? '185px' : '220px', 
+            'dropdown-menu',
+            'show',
+            placement === 'start' && 'w-100',
+            placement === 'end' && 'dropdown-menu-end',
+            'mt-1',
+            'shadow-sm',
+            'overflow-auto'
+          )}
+          style={{
+            maxHeight: multiple ? '185px' : '220px',
             zIndex: 1050,
             left: placement === 'end' ? 'auto' : undefined,
             right: placement === 'end' ? 0 : undefined,
-            minWidth: '100%'
+            minWidth: '100%',
           }}
         >
           {!multiple && showSearch && (
             <div className="p-2 border-bottom sticky-top bg-surface">
-              <input 
+              <input
                 ref={inputRef}
-                type="text" 
-                className="form-control form-control-sm" 
-                placeholder="Search..." 
+                type="text"
+                className="form-control form-control-sm"
+                placeholder="Search..."
                 autoFocus
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -382,14 +512,21 @@ export function Select({
               />
             </div>
           )}
-          
+
           <div className="list-group list-group-flush list-group-hoverable">
             {filteredOptions.length > 0 ? (
               (filteredOptions as SelectOption[]).map((opt) => (
-                <div 
+                <div
                   key={opt.value}
-                  className={clsx('dropdown-item', 'cursor-pointer', selected.includes(opt.value) && 'active')}
-                  onClick={(e) => { e.stopPropagation(); toggleOption(opt.value) }}
+                  className={clsx(
+                    'dropdown-item',
+                    'cursor-pointer',
+                    selected.includes(opt.value) && 'active'
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleOption(opt.value)
+                  }}
                 >
                   {renderOptionContent(opt)}
                 </div>
@@ -398,7 +535,10 @@ export function Select({
               <div className="dropdown-item text-muted">No results found</div>
             )}
             {allOptions.length > 10 && !search && (
-              <div className="dropdown-item text-muted border-top bg-body-tertiary" style={{ fontSize: '0.75rem' }}>
+              <div
+                className="dropdown-item text-muted border-top bg-body-tertiary"
+                style={{ fontSize: '0.75rem' }}
+              >
                 Showing first 10 items. Use search to find more.
               </div>
             )}

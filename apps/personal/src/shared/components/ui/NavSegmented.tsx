@@ -29,9 +29,8 @@ export function NavSegmented({
 }: NavSegmentedProps) {
   const [active, setActive] = useState(defaultActive)
 
-  const disabledArray = typeof disabled === 'string' 
-    ? disabled.split(',').map(s => s.trim()) 
-    : disabled.map(String)
+  const disabledArray =
+    typeof disabled === 'string' ? disabled.split(',').map((s) => s.trim()) : disabled.map(String)
 
   const totalCount = Math.max(items.length, icons.length)
 

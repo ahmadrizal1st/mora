@@ -1,4 +1,3 @@
-// src/components/cards/UserCardBg.tsx
 import { Avatar } from '../ui/Avatar'
 
 import type { Person, Photo } from '@/shared/types/common.types'

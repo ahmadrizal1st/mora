@@ -20,14 +20,7 @@ export interface NavProps {
   children?: ReactNode
 }
 
-export function Nav({
-  items,
-  pills,
-  tabs,
-  header,
-  className,
-  children,
-}: NavProps) {
+export function Nav({ items, pills, tabs, header, className, children }: NavProps) {
   const ulClasses = clsx(
     'nav',
     pills && (header ? 'nav-pills card-header-pills' : 'nav-pills'),
@@ -51,11 +44,7 @@ export function Nav({
       {defaultItems.map((item, i) => (
         <li key={i} className={clsx('nav-item', item.end && 'ms-auto')}>
           <a
-            className={clsx(
-              'nav-link',
-              item.active && 'active',
-              item.disabled && 'disabled'
-            )}
+            className={clsx('nav-link', item.active && 'active', item.disabled && 'disabled')}
             href={item.href ?? '#'}
             {...(item.disabled ? { tabIndex: -1, 'aria-disabled': true } : {})}
           >

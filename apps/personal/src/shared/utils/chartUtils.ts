@@ -1,14 +1,8 @@
-/**
- * Resolves a Tabler CSS color variable to its actual color value.
- * @param colorName Tabler color name (e.g., 'primary', 'success')
- * @returns Computed color value (hex, rgb, or hsl)
- */
 export function resolveCSSColor(colorName: string): string {
   if (typeof window === 'undefined') return '#206bc4'
 
   const style = getComputedStyle(document.documentElement)
 
-  // 1. If it's already a valid CSS color string (hex, rgb, hsl), return it directly
   if (colorName.startsWith('#') || colorName.startsWith('rgb(') || colorName.startsWith('hsl(')) {
     return colorName
   }
@@ -20,7 +14,6 @@ export function resolveCSSColor(colorName: string): string {
     if (computedVar) return computedVar
   }
 
-  // 2. Fallback: resolve using a temporary element
   const el = document.createElement('div')
   el.style.color = isComplex ? colorName : `var(--tblr-${colorName})`
   el.className = 'd-none'
@@ -31,9 +24,6 @@ export function resolveCSSColor(colorName: string): string {
   return computedColor && computedColor !== style.color ? computedColor : '#206bc4'
 }
 
-/**
- * Maps kebab-case chart data properties to camelCase for internal use.
- */
 export function mapChartData(data: Record<string, unknown>): Record<string, unknown> {
   const result: Record<string, unknown> = { ...data }
   const mapping: Record<string, string> = {

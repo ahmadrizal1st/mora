@@ -1,4 +1,3 @@
-// src/features/auth/pages/ResetPassword.tsx
 import { useState } from 'react'
 import SingleLayout from '@/shared/layouts/SingleLayout'
 import { ResetPasswordCard } from '@/shared/components/cards/ResetPasswordCard'
@@ -6,7 +5,6 @@ import { useResetPasswordMutation } from '../hooks/useResetPasswordMutation'
 import { useSearch } from '@tanstack/react-router'
 
 export default function ResetPassword() {
-  // TanStack Router search params for token
   const search = useSearch({ from: '/reset-password' }) as { token?: string }
   const token = search.token || ''
 
@@ -15,7 +13,7 @@ export default function ResetPassword() {
 
   const handleReset = (password: string, passwordConfirmation: string) => {
     setError(null)
-    
+
     if (!token) {
       setError('Reset token is missing. Please check your email link.')
       return
@@ -26,25 +24,24 @@ export default function ResetPassword() {
       return
     }
 
-    resetMutation.mutate({
-      token,
-      password,
-      password_confirmation: passwordConfirmation
-    }, {
-      onError: (err) => {
-        const responseData = err.response?.data as { message?: string } | undefined
-        setError(responseData?.message || 'Failed to reset password.')
+    resetMutation.mutate(
+      {
+        token,
+        password,
+        password_confirmation: passwordConfirmation,
+      },
+      {
+        onError: (err) => {
+          const responseData = err.response?.data as { message?: string } | undefined
+          setError(responseData?.message || 'Failed to reset password.')
+        },
       }
-    })
+    )
   }
 
   return (
     <SingleLayout>
-      <ResetPasswordCard 
-        onSubmit={handleReset}
-        isLoading={resetMutation.isPending}
-        error={error}
-      />
+      <ResetPasswordCard onSubmit={handleReset} isLoading={resetMutation.isPending} error={error} />
     </SingleLayout>
   )
 }

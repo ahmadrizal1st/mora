@@ -1,8 +1,6 @@
-// src/components/marketing/sections/Faq2.tsx
-
 interface Faq2Props {
-  background?: string;
-  className?: string;
+  background?: string
+  className?: string
 }
 
 const faqs = [
@@ -20,12 +18,12 @@ const faqs = [
     answer:
       'Tabler is an HTML template that can be used for any purpose. However, it is not made to be easily installed on WordPress. It will require some effort and enough knowledge of the WordPress script to do so.',
   },
-];
+]
 
 export function Faq2({ background, className = '' }: Faq2Props) {
   const sectionClass = ['section', background ? `section-${background}` : '', className]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
   return (
     <section className={sectionClass}>
@@ -57,7 +55,7 @@ export function Faq2({ background, className = '' }: Faq2Props) {
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-export default Faq2;
+export default Faq2

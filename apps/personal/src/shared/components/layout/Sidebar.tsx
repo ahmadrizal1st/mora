@@ -26,25 +26,37 @@ interface MenuSection {
   children?: Record<string, MenuChild>
 }
 
-const navigationData: NavItem[] = Object.values(menuData as Record<string, MenuSection>).map((section) => ({
-  label: section.title,
-  icon: section.icon,
-  href: section.url ? `/${section.url.replace('.html', '').replace(/^index$/, 'dashboard').replace(/\/index$/, '')}` : '#',
-  type: section.type,
-  dropdown: !!section.children,
-  items: section.children
-    ? Object.values(section.children).map((child) => ({
-        label: child.title,
-        href: child.url ? `/${child.url.replace('.html', '').replace(/^index$/, 'dashboard').replace(/\/index$/, '')}` : '#',
-        items: child.children
-          ? Object.values(child.children).map((sub) => ({
-              label: sub.title,
-              href: sub.url ? `/${sub.url.replace('.html', '').replace(/\/index$/, '')}` : '#',
-            }))
-          : undefined,
-      }))
-    : undefined,
-}))
+const navigationData: NavItem[] = Object.values(menuData as Record<string, MenuSection>).map(
+  (section) => ({
+    label: section.title,
+    icon: section.icon,
+    href: section.url
+      ? `/${section.url
+          .replace('.html', '')
+          .replace(/^index$/, 'dashboard')
+          .replace(/\/index$/, '')}`
+      : '#',
+    type: section.type,
+    dropdown: !!section.children,
+    items: section.children
+      ? Object.values(section.children).map((child) => ({
+          label: child.title,
+          href: child.url
+            ? `/${child.url
+                .replace('.html', '')
+                .replace(/^index$/, 'dashboard')
+                .replace(/\/index$/, '')}`
+            : '#',
+          items: child.children
+            ? Object.values(child.children).map((sub) => ({
+                label: sub.title,
+                href: sub.url ? `/${sub.url.replace('.html', '').replace(/\/index$/, '')}` : '#',
+              }))
+            : undefined,
+        }))
+      : undefined,
+  })
+)
 
 interface SidebarProps {
   end?: boolean
@@ -81,8 +93,9 @@ function SidebarMenuItem({ item, currentPath }: { item: NavItem; currentPath: st
             <div className="dropdown-menu-column">
               {item.items?.map((subItem, index) => {
                 const subActive = isNavItemActive(subItem, currentPath)
-                const isExternal = !subItem.href || subItem.href === '#' || !subItem.href.startsWith('/')
-                
+                const isExternal =
+                  !subItem.href || subItem.href === '#' || !subItem.href.startsWith('/')
+
                 if (isExternal) {
                   return (
                     <a
@@ -189,12 +202,7 @@ export function Sidebar({
           <span className="navbar-toggler-icon" />
         </button>
 
-        {!hideBrand && (
-          <NavbarLogo
-            header
-            showTitle
-          />
-        )}
+        {!hideBrand && <NavbarLogo header showTitle />}
 
         <div className="collapse navbar-collapse" id="sidebar-menu">
           <ul className="navbar-nav pt-lg-3">
@@ -204,12 +212,12 @@ export function Sidebar({
             {children}
           </ul>
           <div className="mt-auto p-3 d-none d-lg-flex justify-content-center">
-            <button 
-              className="btn btn-icon btn-ghost-secondary rounded-circle" 
+            <button
+              className="btn btn-icon btn-ghost-secondary rounded-circle"
               onClick={() => setIsMinimized(!isMinimized)}
               aria-label="Toggle sidebar"
             >
-              <Icon icon={isMinimized ? "chevron-right" : "chevron-left"} />
+              <Icon icon={isMinimized ? 'chevron-right' : 'chevron-left'} />
             </button>
           </div>
         </div>

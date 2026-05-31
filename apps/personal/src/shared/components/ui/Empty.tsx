@@ -58,12 +58,12 @@ export function Empty({
 
       {buttonText && (
         <div className="empty-action">
-          <Button 
-            text={buttonText} 
-            color="primary" 
-            icon={buttonIcon} 
-            href={!to && !onClick ? "." : undefined} 
-            to={to} 
+          <Button
+            text={buttonText}
+            color="primary"
+            icon={buttonIcon}
+            href={!to && !onClick ? '.' : undefined}
+            to={to}
             onClick={onClick}
             element={onClick ? 'button' : undefined}
           />

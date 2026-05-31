@@ -1,4 +1,3 @@
-// src/shared/components/cards/ForgotPasswordCard.tsx
 import React, { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 
@@ -15,7 +14,7 @@ export function ForgotPasswordCard({
   onSubmit,
   isLoading,
   error,
-  success
+  success,
 }: ForgotPasswordCardProps) {
   const [email, setEmail] = useState('')
 
@@ -33,7 +32,8 @@ export function ForgotPasswordCard({
           <div className="text-center">
             <div className="mb-4">
               <p className="text-secondary">
-                We've sent a password reset link to <strong>{email}</strong>. Please check your inbox.
+                We've sent a password reset link to <strong>{email}</strong>. Please check your
+                inbox.
               </p>
             </div>
             <Link to="/sign-in" className="btn btn-primary w-100">
@@ -67,11 +67,7 @@ export function ForgotPasswordCard({
               </div>
 
               <div className="form-footer">
-                <button 
-                  type="submit" 
-                  className="btn btn-primary w-100"
-                  disabled={isLoading}
-                >
+                <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
                   {isLoading ? 'Sending...' : 'Send me reset password link'}
                 </button>
               </div>

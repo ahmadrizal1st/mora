@@ -1,5 +1,3 @@
-// src/components/ui/FormCheck.tsx
-
 interface FormCheckProps {
   title?: string
   name?: string
@@ -25,11 +23,7 @@ export function FormCheck({
 }: FormCheckProps) {
   const inputType = type === 'switch' ? 'checkbox' : type
 
-  const classes = [
-    'form-check',
-    type === 'switch' ? 'form-switch' : '',
-    className,
-  ]
+  const classes = ['form-check', type === 'switch' ? 'form-switch' : '', className]
     .filter(Boolean)
     .join(' ')
 

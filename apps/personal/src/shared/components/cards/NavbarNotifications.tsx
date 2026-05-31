@@ -19,8 +19,6 @@ import 'dayjs/locale/id'
 dayjs.extend(relativeTime)
 dayjs.locale('id')
 
-// ─── Constants ───────────────────────────────────────────────────────────────
-
 const LABEL_COLORS: Record<string, string> = {
   saving: 'blue',
   credit: 'orange',
@@ -34,8 +32,6 @@ const TITLE_LABEL_MAP: Array<{ keywords: string[]; label: string }> = [
   { keywords: ['pengeluaran', 'expense'], label: 'expense' },
   { keywords: ['pemasukan', 'income'], label: 'income' },
 ]
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function resolveLabelFromTitle(title: string): string | null {
   const lower = title.toLowerCase()
@@ -58,8 +54,6 @@ function dotColor(n: Notification): string {
   return 'bg-blue status-dot-animated'
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
 interface NotificationItemProps {
   n: Notification
   onMarkRead: (id: string) => void
@@ -80,7 +74,9 @@ function NotificationItem({ n, onMarkRead, onToggleStar }: NotificationItemProps
           <a
             href={n.data.url || '#'}
             className="text-body d-block fw-medium d-flex align-items-center gap-2"
-            onClick={() => { if (!n.read_at) onMarkRead(n.id) }}
+            onClick={() => {
+              if (!n.read_at) onMarkRead(n.id)
+            }}
           >
             <span className="text-truncate fw-bold">{n.data.title}</span>
             {labelStr && labelColor && (
@@ -105,9 +101,7 @@ function NotificationItem({ n, onMarkRead, onToggleStar }: NotificationItemProps
             {n.data.message}
           </div>
         </div>
-        <div className="col-auto text-secondary small">
-          {dayjs(n.created_at).fromNow()}
-        </div>
+        <div className="col-auto text-secondary small">{dayjs(n.created_at).fromNow()}</div>
         <div className="col-auto">
           <SwitchIcon
             icon="star"
@@ -122,8 +116,6 @@ function NotificationItem({ n, onMarkRead, onToggleStar }: NotificationItemProps
     </div>
   )
 }
-
-// ─── Main Component ───────────────────────────────────────────────────────────
 
 interface NavbarNotificationsProps {
   limit?: number
@@ -166,13 +158,10 @@ export function NavbarNotifications({
 
   return (
     <div className={isPage ? 'd-flex flex-column h-100' : 'card'}>
-      {/* Header */}
       <div className={clsx('card-header d-flex align-items-center', isPage && 'bg-transparent')}>
         <h3 className="card-title">
           Notifications
-          {unreadCount > 0 && (
-            <span className="badge bg-red text-red-fg ms-2">{unreadCount}</span>
-          )}
+          {unreadCount > 0 && <span className="badge bg-red text-red-fg ms-2">{unreadCount}</span>}
         </h3>
         {!isPage && (
           <button
@@ -189,7 +178,6 @@ export function NavbarNotifications({
         )}
       </div>
 
-      {/* List */}
       <div
         className="list-group list-group-flush list-group-hoverable"
         style={{ maxHeight: isPage ? 'none' : '25rem', overflowY: 'auto' }}
@@ -215,12 +203,12 @@ export function NavbarNotifications({
         )}
       </div>
 
-      {/* Footer */}
-      {items.length > 0 && (
-        isPage ? (
+      {items.length > 0 &&
+        (isPage ? (
           <div className="card-footer d-flex align-items-center bg-transparent border-0 mt-auto">
             <p className="m-0 text-secondary">
-              Showing <span>{fromEntry}</span> to <span>{toEntry}</span> of <span>{total}</span> entries
+              Showing <span>{fromEntry}</span> to <span>{toEntry}</span> of <span>{total}</span>{' '}
+              entries
             </p>
             <ul className="pagination m-0 ms-auto">
               <li className={clsx('page-item', page === 1 && 'disabled')}>
@@ -229,7 +217,10 @@ export function NavbarNotifications({
                   href="#"
                   tabIndex={-1}
                   aria-disabled="true"
-                  onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)) }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setPage((p) => Math.max(1, p - 1))
+                  }}
                 >
                   <Icon icon="chevron-left" />
                   prev
@@ -240,7 +231,10 @@ export function NavbarNotifications({
                   <a
                     className="page-link"
                     href="#"
-                    onClick={(e) => { e.preventDefault(); setPage(pageNum) }}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setPage(pageNum)
+                    }}
                   >
                     {pageNum}
                   </a>
@@ -250,7 +244,10 @@ export function NavbarNotifications({
                 <a
                   className="page-link"
                   href="#"
-                  onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(lastPage, p + 1)) }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setPage((p) => Math.min(lastPage, p + 1))
+                  }}
                 >
                   next
                   <Icon icon="chevron-right" />
@@ -275,13 +272,10 @@ export function NavbarNotifications({
               </div>
             </div>
           </div>
-        )
-      )}
+        ))}
     </div>
   )
 }
-
-// ─── Utilities ────────────────────────────────────────────────────────────────
 
 function buildPageNumbers(currentPage: number, lastPage: number): number[] {
   const maxVisible = 5

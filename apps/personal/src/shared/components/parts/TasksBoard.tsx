@@ -1,4 +1,3 @@
-// src/components/parts/TasksBoard.tsx
 import { Icon } from '../ui/Icon'
 
 interface Subtask {
@@ -40,9 +39,7 @@ export function TasksBoard({ columns = [], className }: TasksBoardProps) {
               {column.tasks.map((task, i) => (
                 <div key={i} className="col-12">
                   <div className="card card-sm">
-                    {task.color && (
-                      <div className={`card-status-top bg-${task.color}`} />
-                    )}
+                    {task.color && <div className={`card-status-top bg-${task.color}`} />}
                     {task.starred && (
                       <div className="ribbon ribbon-top ribbon-bookmark bg-yellow">
                         <Icon icon="star" />
@@ -50,9 +47,7 @@ export function TasksBoard({ columns = [], className }: TasksBoardProps) {
                     )}
                     <div className="card-body">
                       <h3 className="card-title">{task.name}</h3>
-                      {task.description && (
-                        <div className="text-secondary">{task.description}</div>
-                      )}
+                      {task.description && <div className="text-secondary">{task.description}</div>}
                       {task.image && (
                         <div className="ratio ratio-16x9">
                           <img src={task.image} className="rounded object-cover" alt={task.name} />
@@ -95,10 +90,13 @@ export function TasksBoard({ columns = [], className }: TasksBoardProps) {
                           {task.subtasks.map((sub, j) => (
                             <div key={j}>
                               <Icon icon="check" color={sub.done ? 'muted' : 'green'} />
-                              {sub.done
-                                ? <span className="text-secondary text-decoration-line-through">{sub.name}</span>
-                                : sub.name
-                              }
+                              {sub.done ? (
+                                <span className="text-secondary text-decoration-line-through">
+                                  {sub.name}
+                                </span>
+                              ) : (
+                                sub.name
+                              )}
                             </div>
                           ))}
                         </div>

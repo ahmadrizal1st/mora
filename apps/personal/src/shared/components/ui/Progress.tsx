@@ -35,20 +35,16 @@ export function Progress({
 }: ProgressProps) {
   const percentage = typeof value === 'string' ? parseInt(value.replace('%', ''), 10) : value
 
-  const classes = clsx(
-    'progress',
-    size && `progress-${size}`,
-    thin && 'progress-sm',
-    className
-  )
+  const classes = clsx('progress', size && `progress-${size}`, thin && 'progress-sm', className)
 
-  const getBarClasses = (barColor?: string) => clsx(
-    'progress-bar',
-    barColor && `bg-${barColor}`,
-    striped && 'progress-bar-striped',
-    animated && 'progress-bar-animated',
-    indeterminate && 'progress-bar-indeterminate'
-  )
+  const getBarClasses = (barColor?: string) =>
+    clsx(
+      'progress-bar',
+      barColor && `bg-${barColor}`,
+      striped && 'progress-bar-striped',
+      animated && 'progress-bar-animated',
+      indeterminate && 'progress-bar-indeterminate'
+    )
 
   return (
     <div
@@ -76,11 +72,10 @@ export function Progress({
           />
         ))
       ) : (
-        <div
-          className={getBarClasses(color)}
-          style={{ width: `${percentage}%` }}
-        >
-          {showValue ? `${percentage}%` : (
+        <div className={getBarClasses(color)} style={{ width: `${percentage}%` }}>
+          {showValue ? (
+            `${percentage}%`
+          ) : (
             <span className="visually-hidden">{percentage}% Complete</span>
           )}
         </div>

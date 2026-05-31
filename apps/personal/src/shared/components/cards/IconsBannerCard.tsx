@@ -1,4 +1,3 @@
-// src/components/cards/IconsBannerCard.tsx
 import { Icon } from '../ui/Icon'
 
 interface IconsBannerCardProps {
@@ -32,12 +31,7 @@ export function IconsBannerCard({
               your favourite design tools.
             </div>
             <div className="mt-3">
-              <a
-                href={iconsUrl}
-                className="btn btn-primary"
-                target="_blank"
-                rel="noopener"
-              >
+              <a href={iconsUrl} className="btn btn-primary" target="_blank" rel="noopener">
                 <Icon icon="download" />
                 Download icons
               </a>

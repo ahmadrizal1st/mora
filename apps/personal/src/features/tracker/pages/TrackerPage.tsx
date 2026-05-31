@@ -1,6 +1,6 @@
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Illustration } from '@/shared/components/ui/Illustration';
-import { TrackerMethodCard } from '../components/TrackerMethodCard';
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import { Illustration } from '@/shared/components/ui/Illustration'
+import { TrackerMethodCard } from '../components/TrackerMethodCard'
 
 const TRACKER_METHODS = [
   {
@@ -52,34 +52,26 @@ const TRACKER_METHODS = [
     colorName: 'warning',
     icon: 'microphone',
   },
-];
+]
 
 export default function TrackerPage() {
   return (
-    <BaseLayout 
-      pageTitle="Tracker" 
-      pageHeaderClass="d-md-none"
-      showBackButton={true}
-    >
+    <BaseLayout pageTitle="Tracker" pageHeaderClass="d-md-none" showBackButton={true}>
       <div className="container-xl py-4">
-        {/* Header Illustration & Text Section */}
         <div className="row align-items-center mb-5 g-4 tracker-animate-fade-in-up">
           <div className="col-12 col-md-7 text-center text-md-start">
-            <h1 className="fw-bold mb-3" style={{ fontSize: '2.5rem' }}>Track Your Finance</h1>
+            <h1 className="fw-bold mb-3" style={{ fontSize: '2.5rem' }}>
+              Track Your Finance
+            </h1>
             <p className="text-muted fs-3 mb-0">
-              Easily record your daily expenses using various methods. 
-              Choose the one that fits your workflow best.
+              Easily record your daily expenses using various methods. Choose the one that fits your
+              workflow best.
             </p>
           </div>
           <div className="col-12 col-md-5 text-center">
-            <Illustration 
-              image="payment" 
-              height={220} 
-              alt="Track finance illustration" 
-            />
+            <Illustration image="payment" height={220} alt="Track finance illustration" />
           </div>
         </div>
-
 
         <div className="row g-3 g-md-4">
           {TRACKER_METHODS.map((method, index) => (
@@ -87,9 +79,8 @@ export default function TrackerPage() {
           ))}
         </div>
 
-        {/* Footer info/help */}
-        <div 
-          className="mt-5 text-center tracker-animate-fade-in-up" 
+        <div
+          className="mt-5 text-center tracker-animate-fade-in-up"
           style={{ animationDelay: '0.8s' }}
         >
           <p className="text-muted small">
@@ -98,5 +89,5 @@ export default function TrackerPage() {
         </div>
       </div>
     </BaseLayout>
-  );
+  )
 }

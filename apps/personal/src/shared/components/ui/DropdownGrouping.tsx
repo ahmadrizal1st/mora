@@ -8,7 +8,7 @@ const OPTIONS = [
   { label: 'Tahunan', value: 'year' },
 ] as const
 
-type GroupOption = typeof OPTIONS[number]['value']
+type GroupOption = (typeof OPTIONS)[number]['value']
 
 interface DropdownGroupingProps {
   id?: string
@@ -35,7 +35,7 @@ export function DropdownGrouping({
     onChange?.(val)
   }
 
-  const selectedOption = OPTIONS.find(opt => opt.value === selected)
+  const selectedOption = OPTIONS.find((opt) => opt.value === selected)
   const selectedLabel = selectedOption?.label || OPTIONS[0].label
 
   return (

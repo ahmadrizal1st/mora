@@ -37,14 +37,12 @@ export function SignInCard({
         <div className="card-body">
           {!showHeader && <h2 className="h2 text-center mb-4">{title}</h2>}
 
-          {error && (
-            <ErrorAlert message={error} fieldErrors={fieldErrors} />
-          )}
+          {error && <ErrorAlert message={error} fieldErrors={fieldErrors} />}
 
-          <SignInForm 
-            onSubmit={(data) => onSubmit?.(data)} 
-            isLoading={isLoading} 
-            fieldErrors={fieldErrors} 
+          <SignInForm
+            onSubmit={(data) => onSubmit?.(data)}
+            isLoading={isLoading}
+            fieldErrors={fieldErrors}
           />
         </div>
 
@@ -52,14 +50,14 @@ export function SignInCard({
 
         <div className="card-body">
           <div className="d-flex justify-content-center">
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <GoogleLogin
-              onSuccess={onGoogleSuccess}
-              onError={onGoogleError}
-              theme="outline"
-              size="large"
-            />
-          </div>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+              <GoogleLogin
+                onSuccess={onGoogleSuccess}
+                onError={onGoogleError}
+                theme="outline"
+                size="large"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -70,7 +68,9 @@ export function SignInCard({
         ) : (
           <>
             Don't have an account?{' '}
-            <Link to="/sign-up" className="fw-medium">Sign up</Link>
+            <Link to="/sign-up" className="fw-medium">
+              Sign up
+            </Link>
           </>
         )}
       </div>

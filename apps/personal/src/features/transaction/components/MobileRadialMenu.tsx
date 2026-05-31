@@ -1,151 +1,170 @@
-import { type FC, useEffect, useState, useRef, useCallback } from 'react';
-import { Icon } from '@/shared/components/ui/Icon';
-import { useNavigate } from '@tanstack/react-router';
-import { useTransactionModalStore } from '../store/useTransactionModalStore';
+import { type FC, useEffect, useState, useRef, useCallback } from 'react'
+import { Icon } from '@/shared/components/ui/Icon'
+import { useNavigate } from '@tanstack/react-router'
+import { useTransactionModalStore } from '../store/useTransactionModalStore'
 
 const TRACKER_METHODS = [
   { id: 'manual', label: 'Manual', icon: 'pencil', bgColor: '#f76707' },
   { id: 'text', label: 'Text', icon: 'message-2', bgColor: '#4299e1', path: '/tracker/text' },
   { id: 'scan', label: 'Scan', icon: 'scan', bgColor: '#206bc4', path: '/tracker/photo' },
   { id: 'image', label: 'Photo', icon: 'photo', bgColor: '#2fb344', path: '/tracker/image' },
-  { id: 'file', label: 'File', icon: 'file-description', bgColor: '#d63939', path: '/tracker/file' },
+  {
+    id: 'file',
+    label: 'File',
+    icon: 'file-description',
+    bgColor: '#d63939',
+    path: '/tracker/file',
+  },
   { id: 'audio', label: 'Voice', icon: 'microphone', bgColor: '#f59f00', path: '/tracker/audio' },
-];
+]
 
 export const MobileRadialMenu: FC = () => {
-  const { isMethodModalOpen, closeMethodModal, openForm } = useTransactionModalStore();
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const buttonRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const closeButtonRef = useRef<HTMLDivElement>(null);
-  const activeIdRef = useRef<string | null>(null);
-  const navigate = useNavigate();
+  const { isMethodModalOpen, closeMethodModal, openForm } = useTransactionModalStore()
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const buttonRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+  const closeButtonRef = useRef<HTMLDivElement>(null)
+  const activeIdRef = useRef<string | null>(null)
+  const navigate = useNavigate()
 
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false)
 
   useEffect(() => {
     if (isMethodModalOpen) {
       const timer = setTimeout(() => {
-        setIsAnimating(true);
-      }, 10);
-      return () => clearTimeout(timer);
+        setIsAnimating(true)
+      }, 10)
+      return () => clearTimeout(timer)
     } else {
-      setIsAnimating(false);
-      activeIdRef.current = null;
-      setActiveId(null);
+      setIsAnimating(false)
+      activeIdRef.current = null
+      setActiveId(null)
     }
-  }, [isMethodModalOpen]);
+  }, [isMethodModalOpen])
 
-  const handleAction = useCallback((methodId: string) => {
-    if (methodId === 'close' || !methodId) {
-      closeMethodModal();
-      return;
-    }
-    
-    const method = TRACKER_METHODS.find(m => m.id === methodId);
-    if (!method) {
-      closeMethodModal();
-      return;
-    }
+  const handleAction = useCallback(
+    (methodId: string) => {
+      if (methodId === 'close' || !methodId) {
+        closeMethodModal()
+        return
+      }
 
-    if (method.id === 'manual') {
-      openForm();
-    } else if (method.path) {
-      navigate({ to: method.path });
-    }
-    closeMethodModal();
-  }, [openForm, closeMethodModal, navigate]);
+      const method = TRACKER_METHODS.find((m) => m.id === methodId)
+      if (!method) {
+        closeMethodModal()
+        return
+      }
+
+      if (method.id === 'manual') {
+        openForm()
+      } else if (method.path) {
+        navigate({ to: method.path })
+      }
+      closeMethodModal()
+    },
+    [openForm, closeMethodModal, navigate]
+  )
 
   useEffect(() => {
     const detectIdAtPoint = (x: number, y: number) => {
       if (closeButtonRef.current) {
-        const rect = closeButtonRef.current.getBoundingClientRect();
-        const buffer = 40;
-        if (x >= rect.left - buffer && x <= rect.right + buffer && y >= rect.top - buffer && y <= rect.bottom + buffer) {
-          return 'close';
+        const rect = closeButtonRef.current.getBoundingClientRect()
+        const buffer = 40
+        if (
+          x >= rect.left - buffer &&
+          x <= rect.right + buffer &&
+          y >= rect.top - buffer &&
+          y <= rect.bottom + buffer
+        ) {
+          return 'close'
         }
       }
 
       for (const id in buttonRefs.current) {
-        const ref = buttonRefs.current[id];
+        const ref = buttonRefs.current[id]
         if (ref) {
-          const rect = ref.getBoundingClientRect();
-          const buffer = 20;
-          if (x >= rect.left - buffer && x <= rect.right + buffer && y >= rect.top - buffer && y <= rect.bottom + buffer) {
-            return id;
+          const rect = ref.getBoundingClientRect()
+          const buffer = 20
+          if (
+            x >= rect.left - buffer &&
+            x <= rect.right + buffer &&
+            y >= rect.top - buffer &&
+            y <= rect.bottom + buffer
+          ) {
+            return id
           }
         }
       }
-      return null;
-    };
+      return null
+    }
 
     const onPointerMove = (e: PointerEvent) => {
-      const foundId = detectIdAtPoint(e.clientX, e.clientY);
+      const foundId = detectIdAtPoint(e.clientX, e.clientY)
       if (foundId !== activeIdRef.current) {
-        activeIdRef.current = foundId;
-        setActiveId(foundId);
+        activeIdRef.current = foundId
+        setActiveId(foundId)
         if (foundId && window.navigator && window.navigator.vibrate) {
-          window.navigator.vibrate(10);
+          window.navigator.vibrate(10)
         }
       }
-    };
+    }
 
     const onPointerUp = (e: PointerEvent) => {
       if (isMethodModalOpen) {
-        const x = e.clientX;
-        const y = e.clientY;
-        const finalId = detectIdAtPoint(x, y);
-        handleAction(finalId || activeIdRef.current || 'close');
+        const x = e.clientX
+        const y = e.clientY
+        const finalId = detectIdAtPoint(x, y)
+        handleAction(finalId || activeIdRef.current || 'close')
       }
-    };
+    }
 
     if (isMethodModalOpen) {
-      window.addEventListener('pointermove', onPointerMove, { passive: true });
-      window.addEventListener('pointerup', onPointerUp, { capture: true });
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+      window.addEventListener('pointerup', onPointerUp, { capture: true })
     }
 
     return () => {
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp, { capture: true });
-    };
-  }, [isMethodModalOpen, handleAction]);
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', onPointerUp, { capture: true })
+    }
+  }, [isMethodModalOpen, handleAction])
 
-  const shouldDisplay = isMethodModalOpen || isAnimating;
+  const shouldDisplay = isMethodModalOpen || isAnimating
 
   return (
-    <div 
+    <div
       className="fixed-top w-100 h-100 align-items-center justify-content-center d-flex d-md-none"
-      style={{ 
-        zIndex: 2000, 
+      style={{
+        zIndex: 2000,
         pointerEvents: isMethodModalOpen ? 'auto' : 'none',
         display: shouldDisplay ? undefined : 'none',
         backgroundColor: isAnimating ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0)',
         opacity: isAnimating ? 1 : 0,
         transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-        touchAction: 'none'
+        touchAction: 'none',
       }}
       onPointerDown={(e) => {
-        if (e.target === e.currentTarget) closeMethodModal();
+        if (e.target === e.currentTarget) closeMethodModal()
       }}
     >
-      <div 
+      <div
         ref={containerRef}
         className="position-relative w-100 h-100 d-flex align-items-end justify-content-center pb-5 mb-5"
       >
         <div className="position-relative" style={{ width: '280px', height: '280px' }}>
           {TRACKER_METHODS.map((method, index) => {
-            const total = TRACKER_METHODS.length;
-            const angle = (Math.PI / (total - 1)) * index;
-            const radius = 120;
-            const x = -Math.cos(angle) * radius;
-            const y = -Math.sin(angle) * radius;
-            const isActive = activeId === method.id;
-            const delay = isAnimating ? index * 15 : (total - index) * 5;
+            const total = TRACKER_METHODS.length
+            const angle = (Math.PI / (total - 1)) * index
+            const radius = 120
+            const x = -Math.cos(angle) * radius
+            const y = -Math.sin(angle) * radius
+            const isActive = activeId === method.id
+            const delay = isAnimating ? index * 15 : (total - index) * 5
 
             return (
               <div
                 key={method.id}
-                ref={el => buttonRefs.current[method.id] = el}
+                ref={(el) => (buttonRefs.current[method.id] = el)}
                 className="position-absolute d-flex align-items-center justify-content-center"
                 style={{
                   left: `calc(50% + ${x}px - 30px)`,
@@ -160,48 +179,50 @@ export const MobileRadialMenu: FC = () => {
                   transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   outline: 'none',
                   WebkitTapHighlightColor: 'transparent',
-                  userSelect: 'none'
+                  userSelect: 'none',
                 }}
                 onPointerDown={(e) => {
-                  e.stopPropagation();
-                  setActiveId(method.id);
-                  activeIdRef.current = method.id;
+                  e.stopPropagation()
+                  setActiveId(method.id)
+                  activeIdRef.current = method.id
                 }}
                 onClick={(e) => {
-                  e.stopPropagation();
-                  handleAction(method.id);
+                  e.stopPropagation()
+                  handleAction(method.id)
                 }}
               >
                 <div
                   className="rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center"
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
+                  style={{
+                    width: '100%',
+                    height: '100%',
                     backgroundColor: isActive ? method.bgColor : 'var(--tblr-bg-surface)',
                     cursor: 'pointer',
-                    boxShadow: isActive ? `0 8px 16px ${method.bgColor}44` : '0 4px 12px rgba(0,0,0,0.1)',
-                    transition: 'all 0.2s ease-in-out'
+                    boxShadow: isActive
+                      ? `0 8px 16px ${method.bgColor}44`
+                      : '0 4px 12px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease-in-out',
                   }}
                 >
-                  <Icon 
-                    icon={method.icon} 
-                    size={28} 
-                    stroke={2.5} 
-                    style={{ color: isActive ? '#fff' : method.bgColor }} 
+                  <Icon
+                    icon={method.icon}
+                    size={28}
+                    stroke={2.5}
+                    style={{ color: isActive ? '#fff' : method.bgColor }}
                   />
                 </div>
               </div>
-            );
+            )
           })}
         </div>
 
-        <div 
+        <div
           ref={closeButtonRef}
           className="rounded-circle shadow-lg position-absolute p-0"
-          style={{ 
-            width: '60px', 
-            height: '60px', 
-            bottom: '24px', 
+          style={{
+            width: '60px',
+            height: '60px',
+            bottom: '24px',
             display: 'grid',
             placeItems: 'center',
             backgroundColor: activeId === 'close' ? '#d9480f' : '#f76707',
@@ -215,14 +236,17 @@ export const MobileRadialMenu: FC = () => {
             transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
             outline: 'none',
             WebkitTapHighlightColor: 'transparent',
-            userSelect: 'none'
+            userSelect: 'none',
           }}
         >
-          <div className="d-flex align-items-center justify-content-center" style={{ width: '100%', height: '100%' }}>
+          <div
+            className="d-flex align-items-center justify-content-center"
+            style={{ width: '100%', height: '100%' }}
+          >
             <Icon icon="plus" size={32} stroke={3} />
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

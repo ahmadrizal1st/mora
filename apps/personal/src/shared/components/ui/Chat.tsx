@@ -14,7 +14,7 @@ export interface ChatMessage {
   timestamp?: string
   loading?: boolean
   gif?: string
-  // Compatibility
+
   'person-id'?: number | string
 }
 
@@ -25,14 +25,9 @@ export interface ChatProps {
   className?: string
 }
 
-export function Chat({
-  messages = [],
-  people = [],
-  wide,
-  className,
-}: ChatProps) {
+export function Chat({ messages = [], people = [], wide, className }: ChatProps) {
   const getPerson = (id: number | string): ChatPerson =>
-    people.find(p => p.id === id) ?? { id, full_name: 'Unknown' }
+    people.find((p) => p.id === id) ?? { id, full_name: 'Unknown' }
 
   return (
     <div className={clsx('chat', className)}>
@@ -49,7 +44,9 @@ export function Chat({
           )
 
           const messageEl = (
-            <div className={clsx(msg.loading ? 'col-auto' : 'col', !msg.loading && wide && 'col-lg-6')}>
+            <div
+              className={clsx(msg.loading ? 'col-auto' : 'col', !msg.loading && wide && 'col-lg-6')}
+            >
               <div className={clsx('chat-bubble', isMe && 'chat-bubble-me')}>
                 {!msg.loading && (
                   <div className="chat-bubble-title">
@@ -64,7 +61,8 @@ export function Chat({
                 <div className="chat-bubble-body">
                   {msg.loading ? (
                     <p className="text-secondary text-italic">
-                      typing<span className="animated-dots" />
+                      typing
+                      <span className="animated-dots" />
                     </p>
                   ) : (
                     <p>{msg.message}</p>

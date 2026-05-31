@@ -10,7 +10,7 @@ export interface Message {
   isGenerating?: boolean
   variants?: string[]
   activeVariantIndex?: number
-  // For user messages: stores subsequent messages for each variant index
+
   variantBranches?: Record<number, Message[]>
 }
 
@@ -42,15 +42,16 @@ const MOCK_INITIAL_SESSIONS: ChatSession[] = [
 
 const MOCK_INITIAL_MESSAGES: Record<string, Message[]> = {
   [MOCK_SESSION_ID]: [
-    { 
-      id: 'm1', 
-      role: 'user', 
-      content: 'berikan jawaban singkat namun sesuai dengan soal tidak perlu dibuat dalam bentuk file\nJawab bagian A terlebih dahulu', 
-      timestamp: new Date(Date.now() - 60000).toISOString() 
+    {
+      id: 'm1',
+      role: 'user',
+      content:
+        'berikan jawaban singkat namun sesuai dengan soal tidak perlu dibuat dalam bentuk file\nJawab bagian A terlebih dahulu',
+      timestamp: new Date(Date.now() - 60000).toISOString(),
     },
-    { 
-      id: 'm2', 
-      role: 'ai', 
+    {
+      id: 'm2',
+      role: 'ai',
       content: `# Panduan Lengkap Markdown
 
 ## Apa itu Markdown?
@@ -282,9 +283,9 @@ Gunakan backslash \`\\\` untuk menampilkan karakter khusus:
 | List          | \`- item\` atau \`1. item\`   |
 | Tabel         | \`\\| col \\| col \\|\`        |
 | Garis Bawah   | \`---\`                     |`,
-      timestamp: new Date().toISOString() 
-    }
-  ]
+      timestamp: new Date().toISOString(),
+    },
+  ],
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -297,20 +298,19 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set((state) => {
       const currentActiveId = state.activeSessionId
       const currentMessages = currentActiveId ? state.messages[currentActiveId] || [] : []
-      
-      // If currently on an empty session, just return
+
       if (currentActiveId && currentMessages.length === 0) {
         return state
       }
 
       const newId = crypto.randomUUID()
-      
+
       return {
         activeSessionId: newId,
         messages: {
           ...state.messages,
-          [newId]: []
-        }
+          [newId]: [],
+        },
       }
     })
   },
@@ -333,19 +333,23 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set((state) => {
       const currentMessages = state.messages[activeSessionId] || []
       let sessions = [...state.sessions]
-      
-      const isNewSession = !sessions.some(s => s.id === activeSessionId)
-      
+
+      const isNewSession = !sessions.some((s) => s.id === activeSessionId)
+
       if (isNewSession) {
         sessions.push({
           id: activeSessionId,
           title: content.slice(0, 30) + (content.length > 30 ? '...' : ''),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         })
       } else {
-        sessions = sessions.map(s => {
+        sessions = sessions.map((s) => {
           if (s.id === activeSessionId && s.title === 'New Conversation') {
-            return { ...s, title: content.slice(0, 30) + (content.length > 30 ? '...' : ''), updatedAt: new Date().toISOString() }
+            return {
+              ...s,
+              title: content.slice(0, 30) + (content.length > 30 ? '...' : ''),
+              updatedAt: new Date().toISOString(),
+            }
           }
           if (s.id === activeSessionId) {
             return { ...s, updatedAt: new Date().toISOString() }
@@ -354,7 +358,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
         })
       }
 
-      // Sort sessions by updatedAt descending
       sessions.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
 
       return {
@@ -367,7 +370,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     })
 
-    // Mock AI response
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -375,7 +377,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         content: `This is a mock AI response to: "${content}". In a real app, this would be an API call to an AI service like OpenAI.`,
         timestamp: new Date().toISOString(),
       }
-      
+
       set((state) => ({
         messages: {
           ...state.messages,
@@ -391,25 +393,22 @@ export const useChatStore = create<ChatState>((set, get) => ({
     if (!activeSessionId) return
     set((state) => {
       const msgs = state.messages[activeSessionId] || []
-      const targetIndex = msgs.findIndex(m => m.id === messageId)
+      const targetIndex = msgs.findIndex((m) => m.id === messageId)
       if (targetIndex === -1) return state
 
       const target = msgs[targetIndex]
       const currentVariantIndex = target.activeVariantIndex ?? 0
 
-      // Save the current branch (messages after this user message) to the current variant
       const currentBranch = msgs.slice(targetIndex + 1)
       const updatedBranches: Record<number, Message[]> = {
         ...(target.variantBranches || {}),
-        [currentVariantIndex]: currentBranch
+        [currentVariantIndex]: currentBranch,
       }
 
-      // Add new variant
       const variants = target.variants || [target.content]
       const newVariants = [...variants, newContent]
       const newVariantIndex = newVariants.length - 1
 
-      // Truncate messages after target, new variant starts with empty branch
       const newMsgs = [
         ...msgs.slice(0, targetIndex),
         {
@@ -417,13 +416,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
           content: newContent,
           variants: newVariants,
           activeVariantIndex: newVariantIndex,
-          variantBranches: updatedBranches
-        }
+          variantBranches: updatedBranches,
+        },
       ]
       return { messages: { ...state.messages, [activeSessionId]: newMsgs }, isTyping: true }
     })
 
-    // Generate new AI response after edit
     const userContent = newContent
     setTimeout(() => {
       const aiMessage: Message = {
@@ -445,45 +443,47 @@ export const useChatStore = create<ChatState>((set, get) => ({
   retryMessage: (messageId) => {
     const { activeSessionId } = get()
     if (!activeSessionId) return
-    
-    // Immediate state update to hide old response or create new branch
+
     set((state) => {
       const msgs = state.messages[activeSessionId] || []
-      const targetIndex = msgs.findIndex(m => m.id === messageId)
+      const targetIndex = msgs.findIndex((m) => m.id === messageId)
       if (targetIndex === -1) return state
-      
+
       const target = msgs[targetIndex]
       let newMsgs = [...msgs]
-      
+
       if (target.role === 'ai') {
-        // For AI messages: add an empty variant slot while regenerating
-        newMsgs = newMsgs.map(m => {
+        newMsgs = newMsgs.map((m) => {
           if (m.id === messageId) {
             const variants = m.variants || [m.content]
-            const newVariants = [...variants, ''] // empty loading state
-            return { ...m, content: '', variants: newVariants, activeVariantIndex: newVariants.length - 1, isGenerating: true }
+            const newVariants = [...variants, '']
+            return {
+              ...m,
+              content: '',
+              variants: newVariants,
+              activeVariantIndex: newVariants.length - 1,
+              isGenerating: true,
+            }
           }
           return m
         })
       } else {
-        // For user messages: just truncate after, don't touch user message object
         newMsgs = newMsgs.slice(0, targetIndex + 1)
       }
-      return { 
-        messages: { ...state.messages, [activeSessionId]: newMsgs }, 
-        isTyping: target.role === 'user' 
+      return {
+        messages: { ...state.messages, [activeSessionId]: newMsgs },
+        isTyping: target.role === 'user',
       }
     })
-    
+
     setTimeout(() => {
       set((state) => {
         const msgs = state.messages[activeSessionId] || []
-        const aiTarget = msgs.find(m => m.id === messageId)
+        const aiTarget = msgs.find((m) => m.id === messageId)
         let newMsgs = [...msgs]
 
         if (aiTarget?.role === 'ai') {
-          // Fill the empty variant slot with regenerated content
-          newMsgs = newMsgs.map(m => {
+          newMsgs = newMsgs.map((m) => {
             if (m.id === messageId) {
               const variants = [...(m.variants || [])]
               const newContent = `*(Regenerated Variant ${variants.length})*: Berikut adalah sudut pandang tambahan mengenai topik tersebut...`
@@ -493,19 +493,18 @@ export const useChatStore = create<ChatState>((set, get) => ({
             return m
           })
         } else {
-          // User message retry: append a new AI message after the (now-truncated) user message
-          const userMsg = msgs.find(m => m.id === messageId)
+          const userMsg = msgs.find((m) => m.id === messageId)
           newMsgs.push({
             id: Date.now().toString(),
             role: 'ai',
             content: `This is a mock AI response to: "${userMsg?.content}". In a real app, this would be an API call to an AI service like OpenAI.`,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           })
         }
-        
+
         return {
           messages: { ...state.messages, [activeSessionId]: newMsgs },
-          isTyping: false
+          isTyping: false,
         }
       })
     }, 1500)
@@ -516,7 +515,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     if (!activeSessionId) return
     set((state) => {
       const msgs = state.messages[activeSessionId] || []
-      const targetIndex = msgs.findIndex(m => m.id === messageId)
+      const targetIndex = msgs.findIndex((m) => m.id === messageId)
       if (targetIndex === -1) return state
 
       const target = msgs[targetIndex]
@@ -528,14 +527,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
       if (nextIndex === currentIndex) return state
 
       if (target.role === 'user') {
-        // Save current branch (messages after this one) to current variant
         const currentBranch = msgs.slice(targetIndex + 1)
         const updatedBranches: Record<number, Message[]> = {
           ...(target.variantBranches || {}),
-          [currentIndex]: currentBranch
+          [currentIndex]: currentBranch,
         }
 
-        // Restore the target variant's branch
         const targetBranch = updatedBranches[nextIndex] || []
 
         const newMsgs = [
@@ -544,14 +541,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
             ...target,
             content: variants[nextIndex],
             activeVariantIndex: nextIndex,
-            variantBranches: updatedBranches
+            variantBranches: updatedBranches,
           },
-          ...targetBranch
+          ...targetBranch,
         ]
         return { messages: { ...state.messages, [activeSessionId]: newMsgs } }
       } else {
-        // AI message: just switch variant content (no branch switching needed)
-        const newMsgs = msgs.map(m => {
+        const newMsgs = msgs.map((m) => {
           if (m.id === messageId) {
             return { ...m, content: variants[nextIndex], activeVariantIndex: nextIndex }
           }
@@ -564,21 +560,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   deleteSessions: (ids) => {
     set((state) => {
-      const remainingSessions = state.sessions.filter(s => !ids.includes(s.id))
+      const remainingSessions = state.sessions.filter((s) => !ids.includes(s.id))
       const newMessages = { ...state.messages }
-      ids.forEach(id => {
+      ids.forEach((id) => {
         delete newMessages[id]
       })
-      
+
       let newActiveSessionId = state.activeSessionId
       if (newActiveSessionId && ids.includes(newActiveSessionId)) {
         newActiveSessionId = remainingSessions.length > 0 ? remainingSessions[0].id : null
       }
-      
+
       return {
         sessions: remainingSessions,
         messages: newMessages,
-        activeSessionId: newActiveSessionId
+        activeSessionId: newActiveSessionId,
       }
     })
   },

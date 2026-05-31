@@ -1,5 +1,3 @@
-// src/components/cards/SocialTrafficCard.tsx
-
 interface SocialService {
   name: string
   visitors: number

@@ -16,12 +16,11 @@ export const useAuth = () => {
           await refreshUser()
         }
       } catch {
-        // Silently handle
       } finally {
         setIsLoading(false)
       }
     }
-    
+
     const timeout = setTimeout(() => {
       if (isLoading) {
         setIsLoading(false)

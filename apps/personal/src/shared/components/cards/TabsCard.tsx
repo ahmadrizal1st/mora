@@ -1,4 +1,3 @@
-// src/components/cards/TabsCard.tsx
 import { useState } from 'react'
 import { Icon } from '../ui/Icon'
 import { DropdownMenu } from '../ui/DropdownMenu'
@@ -39,11 +38,7 @@ export function TabsCard({
     .join(' ')
 
   const paneClass = (tab: string) =>
-    [
-      'tab-pane',
-      animation ? 'fade' : '',
-      activeTab === tab ? 'active show' : '',
-    ]
+    ['tab-pane', animation ? 'fade' : '', activeTab === tab ? 'active show' : '']
       .filter(Boolean)
       .join(' ')
 
@@ -144,23 +139,23 @@ export function TabsCard({
           <div className={paneClass('home')} id={`tabs-home-${id}`}>
             <h4>Home tab</h4>
             <div>
-              Cursus turpis vestibulum, dui in pharetra vulputate id sed non turpis ultricies fringilla at sed facilisis
-              lacus pellentesque purus nibh
+              Cursus turpis vestibulum, dui in pharetra vulputate id sed non turpis ultricies
+              fringilla at sed facilisis lacus pellentesque purus nibh
             </div>
           </div>
           <div className={paneClass('profile')} id={`tabs-profile-${id}`}>
             <h4>Profile tab</h4>
             <div>
-              Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc amet,
-              pellentesque id egestas velit sed
+              Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem
+              nunc amet, pellentesque id egestas velit sed
             </div>
           </div>
           {settings && (
             <div className={paneClass('settings')} id={`tabs-settings-${id}`}>
               <h4>Settings tab</h4>
               <div>
-                Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan
-                nibh habitant senectus
+                Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi
+                sit mauris accumsan nibh habitant senectus
               </div>
             </div>
           )}
@@ -168,8 +163,8 @@ export function TabsCard({
             <div className={paneClass('activity')} id={`tabs-activity-${id}`}>
               <h4>Activity tab</h4>
               <div>
-                Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan
-                nibh habitant senectus
+                Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi
+                sit mauris accumsan nibh habitant senectus
               </div>
             </div>
           )}

@@ -4,7 +4,6 @@ import ApexCharts from 'apexcharts'
 import type { ApexOptions } from 'apexcharts'
 import { useTheme } from '@/shared/context/ThemeContext'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ApexAxisChartSeries = any
 
 export interface ChartSparklineProps {
@@ -53,12 +52,12 @@ export function ChartSparkline({
     const apexType = type === 'donut' ? 'radialBar' : type
     const parsedData = percentage !== undefined ? [percentage] : data
 
-    const resolvedColor = getComputedStyle(document.documentElement)
-      .getPropertyValue(`--tblr-${color}`).trim() || '#206bc4'
+    const resolvedColor =
+      getComputedStyle(document.documentElement).getPropertyValue(`--tblr-${color}`).trim() ||
+      '#206bc4'
 
     const opts: ApexOptions = {
       chart: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         type: apexType as any,
         fontFamily: 'inherit',
         height: Math.round(height * 16),

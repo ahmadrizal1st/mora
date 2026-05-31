@@ -1,4 +1,3 @@
-// src/components/cards/WeatherCard.tsx
 import { Icon } from '../ui/Icon'
 
 interface WeatherCardProps {

@@ -1,4 +1,3 @@
-// src/shared/components/cards/charts/ComparisonChartCard.tsx
 import { clsx } from 'clsx'
 import { Trending, Chart } from '../../ui'
 import type { ChartSerie, ChartData } from '../../ui/Chart'
@@ -36,9 +35,7 @@ export function ComparisonChartCard({
       <div className="card-body" style={{ overflow: 'visible' }}>
         <div className="d-flex align-items-center">
           <div className="subheader">{title}</div>
-          <div className="ms-auto lh-1">
-            {actions}
-          </div>
+          <div className="ms-auto lh-1">{actions}</div>
         </div>
         <div className="d-flex align-items-baseline mt-3">
           <div className="h1 mb-2 me-2">{value}</div>
@@ -46,7 +43,7 @@ export function ComparisonChartCard({
             <Trending value={trendValue} />
           </div>
         </div>
-        
+
         {series && (
           <Chart
             chartId={chartId}

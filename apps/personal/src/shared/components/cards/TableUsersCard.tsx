@@ -1,26 +1,56 @@
 interface TableUser {
-  name: string;
-  registeredDate?: string;
-  avatarSrc?: string;
-  usagePercent?: number;
-  lastLogin?: string;
-  satisfaction?: number;
+  name: string
+  registeredDate?: string
+  avatarSrc?: string
+  usagePercent?: number
+  lastLogin?: string
+  satisfaction?: number
 }
 
 interface TableUsersCardProps {
-  users?: TableUser[];
+  users?: TableUser[]
 }
 
-const payments = ['visa', 'mastercard', 'paypal', 'googlewallet', 'shopify', 'ebay'];
-const usageColor = (v: number) => v >= 70 ? 'success' : v >= 40 ? 'warning' : 'danger';
+const payments = ['visa', 'mastercard', 'paypal', 'googlewallet', 'shopify', 'ebay']
+const usageColor = (v: number) => (v >= 70 ? 'success' : v >= 40 ? 'warning' : 'danger')
 
 export function TableUsersCard({
   users = [
-    { name: 'Alice Smith', registeredDate: 'Jan 15, 2020', usagePercent: 82, lastLogin: '5 min ago', satisfaction: 92 },
-    { name: 'Bob Jones', registeredDate: 'Mar 3, 2021', usagePercent: 45, lastLogin: '2 hours ago', satisfaction: 60 },
-    { name: 'Carol White', registeredDate: 'Jun 18, 2022', usagePercent: 67, lastLogin: '1 day ago', satisfaction: 75 },
-    { name: 'Dave Brown', registeredDate: 'Aug 22, 2019', usagePercent: 91, lastLogin: 'Just now', satisfaction: 88 },
-    { name: 'Eve Taylor', registeredDate: 'Dec 11, 2023', usagePercent: 33, lastLogin: '3 days ago', satisfaction: 42 },
+    {
+      name: 'Alice Smith',
+      registeredDate: 'Jan 15, 2020',
+      usagePercent: 82,
+      lastLogin: '5 min ago',
+      satisfaction: 92,
+    },
+    {
+      name: 'Bob Jones',
+      registeredDate: 'Mar 3, 2021',
+      usagePercent: 45,
+      lastLogin: '2 hours ago',
+      satisfaction: 60,
+    },
+    {
+      name: 'Carol White',
+      registeredDate: 'Jun 18, 2022',
+      usagePercent: 67,
+      lastLogin: '1 day ago',
+      satisfaction: 75,
+    },
+    {
+      name: 'Dave Brown',
+      registeredDate: 'Aug 22, 2019',
+      usagePercent: 91,
+      lastLogin: 'Just now',
+      satisfaction: 88,
+    },
+    {
+      name: 'Eve Taylor',
+      registeredDate: 'Dec 11, 2023',
+      usagePercent: 33,
+      lastLogin: '3 days ago',
+      satisfaction: 42,
+    },
   ],
 }: TableUsersCardProps) {
   return (
@@ -38,27 +68,40 @@ export function TableUsersCard({
           </thead>
           <tbody>
             {users.map((user, i) => {
-              const pct = user.usagePercent ?? 50;
-              const sat = user.satisfaction ?? 70;
+              const pct = user.usagePercent ?? 50
+              const sat = user.satisfaction ?? 70
               return (
                 <tr key={i}>
                   <td className="text-center w-1">
-                    <span className="avatar"
-                      style={user.avatarSrc ? { backgroundImage: `url(${user.avatarSrc})` } : undefined}>
+                    <span
+                      className="avatar"
+                      style={
+                        user.avatarSrc ? { backgroundImage: `url(${user.avatarSrc})` } : undefined
+                      }
+                    >
                       {!user.avatarSrc && user.name.charAt(0)}
                     </span>
                   </td>
                   <td>
                     <div>{user.name}</div>
-                    {user.registeredDate && <div className="small text-secondary">Registered: {user.registeredDate}</div>}
+                    {user.registeredDate && (
+                      <div className="small text-secondary">Registered: {user.registeredDate}</div>
+                    )}
                   </td>
                   <td>
                     <div className="clearfix">
-                      <div className="float-start"><strong>{pct}%</strong></div>
-                      <div className="float-end"><small className="text-secondary">Jun–Jul 2015</small></div>
+                      <div className="float-start">
+                        <strong>{pct}%</strong>
+                      </div>
+                      <div className="float-end">
+                        <small className="text-secondary">Jun–Jul 2015</small>
+                      </div>
                     </div>
                     <div className="progress progress-sm">
-                      <div className={`progress-bar bg-${usageColor(pct)}`} style={{ width: `${pct}%` }} />
+                      <div
+                        className={`progress-bar bg-${usageColor(pct)}`}
+                        style={{ width: `${pct}%` }}
+                      />
                     </div>
                   </td>
                   <td className="text-center">
@@ -72,11 +115,11 @@ export function TableUsersCard({
                     <div className="text-secondary small">{sat}%</div>
                   </td>
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
       </div>
     </div>
-  );
+  )
 }

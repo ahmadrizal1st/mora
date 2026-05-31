@@ -21,7 +21,7 @@ export const LS_PREFIX = 'tabler-'
 
 export interface ThemeContextValue {
   config: ThemeConfig
-  /** Increments on every config change; use as key/dep to force re-render of imperative components */
+
   themeKey: number
   setThemeValue: (key: keyof ThemeConfig, value: string) => void
   resetTheme: () => void
@@ -39,7 +39,6 @@ export function useTheme() {
   return ctx
 }
 
-/** Read initial config: URL params > localStorage > defaults */
 export function loadInitialConfig(): ThemeConfig {
   const url = new URL(window.location.href)
   const config = { ...DEFAULTS }
@@ -56,18 +55,16 @@ export function loadInitialConfig(): ThemeConfig {
   return config
 }
 
-/** Apply all data-bs-* attributes to <html> element */
 export function applyToDOM(config: ThemeConfig) {
   const el = document.documentElement
   for (const key of THEME_KEYS) {
-     const value = config[key];
-     if (value) {
-       el.setAttribute('data-bs-' + key, value)
-     }
+    const value = config[key]
+    if (value) {
+      el.setAttribute('data-bs-' + key, value)
+    }
   }
 }
 
-/** Sync URL search params without reload */
 export function syncURL(config: ThemeConfig) {
   const url = new URL(window.location.href)
 

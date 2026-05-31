@@ -25,28 +25,26 @@ export default function TwoStepVerificationCode() {
     e.preventDefault()
     setError(null)
 
-    const code = inputRefs.current.map(input => input?.value || '').join('')
+    const code = inputRefs.current.map((input) => input?.value || '').join('')
 
     if (code.length < 6) {
       setError('Please enter the full 6-digit verification code.')
       return
     }
 
-    verifyMutation.mutate({ code }, {
-      onError: (err) => {
-        setError(err.response?.data?.message || 'Verification failed. Please check the code.')
+    verifyMutation.mutate(
+      { code },
+      {
+        onError: (err) => {
+          setError(err.response?.data?.message || 'Verification failed. Please check the code.')
+        },
       }
-    })
+    )
   }
 
   return (
     <SingleLayout>
-      <form
-        className="card card-md"
-        onSubmit={handleSubmit}
-        autoComplete="off"
-        noValidate
-      >
+      <form className="card card-md" onSubmit={handleSubmit} autoComplete="off" noValidate>
         <div className="card-body">
           <h2 className="card-title card-title-lg text-center mb-4">Authenticate Your Account</h2>
 
@@ -70,7 +68,9 @@ export default function TwoStepVerificationCode() {
                       return (
                         <div key={i} className="col">
                           <input
-                            ref={(el) => { if (el) inputRefs.current[idx] = el }}
+                            ref={(el) => {
+                              if (el) inputRefs.current[idx] = el
+                            }}
                             type="text"
                             className="form-control form-control-lg text-center px-3 py-3"
                             maxLength={1}
@@ -98,9 +98,11 @@ export default function TwoStepVerificationCode() {
 
           <div className="form-footer">
             <div className="btn-list flex-nowrap">
-              <Link to="/2-step-verification" className="btn w-100">Cancel</Link>
-              <button 
-                type="submit" 
+              <Link to="/2-step-verification" className="btn w-100">
+                Cancel
+              </Link>
+              <button
+                type="submit"
                 className="btn btn-primary w-100"
                 disabled={verifyMutation.isPending}
               >
@@ -113,7 +115,9 @@ export default function TwoStepVerificationCode() {
 
       <div className="text-center text-secondary mt-3">
         It may take a minute to receive your code. Haven't received it?{' '}
-        <a href="#" onClick={(e) => e.preventDefault()}>Resend a new code.</a>
+        <a href="#" onClick={(e) => e.preventDefault()}>
+          Resend a new code.
+        </a>
       </div>
     </SingleLayout>
   )

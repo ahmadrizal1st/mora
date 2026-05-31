@@ -1,4 +1,3 @@
-// src/components/cards/ProjectKanban.tsx
 import { Avatar } from '../ui/Avatar'
 import { Icon } from '../ui/Icon'
 
@@ -34,10 +33,7 @@ export function ProjectKanban({
   return (
     <div className="card">
       <div className="progress progress-sm card-progress">
-        <div
-          className={`progress-bar bg-${percentageColor}`}
-          style={{ width: `${value}%` }}
-        />
+        <div className={`progress-bar bg-${percentageColor}`} style={{ width: `${value}%` }} />
       </div>
       <div className="card-body">
         <h3 className="card-title">
@@ -56,7 +52,9 @@ export function ProjectKanban({
         <div className="card-meta d-flex justify-content-between">
           <div className="d-flex align-items-center">
             <Icon icon="check" className="me-2" />
-            <span>{tasksCompleted}/{tasksTotal}</span>
+            <span>
+              {tasksCompleted}/{tasksTotal}
+            </span>
           </div>
           <span>Due {due}</span>
         </div>

@@ -1,4 +1,3 @@
-// src/components/cards/music/MusicTracksList.tsx
 import { useState } from 'react'
 import { Icon } from '../../ui/Icon'
 
@@ -35,7 +34,7 @@ export function MusicTracksList({ tracks, limit = 12 }: MusicTracksListProps) {
   const [liked, setLiked] = useState<Record<number, boolean>>({})
 
   const toggleLike = (index: number) => {
-    setLiked(prev => ({ ...prev, [index]: !prev[index] }))
+    setLiked((prev) => ({ ...prev, [index]: !prev[index] }))
   }
 
   const formatDuration = (ms: number) => {
@@ -50,34 +49,31 @@ export function MusicTracksList({ tracks, limit = 12 }: MusicTracksListProps) {
         {tracks.slice(0, limit).map((track, i) => (
           <div key={i} className="list-group-item">
             <div className="row g-2 align-items-center">
-              <div className="col-auto fs-3">
-                {i + 1}
-              </div>
+              <div className="col-auto fs-3">{i + 1}</div>
               <div className="col-auto">
                 {track.album.images[1] && (
-                  <img 
-                    src={`/static/tracks/${track.album.images[1].path}`} 
-                    className="rounded" 
-                    alt={track.name} 
-                    width="40" 
-                    height="40" 
+                  <img
+                    src={`/static/tracks/${track.album.images[1].path}`}
+                    className="rounded"
+                    alt={track.name}
+                    width="40"
+                    height="40"
                   />
                 )}
               </div>
               <div className="col">
                 {track.name}
-                <div className="text-secondary">
-                  {track.artists.map(a => a.name).join(', ')}
-                </div>
+                <div className="text-secondary">{track.artists.map((a) => a.name).join(', ')}</div>
               </div>
-              <div className="col-auto text-secondary">
-                {formatDuration(track.duration_ms)}
-              </div>
+              <div className="col-auto text-secondary">{formatDuration(track.duration_ms)}</div>
               <div className="col-auto">
-                <a 
-                  href="#" 
+                <a
+                  href="#"
                   className={`link-secondary ${liked[i] ? 'text-red' : ''}`}
-                  onClick={(e) => { e.preventDefault(); toggleLike(i); }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    toggleLike(i)
+                  }}
                 >
                   <Icon icon="heart" filled={liked[i]} />
                 </a>
@@ -88,8 +84,12 @@ export function MusicTracksList({ tracks, limit = 12 }: MusicTracksListProps) {
                     <Icon icon="dots" />
                   </a>
                   <div className="dropdown-menu dropdown-menu-end">
-                    <a className="dropdown-item" href="#">Action</a>
-                    <a className="dropdown-item" href="#">Another action</a>
+                    <a className="dropdown-item" href="#">
+                      Action
+                    </a>
+                    <a className="dropdown-item" href="#">
+                      Another action
+                    </a>
                   </div>
                 </div>
               </div>

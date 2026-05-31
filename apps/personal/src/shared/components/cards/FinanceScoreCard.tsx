@@ -1,4 +1,4 @@
-import { Icon } from '@/shared/components/ui/Icon';
+import { Icon } from '@/shared/components/ui/Icon'
 
 export function FinanceScoreCard() {
   return (
@@ -30,13 +30,21 @@ export function FinanceScoreCard() {
               Baik
             </div>
           </div>
-          <div className="h1 fw-bold mb-0 lh-1 text-primary" style={{ fontSize: '2rem', letterSpacing: '-0.5px' }}>Tinggi</div>
+          <div
+            className="h1 fw-bold mb-0 lh-1 text-primary"
+            style={{ fontSize: '2rem', letterSpacing: '-0.5px' }}
+          >
+            Tinggi
+          </div>
         </div>
         <div className="d-flex gap-2">
           <div className="rounded-1 bg-primary" style={{ height: '12px', flex: '4' }}></div>
-          <div className="rounded-1" style={{ height: '12px', flex: '1', background: 'rgba(var(--tblr-primary-rgb), 0.3)' }}></div>
+          <div
+            className="rounded-1"
+            style={{ height: '12px', flex: '1', background: 'rgba(var(--tblr-primary-rgb), 0.3)' }}
+          ></div>
         </div>
       </div>
     </div>
-  );
+  )
 }

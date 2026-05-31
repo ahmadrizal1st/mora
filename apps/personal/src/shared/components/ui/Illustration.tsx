@@ -7,12 +7,7 @@ export interface IllustrationProps {
   className?: string
 }
 
-export function Illustration({
-  image,
-  height = 128,
-  alt = '',
-  className,
-}: IllustrationProps) {
+export function Illustration({ image, height = 128, alt = '', className }: IllustrationProps) {
   const name = image.replace(/\.svg$/, '')
   const theme = document.documentElement.getAttribute('data-bs-theme') || 'light'
 

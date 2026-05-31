@@ -39,8 +39,7 @@ export function UserInfoCard({ person, title = 'Basic info' }: UserInfoCardProps
           <Icon icon="map-pin" className="me-2 text-secondary" />
           From:{' '}
           <strong>
-            <Flag size="xs" flag={person.country_code} />{' '}
-            {person.country}
+            <Flag size="xs" flag={person.country_code} /> {person.country}
           </strong>
         </div>
 

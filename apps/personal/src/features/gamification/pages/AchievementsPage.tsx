@@ -1,9 +1,9 @@
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Progress } from '@/shared/components/ui/Progress';
-import { Icon } from '@/shared/components/ui/Icon';
-import { Badge } from '@/shared/components/ui/Badge';
-import { Ribbon } from '@/shared/components/ui/Ribbon';
-import { Avatar } from '@/shared/components/ui/Avatar';
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import { Progress } from '@/shared/components/ui/Progress'
+import { Icon } from '@/shared/components/ui/Icon'
+import { Badge } from '@/shared/components/ui/Badge'
+import { Ribbon } from '@/shared/components/ui/Ribbon'
+import { Avatar } from '@/shared/components/ui/Avatar'
 
 export default function AchievementsPage() {
   const stats = [
@@ -11,7 +11,7 @@ export default function AchievementsPage() {
     { label: 'Total XP', value: '12,450', icon: 'star', color: 'yellow' },
     { label: 'Badges', value: '18/45', icon: 'award', color: 'green' },
     { label: 'Longest Streak', value: '12 Days', icon: 'flame', color: 'red' },
-  ];
+  ]
 
   const achievements = [
     {
@@ -25,7 +25,7 @@ export default function AchievementsPage() {
       rarity: 'Rare',
       icon: 'pig-money',
       color: 'green',
-      streak: '2 Months'
+      streak: '2 Months',
     },
     {
       id: 2,
@@ -37,7 +37,7 @@ export default function AchievementsPage() {
       status: 'completed',
       rarity: 'Epic',
       icon: 'target-arrow',
-      color: 'purple'
+      color: 'purple',
     },
     {
       id: 3,
@@ -49,7 +49,7 @@ export default function AchievementsPage() {
       status: 'unlocked',
       rarity: 'Legendary',
       icon: 'sword',
-      color: 'red'
+      color: 'red',
     },
     {
       id: 4,
@@ -61,7 +61,7 @@ export default function AchievementsPage() {
       status: 'unlocked',
       rarity: 'Rare',
       icon: 'chart-pie',
-      color: 'azure'
+      color: 'azure',
     },
     {
       id: 5,
@@ -74,7 +74,7 @@ export default function AchievementsPage() {
       rarity: 'Common',
       icon: 'sun',
       color: 'orange',
-      streak: '0 Days'
+      streak: '0 Days',
     },
     {
       id: 6,
@@ -86,7 +86,7 @@ export default function AchievementsPage() {
       status: 'unlocked',
       rarity: 'Epic',
       icon: 'trending-up',
-      color: 'teal'
+      color: 'teal',
     },
     {
       id: 7,
@@ -98,7 +98,7 @@ export default function AchievementsPage() {
       status: 'completed',
       rarity: 'Common',
       icon: 'cut',
-      color: 'pink'
+      color: 'pink',
     },
     {
       id: 8,
@@ -110,7 +110,7 @@ export default function AchievementsPage() {
       status: 'unlocked',
       rarity: 'Rare',
       icon: 'heart',
-      color: 'red'
+      color: 'red',
     },
     {
       id: 9,
@@ -122,7 +122,7 @@ export default function AchievementsPage() {
       status: 'unlocked',
       rarity: 'Legendary',
       icon: 'shield-check',
-      color: 'green'
+      color: 'green',
     },
     {
       id: 10,
@@ -134,7 +134,7 @@ export default function AchievementsPage() {
       status: 'locked',
       rarity: 'Epic',
       icon: 'receipt-tax',
-      color: 'indigo'
+      color: 'indigo',
     },
     {
       id: 11,
@@ -146,7 +146,7 @@ export default function AchievementsPage() {
       status: 'completed',
       rarity: 'Rare',
       icon: 'scale',
-      color: 'cyan'
+      color: 'cyan',
     },
     {
       id: 12,
@@ -159,9 +159,9 @@ export default function AchievementsPage() {
       rarity: 'Legendary',
       icon: 'credit-card',
       color: 'yellow',
-      streak: '3 Months'
-    }
-  ];
+      streak: '3 Months',
+    },
+  ]
 
   const leaderboard = [
     { rank: 1, name: 'Alex Johnson', xp: '24,500', avatar: 'AJ', src: '000m.jpg' },
@@ -174,15 +174,11 @@ export default function AchievementsPage() {
     { rank: 8, name: 'Tom Hardy', xp: '7,800', avatar: 'TH', src: '007m.jpg' },
     { rank: 9, name: 'Linda Song', xp: '7,200', avatar: 'LS', src: '008f.jpg' },
     { rank: 10, name: 'Kevin Hart', xp: '6,500', avatar: 'KH', src: '009m.jpg' },
-  ];
+  ]
 
   return (
-    <BaseLayout 
-      pageTitle="Achievements Hub"
-      pagePretitle="GAMIFICATION"
-    >
+    <BaseLayout pageTitle="Achievements Hub" pagePretitle="GAMIFICATION">
       <div className="row g-4">
-        {/* Stats Summary */}
         <div className="col-12">
           <div className="row g-3">
             {stats.map((stat, i) => (
@@ -190,11 +186,16 @@ export default function AchievementsPage() {
                 <div className="card border-0 shadow-sm h-100 rounded-4">
                   <div className="card-body p-2 px-3">
                     <div className="d-flex align-items-center">
-                      <div className={`bg-${stat.color} p-2 rounded-4 me-3 shadow-sm d-flex align-items-center justify-content-center`} style={{ width: '40px', height: '40px' }}>
+                      <div
+                        className={`bg-${stat.color} p-2 rounded-4 me-3 shadow-sm d-flex align-items-center justify-content-center`}
+                        style={{ width: '40px', height: '40px' }}
+                      >
                         <Icon icon={stat.icon} size="md" color="white" />
                       </div>
                       <div>
-                        <div className="text-muted" style={{ fontSize: '11px', lineHeight: '1' }}>{stat.label}</div>
+                        <div className="text-muted" style={{ fontSize: '11px', lineHeight: '1' }}>
+                          {stat.label}
+                        </div>
                         <div className="h4 mb-0 fw-bold">{stat.value}</div>
                       </div>
                     </div>
@@ -205,7 +206,6 @@ export default function AchievementsPage() {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="col-12 col-lg-8">
           <div className="card border-0 shadow-sm h-100 rounded-4">
             <div className="card-header border-0 bg-transparent py-3">
@@ -221,32 +221,59 @@ export default function AchievementsPage() {
             <div className="card-body p-0">
               <div className="list-group list-group-flush">
                 {achievements.map((item) => (
-                  <div key={item.id} className={`list-group-item py-2 px-3 border-0 ${item.status === 'locked' ? 'opacity-50' : ''}`}>
+                  <div
+                    key={item.id}
+                    className={`list-group-item py-2 px-3 border-0 ${item.status === 'locked' ? 'opacity-50' : ''}`}
+                  >
                     <div className="row g-3 align-items-center">
                       <div className="col-auto">
-                        <div className={`avatar avatar-md rounded-4 bg-${item.color} text-white shadow-sm`}>
+                        <div
+                          className={`avatar avatar-md rounded-4 bg-${item.color} text-white shadow-sm`}
+                        >
                           <Icon icon={item.icon} size="md" />
                         </div>
                       </div>
                       <div className="col">
                         <div className="d-flex align-items-center mb-0">
                           <h5 className="mb-0 me-2">{item.title}</h5>
-                          <Badge color={item.rarity === 'Legendary' ? 'yellow' : item.rarity === 'Epic' ? 'purple' : 'azure'} pill>
+                          <Badge
+                            color={
+                              item.rarity === 'Legendary'
+                                ? 'yellow'
+                                : item.rarity === 'Epic'
+                                  ? 'purple'
+                                  : 'azure'
+                            }
+                            pill
+                          >
                             {item.rarity}
                           </Badge>
                           {item.streak && (
-                            <Badge color="red" light pill className="ms-2" style={{ fontSize: '9px' }}>
+                            <Badge
+                              color="red"
+                              light
+                              pill
+                              className="ms-2"
+                              style={{ fontSize: '9px' }}
+                            >
                               <Icon icon="flame" size="xxs" className="me-1" />
                               {item.streak} Streak
                             </Badge>
                           )}
                         </div>
-                        <div className="text-muted" style={{ fontSize: '11px', marginBottom: '8px' }}>{item.description}</div>
+                        <div
+                          className="text-muted"
+                          style={{ fontSize: '11px', marginBottom: '8px' }}
+                        >
+                          {item.description}
+                        </div>
                         <div className="d-flex align-items-center">
                           <div className="flex-fill me-3">
                             <Progress value={item.progress} size="xs" color={item.color} />
                           </div>
-                          <div className="fw-bold text-nowrap" style={{ fontSize: '10px' }}>{item.current} / {item.target}</div>
+                          <div className="fw-bold text-nowrap" style={{ fontSize: '10px' }}>
+                            {item.current} / {item.target}
+                          </div>
                         </div>
                       </div>
                       <div className="col-auto">
@@ -259,7 +286,10 @@ export default function AchievementsPage() {
                             <Icon icon="lock" size="md" />
                           </div>
                         ) : (
-                          <button className="btn btn-outline-primary btn-sm rounded-pill px-3 py-1" style={{ fontSize: '11px' }}>
+                          <button
+                            className="btn btn-outline-primary btn-sm rounded-pill px-3 py-1"
+                            style={{ fontSize: '11px' }}
+                          >
                             Claim 50 XP
                           </button>
                         )}
@@ -272,31 +302,38 @@ export default function AchievementsPage() {
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="col-12 col-lg-4">
           <div className="d-flex flex-column h-100 gap-3">
-            {/* Pet Streak Card */}
             <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
               <div className="card-body text-center p-3">
                 <div className="position-absolute top-0 end-0 p-2">
-                  <Badge color="green" light pill style={{ fontSize: '10px' }}>ACTIVE</Badge>
+                  <Badge color="green" light pill style={{ fontSize: '10px' }}>
+                    ACTIVE
+                  </Badge>
                 </div>
-                <div className="mx-auto mb-2 d-flex align-items-center justify-content-center" style={{ width: '100px', height: '100px' }}>
-                  <img 
-                    src="/static/illustrations/streak/pet.gif" 
-                    alt="Mora Mascot" 
+                <div
+                  className="mx-auto mb-2 d-flex align-items-center justify-content-center"
+                  style={{ width: '100px', height: '100px' }}
+                >
+                  <img
+                    src="/static/illustrations/streak/pet.gif"
+                    alt="Mora Mascot"
                     className="img-fluid"
                     style={{ maxHeight: '100%', objectFit: 'contain' }}
                   />
                 </div>
                 <h4 className="mb-0">Mora the Spirit</h4>
-                <p className="text-muted mb-3" style={{ fontSize: '11px' }}>Level 12 • Happy & Energized</p>
+                <p className="text-muted mb-3" style={{ fontSize: '11px' }}>
+                  Level 12 • Happy & Energized
+                </p>
                 <div className="p-2 bg-body-tertiary rounded-3 d-inline-flex align-items-center">
                   <Badge color="red" pill className="me-2">
                     <Icon icon="flame" size="xxs" className="me-1" />
                     12 Days
                   </Badge>
-                  <span className="small fw-bold text-muted" style={{ fontSize: '10px' }}>Keep it up to evolve!</span>
+                  <span className="small fw-bold text-muted" style={{ fontSize: '10px' }}>
+                    Keep it up to evolve!
+                  </span>
                 </div>
               </div>
             </div>
@@ -310,24 +347,35 @@ export default function AchievementsPage() {
                 <div className="card-body p-0">
                   <div className="list-group list-group-flush">
                     {leaderboard.map((user) => (
-                      <div key={user.rank} className={`list-group-item d-flex align-items-center py-2 px-3 border-0 ${user.isMe ? 'bg-primary-lt' : ''}`}>
-                        <div className="me-3 fw-bold text-muted" style={{ width: '20px' }}>{user.rank}</div>
+                      <div
+                        key={user.rank}
+                        className={`list-group-item d-flex align-items-center py-2 px-3 border-0 ${user.isMe ? 'bg-primary-lt' : ''}`}
+                      >
+                        <div className="me-3 fw-bold text-muted" style={{ width: '20px' }}>
+                          {user.rank}
+                        </div>
                         <div className="me-3">
-                          <Avatar 
-                            src={user.src} 
-                            placeholder={user.avatar} 
-                            size="sm" 
-                            shape="rounded-4" 
+                          <Avatar
+                            src={user.src}
+                            placeholder={user.avatar}
+                            size="sm"
+                            shape="rounded-4"
                             className="shadow-sm"
                           />
                         </div>
                         <div className="flex-fill">
-                          <div className={`fw-bold small ${user.isMe ? 'text-primary' : ''}`}>{user.name}</div>
-                          <div className="text-muted" style={{ fontSize: '10px' }}>Tier 1 Saver</div>
+                          <div className={`fw-bold small ${user.isMe ? 'text-primary' : ''}`}>
+                            {user.name}
+                          </div>
+                          <div className="text-muted" style={{ fontSize: '10px' }}>
+                            Tier 1 Saver
+                          </div>
                         </div>
                         <div className="text-end">
                           <div className="fw-bold small">{user.xp}</div>
-                          <div className="text-muted" style={{ fontSize: '10px' }}>XP</div>
+                          <div className="text-muted" style={{ fontSize: '10px' }}>
+                            XP
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -339,20 +387,28 @@ export default function AchievementsPage() {
               </div>
             </div>
 
-            {/* Reward Card */}
             <div className="mt-auto">
-              <div className="card border-0 bg-dark text-white shadow-sm overflow-hidden rounded-4" style={{ minHeight: '150px' }}>
+              <div
+                className="card border-0 bg-dark text-white shadow-sm overflow-hidden rounded-4"
+                style={{ minHeight: '150px' }}
+              >
                 <div className="card-body d-flex flex-column justify-content-between p-3 position-relative">
                   <div className="position-absolute top-0 end-0 p-3 opacity-20">
                     <Icon icon="crown" size={60} />
                   </div>
                   <div>
-                    <Badge color="yellow" className="mb-1" style={{ fontSize: '9px' }}>EXCLUSIVE</Badge>
+                    <Badge color="yellow" className="mb-1" style={{ fontSize: '9px' }}>
+                      EXCLUSIVE
+                    </Badge>
                     <h4 className="fw-bold mb-1">Mora Elite Skin</h4>
-                    <p className="small text-white-50">Unlock a premium theme for your dashboard by completing 5 Epic achievements.</p>
+                    <p className="small text-white-50">
+                      Unlock a premium theme for your dashboard by completing 5 Epic achievements.
+                    </p>
                   </div>
                   <div>
-                    <button className="btn btn-white btn-sm rounded-pill px-4 fw-bold">Learn More</button>
+                    <button className="btn btn-white btn-sm rounded-pill px-4 fw-bold">
+                      Learn More
+                    </button>
                   </div>
                 </div>
               </div>
@@ -361,5 +417,5 @@ export default function AchievementsPage() {
         </div>
       </div>
     </BaseLayout>
-  );
+  )
 }

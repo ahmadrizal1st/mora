@@ -1,17 +1,16 @@
-// src/components/marketing/sections/Features2.tsx
-import SectionDivider from '../SectionDivider';
-import { Shape } from '@/shared/components/ui/Shape';
+import SectionDivider from '../SectionDivider'
+import { Shape } from '@/shared/components/ui/Shape'
 
 interface Features2Props {
-  background?: string;
-  className?: string;
-  divider?: 'waves' | 'arc';
+  background?: string
+  className?: string
+  divider?: 'waves' | 'arc'
 }
 
 export function Features2({ background, className = '', divider }: Features2Props) {
   const sectionClass = ['section', background ? `section-${background}` : '', className]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
   return (
     <section className={sectionClass}>
@@ -20,8 +19,8 @@ export function Features2({ background, className = '', divider }: Features2Prop
         <div className="section-header">
           <h2 className="section-title">Everything you need to deploy your app</h2>
           <div className="section-description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-            ut labore et dolore magna aliqua.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua.
           </div>
         </div>
         <div className="row g-lg-10">
@@ -74,7 +73,7 @@ export function Features2({ background, className = '', divider }: Features2Prop
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-export default Features2;
+export default Features2

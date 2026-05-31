@@ -17,14 +17,12 @@ export function UsersListHeaders({
   className = '',
 }: UsersListHeadersProps) {
   const sortedPeople = useMemo(() => {
-    return [...people].sort((a, b) => 
-      (a.last_name || '').localeCompare(b.last_name || '')
-    )
+    return [...people].sort((a, b) => (a.last_name || '').localeCompare(b.last_name || ''))
   }, [people])
 
   const groupedPeople = useMemo(() => {
     const groups: { [key: string]: Person[] } = {}
-    sortedPeople.forEach(person => {
+    sortedPeople.forEach((person) => {
       const firstLetter = (person.last_name?.charAt(0) || '').toUpperCase() || '#'
       if (!groups[firstLetter]) groups[firstLetter] = []
       groups[firstLetter].push(person)
@@ -42,7 +40,7 @@ export function UsersListHeaders({
           <div key={letter}>
             <div className="list-group-header sticky-top">{letter}</div>
             {group.map((person) => {
-              const personIndex = sortedPeople.findIndex(p => p.id === person.id)
+              const personIndex = sortedPeople.findIndex((p) => p.id === person.id)
               const commit = commits[personIndex]
 
               return (

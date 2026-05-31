@@ -48,21 +48,12 @@ export function SwitchIcon({
   )
 
   return (
-    <button
-      className={btnClass}
-      data-bs-toggle="switch-icon"
-      onClick={handleClick}
-      type="button"
-    >
+    <button className={btnClass} data-bs-toggle="switch-icon" onClick={handleClick} type="button">
       <span className={clsx('switch-icon-a', `text-${colorA}`)}>
         <Icon icon={icon} />
       </span>
       <span className={clsx('switch-icon-b', `text-${colorB}`)}>
-        <Icon 
-          icon={resolvedIconB} 
-          className={filledClass} 
-          filled={isFilled}
-        />
+        <Icon icon={resolvedIconB} className={filledClass} filled={isFilled} />
       </span>
     </button>
   )

@@ -18,12 +18,7 @@ export interface FlagProps {
 
 export function Flag({ flag = 'pl', size = 'xs', className }: FlagProps) {
   const code = flag.toLowerCase()
-  const classes = clsx(
-    'flag',
-    `flag-${size}`,
-    `flag-country-${code}`,
-    className
-  )
+  const classes = clsx('flag', `flag-${size}`, `flag-country-${code}`, className)
 
   const style: React.CSSProperties = {
     backgroundImage: `url(/static/flags/${code}.svg)`,

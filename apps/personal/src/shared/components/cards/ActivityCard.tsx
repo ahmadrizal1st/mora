@@ -1,4 +1,3 @@
-// src/components/cards/ActivityCard.tsx
 import { ActivityFeed } from '../parts/ActivityFeed'
 
 interface ActivityItem {

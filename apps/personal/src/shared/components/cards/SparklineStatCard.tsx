@@ -1,17 +1,16 @@
-// src/components/cards/SparklineStatCard.tsx
-import { Trending } from '../ui/Trending';
-import { Icon } from '../ui/Icon';
-import type { ChartSerie } from '../ui/Chart';
+import { Trending } from '../ui/Trending'
+import { Icon } from '../ui/Icon'
+import type { ChartSerie } from '../ui/Chart'
 
 interface SparklineStatCardProps {
-  title?: string;
-  value?: string;
-  trendValue?: number;
-  series?: ChartSerie[];
-  color?: string;
-  chartType?: 'area' | 'bar' | 'line';
-  icon?: string;
-  filterLabel?: string;
+  title?: string
+  value?: string
+  trendValue?: number
+  series?: ChartSerie[]
+  color?: string
+  chartType?: 'area' | 'bar' | 'line'
+  icon?: string
+  filterLabel?: string
 }
 
 export function SparklineStatCard({
@@ -25,7 +24,6 @@ export function SparklineStatCard({
   return (
     <div className="card border-0 shadow-sm">
       <div className="card-body p-3">
-        {/* Header Row */}
         <div className="d-flex justify-content-between align-items-start mb-2 mb-md-4">
           <div
             className={`bg-${color} text-white rounded-2 d-flex align-items-center justify-content-center shadow-sm`}
@@ -49,17 +47,15 @@ export function SparklineStatCard({
           </div>
         </div>
 
-        {/* Trend Indicator */}
         <div className="mb-2">
           <Trending value={trendValue} isBadge />
         </div>
 
-        {/* Metrics */}
         <div>
           <div className="h1 mb-1 fw-bold h1-mobile">{value}</div>
           <div className="subheader text-secondary m-0 text-mobile-xs">{title}</div>
         </div>
       </div>
     </div>
-  );
+  )
 }

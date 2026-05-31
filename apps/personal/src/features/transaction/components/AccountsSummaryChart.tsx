@@ -1,26 +1,26 @@
-import { Chart, DropdownGrouping } from '@/shared/components/ui';
-import { formatCurrency } from '@/shared/utils/currencyUtils';
-import type { FC } from 'react';
-import type { Account } from '@/features/transaction/types/transaction.types';
+import { Chart, DropdownGrouping } from '@/shared/components/ui'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
+import type { FC } from 'react'
+import type { Account } from '@/features/transaction/types/transaction.types'
 
-type GroupBy = 'day' | 'week' | 'month' | 'year';
+type GroupBy = 'day' | 'week' | 'month' | 'year'
 
 interface ChartSeriesItem {
-  name: string;
-  color: string;
-  data: number[];
+  name: string
+  color: string
+  data: number[]
 }
 
 interface AccountsSummaryChartProps {
-  accountsWithHistory: Account[];
-  effectiveSelected: Set<string>;
-  toggleAccount: (id: string) => void;
-  groupBy: GroupBy;
-  setGroupBy: (val: GroupBy) => void;
-  totalWealth: number;
-  chartSeries: ChartSeriesItem[];
-  chartLabels: string[];
-  isBalanceHidden?: boolean;
+  accountsWithHistory: Account[]
+  effectiveSelected: Set<string>
+  toggleAccount: (id: string) => void
+  groupBy: GroupBy
+  setGroupBy: (val: GroupBy) => void
+  totalWealth: number
+  chartSeries: ChartSeriesItem[]
+  chartLabels: string[]
+  isBalanceHidden?: boolean
 }
 
 export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
@@ -34,23 +34,32 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
   chartLabels,
   isBalanceHidden = false,
 }) => {
-  if (accountsWithHistory.length === 0) return null;
+  if (accountsWithHistory.length === 0) return null
 
   return (
     <div className="row mt-4">
       <div className="col-12">
-        <div className="card shadow-sm border-0 overflow-hidden" style={{ borderRadius: '1.25rem' }}>
+        <div
+          className="card shadow-sm border-0 overflow-hidden"
+          style={{ borderRadius: '1.25rem' }}
+        >
           <div className="card-body p-4">
-            {/* Header */}
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
               <div>
                 <h3 className="h2 mb-1 fw-bold text-dark">Tren Kekayaan Bersih</h3>
-                <div className="text-secondary small fw-medium">Perbandingan saldo antar akun Anda secara historis</div>
+                <div className="text-secondary small fw-medium">
+                  Perbandingan saldo antar akun Anda secara historis
+                </div>
               </div>
               <div className="d-flex align-items-center gap-3">
                 <DropdownGrouping value={groupBy} onChange={setGroupBy} />
                 <div className="text-end border-start ps-3 d-none d-sm-block">
-                  <div className="text-secondary small fw-bold text-uppercase" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>Total Kekayaan</div>
+                  <div
+                    className="text-secondary small fw-bold text-uppercase"
+                    style={{ fontSize: '10px', letterSpacing: '0.5px' }}
+                  >
+                    Total Kekayaan
+                  </div>
                   <div className="h2 fw-bold mb-0 text-primary" style={{ letterSpacing: '-0.5px' }}>
                     {isBalanceHidden ? 'Rp ••••••••' : formatCurrency(totalWealth)}
                   </div>
@@ -58,10 +67,12 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
               </div>
             </div>
 
-            {/* Account filter toggles */}
-            <div className="d-flex flex-wrap gap-2 mb-4 p-2 bg-light rounded-3" style={{ width: 'fit-content' }}>
+            <div
+              className="d-flex flex-wrap gap-2 mb-4 p-2 bg-light rounded-3"
+              style={{ width: 'fit-content' }}
+            >
               {accountsWithHistory.map((acc) => {
-                const isActive = effectiveSelected.has(acc.id);
+                const isActive = effectiveSelected.has(acc.id)
                 return (
                   <button
                     key={acc.id}
@@ -75,7 +86,11 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
                       padding: '6px 16px',
                       borderRadius: '2rem',
                       backgroundColor: isActive ? acc.color : 'transparent',
-                      color: isActive ? (parseInt(acc.color.slice(1), 16) > 0xbbbbbb ? '#1d273b' : 'white') : '#6e7687',
+                      color: isActive
+                        ? parseInt(acc.color.slice(1), 16) > 0xbbbbbb
+                          ? '#1d273b'
+                          : 'white'
+                        : '#6e7687',
                       fontSize: '12px',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -95,11 +110,10 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
                     )}
                     {acc.name}
                   </button>
-                );
+                )
               })}
             </div>
 
-            {/* Chart */}
             <div style={{ minHeight: '350px', margin: '0 -10px' }}>
               {chartSeries.length === 0 ? (
                 <div className="text-center text-muted py-5">
@@ -130,20 +144,20 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
                       labels: {
                         style: { colors: '#9199a0', fontWeight: 500 },
                         formatter: (val: string) => {
-                          if (!val) return '';
-                          if (val.includes('-W')) return val.split('-')[1];
-                          if (/^\d{4}$/.test(val)) return val;
+                          if (!val) return ''
+                          if (val.includes('-W')) return val.split('-')[1]
+                          if (/^\d{4}$/.test(val)) return val
                           if (/^\d{4}-\d{2}$/.test(val)) {
-                            const [y, m] = val.split('-');
-                            const date = new Date(Number(y), Number(m) - 1, 1);
-                            return date.toLocaleDateString('id-ID', { month: 'short' });
+                            const [y, m] = val.split('-')
+                            const date = new Date(Number(y), Number(m) - 1, 1)
+                            return date.toLocaleDateString('id-ID', { month: 'short' })
                           }
-                          const date = new Date(val);
-                          if (isNaN(date.getTime())) return val;
+                          const date = new Date(val)
+                          if (isNaN(date.getTime())) return val
                           return date.toLocaleDateString('id-ID', {
                             day: '2-digit',
                             month: 'short',
-                          });
+                          })
                         },
                       },
                     },
@@ -151,11 +165,11 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
                       labels: {
                         style: { colors: '#9199a0', fontWeight: 500 },
                         formatter: (val: number) => {
-                          const absVal = Math.abs(val);
-                          const sign = val < 0 ? '-' : '';
-                          if (absVal >= 1000000) return sign + (absVal / 1000000).toFixed(1) + 'jt';
-                          if (absVal >= 1000) return sign + (absVal / 1000).toFixed(0) + 'rb';
-                          return val.toString();
+                          const absVal = Math.abs(val)
+                          const sign = val < 0 ? '-' : ''
+                          if (absVal >= 1000000) return sign + (absVal / 1000000).toFixed(1) + 'jt'
+                          if (absVal >= 1000) return sign + (absVal / 1000).toFixed(0) + 'rb'
+                          return val.toString()
                         },
                       },
                     },
@@ -166,13 +180,13 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
                           easing: 'easeinout',
                           speed: 600,
                           animateGradually: { enabled: false },
-                          dynamicAnimation: { enabled: true, speed: 400 }
-                        }
+                          dynamicAnimation: { enabled: true, speed: 400 },
+                        },
                       },
                       markers: {
                         size: 0,
                         strokeWidth: 0,
-                        hover: { size: 5 }
+                        hover: { size: 5 },
                       },
                       tooltip: {
                         container: 'body',
@@ -181,22 +195,26 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
                         theme: 'dark',
                         x: {
                           show: true,
-                          formatter: (_val: unknown, { dataPointIndex }: { dataPointIndex: number }) => {
-                            const label = chartLabels[dataPointIndex];
-                            if (!label) return _val;
-                            if (/^\d{4}$/.test(String(label))) return label;
-                            if (String(label).includes('-W')) return label;
-                            const date = new Date(label);
-                            if (isNaN(date.getTime())) return label;
+                          formatter: (
+                            _val: unknown,
+                            { dataPointIndex }: { dataPointIndex: number }
+                          ) => {
+                            const label = chartLabels[dataPointIndex]
+                            if (!label) return _val
+                            if (/^\d{4}$/.test(String(label))) return label
+                            if (String(label).includes('-W')) return label
+                            const date = new Date(label)
+                            if (isNaN(date.getTime())) return label
                             return date.toLocaleDateString('id-ID', {
                               day: '2-digit',
                               month: 'long',
                               year: 'numeric',
-                            });
-                          }
+                            })
+                          },
                         },
                         y: {
-                          formatter: (val: number) => isBalanceHidden ? '••••' : formatCurrency(val),
+                          formatter: (val: number) =>
+                            isBalanceHidden ? '••••' : formatCurrency(val),
                         },
                       },
                     },
@@ -209,5 +227,5 @@ export const AccountsSummaryChart: FC<AccountsSummaryChartProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

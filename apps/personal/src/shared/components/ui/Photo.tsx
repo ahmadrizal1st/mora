@@ -45,35 +45,16 @@ export function Photo({
       finalSrc = `/static/photos/${photo.file}`
       finalAlt = finalAlt || photo.title
     } else {
-      return (
-        <Svg
-          width={width || 640}
-          height={height || 480}
-          border
-          className={className}
-        />
-      )
+      return <Svg width={width || 640} height={height || 480} border className={className} />
     }
   }
 
   if (!finalSrc) {
-    return (
-      <Svg
-        width={width || 640}
-        height={height || 480}
-        border
-        className={className}
-      />
-    )
+    return <Svg width={width || 640} height={height || 480} border className={className} />
   }
 
   if (background) {
-    return (
-      <div
-        className={className}
-        style={{ backgroundImage: `url(${finalSrc})` }}
-      />
-    )
+    return <div className={className} style={{ backgroundImage: `url(${finalSrc})` }} />
   }
 
   if (ratio) {
@@ -86,13 +67,7 @@ export function Photo({
   }
 
   return (
-    <img
-      src={finalSrc}
-      alt={finalAlt || ''}
-      className={className}
-      width={width}
-      height={height}
-    />
+    <img src={finalSrc} alt={finalAlt || ''} className={className} width={width} height={height} />
   )
 }
 

@@ -1,10 +1,10 @@
-import { Icon } from '../ui/Icon';
+import { Icon } from '../ui/Icon'
 
 interface ProjectProgressCardProps {
-  title?: string;
-  imageSrc?: string;
-  updatedAt?: string;
-  progress?: number;
+  title?: string
+  imageSrc?: string
+  updatedAt?: string
+  progress?: number
 }
 
 export function ProjectProgressCard({
@@ -18,14 +18,22 @@ export function ProjectProgressCard({
       <div className="card-body">
         <div className="row align-items-center">
           <div className="col-3">
-            {imageSrc
-              ? <img src={imageSrc} alt={title} className="rounded" style={{ width: '100%' }} />
-              : <div className="rounded d-flex align-items-center justify-content-center bg-blue-lt"
-                  style={{ aspectRatio: '1', fontSize: 24 }}>📋</div>}
+            {imageSrc ? (
+              <img src={imageSrc} alt={title} className="rounded" style={{ width: '100%' }} />
+            ) : (
+              <div
+                className="rounded d-flex align-items-center justify-content-center bg-blue-lt"
+                style={{ aspectRatio: '1', fontSize: 24 }}
+              >
+                📋
+              </div>
+            )}
           </div>
           <div className="col">
             <h3 className="card-title mb-1">
-              <a href="#" className="text-reset">{title}</a>
+              <a href="#" className="text-reset">
+                {title}
+              </a>
             </h3>
             <div className="text-secondary">{updatedAt}</div>
             <div className="mt-3">
@@ -47,5 +55,5 @@ export function ProjectProgressCard({
         </div>
       </div>
     </div>
-  );
+  )
 }

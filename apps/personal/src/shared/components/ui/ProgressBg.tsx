@@ -11,13 +11,13 @@ export interface ProgressBgProps {
   className?: string
 }
 
-export function ProgressBg({ 
-  value = 0, 
-  color = 'primary-lt', 
-  text, 
+export function ProgressBg({
+  value = 0,
+  color = 'primary-lt',
+  text,
   flag,
   showValue,
-  className 
+  className,
 }: ProgressBgProps) {
   const percentage = typeof value === 'string' ? parseInt(value.replace('%', ''), 10) : value
 
@@ -58,9 +58,7 @@ export function ProgressDescription({
     <div className={className}>
       <div className="d-flex mb-1 align-items-center lh-1">
         <div className="fs-5 fw-semibold m-0">{label}</div>
-        {description && (
-          <div className="fs-6 text-secondary ms-2">{description}</div>
-        )}
+        {description && <div className="fs-6 text-secondary ms-2">{description}</div>}
         <span className="ms-auto fs-6 strong">{percentage}%</span>
       </div>
       <Progress size={size} value={percentage} color={color} />
@@ -91,11 +89,7 @@ export function ProgressSteps({
   const stepsAr = Array.from({ length: stepCount }, (_, i) => i + 1)
 
   return (
-    <div 
-      className={clsx('progress progress-steps', className)}
-      id={id}
-      aria-label={ariaLabel}
-    >
+    <div className={clsx('progress progress-steps', className)} id={id} aria-label={ariaLabel}>
       {stepsAr.map((n, i) => {
         const label = labels[i] || `Step ${n}`
         return (

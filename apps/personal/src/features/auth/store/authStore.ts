@@ -8,8 +8,7 @@ export interface AuthState {
   token: string | null
   isAuthenticated: boolean
   isLoading: boolean
-  
-  
+
   login: (credentials: LoginCredentials) => Promise<void>
   loginWithGoogle: (credential: string) => Promise<void>
   register: (credentials: RegisterCredentials) => Promise<void>
@@ -37,10 +36,10 @@ export const useAuthStore = create<AuthState>()(
           localStorage.setItem('token', response.access_token)
           localStorage.setItem('user', JSON.stringify(response.user))
         }
-        set({ 
-          user: response.user, 
-          token: response.access_token, 
-          isAuthenticated: !!response.access_token 
+        set({
+          user: response.user,
+          token: response.access_token,
+          isAuthenticated: !!response.access_token,
         })
       },
 
@@ -50,10 +49,10 @@ export const useAuthStore = create<AuthState>()(
           localStorage.setItem('token', response.access_token)
           localStorage.setItem('user', JSON.stringify(response.user))
         }
-        set({ 
-          user: response.user, 
-          token: response.access_token, 
-          isAuthenticated: !!response.access_token 
+        set({
+          user: response.user,
+          token: response.access_token,
+          isAuthenticated: !!response.access_token,
         })
       },
 
@@ -65,10 +64,10 @@ export const useAuthStore = create<AuthState>()(
             localStorage.setItem('token', response.access_token)
             localStorage.setItem('user', JSON.stringify(response.user))
           }
-          set({ 
-            user: response.user, 
-            token: response.access_token, 
-            isAuthenticated: !!response.access_token 
+          set({
+            user: response.user,
+            token: response.access_token,
+            isAuthenticated: !!response.access_token,
           })
         } finally {
           set({ isLoading: false })
@@ -80,10 +79,10 @@ export const useAuthStore = create<AuthState>()(
         if (response.access_token) {
           localStorage.setItem('token', response.access_token)
           localStorage.setItem('user', JSON.stringify(response.user))
-          set({ 
-            user: response.user, 
-            token: response.access_token, 
-            isAuthenticated: true 
+          set({
+            user: response.user,
+            token: response.access_token,
+            isAuthenticated: true,
           })
         }
       },
@@ -92,7 +91,6 @@ export const useAuthStore = create<AuthState>()(
         try {
           await AuthService.logout()
         } catch {
-          // Silent catch
         } finally {
           set({ user: null, token: null, isAuthenticated: false })
           localStorage.removeItem('token')
@@ -113,7 +111,11 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'auth-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: !!state.token }),
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: !!state.token,
+      }),
       onRehydrateStorage: (state) => {
         return () => state.setHasHydrated(true)
       },

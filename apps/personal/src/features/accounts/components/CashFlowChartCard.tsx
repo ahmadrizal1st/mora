@@ -1,15 +1,15 @@
-import { Chart } from '@/shared/components/ui/Chart';
-import { Icon } from '@/shared/components/ui/Icon';
-import { clsx } from 'clsx';
+import { Chart } from '@/shared/components/ui/Chart'
+import { Icon } from '@/shared/components/ui/Icon'
+import { clsx } from 'clsx'
 
 interface CashFlowChartCardProps {
-  range: string;
-  setRange: (r: string) => void;
+  range: string
+  setRange: (r: string) => void
   data: {
-    lbl: string[];
-    inc: number[];
-    exp: number[];
-  };
+    lbl: string[]
+    inc: number[]
+    exp: number[]
+  }
 }
 
 export function CashFlowChartCard({ range, setRange, data }: CashFlowChartCardProps) {
@@ -18,7 +18,7 @@ export function CashFlowChartCard({ range, setRange, data }: CashFlowChartCardPr
     height: 20,
     series: [
       { name: 'Income', data: data.inc, color: 'primary' },
-      { name: 'Expense', data: data.exp, color: 'secondary' }
+      { name: 'Expense', data: data.exp, color: 'secondary' },
     ],
     extend: {
       plotOptions: {
@@ -28,9 +28,9 @@ export function CashFlowChartCard({ range, setRange, data }: CashFlowChartCardPr
           borderRadius: 6,
           borderRadiusApplication: 'around',
           borderRadiusWhenStacked: 'all',
-          dataLabels: { position: 'top' }
-        }
-      }
+          dataLabels: { position: 'top' },
+        },
+      },
     },
     fill: {
       type: 'gradient',
@@ -41,36 +41,36 @@ export function CashFlowChartCard({ range, setRange, data }: CashFlowChartCardPr
         inverseColors: false,
         opacityFrom: 1,
         opacityTo: 0.8,
-        stops: [0, 100]
-      }
+        stops: [0, 100],
+      },
     },
     grid: {
       show: true,
       borderColor: 'var(--tblr-border-color-light)',
       strokeDashArray: 4,
-      padding: { left: 0, right: 0, top: 0, bottom: 0 }
+      padding: { left: 0, right: 0, top: 0, bottom: 0 },
     },
     xaxis: {
       categories: data.lbl,
       axisBorder: { show: false },
       axisTicks: { show: false },
       labels: {
-        style: { colors: 'var(--tblr-secondary)', fontSize: '11px', fontWeight: 500 }
-      }
+        style: { colors: 'var(--tblr-secondary)', fontSize: '11px', fontWeight: 500 },
+      },
     },
     yaxis: {
       labels: {
-        show: false // Keep it clean, use tooltips
-      }
+        show: false,
+      },
     },
     tooltip: {
       theme: 'dark',
       y: {
-        formatter: (val: number) => `Rp ${val.toLocaleString('id-ID')}`
-      }
+        formatter: (val: number) => `Rp ${val.toLocaleString('id-ID')}`,
+      },
     },
-    legend: { show: false }
-  };
+    legend: { show: false },
+  }
 
   return (
     <div className="card shadow-sm border-0 h-100 overflow-hidden">
@@ -81,11 +81,11 @@ export function CashFlowChartCard({ range, setRange, data }: CashFlowChartCardPr
               <Icon icon="arrows-up-down" size="xs" />
             </div>
             <div>
-               <span className="text-body fw-bold h3 mb-0 d-block">Cash Flow</span>
-               <span className="text-secondary small">Monitoring mutasi saldo harian</span>
+              <span className="text-body fw-bold h3 mb-0 d-block">Cash Flow</span>
+              <span className="text-secondary small">Monitoring mutasi saldo harian</span>
             </div>
           </div>
-          
+
           <div className="btn-group shadow-none border rounded-pill p-1 bg-body-tertiary">
             {['W', 'M', '3M', 'Y'].map((r) => (
               <button
@@ -103,16 +103,16 @@ export function CashFlowChartCard({ range, setRange, data }: CashFlowChartCardPr
         </div>
 
         <div className="d-flex gap-4 mb-4">
-           <div className="d-flex align-items-center gap-2">
-              <span className="badge badge-dot bg-primary"></span>
-              <span className="text-secondary small fw-medium">Income</span>
-              <span className="text-body fw-bold ms-1">Rp 12.5 jt</span>
-           </div>
-           <div className="d-flex align-items-center gap-2">
-              <span className="badge badge-dot bg-secondary"></span>
-              <span className="text-secondary small fw-medium">Expense</span>
-              <span className="text-body fw-bold ms-1">Rp 8.2 jt</span>
-           </div>
+          <div className="d-flex align-items-center gap-2">
+            <span className="badge badge-dot bg-primary"></span>
+            <span className="text-secondary small fw-medium">Income</span>
+            <span className="text-body fw-bold ms-1">Rp 12.5 jt</span>
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <span className="badge badge-dot bg-secondary"></span>
+            <span className="text-secondary small fw-medium">Expense</span>
+            <span className="text-body fw-bold ms-1">Rp 8.2 jt</span>
+          </div>
         </div>
 
         <div className="mx-n3">
@@ -120,5 +120,5 @@ export function CashFlowChartCard({ range, setRange, data }: CashFlowChartCardPr
         </div>
       </div>
     </div>
-  );
+  )
 }

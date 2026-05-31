@@ -1,4 +1,3 @@
-// src/features/auth/pages/SignInCover.tsx
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { NavbarLogo } from '@/shared/components/layout/NavbarLogo'
@@ -22,7 +21,7 @@ export default function SignInCover() {
         const responseData = err.response?.data as { errors?: Record<string, string[]> } | undefined
         setError(getApiErrorMessage(err, 'Login failed. Please check your credentials.'))
         setFieldErrors(responseData?.errors)
-      }
+      },
     })
   }
 
@@ -42,26 +41,24 @@ export default function SignInCover() {
               </div>
             )}
 
-            <SignInForm 
-              onSubmit={handleLogin} 
+            <SignInForm
+              onSubmit={handleLogin}
               isLoading={signInMutation.isPending}
               fieldErrors={fieldErrors}
             />
 
             <div className="text-center text-secondary mt-3">
-              Don't have account yet? <Link to="/sign-up" tabIndex={-1}>Sign up</Link>
+              Don't have account yet?{' '}
+              <Link to="/sign-up" tabIndex={-1}>
+                Sign up
+              </Link>
             </div>
           </div>
         </div>
         <div className="col-12 col-lg-6 col-xl-8 d-none d-lg-block">
-          <Photo
-            id={11}
-            background={true}
-            className="bg-cover h-100 min-vh-100"
-          />
+          <Photo id={11} background={true} className="bg-cover h-100 min-vh-100" />
         </div>
       </div>
     </div>
   )
 }
-

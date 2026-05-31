@@ -12,9 +12,7 @@ export function Dropdown({
   className,
 }: DropdownProps) {
   const optionsArray =
-    typeof options === 'string'
-      ? options.split(', ').map((o) => o.trim())
-      : options
+    typeof options === 'string' ? options.split(', ').map((o) => o.trim()) : options
 
   return (
     <div className={clsx('dropdown', className)}>

@@ -10,11 +10,12 @@ export function BottomNav() {
   const currentPath = location.pathname
   const { isAuthenticated } = useAuth()
   const { openMethodModal } = useTransactionModalStore()
-  const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const holdTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const isAllowedPath = currentPath === '/' || 
-    currentPath.startsWith('/dashboard') || 
-    currentPath.startsWith('/activity') || 
+  const isAllowedPath =
+    currentPath === '/' ||
+    currentPath.startsWith('/dashboard') ||
+    currentPath.startsWith('/activity') ||
     currentPath.startsWith('/planning')
 
   if (!isAuthenticated || !isAllowedPath) return null
@@ -35,40 +36,37 @@ export function BottomNav() {
   }
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    // Capture pointer to ensure events continue even if thumb moves
-    e.currentTarget.setPointerCapture(e.pointerId);
-    
-    holdTimerRef.current = setTimeout(() => {
-      openMethodModal();
-      holdTimerRef.current = null; // Clear so PointerUp knows it was a HOLD
+    e.currentTarget.setPointerCapture(e.pointerId)
 
-      // Release capture so the global listeners can take over
+    holdTimerRef.current = setTimeout(() => {
+      openMethodModal()
+      holdTimerRef.current = null
+
       try {
-        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+        ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
       } catch (err) {}
-      
+
       if (window.navigator && window.navigator.vibrate) {
-        window.navigator.vibrate(50);
+        window.navigator.vibrate(50)
       }
-    }, 150);
-  };
+    }, 150)
+  }
 
   const handlePointerUp = (e: React.PointerEvent) => {
     if (holdTimerRef.current) {
-      // It was a TAP (timer was still running)
-      clearTimeout(holdTimerRef.current);
-      holdTimerRef.current = null;
-      openMethodModal();
-      
+      clearTimeout(holdTimerRef.current)
+      holdTimerRef.current = null
+      openMethodModal()
+
       if (window.navigator && window.navigator.vibrate) {
-        window.navigator.vibrate(20); // Light tap haptic
+        window.navigator.vibrate(20)
       }
     }
-  };
+  }
 
   const handleContextMenu = (e: React.MouseEvent | React.PointerEvent) => {
-    e.preventDefault();
-  };
+    e.preventDefault()
+  }
 
   return (
     <nav className="bottom-navbar d-md-none px-3">
@@ -76,7 +74,7 @@ export function BottomNav() {
         {navItems.map((item) => {
           const active = isActive(item.href)
           const isAction = item.isAction
-          
+
           if (isAction) {
             return (
               <div key={item.label} className="bottom-navbar-action-wrapper">
@@ -103,12 +101,7 @@ export function BottomNav() {
               className={clsx('bottom-navbar-item', active && 'active')}
             >
               <div className="bottom-navbar-icon-wrapper">
-                <Icon 
-                  icon={item.icon} 
-                  filled={active}
-                  stroke={active ? 1.5 : 2}
-                  size={24}
-                />
+                <Icon icon={item.icon} filled={active} stroke={active ? 1.5 : 2} size={24} />
               </div>
               <span className="bottom-navbar-label">{item.label}</span>
             </Link>

@@ -1,29 +1,29 @@
-import { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { Button, AutosizeTextarea, Icon } from '@/shared/components/ui';
-import { useProcessText } from '../hooks/useTracker';
+import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import { Button, AutosizeTextarea, Icon } from '@/shared/components/ui'
+import { useProcessText } from '../hooks/useTracker'
 
 export default function TrackerTextPage() {
-  const [text, setText] = useState('');
-  const processTextMutation = useProcessText();
-  const navigate = useNavigate();
+  const [text, setText] = useState('')
+  const processTextMutation = useProcessText()
+  const navigate = useNavigate()
 
   const handleProcess = async () => {
-    if (!text.trim()) return;
+    if (!text.trim()) return
 
     try {
-      await processTextMutation.mutateAsync({ text, docType: 'expense' });
-      // Clear text after success
-      setText('');
-      // Delay navigation to let background process start
+      await processTextMutation.mutateAsync({ text, docType: 'expense' })
+
+      setText('')
+
       setTimeout(() => {
-        navigate({ to: '/transactions' });
-      }, 1500);
+        navigate({ to: '/transactions' })
+      }, 1500)
     } catch (error) {
-      console.error('Failed to process text:', error);
+      console.error('Failed to process text:', error)
     }
-  };
+  }
 
   return (
     <BaseLayout
@@ -48,7 +48,8 @@ export default function TrackerTextPage() {
                   style={{ minHeight: '150px' }}
                 />
                 <small className="form-hint mt-2">
-                  Tips: Masukkan jumlah, kategori, dan tanggal jika memungkinkan untuk akurasi lebih baik.
+                  Tips: Masukkan jumlah, kategori, dan tanggal jika memungkinkan untuk akurasi lebih
+                  baik.
                 </small>
               </div>
 
@@ -58,9 +59,7 @@ export default function TrackerTextPage() {
                     <div>
                       <Icon icon="alert-circle" className="alert-icon" />
                     </div>
-                    <div>
-                      Gagal memproses teks transaksi. Silakan coba lagi.
-                    </div>
+                    <div>Gagal memproses teks transaksi. Silakan coba lagi.</div>
                   </div>
                 </div>
               )}
@@ -98,7 +97,8 @@ export default function TrackerTextPage() {
                 <div>
                   <div className="fw-bold text-primary">Magic Extraction</div>
                   <div className="text-secondary small">
-                    AI kami akan mencoba mengenali nama merchant, kategori, dan jumlah secara otomatis.
+                    AI kami akan mencoba mengenali nama merchant, kategori, dan jumlah secara
+                    otomatis.
                   </div>
                 </div>
               </div>
@@ -107,5 +107,5 @@ export default function TrackerTextPage() {
         </div>
       </div>
     </BaseLayout>
-  );
+  )
 }

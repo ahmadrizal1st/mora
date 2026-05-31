@@ -1,7 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { Account } from '../types/transaction.types';
+import { useQuery } from '@tanstack/react-query'
+import { Account } from '../types/transaction.types'
 
-// Mock data to bypass backend 500 errors for now
 const MOCK_CREDITS: Account[] = [
   {
     id: 'cc-bca',
@@ -18,7 +17,7 @@ const MOCK_CREDITS: Account[] = [
       due_date: '2026-05-20',
       interest_rate: 1.75,
       billing_cycle_day: 5,
-    }
+    },
   },
   {
     id: 'cc-mandiri',
@@ -35,7 +34,7 @@ const MOCK_CREDITS: Account[] = [
       due_date: '2026-05-15',
       interest_rate: 1.75,
       billing_cycle_day: 1,
-    }
+    },
   },
   {
     id: 'kta-digibank',
@@ -52,7 +51,7 @@ const MOCK_CREDITS: Account[] = [
       due_date: '2026-05-14',
       interest_rate: 8.5,
       tenor_months: 48,
-    }
+    },
   },
   {
     id: 'kpr-btn',
@@ -69,7 +68,7 @@ const MOCK_CREDITS: Account[] = [
       due_date: '2026-05-25',
       interest_rate: 6.75,
       tenor_months: 240,
-    }
+    },
   },
   {
     id: 'pl-gopay',
@@ -84,24 +83,22 @@ const MOCK_CREDITS: Account[] = [
       total_amount: 1200000,
       installment_amount: 120000,
       due_date: '2026-05-28',
-    }
-  }
-];
+    },
+  },
+]
 
 export const useCredits = () => {
   return useQuery({
     queryKey: ['credits'],
     queryFn: async () => {
-      const stored = localStorage.getItem('visatamora_credits');
+      const stored = localStorage.getItem('visatamora_credits')
       if (stored) {
         try {
-          return JSON.parse(stored) as Account[];
-        } catch (e) {
-          // ignore parsing error
-        }
+          return JSON.parse(stored) as Account[]
+        } catch (e) {}
       }
-      localStorage.setItem('visatamora_credits', JSON.stringify(MOCK_CREDITS));
-      return MOCK_CREDITS;
+      localStorage.setItem('visatamora_credits', JSON.stringify(MOCK_CREDITS))
+      return MOCK_CREDITS
     },
-  });
-};
+  })
+}

@@ -1,11 +1,10 @@
-// src/components/marketing/sections/Features3.tsx
-import SectionDivider from '../SectionDivider';
-import { Shape } from '@/shared/components/ui/Shape';
+import SectionDivider from '../SectionDivider'
+import { Shape } from '@/shared/components/ui/Shape'
 
 interface Features3Props {
-  background?: string;
-  className?: string;
-  divider?: 'waves' | 'arc';
+  background?: string
+  className?: string
+  divider?: 'waves' | 'arc'
 }
 
 const featureItems = [
@@ -24,12 +23,12 @@ const featureItems = [
     title: 'Fully customizable',
     text: "You can easily customize the UI elements to make them fit the needs of your project. And don't worry if you don't have much experience - Tabler is easy to get started!",
   },
-];
+]
 
 export function Features3({ background, className = '', divider }: Features3Props) {
   const sectionClass = ['section', background ? `section-${background}` : '', className]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
   return (
     <section className={sectionClass}>
@@ -38,8 +37,8 @@ export function Features3({ background, className = '', divider }: Features3Prop
         <div className="section-header">
           <h2 className="section-title">Everything you need to deploy your app</h2>
           <div className="section-description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-            ut labore et dolore magna aliqua.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua.
           </div>
         </div>
         <div className="row g-lg-10">
@@ -76,7 +75,7 @@ export function Features3({ background, className = '', divider }: Features3Prop
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-export default Features3;
+export default Features3

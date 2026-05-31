@@ -1,4 +1,3 @@
-// src/components/cards/UserCardBig.tsx
 import { Avatar } from '../ui/Avatar'
 
 import type { Person } from '@/shared/types/common.types'
@@ -19,7 +18,9 @@ export function UserCardBig({ person }: UserCardBigProps) {
         <div className="card-title mb-1">{person.full_name}</div>
         <div className="text-secondary">{person.job_title}</div>
       </div>
-      <a href="#" className="card-btn">View full profile</a>
+      <a href="#" className="card-btn">
+        View full profile
+      </a>
     </div>
   )
 }

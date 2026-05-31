@@ -1,4 +1,3 @@
-// src/components/cards/ProjectProgress.tsx
 import { Icon } from '../ui/Icon'
 
 import type { Project } from '@/shared/types/common.types'
@@ -10,11 +9,7 @@ interface ProjectProgressProps {
   daysAgo?: number
 }
 
-export function ProjectProgress({
-  project,
-  progress = 25,
-  daysAgo = 2,
-}: ProjectProgressProps) {
+export function ProjectProgress({ project, progress = 25, daysAgo = 2 }: ProjectProgressProps) {
   const title = project?.title ?? 'Project Title'
   const image = project?.image
 
@@ -23,13 +18,13 @@ export function ProjectProgress({
       <div className="card-body">
         <div className="row align-items-center">
           <div className="col-3">
-            {image && (
-              <img src={image} alt={title} className="rounded" />
-            )}
+            {image && <img src={image} alt={title} className="rounded" />}
           </div>
           <div className="col">
             <h3 className="card-title mb-1">
-              <a href="#" className="text-reset">{title}</a>
+              <a href="#" className="text-reset">
+                {title}
+              </a>
             </h3>
             <div className="text-secondary">
               Updated {daysAgo} {daysAgo === 1 ? 'day' : 'days'} ago
@@ -39,10 +34,7 @@ export function ProjectProgress({
                 <div className="col-auto">{progress}%</div>
                 <div className="col">
                   <div className="progress progress-sm">
-                    <div
-                      className="progress-bar"
-                      style={{ width: `${progress}%` }}
-                    />
+                    <div className="progress-bar" style={{ width: `${progress}%` }} />
                   </div>
                 </div>
               </div>
@@ -54,8 +46,12 @@ export function ProjectProgress({
                 <Icon icon="dots-vertical" />
               </a>
               <div className="dropdown-menu dropdown-menu-end">
-                <a href="#" className="dropdown-item">Edit</a>
-                <a href="#" className="dropdown-item">Delete</a>
+                <a href="#" className="dropdown-item">
+                  Edit
+                </a>
+                <a href="#" className="dropdown-item">
+                  Delete
+                </a>
               </div>
             </div>
           </div>

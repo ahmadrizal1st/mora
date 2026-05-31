@@ -12,16 +12,34 @@ export const defaultHeaders: AdvancedTableHeader[] = [
 
 export const defaultPeople: Person[] = Array.from({ length: 20 }, (_, i) => {
   const isMale = i % 2 === 0
-  const photoNum = Math.floor(i / 2).toString().padStart(3, '0')
+  const photoNum = Math.floor(i / 2)
+    .toString()
+    .padStart(3, '0')
   const photo = `${photoNum}${isMale ? 'm' : 'f'}.jpg`
 
   return {
     id: i + 1,
     full_name: [
-      'Alice Smith', 'Bob Jones', 'Carol White', 'Dave Brown', 'Eve Davis',
-      'Frank Miller', 'Grace Wilson', 'Hank Moore', 'Iris Taylor', 'Jake Anderson',
-      'Kate Thomas', 'Liam Jackson', 'Mia Harris', 'Noah Martin', 'Olivia Garcia',
-      'Paul Martinez', 'Quinn Robinson', 'Rita Clark', 'Sam Rodriguez', 'Tina Lewis',
+      'Alice Smith',
+      'Bob Jones',
+      'Carol White',
+      'Dave Brown',
+      'Eve Davis',
+      'Frank Miller',
+      'Grace Wilson',
+      'Hank Moore',
+      'Iris Taylor',
+      'Jake Anderson',
+      'Kate Thomas',
+      'Liam Jackson',
+      'Mia Harris',
+      'Noah Martin',
+      'Olivia Garcia',
+      'Paul Martinez',
+      'Quinn Robinson',
+      'Rita Clark',
+      'Sam Rodriguez',
+      'Tina Lewis',
     ][i],
     city: ['New York', 'London', 'Paris', 'Tokyo', 'Sydney'][i % 5],
     country: ['US', 'UK', 'FR', 'JP', 'AU'][i % 5],

@@ -1,1 +1,1 @@
-declare module 'hugerte';
+declare module 'hugerte'

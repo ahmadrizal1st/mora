@@ -22,8 +22,23 @@
   --tblr-card-gradient: var(--tblr-primary), var(--tblr-primary);
 
   background:
-    radial-gradient(ellipse at center, var(--tblr-card-bg, var(--tblr-bg-surface)) 0%, color-mix(in srgb, var(--tblr-card-bg, var(--tblr-bg-surface)) 0%, transparent) 80%) border-box,
-    linear-gradient(var(--tblr-card-gradient-direction), color-mix(in srgb, var(--tblr-card-bg, var(--tblr-bg-surface)) var(--tblr-card-gradient-opacity), transparent) 0%, var(--tblr-card-bg, var(--tblr-bg-surface)) 40%) border-box,
+    radial-gradient(
+        ellipse at center,
+        var(--tblr-card-bg, var(--tblr-bg-surface)) 0%,
+        color-mix(in srgb, var(--tblr-card-bg, var(--tblr-bg-surface)) 0%, transparent) 80%
+      )
+      border-box,
+    linear-gradient(
+        var(--tblr-card-gradient-direction),
+        color-mix(
+            in srgb,
+            var(--tblr-card-bg, var(--tblr-bg-surface)) var(--tblr-card-gradient-opacity),
+            transparent
+          )
+          0%,
+        var(--tblr-card-bg, var(--tblr-bg-surface)) 40%
+      )
+      border-box,
     linear-gradient(var(--tblr-card-gradient-direction), var(--tblr-card-gradient)) border-box;
 }
 
@@ -33,20 +48,20 @@
 
 // Support for standard colors
 $colors: (
-  "blue": #066fd1,
-  "azure": #4299e1,
-  "indigo": #4263eb,
-  "purple": #ae3ec9,
-  "pink": #d6336c,
-  "red": #d63939,
-  "orange": #f76707,
-  "yellow": #f59f00,
-  "lime": #74b816,
-  "green": #2fb344,
-  "teal": #0ca678,
-  "cyan": #17a2b8,
-  "danger": #d63939,
-  "success": #2fb344,
+  'blue': #066fd1,
+  'azure': #4299e1,
+  'indigo': #4263eb,
+  'purple': #ae3ec9,
+  'pink': #d6336c,
+  'red': #d63939,
+  'orange': #f76707,
+  'yellow': #f59f00,
+  'lime': #74b816,
+  'green': #2fb344,
+  'teal': #0ca678,
+  'cyan': #17a2b8,
+  'danger': #d63939,
+  'success': #2fb344,
 );
 
 @each $name, $value in $colors {

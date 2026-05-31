@@ -1,121 +1,129 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Outlet } from '@tanstack/react-router';
-import BaseLayout from '@/shared/layouts/BaseLayout';
-import { PlanningSegmentedNav } from '../components/shared/PlanningSegmentedNav';
-import { PlanningMetricCard } from '../components/shared/PlanningMetricCard';
-import { Icon, MonthPicker, Modal, ModalHeader, Button } from '@/shared/components/ui';
-import { MOCK_BUDGET_DATA, MOCK_GOALS_DATA, MOCK_SUBSCRIPTIONS_DATA } from '../data/mockPlanningData';
-import type { Goal, GoalsData, SubscriptionsData } from '../types';
-import { formatCurrency } from '@/shared/utils/currencyUtils';
+import React, { useState, useEffect, useRef } from 'react'
+import { Outlet } from '@tanstack/react-router'
+import BaseLayout from '@/shared/layouts/BaseLayout'
+import { PlanningSegmentedNav } from '../components/shared/PlanningSegmentedNav'
+import { PlanningMetricCard } from '../components/shared/PlanningMetricCard'
+import { Icon, MonthPicker, Modal, ModalHeader, Button } from '@/shared/components/ui'
+import {
+  MOCK_BUDGET_DATA,
+  MOCK_GOALS_DATA,
+  MOCK_SUBSCRIPTIONS_DATA,
+} from '../data/mockPlanningData'
+import type { Goal, GoalsData, SubscriptionsData } from '../types'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 
-export const PlanningContext = React.createContext<any>(null);
+export const PlanningContext = React.createContext<any>(null)
 
 export function PlanningLayout() {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date(2026, 4)); // Mei 2026
+  const [currentDate, setCurrentDate] = useState<Date>(new Date(2026, 4))
 
-  // Dropdown & Modal show states
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
-  const [isSubModalOpen, setIsSubModalOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false)
+  const [isSubModalOpen, setIsSubModalOpen] = useState(false)
 
-  // Click outside to close dropdown
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
+        setIsDropdownOpen(false)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
-  // Goal Form State
-  const [goalName, setGoalName] = useState('');
-  const [goalTarget, setGoalTarget] = useState('');
-  const [goalSaved, setGoalSaved] = useState('');
-  const [goalMonthly, setGoalMonthly] = useState('');
-  const [goalEta, setGoalEta] = useState('');
-  const [goalIcon, setGoalIcon] = useState('star');
+  const [goalName, setGoalName] = useState('')
+  const [goalTarget, setGoalTarget] = useState('')
+  const [goalSaved, setGoalSaved] = useState('')
+  const [goalMonthly, setGoalMonthly] = useState('')
+  const [goalEta, setGoalEta] = useState('')
+  const [goalIcon, setGoalIcon] = useState('star')
 
-  // Subscription Form State
-  const [subName, setSubName] = useState('');
-  const [subCost, setSubCost] = useState('');
-  const [subDueDate, setSubDueDate] = useState('');
-  const [subCategory, setSubCategory] = useState('Streaming');
-  const [subStatus, setSubStatus] = useState('upcoming');
-  const [subIcon, setSubIcon] = useState('device-tv');
+  const [subName, setSubName] = useState('')
+  const [subCost, setSubCost] = useState('')
+  const [subDueDate, setSubDueDate] = useState('')
+  const [subCategory, setSubCategory] = useState('Streaming')
+  const [subStatus, setSubStatus] = useState('upcoming')
+  const [subIcon, setSubIcon] = useState('device-tv')
 
-  // Lifted state with local storage fallback
   const [goalsData, setGoalsData] = useState<GoalsData>(() => {
-    const stored = localStorage.getItem('visatamora_goals');
+    const stored = localStorage.getItem('visatamora_goals')
     if (stored) {
       try {
-        const parsed = JSON.parse(stored);
+        const parsed = JSON.parse(stored)
         if (parsed && Array.isArray(parsed.goals)) {
           parsed.goals = parsed.goals.map((g: Goal) => ({
             ...g,
-            color: g.color === '#5b9ef7' || g.color === '#7c6fff' ? '#ff6b00' : g.color
-          }));
+            color: g.color === '#5b9ef7' || g.color === '#7c6fff' ? '#ff6b00' : g.color,
+          }))
         }
-        return parsed;
+        return parsed
       } catch (e) {}
     }
-    localStorage.setItem('visatamora_goals', JSON.stringify(MOCK_GOALS_DATA));
-    return MOCK_GOALS_DATA;
-  });
+    localStorage.setItem('visatamora_goals', JSON.stringify(MOCK_GOALS_DATA))
+    return MOCK_GOALS_DATA
+  })
 
   const [subsData, setSubsData] = useState<SubscriptionsData>(() => {
-    const stored = localStorage.getItem('visatamora_subscriptions');
+    const stored = localStorage.getItem('visatamora_subscriptions')
     if (stored) {
       try {
-        return JSON.parse(stored);
+        return JSON.parse(stored)
       } catch (e) {}
     }
-    localStorage.setItem('visatamora_subscriptions', JSON.stringify(MOCK_SUBSCRIPTIONS_DATA));
-    return MOCK_SUBSCRIPTIONS_DATA;
-  });
+    localStorage.setItem('visatamora_subscriptions', JSON.stringify(MOCK_SUBSCRIPTIONS_DATA))
+    return MOCK_SUBSCRIPTIONS_DATA
+  })
 
-  const { totalBudget, spent } = MOCK_BUDGET_DATA;
-  const remaining = totalBudget - spent;
+  const { totalBudget, spent } = MOCK_BUDGET_DATA
+  const remaining = totalBudget - spent
 
   const formatMonthYear = (date: Date) => {
     const months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-    ];
-    return `${months[date.getMonth()]} ${date.getFullYear()}`;
-  };
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ]
+    return `${months[date.getMonth()]} ${date.getFullYear()}`
+  }
 
-  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
 
   const handleOpenAddGoal = () => {
-    setEditingGoal(null);
-    setGoalName('');
-    setGoalTarget('');
-    setGoalSaved('');
-    setGoalMonthly('');
-    setGoalEta('');
-    setGoalIcon('star');
-    setIsGoalModalOpen(true);
-  };
+    setEditingGoal(null)
+    setGoalName('')
+    setGoalTarget('')
+    setGoalSaved('')
+    setGoalMonthly('')
+    setGoalEta('')
+    setGoalIcon('star')
+    setIsGoalModalOpen(true)
+  }
 
   const handleEditGoal = (goal: Goal) => {
-    setEditingGoal(goal);
-    setGoalName(goal.name);
-    setGoalTarget(goal.target.toString());
-    setGoalSaved(goal.saved.toString());
-    setGoalMonthly(goal.monthlyDeposit ? goal.monthlyDeposit.toString() : '');
-    setGoalEta(goal.eta);
-    setGoalIcon(goal.icon);
-    setIsGoalModalOpen(true);
-  };
+    setEditingGoal(goal)
+    setGoalName(goal.name)
+    setGoalTarget(goal.target.toString())
+    setGoalSaved(goal.saved.toString())
+    setGoalMonthly(goal.monthlyDeposit ? goal.monthlyDeposit.toString() : '')
+    setGoalEta(goal.eta)
+    setGoalIcon(goal.icon)
+    setIsGoalModalOpen(true)
+  }
 
   const handleAddGoalSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     if (editingGoal) {
-      // Edit Mode
       const updatedGoals = goalsData.goals.map((g: Goal) => {
         if (g.id === editingGoal.id) {
           return {
@@ -125,26 +133,25 @@ export function PlanningLayout() {
             saved: parseFloat(goalSaved) || 0,
             eta: goalEta,
             monthlyDeposit: parseFloat(goalMonthly) || 0,
-            icon: goalIcon
-          };
+            icon: goalIcon,
+          }
         }
-        return g;
-      });
+        return g
+      })
 
-      const totalSaved = updatedGoals.reduce((sum: number, g: Goal) => sum + g.saved, 0);
-      const totalTarget = updatedGoals.reduce((sum: number, g: Goal) => sum + g.target, 0);
+      const totalSaved = updatedGoals.reduce((sum: number, g: Goal) => sum + g.saved, 0)
+      const totalTarget = updatedGoals.reduce((sum: number, g: Goal) => sum + g.target, 0)
 
       const updated = {
         ...goalsData,
         totalSaved,
         totalTarget,
-        goals: updatedGoals
-      };
+        goals: updatedGoals,
+      }
 
-      setGoalsData(updated);
-      localStorage.setItem('visatamora_goals', JSON.stringify(updated));
+      setGoalsData(updated)
+      localStorage.setItem('visatamora_goals', JSON.stringify(updated))
     } else {
-      // Add Mode
       const newGoal = {
         id: `goal-${Date.now()}`,
         name: goalName,
@@ -154,61 +161,62 @@ export function PlanningLayout() {
         monthlyDeposit: parseFloat(goalMonthly) || 0,
         icon: goalIcon,
         color: '#ff6b00',
-        imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=cover&w=400&q=80'
-      };
+        imageUrl:
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=cover&w=400&q=80',
+      }
 
       const updated = {
         ...goalsData,
         totalSaved: goalsData.totalSaved + newGoal.saved,
         totalTarget: goalsData.totalTarget + newGoal.target,
-        goals: [...goalsData.goals, newGoal]
-      };
+        goals: [...goalsData.goals, newGoal],
+      }
 
-      setGoalsData(updated);
-      localStorage.setItem('visatamora_goals', JSON.stringify(updated));
+      setGoalsData(updated)
+      localStorage.setItem('visatamora_goals', JSON.stringify(updated))
     }
 
-    setIsGoalModalOpen(false);
-    setEditingGoal(null);
-    // Reset Form
-    setGoalName('');
-    setGoalTarget('');
-    setGoalSaved('');
-    setGoalMonthly('');
-    setGoalEta('');
-    setGoalIcon('star');
-  };
+    setIsGoalModalOpen(false)
+    setEditingGoal(null)
+
+    setGoalName('')
+    setGoalTarget('')
+    setGoalSaved('')
+    setGoalMonthly('')
+    setGoalEta('')
+    setGoalIcon('star')
+  }
 
   const handleDeleteGoal = (goalId: string) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus impian ini?')) {
-      const updatedGoals = goalsData.goals.filter((g: Goal) => g.id !== goalId);
-      
-      const totalSaved = updatedGoals.reduce((sum: number, g: Goal) => sum + g.saved, 0);
-      const totalTarget = updatedGoals.reduce((sum: number, g: Goal) => sum + g.target, 0);
+      const updatedGoals = goalsData.goals.filter((g: Goal) => g.id !== goalId)
+
+      const totalSaved = updatedGoals.reduce((sum: number, g: Goal) => sum + g.saved, 0)
+      const totalTarget = updatedGoals.reduce((sum: number, g: Goal) => sum + g.target, 0)
 
       const updated = {
         ...goalsData,
         totalSaved,
         totalTarget,
-        goals: updatedGoals
-      };
+        goals: updatedGoals,
+      }
 
-      setGoalsData(updated);
-      localStorage.setItem('visatamora_goals', JSON.stringify(updated));
-      setIsGoalModalOpen(false);
-      setEditingGoal(null);
-      // Reset Form
-      setGoalName('');
-      setGoalTarget('');
-      setGoalSaved('');
-      setGoalMonthly('');
-      setGoalEta('');
-      setGoalIcon('star');
+      setGoalsData(updated)
+      localStorage.setItem('visatamora_goals', JSON.stringify(updated))
+      setIsGoalModalOpen(false)
+      setEditingGoal(null)
+
+      setGoalName('')
+      setGoalTarget('')
+      setGoalSaved('')
+      setGoalMonthly('')
+      setGoalEta('')
+      setGoalIcon('star')
     }
-  };
+  }
 
   const handleAddSubSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const newSub = {
       id: `sub-${Date.now()}`,
@@ -217,31 +225,32 @@ export function PlanningLayout() {
       dueDate: `2026-05-${subDueDate.padStart(2, '0')}`,
       status: subStatus as 'paid' | 'unpaid' | 'upcoming',
       icon: subIcon,
-      color: '#5b9ef7'
-    };
+      color: '#5b9ef7',
+    }
 
     const updated = {
       ...subsData,
       totalMonthly: subsData.totalMonthly + newSub.amount,
-      paidThisMonth: subStatus === 'paid' ? subsData.paidThisMonth + newSub.amount : subsData.paidThisMonth,
-      subscriptions: [...subsData.subscriptions, newSub]
-    };
+      paidThisMonth:
+        subStatus === 'paid' ? subsData.paidThisMonth + newSub.amount : subsData.paidThisMonth,
+      subscriptions: [...subsData.subscriptions, newSub],
+    }
 
-    setSubsData(updated);
-    localStorage.setItem('visatamora_subscriptions', JSON.stringify(updated));
+    setSubsData(updated)
+    localStorage.setItem('visatamora_subscriptions', JSON.stringify(updated))
 
-    setIsSubModalOpen(false);
-    // Reset Form
-    setSubName('');
-    setSubCost('');
-    setSubDueDate('');
-    setSubCategory('Streaming');
-    setSubStatus('upcoming');
-    setSubIcon('device-tv');
-  };
+    setIsSubModalOpen(false)
+
+    setSubName('')
+    setSubCost('')
+    setSubDueDate('')
+    setSubCategory('Streaming')
+    setSubStatus('upcoming')
+    setSubIcon('device-tv')
+  }
 
   return (
-    <BaseLayout 
+    <BaseLayout
       pageTitle="Financial Planning"
       pagePretitle="STRATEGY"
       showBackButton={false}
@@ -249,7 +258,7 @@ export function PlanningLayout() {
         <div className="d-flex align-items-center gap-2">
           <MonthPicker value={currentDate} onChange={setCurrentDate} />
           <div className="position-relative" ref={dropdownRef}>
-            <button 
+            <button
               className="btn btn-sm px-3 d-flex align-items-center gap-2 rounded-pill shadow-sm text-white border-0 fw-bold py-2"
               style={{ backgroundColor: '#ff6b00' }}
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -258,34 +267,34 @@ export function PlanningLayout() {
               Tambah Baru
             </button>
             {isDropdownOpen && (
-              <div 
+              <div
                 className="card shadow-lg border position-absolute end-0 mt-2 py-1 bg-surface"
-                style={{ 
-                  zIndex: 1050, 
+                style={{
+                  zIndex: 1050,
                   minWidth: '220px',
                   borderRadius: '10px',
-                  borderColor: 'rgba(0, 0, 0, 0.08)'
+                  borderColor: 'rgba(0, 0, 0, 0.08)',
                 }}
               >
-                <button 
+                <button
                   type="button"
                   className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-start bg-transparent border-0 w-100 hover-bg-light"
                   style={{ fontSize: '13px' }}
                   onClick={() => {
-                    setIsGoalModalOpen(true);
-                    setIsDropdownOpen(false);
+                    setIsGoalModalOpen(true)
+                    setIsDropdownOpen(false)
                   }}
                 >
                   <Icon icon="star" size="sm" className="text-orange" />
                   Tambah Impian (Goal)
                 </button>
-                <button 
+                <button
                   type="button"
                   className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-start bg-transparent border-0 w-100 hover-bg-light"
                   style={{ fontSize: '13px' }}
                   onClick={() => {
-                    setIsSubModalOpen(true);
-                    setIsDropdownOpen(false);
+                    setIsSubModalOpen(true)
+                    setIsDropdownOpen(false)
                   }}
                 >
                   <Icon icon="credit-card" size="sm" className="text-primary" />
@@ -297,58 +306,69 @@ export function PlanningLayout() {
         </div>
       }
     >
-      {/* 1. TOP STATS ROW (DESKTOP) - 4 Separate Cards */}
       <div className="row g-3 mb-4 d-none d-md-flex">
         <div className="col-3">
-          <PlanningMetricCard 
-            title="Total Budget" 
-            value={formatCurrency(totalBudget)} 
-            subtext={formatMonthYear(currentDate)} 
-            icon="wallet" 
-            valueColor="primary" 
+          <PlanningMetricCard
+            title="Total Budget"
+            value={formatCurrency(totalBudget)}
+            subtext={formatMonthYear(currentDate)}
+            icon="wallet"
+            valueColor="primary"
           />
         </div>
         <div className="col-3">
-          <PlanningMetricCard 
-            title="Terpakai" 
-            value={formatCurrency(spent)} 
-            subtext={`${Math.round((spent/totalBudget)*100)}% digunakan`} 
-            icon="trending-down" 
-            valueColor="danger" 
+          <PlanningMetricCard
+            title="Terpakai"
+            value={formatCurrency(spent)}
+            subtext={`${Math.round((spent / totalBudget) * 100)}% digunakan`}
+            icon="trending-down"
+            valueColor="danger"
           />
         </div>
         <div className="col-3">
-          <PlanningMetricCard 
-            title="Sisa Anggaran" 
-            value={formatCurrency(remaining)} 
-            subtext="Tersedia" 
-            icon="cash" 
-            valueColor="success" 
+          <PlanningMetricCard
+            title="Sisa Anggaran"
+            value={formatCurrency(remaining)}
+            subtext="Tersedia"
+            icon="cash"
+            valueColor="success"
           />
         </div>
         <div className="col-3">
-          <PlanningMetricCard 
-            title="Harian (Safe)" 
-            value={formatCurrency(MOCK_BUDGET_DATA.safeToSpendPerDay)} 
-            subtext="Estimasi harian" 
-            icon="shield-check" 
-            valueColor="warning" 
+          <PlanningMetricCard
+            title="Harian (Safe)"
+            value={formatCurrency(MOCK_BUDGET_DATA.safeToSpendPerDay)}
+            subtext="Estimasi harian"
+            icon="shield-check"
+            valueColor="warning"
           />
         </div>
       </div>
 
-      {/* 1. TOP STATS ROW (MOBILE) - Unified Single Card */}
-      <div className="card border-0 shadow-sm mb-4 overflow-hidden d-block d-md-none" style={{ borderRadius: '16px' }}>
+      <div
+        className="card border-0 shadow-sm mb-4 overflow-hidden d-block d-md-none"
+        style={{ borderRadius: '16px' }}
+      >
         <div className="row g-0">
-          {/* Total Budget */}
           <div className="col-6 border-end border-bottom p-3 position-relative">
             <div className="d-flex align-items-center gap-2 mb-2">
-              <div className="avatar avatar-sm bg-primary-lt text-primary" style={{ borderRadius: '8px', width: '28px', height: '28px' }}>
+              <div
+                className="avatar avatar-sm bg-primary-lt text-primary"
+                style={{ borderRadius: '8px', width: '28px', height: '28px' }}
+              >
                 <Icon icon="wallet" size="sm" />
               </div>
-              <div className="text-muted fw-bold text-truncate" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>TOTAL BUDGET</div>
+              <div
+                className="text-muted fw-bold text-truncate"
+                style={{ fontSize: '10px', letterSpacing: '0.05em' }}
+              >
+                TOTAL BUDGET
+              </div>
             </div>
-            <div className="fs-4 fw-bold text-body mb-1 text-truncate" style={{ letterSpacing: '-0.5px' }}>
+            <div
+              className="fs-4 fw-bold text-body mb-1 text-truncate"
+              style={{ letterSpacing: '-0.5px' }}
+            >
               {formatCurrency(totalBudget)}
             </div>
             <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
@@ -356,31 +376,51 @@ export function PlanningLayout() {
             </div>
           </div>
 
-          {/* Terpakai */}
           <div className="col-6 border-bottom p-3 position-relative">
             <div className="d-flex align-items-center gap-2 mb-2">
-              <div className="avatar avatar-sm bg-danger-lt text-danger" style={{ borderRadius: '8px', width: '28px', height: '28px' }}>
+              <div
+                className="avatar avatar-sm bg-danger-lt text-danger"
+                style={{ borderRadius: '8px', width: '28px', height: '28px' }}
+              >
                 <Icon icon="trending-down" size="sm" />
               </div>
-              <div className="text-muted fw-bold text-truncate" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>TERPAKAI</div>
+              <div
+                className="text-muted fw-bold text-truncate"
+                style={{ fontSize: '10px', letterSpacing: '0.05em' }}
+              >
+                TERPAKAI
+              </div>
             </div>
-            <div className="fs-4 fw-bold text-danger mb-1 text-truncate" style={{ letterSpacing: '-0.5px' }}>
+            <div
+              className="fs-4 fw-bold text-danger mb-1 text-truncate"
+              style={{ letterSpacing: '-0.5px' }}
+            >
               {formatCurrency(spent)}
             </div>
             <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
-              {Math.round((spent/totalBudget)*100)}% digunakan
+              {Math.round((spent / totalBudget) * 100)}% digunakan
             </div>
           </div>
 
-          {/* Sisa Anggaran */}
           <div className="col-6 border-end p-3 position-relative">
             <div className="d-flex align-items-center gap-2 mb-2">
-              <div className="avatar avatar-sm bg-success-lt text-success" style={{ borderRadius: '8px', width: '28px', height: '28px' }}>
+              <div
+                className="avatar avatar-sm bg-success-lt text-success"
+                style={{ borderRadius: '8px', width: '28px', height: '28px' }}
+              >
                 <Icon icon="cash" size="sm" />
               </div>
-              <div className="text-muted fw-bold text-truncate" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>SISA ANGGARAN</div>
+              <div
+                className="text-muted fw-bold text-truncate"
+                style={{ fontSize: '10px', letterSpacing: '0.05em' }}
+              >
+                SISA ANGGARAN
+              </div>
             </div>
-            <div className="fs-4 fw-bold text-success mb-1 text-truncate" style={{ letterSpacing: '-0.5px' }}>
+            <div
+              className="fs-4 fw-bold text-success mb-1 text-truncate"
+              style={{ letterSpacing: '-0.5px' }}
+            >
               {formatCurrency(remaining)}
             </div>
             <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
@@ -388,15 +428,25 @@ export function PlanningLayout() {
             </div>
           </div>
 
-          {/* Harian (Safe) */}
           <div className="col-6 p-3 position-relative">
             <div className="d-flex align-items-center gap-2 mb-2">
-              <div className="avatar avatar-sm bg-warning-lt text-warning" style={{ borderRadius: '8px', width: '28px', height: '28px' }}>
+              <div
+                className="avatar avatar-sm bg-warning-lt text-warning"
+                style={{ borderRadius: '8px', width: '28px', height: '28px' }}
+              >
                 <Icon icon="shield-check" size="sm" />
               </div>
-              <div className="text-muted fw-bold text-truncate" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>HARIAN (SAFE)</div>
+              <div
+                className="text-muted fw-bold text-truncate"
+                style={{ fontSize: '10px', letterSpacing: '0.05em' }}
+              >
+                HARIAN (SAFE)
+              </div>
             </div>
-            <div className="fs-4 fw-bold text-warning mb-1 text-truncate" style={{ letterSpacing: '-0.5px' }}>
+            <div
+              className="fs-4 fw-bold text-warning mb-1 text-truncate"
+              style={{ letterSpacing: '-0.5px' }}
+            >
               {formatCurrency(MOCK_BUDGET_DATA.safeToSpendPerDay)}
             </div>
             <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
@@ -406,41 +456,40 @@ export function PlanningLayout() {
         </div>
       </div>
 
-      {/* 2. NAVIGATION TOOLBAR - Centered tab list like credit page */}
       <div className="mb-4 d-flex justify-content-center">
         <PlanningSegmentedNav />
       </div>
 
-      {/* 3. MAIN CONTENT - Dynamic Tab Switcher */}
       <div className="tab-content transition-all animate-in fade-in duration-500">
-        <PlanningContext.Provider value={{
-          goalsData,
-          subsData,
-          handleOpenAddGoal,
-          handleEditGoal,
-          setIsSubModalOpen
-        }}>
+        <PlanningContext.Provider
+          value={{
+            goalsData,
+            subsData,
+            handleOpenAddGoal,
+            handleEditGoal,
+            setIsSubModalOpen,
+          }}
+        >
           <Outlet />
         </PlanningContext.Provider>
       </div>
 
-      {/* Goal Modal */}
       <Modal show={isGoalModalOpen} onClose={() => setIsGoalModalOpen(false)} size="lg">
         <form onSubmit={handleAddGoalSubmit}>
-          <ModalHeader 
-            title={editingGoal ? 'Edit Target Impian (Goal)' : 'Tambah Target Impian (Goal)'} 
-            onClose={() => setIsGoalModalOpen(false)} 
+          <ModalHeader
+            title={editingGoal ? 'Edit Target Impian (Goal)' : 'Tambah Target Impian (Goal)'}
+            onClose={() => setIsGoalModalOpen(false)}
           />
           <div className="modal-body py-4">
             <div className="row">
               <div className="col-md-12 mb-3">
                 <label className="form-label fw-bold small text-secondary">Nama Impian</label>
-                <input 
-                  type="text" 
-                  className="form-control rounded-3" 
-                  placeholder="Contoh: DP Rumah, Liburan Jepang" 
+                <input
+                  type="text"
+                  className="form-control rounded-3"
+                  placeholder="Contoh: DP Rumah, Liburan Jepang"
                   value={goalName}
-                  onChange={e => setGoalName(e.target.value)}
+                  onChange={(e) => setGoalName(e.target.value)}
                   required
                 />
               </div>
@@ -450,26 +499,28 @@ export function PlanningLayout() {
                 <label className="form-label fw-bold small text-secondary">Target Tabungan</label>
                 <div className="input-group">
                   <span className="input-group-text bg-light fw-bold text-secondary">Rp</span>
-                  <input 
-                    type="number" 
-                    className="form-control" 
+                  <input
+                    type="number"
+                    className="form-control"
                     placeholder="0"
                     value={goalTarget}
-                    onChange={e => setGoalTarget(e.target.value)}
+                    onChange={(e) => setGoalTarget(e.target.value)}
                     required
                   />
                 </div>
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label fw-bold small text-secondary">Dana Terkumpul (Mulai Awal)</label>
+                <label className="form-label fw-bold small text-secondary">
+                  Dana Terkumpul (Mulai Awal)
+                </label>
                 <div className="input-group">
                   <span className="input-group-text bg-light fw-bold text-secondary">Rp</span>
-                  <input 
-                    type="number" 
-                    className="form-control" 
+                  <input
+                    type="number"
+                    className="form-control"
                     placeholder="0"
                     value={goalSaved}
-                    onChange={e => setGoalSaved(e.target.value)}
+                    onChange={(e) => setGoalSaved(e.target.value)}
                   />
                 </div>
               </div>
@@ -479,23 +530,25 @@ export function PlanningLayout() {
                 <label className="form-label fw-bold small text-secondary">Setoran Bulanan</label>
                 <div className="input-group">
                   <span className="input-group-text bg-light fw-bold text-secondary">Rp</span>
-                  <input 
-                    type="number" 
-                    className="form-control" 
+                  <input
+                    type="number"
+                    className="form-control"
                     placeholder="0"
                     value={goalMonthly}
-                    onChange={e => setGoalMonthly(e.target.value)}
+                    onChange={(e) => setGoalMonthly(e.target.value)}
                   />
                 </div>
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label fw-bold small text-secondary">Target Selesai (ETA)</label>
-                <input 
-                  type="text" 
-                  className="form-control rounded-3" 
+                <label className="form-label fw-bold small text-secondary">
+                  Target Selesai (ETA)
+                </label>
+                <input
+                  type="text"
+                  className="form-control rounded-3"
                   placeholder="Contoh: Desember 2026"
                   value={goalEta}
-                  onChange={e => setGoalEta(e.target.value)}
+                  onChange={(e) => setGoalEta(e.target.value)}
                   required
                 />
               </div>
@@ -504,29 +557,31 @@ export function PlanningLayout() {
               <label className="form-label fw-bold small text-secondary">Pilih Icon Impian</label>
               <div className="d-flex gap-2">
                 {['star', 'home', 'plane', 'car', 'device-laptop', 'gift'].map((iconName) => {
-                  const isActive = goalIcon === iconName;
+                  const isActive = goalIcon === iconName
                   return (
                     <button
                       key={iconName}
                       type="button"
                       className="btn p-0 d-flex align-items-center justify-content-center rounded-3"
                       onClick={() => setGoalIcon(iconName)}
-                      style={{ 
-                        width: '42px', 
+                      style={{
+                        width: '42px',
                         height: '42px',
                         backgroundColor: isActive ? '#ff6b00' : 'transparent',
                         borderColor: isActive ? '#ff6b00' : 'var(--tblr-border-color)',
                         color: isActive ? '#ffffff' : 'var(--tblr-secondary)',
-                        transition: 'all 0.15s ease'
+                        transition: 'all 0.15s ease',
                       }}
                     >
                       <Icon icon={iconName} size="sm" className="m-0" />
                     </button>
-                  );
+                  )
                 })}
               </div>
             </div>
-            <div className={`mt-4 d-flex ${editingGoal ? 'justify-content-between' : 'justify-content-end'} align-items-center`}>
+            <div
+              className={`mt-4 d-flex ${editingGoal ? 'justify-content-between' : 'justify-content-end'} align-items-center`}
+            >
               {editingGoal && (
                 <Button
                   element="button"
@@ -548,12 +603,7 @@ export function PlanningLayout() {
                 >
                   Batal
                 </Button>
-                <Button
-                  element="button"
-                  type="submit"
-                  color="primary"
-                  icon="check"
-                >
+                <Button element="button" type="submit" color="primary" icon="check">
                   {editingGoal ? 'Simpan Perubahan' : 'Simpan Impian'}
                 </Button>
               </div>
@@ -562,33 +612,37 @@ export function PlanningLayout() {
         </form>
       </Modal>
 
-      {/* Subscription Modal */}
       <Modal show={isSubModalOpen} onClose={() => setIsSubModalOpen(false)} size="lg">
         <form onSubmit={handleAddSubSubmit}>
-          <ModalHeader title="Tambah Layanan Langganan (Subscription)" onClose={() => setIsSubModalOpen(false)} />
+          <ModalHeader
+            title="Tambah Layanan Langganan (Subscription)"
+            onClose={() => setIsSubModalOpen(false)}
+          />
           <div className="modal-body py-4">
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label className="form-label fw-bold small text-secondary">Nama Layanan</label>
-                <input 
-                  type="text" 
-                  className="form-control rounded-3" 
-                  placeholder="Contoh: Netflix, Spotify, iCloud" 
+                <input
+                  type="text"
+                  className="form-control rounded-3"
+                  placeholder="Contoh: Netflix, Spotify, iCloud"
                   value={subName}
-                  onChange={e => setSubName(e.target.value)}
+                  onChange={(e) => setSubName(e.target.value)}
                   required
                 />
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label fw-bold small text-secondary">Biaya Langganan (Bulanan)</label>
+                <label className="form-label fw-bold small text-secondary">
+                  Biaya Langganan (Bulanan)
+                </label>
                 <div className="input-group">
                   <span className="input-group-text bg-light fw-bold text-secondary">Rp</span>
-                  <input 
-                    type="number" 
-                    className="form-control" 
+                  <input
+                    type="number"
+                    className="form-control"
                     placeholder="0"
                     value={subCost}
-                    onChange={e => setSubCost(e.target.value)}
+                    onChange={(e) => setSubCost(e.target.value)}
                     required
                   />
                 </div>
@@ -596,24 +650,26 @@ export function PlanningLayout() {
             </div>
             <div className="row">
               <div className="col-md-6 mb-3">
-                <label className="form-label fw-bold small text-secondary">Tanggal Tagihan (Setiap Bulan)</label>
-                <input 
-                  type="number" 
-                  className="form-control rounded-3" 
+                <label className="form-label fw-bold small text-secondary">
+                  Tanggal Tagihan (Setiap Bulan)
+                </label>
+                <input
+                  type="number"
+                  className="form-control rounded-3"
                   placeholder="Contoh: 15"
                   min="1"
                   max="31"
                   value={subDueDate}
-                  onChange={e => setSubDueDate(e.target.value)}
+                  onChange={(e) => setSubDueDate(e.target.value)}
                   required
                 />
               </div>
               <div className="col-md-6 mb-3">
                 <label className="form-label fw-bold small text-secondary">Kategori Layanan</label>
-                <select 
-                  className="form-select rounded-3" 
+                <select
+                  className="form-select rounded-3"
                   value={subCategory}
-                  onChange={e => setSubCategory(e.target.value)}
+                  onChange={(e) => setSubCategory(e.target.value)}
                 >
                   <option value="Streaming">Streaming (Hiburan)</option>
                   <option value="Kerja">Pekerjaan & Produktivitas</option>
@@ -625,10 +681,10 @@ export function PlanningLayout() {
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label className="form-label fw-bold small text-secondary">Status Pembayaran</label>
-                <select 
-                  className="form-select rounded-3" 
+                <select
+                  className="form-select rounded-3"
                   value={subStatus}
-                  onChange={e => setSubStatus(e.target.value)}
+                  onChange={(e) => setSubStatus(e.target.value)}
                 >
                   <option value="paid">Lunas (Paid)</option>
                   <option value="upcoming">Akan Datang (Upcoming)</option>
@@ -636,28 +692,32 @@ export function PlanningLayout() {
                 </select>
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label fw-bold small text-secondary">Pilih Jenis Icon Layanan</label>
+                <label className="form-label fw-bold small text-secondary">
+                  Pilih Jenis Icon Layanan
+                </label>
                 <div className="d-flex gap-2">
                   {['device-tv', 'music', 'world', 'bolt', 'database'].map((iconName) => {
-                    const isActive = subIcon === iconName;
+                    const isActive = subIcon === iconName
                     return (
                       <button
                         key={iconName}
                         type="button"
                         className="btn p-0 d-flex align-items-center justify-content-center rounded-3"
                         onClick={() => setSubIcon(iconName)}
-                        style={{ 
-                          width: '42px', 
+                        style={{
+                          width: '42px',
                           height: '42px',
                           backgroundColor: isActive ? 'var(--tblr-primary)' : 'transparent',
-                          borderColor: isActive ? 'var(--tblr-primary)' : 'var(--tblr-border-color)',
+                          borderColor: isActive
+                            ? 'var(--tblr-primary)'
+                            : 'var(--tblr-border-color)',
                           color: isActive ? '#ffffff' : 'var(--tblr-secondary)',
-                          transition: 'all 0.15s ease'
+                          transition: 'all 0.15s ease',
                         }}
                       >
                         <Icon icon={iconName} size="sm" className="m-0" />
                       </button>
-                    );
+                    )
                   })}
                 </div>
               </div>
@@ -672,12 +732,7 @@ export function PlanningLayout() {
               >
                 Batal
               </Button>
-              <Button
-                element="button"
-                type="submit"
-                color="primary"
-                icon="check"
-              >
+              <Button element="button" type="submit" color="primary" icon="check">
                 Simpan Layanan
               </Button>
             </div>
@@ -685,5 +740,5 @@ export function PlanningLayout() {
         </form>
       </Modal>
     </BaseLayout>
-  );
+  )
 }

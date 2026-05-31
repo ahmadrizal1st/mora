@@ -17,7 +17,6 @@ export function Calendar({
 }: CalendarProps) {
   return (
     <>
-
       <FullCalendar
         plugins={[dayGridPlugin]}
         initialView={initialView}

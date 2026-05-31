@@ -36,9 +36,9 @@ export function NavbarSide({
   return (
     <div className={classes}>
       <div className={clsx('nav-item me-2 d-flex align-items-center', responsiveClass)}>
-        <Link 
-          to="/ai/chat/" 
-          className="btn btn-primary btn-icon rounded-circle shadow-sm" 
+        <Link
+          to="/ai/chat/"
+          className="btn btn-primary btn-icon rounded-circle shadow-sm"
           aria-label="Open Chat Assistant"
           style={{ width: '36px', height: '36px' }}
           title="Mora AI Chatbot"
@@ -47,25 +47,13 @@ export function NavbarSide({
         </Link>
       </div>
 
-      {showNotifications && (
-        <NavbarSideNotifications />
-      )}
+      {showNotifications && <NavbarSideNotifications />}
 
-      {showTheme && (
-        <NavbarSideTheme className={responsiveClass} />
-      )}
+      {showTheme && <NavbarSideTheme className={responsiveClass} />}
 
-      {showLanguage && (
-        <NavbarSideLanguage className={responsiveClass} />
-      )}
+      {showLanguage && <NavbarSideLanguage className={responsiveClass} />}
 
-      {showUser && (
-        <NavbarSideUser
-          personId={personId}
-          hideUsername={hideUsername}
-          dark={dark}
-        />
-      )}
+      {showUser && <NavbarSideUser personId={personId} hideUsername={hideUsername} dark={dark} />}
     </div>
   )
 }

@@ -65,7 +65,9 @@ export function Alert({
             {description}
             {list && (
               <ul className="alert-list">
-                {list.map((item, i) => <li key={i}>{item}</li>)}
+                {list.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
               </ul>
             )}
           </div>
@@ -73,21 +75,31 @@ export function Alert({
       ) : (
         <>
           {children || title}
-          {action && <a href="#" className="alert-action">{action}</a>}
-          {link && <a href="#" className="alert-link">{link}</a>}
+          {action && (
+            <a href="#" className="alert-action">
+              {action}
+            </a>
+          )}
+          {link && (
+            <a href="#" className="alert-link">
+              {link}
+            </a>
+          )}
         </>
       )}
 
       {buttons && (
         <div className="btn-list">
-          <a href="#" className={clsx('btn', `btn-${type}`)}>Okay</a>
-          <a href="#" className="btn">Cancel</a>
+          <a href="#" className={clsx('btn', `btn-${type}`)}>
+            Okay
+          </a>
+          <a href="#" className="btn">
+            Cancel
+          </a>
         </div>
       )}
 
-      {showClose && (
-        <a className="btn-close" data-bs-dismiss="alert" aria-label="close" />
-      )}
+      {showClose && <a className="btn-close" data-bs-dismiss="alert" aria-label="close" />}
     </div>
   )
 }

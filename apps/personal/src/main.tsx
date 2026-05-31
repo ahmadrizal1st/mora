@@ -1,4 +1,3 @@
-// src/main.tsx
 import ReactDOM from 'react-dom/client'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { App } from './app/App'
@@ -23,7 +22,6 @@ declare global {
   }
 }
 
-// Initialize ApexCharts globally for use in components
 window.ApexCharts = ApexCharts
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID

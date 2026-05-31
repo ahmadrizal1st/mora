@@ -11,9 +11,7 @@ interface StatusProps {
 export function Status({ text = 'Status', color, lite, dot, animated }: StatusProps) {
   return (
     <span className={clsx('status', color && `status-${color}`, lite && 'status-lite')}>
-      {dot && (
-        <span className={clsx('status-dot', animated && 'status-dot-animated')} />
-      )}
+      {dot && <span className={clsx('status-dot', animated && 'status-dot-animated')} />}
       {text}
     </span>
   )

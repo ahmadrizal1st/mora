@@ -19,20 +19,8 @@
   "tags": {
     "max-items": 15,
     "multiple": true,
-    "value": [
-      "HTML",
-      "JavaScript",
-      "Bootstrap"
-    ],
-    "options": [
-      "HTML",
-      "JavaScript",
-      "CSS",
-      "jQuery",
-      "Bootstrap",
-      "Ruby",
-      "Python"
-    ]
+    "value": ["HTML", "JavaScript", "Bootstrap"],
+    "options": ["HTML", "JavaScript", "CSS", "jQuery", "Bootstrap", "Ruby", "Python"]
   },
   "countries": {
     "value": "pl",
@@ -82,34 +70,18 @@
     "options": [
       {
         "title": "Tags",
-        "options": [
-          "HTML",
-          "JavaScript",
-          "CSS",
-          "jQuery",
-          "Bootstrap",
-          "Ruby",
-          "Python"
-        ]
+        "options": ["HTML", "JavaScript", "CSS", "jQuery", "Bootstrap", "Ruby", "Python"]
       },
       {
         "title": "People",
-        "options": [
-          "Chuck Tesla",
-          "Elon Musk",
-          "Paweł Kuna",
-          "Nikola Tesla"
-        ]
+        "options": ["Chuck Tesla", "Elon Musk", "Paweł Kuna", "Nikola Tesla"]
       }
     ]
   },
   "states": {
     "max-items": 15,
     "multiple": true,
-    "value": [
-      "AL",
-      "AZ"
-    ],
+    "value": ["AL", "AZ"],
     "options": {
       "AL": {
         "name": "Alabama"

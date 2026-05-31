@@ -1,8 +1,8 @@
 interface Profile2CardProps {
-  name?: string;
-  jobTitle?: string;
-  avatarSrc?: string;
-  socials?: { icon: string; title: string; href?: string }[];
+  name?: string
+  jobTitle?: string
+  avatarSrc?: string
+  socials?: { icon: string; title: string; href?: string }[]
 }
 
 export function Profile2Card({
@@ -32,8 +32,16 @@ export function Profile2Card({
               {socials.map((s, i) => (
                 <li key={i} className="list-inline-item">
                   <a href={s.href || '#'} title={s.title} data-bs-toggle="tooltip">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24"
-                      viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      fill="none"
+                    >
                       <use href={`#ti-${s.icon}`} />
                     </svg>
                   </a>
@@ -44,5 +52,5 @@ export function Profile2Card({
         </div>
       </div>
     </div>
-  );
+  )
 }

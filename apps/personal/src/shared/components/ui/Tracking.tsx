@@ -34,11 +34,7 @@ const statusClass: Record<TrackingBlockStatus, string> = {
 export function Tracking({ blocks = 30, items, squares, className }: TrackingProps) {
   const displayItems = items ?? defaultBlocks(blocks)
 
-  const trackingClass = clsx(
-    'tracking',
-    squares && 'tracking-squares',
-    className
-  )
+  const trackingClass = clsx('tracking', squares && 'tracking-squares', className)
 
   return (
     <div className={trackingClass}>

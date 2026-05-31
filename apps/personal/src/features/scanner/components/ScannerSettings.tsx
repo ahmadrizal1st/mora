@@ -1,13 +1,13 @@
-import React from 'react';
-import { Select } from '@/shared/components/ui/Select';
+import React from 'react'
+import { Select } from '@/shared/components/ui/Select'
 
 interface ScannerSettingsProps {
-  isAutoCrop: boolean;
-  setIsAutoCrop: (val: boolean) => void;
-  cameraFacing: 'environment' | 'user';
-  setCameraFacing: (val: 'environment' | 'user') => void;
-  outputFormat: 'png' | 'jpeg';
-  setOutputFormat: (val: 'png' | 'jpeg') => void;
+  isAutoCrop: boolean
+  setIsAutoCrop: (val: boolean) => void
+  cameraFacing: 'environment' | 'user'
+  setCameraFacing: (val: 'environment' | 'user') => void
+  outputFormat: 'png' | 'jpeg'
+  setOutputFormat: (val: 'png' | 'jpeg') => void
 }
 
 export const ScannerSettings: React.FC<ScannerSettingsProps> = ({
@@ -16,7 +16,7 @@ export const ScannerSettings: React.FC<ScannerSettingsProps> = ({
   cameraFacing,
   setCameraFacing,
   outputFormat,
-  setOutputFormat
+  setOutputFormat,
 }) => {
   return (
     <div className="card shadow-sm border-0">
@@ -54,7 +54,7 @@ export const ScannerSettings: React.FC<ScannerSettingsProps> = ({
                 onChange={(val) => setCameraFacing(val as 'environment' | 'user')}
                 options={[
                   { value: 'environment', label: 'Belakang' },
-                  { value: 'user', label: 'Depan' }
+                  { value: 'user', label: 'Depan' },
                 ]}
               />
             </div>
@@ -72,7 +72,7 @@ export const ScannerSettings: React.FC<ScannerSettingsProps> = ({
                 onChange={(val) => setOutputFormat(val as 'png' | 'jpeg')}
                 options={[
                   { value: 'png', label: 'PNG' },
-                  { value: 'jpeg', label: 'JPEG' }
+                  { value: 'jpeg', label: 'JPEG' },
                 ]}
               />
             </div>
@@ -80,5 +80,5 @@ export const ScannerSettings: React.FC<ScannerSettingsProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
