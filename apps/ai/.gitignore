@@ -41,3 +41,4 @@ venv.bak/
 uploads/
 .models/
 *.log
+tests/samples/large.txt
