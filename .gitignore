@@ -45,3 +45,7 @@ pnpm-debug.log*
 .nuxt/
 .cache/
 .turbo/
+
+# Large files
+**/large.txt
+tests/samples/large.txt
