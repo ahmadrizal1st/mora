@@ -1,121 +1,179 @@
+import { Chart } from '@/shared/components/ui/Chart'
+import { useMemo, useState, useEffect } from 'react'
+
 interface Props {
   score: number
 }
 
-export function CreditScoreGauge({ score }: Props) {
+const lerpColor = (color1: number[], color2: number[], t: number) => {
+  const r = Math.round(color1[0] + (color2[0] - color1[0]) * t)
+  const g = Math.round(color1[1] + (color2[1] - color1[1]) * t)
+  const b = Math.round(color1[2] + (color2[2] - color1[2]) * t)
+  return `rgb(${r},${g},${b})`
+}
+
+export const getCreditScoreColor = (score: number) => {
   const min = 300
   const max = 850
-
   const clampedScore = Math.max(min, Math.min(score, max))
-  const percent = (clampedScore - min) / (max - min)
-  const needleAngle = percent * 180
-
-  const segments = [
-    { color: '#ff4d4f', start: 0, end: 34 },
-    { color: '#faad14', start: 36.5, end: 70.5 },
-    { color: '#fadb14', start: 73, end: 107 },
-    { color: '#1677ff', start: 109.5, end: 143.5 },
-    { color: '#52c41a', start: 146, end: 180 },
-  ]
-
-  const getNeedleColor = (sc: number) => {
-    if (sc < 410) return '#ff4d4f'
-    if (sc < 520) return '#faad14'
-    if (sc < 630) return '#fadb14'
-    if (sc < 740) return '#1677ff'
-    return '#52c41a'
+  const pct = (clampedScore - min) / (max - min)
+  
+  const red = [226, 75, 74]
+  const yellow = [239, 159, 39]
+  const green = [43, 138, 62] // #2b8a3e
+  
+  if (pct <= 0.5) {
+    const t = pct / 0.5
+    return lerpColor(red, yellow, t)
+  } else {
+    const t = (pct - 0.5) / 0.5
+    return lerpColor(yellow, green, t)
   }
+}
 
-  const getLabel = (sc: number) => {
-    if (sc < 580) return 'Poor'
-    if (sc < 670) return 'Fair'
-    if (sc < 740) return 'Good'
-    if (sc < 800) return 'Very Good'
-    return 'Excellent'
-  }
+export const getCreditScoreLabel = (sc: number) => {
+  if (sc < 580) return 'Poor'
+  if (sc < 670) return 'Fair'
+  if (sc < 740) return 'Good'
+  if (sc < 800) return 'Very Good'
+  return 'Excellent'
+}
 
-  const needleColor = getNeedleColor(clampedScore)
-  const label = getLabel(clampedScore)
+export function CreditScoreGauge({ score }: Props) {
+  const [showBubble, setShowBubble] = useState(false)
+  const min = 300
+  const max = 850
+  const clampedScore = Math.max(min, Math.min(score, max))
+  const range = max - min
+  const percentage = ((clampedScore - min) / range) * 100
+  const pct = (clampedScore - min) / range
 
-  const polarToCartesian = (
-    centerX: number,
-    centerY: number,
-    radius: number,
-    angleInDegrees: number
-  ) => {
-    const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180.0
-    return {
-      x: centerX + radius * Math.cos(angleInRadians),
-      y: centerY + radius * Math.sin(angleInRadians),
+  const activeColor = useMemo(() => getCreditScoreColor(score), [score])
+
+  const gradientStops = useMemo(() => {
+    if (pct <= 0.5) {
+      return [
+        { offset: 0, color: '#E24B4A', opacity: 1 },
+        { offset: 100, color: activeColor, opacity: 1 },
+      ]
+    } else {
+      return [
+        { offset: 0, color: '#E24B4A', opacity: 1 },
+        { offset: 50, color: '#EF9F27', opacity: 1 },
+        { offset: 100, color: activeColor, opacity: 1 },
+      ]
     }
-  }
+  }, [pct, activeColor])
 
-  const describeArc = (
-    x: number,
-    y: number,
-    radius: number,
-    startAngle: number,
-    endAngle: number
-  ) => {
-    const start = polarToCartesian(x, y, radius, endAngle)
-    const end = polarToCartesian(x, y, radius, startAngle)
-    const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1'
-    return ['M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(' ')
-  }
+  const rotation = useMemo(() => -90 + (percentage / 100) * 180 - 1, [percentage])
 
-  const needlePos = polarToCartesian(100, 95, 75, needleAngle)
-  const needleLineEnd = polarToCartesian(100, 95, 58, needleAngle)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowBubble(true)
+    }, 1100)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const label = getCreditScoreLabel(clampedScore)
+
+  const chartData = useMemo(
+    () => ({
+      type: 'radialBar' as const,
+      height: 42,
+      series: [{ name: 'Credit Score', data: [percentage] }],
+      sparkline: true,
+      animations: true,
+      extend: {
+        plotOptions: {
+          radialBar: {
+            startAngle: -90,
+            endAngle: 90,
+            hollow: { size: '70%' },
+            track: {
+              background: 'var(--tblr-bg-surface-secondary, #f1f5f9)',
+              strokeWidth: '100%',
+            },
+            dataLabels: {
+              show: false,
+            },
+          },
+        },
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shade: 'dark',
+            type: 'horizontal',
+            shadeIntensity: 1,
+            opacityFrom: 1,
+            opacityTo: 1,
+            colorStops: gradientStops,
+          },
+        },
+        stroke: {
+          lineCap: 'round',
+        },
+      },
+    }),
+    [percentage, gradientStops]
+  )
 
   return (
-    <div className="position-relative w-100" style={{ maxWidth: '300px', margin: '0 auto' }}>
-      <svg viewBox="0 0 200 120" className="w-100 h-auto">
-        {segments.map((seg, i) => (
-          <path
-            key={i}
-            d={describeArc(100, 95, 75, seg.start, seg.end)}
-            fill="none"
-            stroke={seg.color}
-            strokeWidth="7"
-            strokeLinecap="round"
-          />
-        ))}
+    <div
+      className="position-relative mx-auto"
+      style={{ width: '200px', height: '200px', marginBottom: '-60px' }}
+    >
+      <Chart chartId="creditScoreGauge" chartData={chartData as any} />
 
-        <g style={{ transition: 'all 1s ease-out' }}>
-          <line
-            x1={needlePos.x}
-            y1={needlePos.y}
-            x2={needleLineEnd.x}
-            y2={needleLineEnd.y}
-            stroke={needleColor}
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-          <circle cx={needlePos.x} cy={needlePos.y} r="4.5" fill={needleColor} />
-          <circle cx={needlePos.x} cy={needlePos.y} r="1.8" fill="#ffffff" />
-        </g>
-
-        <text x="25" y="115" fontSize="9" fill="#adb5bd" fontWeight="700" textAnchor="middle">
-          300
-        </text>
-        <text x="175" y="115" fontSize="9" fill="#adb5bd" fontWeight="700" textAnchor="middle">
-          850
-        </text>
-
-        <text
-          x="100"
-          y="80"
-          fontSize="38"
-          fill="#495057"
-          fontWeight="800"
-          textAnchor="middle"
-          letterSpacing="-1"
+      <div
+        className="position-absolute start-0 w-100 text-center"
+        style={{ top: '50%', transform: 'translateY(-50%)' }}
+      >
+        <div
+          className="display-5 fw-bold lh-1"
+          style={{
+            color: activeColor,
+            fontFeatureSettings: '"tnum" 1',
+            letterSpacing: '-0.02em',
+          }}
         >
-          {score}
-        </text>
-        <text x="100" y="100" fontSize="13" fill="#495057" fontWeight="700" textAnchor="middle">
-          {label}
-        </text>
-      </svg>
+          {clampedScore}
+        </div>
+        <div className="text-muted fw-semibold small mt-1">{label}</div>
+      </div>
+
+      <div
+        className="position-absolute top-0 start-0 w-100 h-100"
+        style={{
+          transform: `rotate(${rotation}deg)`,
+          pointerEvents: 'none',
+          zIndex: 10,
+          opacity: showBubble ? 1 : 0,
+          transition: 'opacity 0.3s ease-in-out',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: '22px',
+            left: '50%',
+            transform: 'translateX(-50%) translateY(-50%)',
+            width: '20px',
+            height: '20px',
+            backgroundColor: 'var(--tblr-bg-surface, #fff)',
+            borderRadius: '50%',
+            border: `4px solid ${activeColor}`,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          }}
+        />
+      </div>
+
+      <div
+        className="d-flex justify-content-between px-3 position-absolute start-0 w-100"
+        style={{ bottom: '40%' }}
+      >
+        <span className="small text-muted fw-bold">{min}</span>
+        <span className="small text-muted fw-bold">{max}</span>
+      </div>
     </div>
   )
 }

@@ -26,6 +26,7 @@ import { Route as Error500RouteImport } from './routes/error-500'
 import { Route as Error429RouteImport } from './routes/error-429'
 import { Route as Error404RouteImport } from './routes/error-404'
 import { Route as Error403RouteImport } from './routes/error-403'
+import { Route as DebtsRouteImport } from './routes/debts'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreditRouteImport } from './routes/credit'
 import { Route as ChatRouteImport } from './routes/chat'
@@ -40,6 +41,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions.index'
 import { Route as TrackerIndexRouteImport } from './routes/tracker.index'
 import { Route as PlanningIndexRouteImport } from './routes/planning.index'
+import { Route as DebtsIndexRouteImport } from './routes/debts.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as CreditIndexRouteImport } from './routes/credit.index'
 import { Route as ChatIndexRouteImport } from './routes/chat.index'
@@ -152,6 +154,11 @@ const Error403Route = Error403RouteImport.update({
   path: '/error-403',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DebtsRoute = DebtsRouteImport.update({
+  id: '/debts',
+  path: '/debts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -221,6 +228,11 @@ const PlanningIndexRoute = PlanningIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PlanningRoute,
+} as any)
+const DebtsIndexRoute = DebtsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DebtsRoute,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
@@ -365,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRouteWithChildren
   '/credit': typeof CreditRouteWithChildren
   '/dashboard': typeof DashboardRouteWithChildren
+  '/debts': typeof DebtsRouteWithChildren
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
   '/error-429': typeof Error429Route
@@ -406,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/chat/': typeof ChatIndexRoute
   '/credit/': typeof CreditIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/debts/': typeof DebtsIndexRoute
   '/planning/': typeof PlanningIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
@@ -460,6 +474,7 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatIndexRoute
   '/credit': typeof CreditIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/debts': typeof DebtsIndexRoute
   '/planning': typeof PlanningIndexRoute
   '/tracker': typeof TrackerIndexRoute
   '/transactions': typeof TransactionsIndexRoute
@@ -479,6 +494,7 @@ export interface FileRoutesById {
   '/chat': typeof ChatRouteWithChildren
   '/credit': typeof CreditRouteWithChildren
   '/dashboard': typeof DashboardRouteWithChildren
+  '/debts': typeof DebtsRouteWithChildren
   '/error-403': typeof Error403Route
   '/error-404': typeof Error404Route
   '/error-429': typeof Error429Route
@@ -520,6 +536,7 @@ export interface FileRoutesById {
   '/chat/': typeof ChatIndexRoute
   '/credit/': typeof CreditIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/debts/': typeof DebtsIndexRoute
   '/planning/': typeof PlanningIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
@@ -540,6 +557,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/credit'
     | '/dashboard'
+    | '/debts'
     | '/error-403'
     | '/error-404'
     | '/error-429'
@@ -581,6 +599,7 @@ export interface FileRouteTypes {
     | '/chat/'
     | '/credit/'
     | '/dashboard/'
+    | '/debts/'
     | '/planning/'
     | '/tracker/'
     | '/transactions/'
@@ -635,6 +654,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/credit'
     | '/dashboard'
+    | '/debts'
     | '/planning'
     | '/tracker'
     | '/transactions'
@@ -653,6 +673,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/credit'
     | '/dashboard'
+    | '/debts'
     | '/error-403'
     | '/error-404'
     | '/error-429'
@@ -694,6 +715,7 @@ export interface FileRouteTypes {
     | '/chat/'
     | '/credit/'
     | '/dashboard/'
+    | '/debts/'
     | '/planning/'
     | '/tracker/'
     | '/transactions/'
@@ -713,6 +735,7 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRouteWithChildren
   CreditRoute: typeof CreditRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
+  DebtsRoute: typeof DebtsRouteWithChildren
   Error403Route: typeof Error403Route
   Error404Route: typeof Error404Route
   Error429Route: typeof Error429Route
@@ -866,6 +889,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Error403RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/debts': {
+      id: '/debts'
+      path: '/debts'
+      fullPath: '/debts'
+      preLoaderRoute: typeof DebtsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -963,6 +993,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/planning/'
       preLoaderRoute: typeof PlanningIndexRouteImport
       parentRoute: typeof PlanningRoute
+    }
+    '/debts/': {
+      id: '/debts/'
+      path: '/'
+      fullPath: '/debts/'
+      preLoaderRoute: typeof DebtsIndexRouteImport
+      parentRoute: typeof DebtsRoute
     }
     '/dashboard/': {
       id: '/dashboard/'
@@ -1206,6 +1243,16 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface DebtsRouteChildren {
+  DebtsIndexRoute: typeof DebtsIndexRoute
+}
+
+const DebtsRouteChildren: DebtsRouteChildren = {
+  DebtsIndexRoute: DebtsIndexRoute,
+}
+
+const DebtsRouteWithChildren = DebtsRoute._addFileChildren(DebtsRouteChildren)
+
 interface PlanningRouteChildren {
   PlanningBudgetRoute: typeof PlanningBudgetRoute
   PlanningGoalsRoute: typeof PlanningGoalsRoute
@@ -1249,6 +1296,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRouteWithChildren,
   CreditRoute: CreditRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
+  DebtsRoute: DebtsRouteWithChildren,
   Error403Route: Error403Route,
   Error404Route: Error404Route,
   Error429Route: Error429Route,

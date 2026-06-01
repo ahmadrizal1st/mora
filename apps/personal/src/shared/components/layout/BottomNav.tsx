@@ -1,4 +1,4 @@
-import { type FC, useRef } from 'react'
+import { useRef } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { clsx } from 'clsx'
 import { Icon } from '../ui/Icon'

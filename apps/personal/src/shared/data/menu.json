@@ -10,6 +10,7 @@
     "icon": "cash-banknote",
     "children": {
       "transactions": { "url": "transactions", "title": "Riwayat Transaksi" },
+      "debts": { "url": "debts", "title": "Utang & Piutang" },
       "accounts": { "url": "accounts", "title": "Kelola Akun" }
     }
   },

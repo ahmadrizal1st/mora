@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { Icon, Chart } from '@/shared/components/ui'
 import { CreditTypeCards } from '../components/CreditTypeCards'
-import { CreditScoreGauge } from '../components/CreditScoreGauge'
+import { CreditScoreGauge, getCreditScoreColor } from '../components/CreditScoreGauge'
 import { DebtPayoffPlannerPreview } from '../components/DebtPayoffPlannerPreview'
 import { useCreditSummary } from '../hooks/useCreditSummary'
 import { useCredits } from '../hooks/useCredits'
@@ -64,14 +64,15 @@ export function CreditOverviewPage() {
     return alerts
   }, [credits, isLoading])
 
-  const scoreColor =
-    creditScore >= 740
-      ? 'var(--tblr-success)'
-      : creditScore >= 670
-        ? 'var(--tblr-primary)'
-        : 'var(--tblr-warning)'
-  const scoreLabel =
-    creditScore >= 740 ? 'Sangat Baik' : creditScore >= 670 ? 'Baik' : 'Perlu Pantau'
+  const getScoreInfo = (sc: number) => {
+    if (sc >= 740) return { color: 'success', label: 'Sangat Baik' }
+    if (sc >= 670) return { color: 'primary', label: 'Baik' }
+    if (sc >= 580) return { color: 'warning', label: 'Cukup' }
+    return { color: 'danger', label: 'Perlu Pantau' }
+  }
+  const { color: scoreColorName, label: scoreLabel } = getScoreInfo(creditScore)
+  const exactScoreColor = getCreditScoreColor(creditScore)
+  const gradientColor = exactScoreColor.replace('rgb', 'rgba').replace(')', ', 0.15)')
 
   if (isLoading) {
     return <div className="py-5 text-center text-muted">Memuat ringkasan kredit...</div>
@@ -83,18 +84,23 @@ export function CreditOverviewPage() {
     <>
       <div className="row g-3 mb-4">
         <div className="col-12 col-lg-4">
-          <div className="card border-0 shadow-sm h-100 overflow-hidden credit-score-card">
+          <div 
+            className="card border-0 shadow-sm h-100 overflow-hidden credit-score-card"
+            style={{
+              background: `linear-gradient(180deg, ${gradientColor} 0%, var(--tblr-bg-surface, #fff) 100%)`
+            }}
+          >
             <div className="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center position-relative">
               <div className="subheader text-secondary mb-2 tracking-wider text-10 fw-bold">
                 CREDIT SCORE
               </div>
 
               <div className="position-relative w-100 d-flex justify-content-center my-n10px">
-                <CreditScoreGauge score={550} />
+                <CreditScoreGauge score={creditScore} />
               </div>
 
               <span
-                className={`badge bg-${scoreColor === 'var(--tblr-success)' ? 'success' : scoreColor === 'var(--tblr-primary)' ? 'primary' : 'warning'}-lt text-${scoreColor === 'var(--tblr-success)' ? 'success' : scoreColor === 'var(--tblr-primary)' ? 'primary' : 'warning'} border-0 px-3 py-2 rounded-pill fw-bold shadow-sm mb-4 z-1 text-11 tracking-wide`}
+                className={`badge bg-${scoreColorName}-lt text-${scoreColorName} border-0 px-3 py-2 rounded-pill fw-bold shadow-sm mb-4 z-1 text-11 tracking-wide`}
               >
                 {scoreLabel.toUpperCase()}
               </span>
@@ -135,10 +141,10 @@ export function CreditOverviewPage() {
           </div>
         </div>
 
-        <div className="col-12 col-lg-8">
-          <div className="row g-2 h-100">
+        <div className="col-12 col-lg-8 d-flex flex-column gap-3">
+          <div className="row g-2">
             <div className="col-6 col-md-6">
-              <div className="card border-0 shadow-sm h-100">
+              <div className="card border-0 shadow-sm">
                 <div className="card-body p-3">
                   <div className="d-flex align-items-center gap-2 mb-2">
                     <span className="avatar avatar-xs bg-red text-white rounded-2 w-22">
@@ -156,7 +162,7 @@ export function CreditOverviewPage() {
               </div>
             </div>
             <div className="col-6 col-md-6">
-              <div className="card border-0 shadow-sm h-100">
+              <div className="card border-0 shadow-sm">
                 <div className="card-body p-3">
                   <div className="d-flex align-items-center gap-2 mb-2">
                     <span className="avatar avatar-xs bg-azure text-white rounded-2 w-22">
@@ -174,7 +180,7 @@ export function CreditOverviewPage() {
               </div>
             </div>
             <div className="col-6 col-md-6">
-              <div className="card border-0 shadow-sm h-100">
+              <div className="card border-0 shadow-sm">
                 <div className="card-body p-3">
                   <div className="d-flex align-items-center gap-2 mb-2">
                     <span className="avatar avatar-xs bg-green text-white rounded-2 w-22">
@@ -194,7 +200,7 @@ export function CreditOverviewPage() {
               </div>
             </div>
             <div className="col-6 col-md-6">
-              <div className="card border-0 shadow-sm h-100">
+              <div className="card border-0 shadow-sm">
                 <div className="card-body p-3">
                   <div className="d-flex align-items-center gap-2 mb-2">
                     <span className="avatar avatar-xs bg-purple text-white rounded-2 w-22">
@@ -210,46 +216,46 @@ export function CreditOverviewPage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="card border-0 shadow-sm mb-4">
-        <div className="card-header border-0 d-flex justify-content-between align-items-center">
-          <h3 className="card-title fw-bold">Notifikasi & Peringatan</h3>
-          <div className="card-actions d-flex align-items-center gap-2">
-            <span className="badge bg-blue-lt text-blue border-0">{quickAlerts.length} item</span>
-            {quickAlerts.length > 1 && (
-              <button
-                className="btn btn-link btn-sm text-decoration-none p-0 fw-bold"
-                onClick={() => setIsExpanded(!isExpanded)}
-              >
-                {isExpanded ? 'Sembunyikan' : 'Lihat Semua'}
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="card-body pt-0">
-          <div className="d-flex flex-column gap-2">
-            {visibleAlerts.map((alert, i) => (
-              <div
-                key={i}
-                className={`d-flex align-items-center gap-3 py-2 px-3 rounded-2 bg-${alert.color}-lt`}
-              >
-                <div
-                  className={`avatar avatar-xs bg-${alert.color}-lt text-${alert.color} rounded-circle flex-shrink-0 border-current`}
-                >
-                  <Icon icon={alert.icon} size={12} />
-                </div>
-                <div className="flex-fill small fw-medium">{alert.text}</div>
-                {alert.action && (
+          <div className="card border-0 shadow-sm flex-fill">
+            <div className="card-header border-0 d-flex justify-content-between align-items-center">
+              <h3 className="card-title fw-bold">Notifikasi & Peringatan</h3>
+              <div className="card-actions d-flex align-items-center gap-2">
+                <span className="badge bg-blue-lt text-blue border-0">{quickAlerts.length} item</span>
+                {quickAlerts.length > 1 && (
                   <button
-                    className={`btn btn-sm btn-${alert.color} px-3 flex-shrink-0 fw-bold rounded-pill text-10`}
+                    className="btn btn-link btn-sm text-decoration-none p-0 fw-bold"
+                    onClick={() => setIsExpanded(!isExpanded)}
                   >
-                    {alert.action}
+                    {isExpanded ? 'Sembunyikan' : 'Lihat Semua'}
                   </button>
                 )}
               </div>
-            ))}
+            </div>
+            <div className="card-body pt-0">
+              <div className="d-flex flex-column gap-2">
+                {visibleAlerts.map((alert, i) => (
+                  <div
+                    key={i}
+                    className={`d-flex align-items-center gap-3 py-2 px-3 rounded-2 bg-${alert.color}-lt`}
+                  >
+                    <div
+                      className={`avatar avatar-xs bg-${alert.color}-lt text-${alert.color} rounded-circle flex-shrink-0 border-current`}
+                    >
+                      <Icon icon={alert.icon} size={12} />
+                    </div>
+                    <div className="flex-fill small fw-medium">{alert.text}</div>
+                    {alert.action && (
+                      <button
+                        className={`btn btn-sm btn-${alert.color} px-3 flex-shrink-0 fw-bold rounded-pill text-10`}
+                      >
+                        {alert.action}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
