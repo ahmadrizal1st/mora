@@ -42,7 +42,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({
           : 'credit-card'
 
   const handleCardClick = () => {
-    navigate({ to: '/accounts/$accountId', params: { accountId: account.id } })
+    navigate({ to: '/accounts/$accountId', params: { accountId: account.id }, search: { page: 1, per_page: 10 } })
   }
 
   const handleEditClick = (e: React.MouseEvent) => {

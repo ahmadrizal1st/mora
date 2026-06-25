@@ -1,8 +1,7 @@
-import React from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 import { useBudgets } from '../../hooks/usePlanning'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
-import type { BudgetCategory } from '../../types'
+import { clsx } from 'clsx'
 
 export function BudgetDetailedTable() {
   const { data: budgetData } = useBudgets()

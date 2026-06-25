@@ -164,7 +164,7 @@ export const MobileRadialMenu: FC = () => {
             return (
               <div
                 key={method.id}
-                ref={(el) => (buttonRefs.current[method.id] = el)}
+                ref={(el) => { buttonRefs.current[method.id] = el }}
                 className="position-absolute d-flex align-items-center justify-content-center"
                 style={{
                   left: `calc(50% + ${x}px - 30px)`,

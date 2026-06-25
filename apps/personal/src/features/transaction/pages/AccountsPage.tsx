@@ -19,7 +19,7 @@ export const AccountsPage: React.FC = () => {
   const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day')
   const { data: response, isLoading } = useAccounts({
     group_by: groupBy,
-    'filter[is_archived]': showArchived ? '1' : '0',
+    filter: { is_archived: showArchived ? '1' : '0' },
   })
 
   const groupedAccounts = useMemo(() => {
@@ -105,7 +105,7 @@ export const AccountsPage: React.FC = () => {
 
   const handleCreate = async (data: AccountFormValues) => {
     try {
-      await createMutation.mutateAsync(data)
+      await createMutation.mutateAsync({ ...data, is_archived: data.is_archived ?? false })
       setIsModalOpen(false)
     } catch (error: unknown) {
       alert(getApiErrorMessage(error, 'Gagal membuat akun baru.'))

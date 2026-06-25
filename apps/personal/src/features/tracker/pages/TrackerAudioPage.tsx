@@ -17,7 +17,7 @@ export default function TrackerAudioPage() {
   const chunksRef = useRef<Blob[]>([])
   const streamRef = useRef<MediaStream | null>(null)
   const navigate = useNavigate()
-  const uploadMutation = { mutateAsync: async (data: any) => { throw new Error('Fitur OCR belum didukung.') } }
+  const uploadMutation: any = { mutateAsync: async (_data: any) => { throw new Error('Fitur OCR belum didukung.') } }
 
   useEffect(() => {
     let interval: NodeJS.Timeout

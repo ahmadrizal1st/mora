@@ -1,6 +1,4 @@
-import React from 'react'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
-import { Icon } from '@/shared/components/ui/Icon'
 import { clsx } from 'clsx'
 
 interface BudgetCategoryItemProps {

@@ -9,7 +9,7 @@ export default function TrackerImagePage() {
   const [files, setFiles] = useState<File[]>([])
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
-  const uploadMutation = { mutateAsync: async (data: any) => { throw new Error('Fitur OCR belum didukung.') } }
+  const uploadMutation: any = { mutateAsync: async (_data: any) => { throw new Error('Fitur OCR belum didukung.') } }
 
   const handleProcess = async () => {
     if (files.length === 0) return

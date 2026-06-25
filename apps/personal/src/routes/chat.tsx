@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/chat')({
+export const Route = createFileRoute('/ai/chat')({
   beforeLoad: () => {
-    throw redirect({ to: '/ai/chat/' })
+    throw redirect({ to: '/ai/chat' })
   },
 })

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext, useEffect } from 'react'
+import React, { useState, useMemo, useContext } from 'react'
 import { UpcomingBillsCard } from '../components/subscriptions/UpcomingBillsCard'
 import { SubscriptionItem } from '../components/subscriptions/SubscriptionItem'
 import { SubscriptionDistributionChart } from '../components/subscriptions/SubscriptionDistributionChart'
@@ -44,7 +44,11 @@ const getSubCategory = (subName: string): string => {
 
 export function SubscriptionsPage() {
   const { subsData, setIsSubModalOpen } = useContext(PlanningContext)
-  const data = subsData || MOCK_SUBSCRIPTIONS_DATA
+  const data = subsData || {
+    totalMonthly: 0,
+    paidThisMonth: 0,
+    subscriptions: []
+  }
   const { totalMonthly, paidThisMonth, subscriptions } = data
   const [selectedCategory, setSelectedCategory] = useState('Semua')
   const [searchQuery, setSearchQuery] = useState('')

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 
 export function SubscriptionMetricStrip() {

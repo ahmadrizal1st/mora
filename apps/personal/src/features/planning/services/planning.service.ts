@@ -1,5 +1,5 @@
 import api from '@/shared/api/client'
-import type { Goal, Subscription, GoalsData, SubscriptionsData } from '../types'
+import type { Goal, Subscription, GoalsData, SubscriptionsData, BudgetData } from '../types'
 
 export const planningService = {
   async getGoals(): Promise<GoalsData> {

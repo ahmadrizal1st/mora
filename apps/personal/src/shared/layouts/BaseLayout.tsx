@@ -1,11 +1,11 @@
 import { type ReactNode } from 'react'
-import { useLocation, Link } from '@tanstack/react-router'
+import { useLocation } from '@tanstack/react-router'
 import { clsx } from 'clsx'
 import { Navbar } from '../components/layout/Navbar'
 import { Sidebar } from '../components/layout/Sidebar'
 import { PageHeader } from '../components/layout/PageHeader'
 import { Footer } from '../components/layout/Footer'
-import { Icon } from '../components/ui/Icon'
+
 
 interface BaseLayoutProps {
   children: ReactNode

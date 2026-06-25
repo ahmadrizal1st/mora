@@ -4,10 +4,7 @@ import BaseLayout from '@/shared/layouts/BaseLayout'
 import { PlanningSegmentedNav } from '../components/shared/PlanningSegmentedNav'
 import { PlanningMetricCard } from '../components/shared/PlanningMetricCard'
 import { Icon, MonthPicker, Modal, ModalHeader, Button } from '@/shared/components/ui'
-import {
-  MOCK_GOALS_DATA,
-  MOCK_SUBSCRIPTIONS_DATA,
-} from '../data/mockPlanningData'
+
 import type { Goal, GoalsData, SubscriptionsData } from '../types'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
 import { useGoals, useSubscriptions, useBudgets } from '../hooks/usePlanning'

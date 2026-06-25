@@ -7,8 +7,6 @@ import {
   useDeleteTransaction,
   useTransactionHistory,
   useInfiniteTransactions,
-  useCreateTransaction,
-  useUpdateTransaction,
 } from '../hooks/useTransactions'
 import type { TransactionFilters, Transaction } from '../types/transaction.types'
 import { TransactionFiltersComponent } from '../components/TransactionFilters'
@@ -24,7 +22,7 @@ export const TransactionListPage: FC = () => {
     per_page: 15,
   })
 
-  const { openMethodModal, openForm, setTxToDelete, txToDelete, isMethodModalOpen } =
+  const { openMethodModal, openForm, setTxToDelete, isMethodModalOpen } =
     useTransactionModalStore()
 
   const [isMobile, setIsMobile] = useState(
@@ -109,16 +107,9 @@ export const TransactionListPage: FC = () => {
     group_by: groupBy,
   })
 
-  const createMutation = useCreateTransaction()
-  const updateMutation = useUpdateTransaction()
   const deleteMutation = useDeleteTransaction()
 
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null)
-
-  const handleAdd = (e: MouseEvent) => {
-    e.preventDefault()
-    openMethodModal()
-  }
 
   const handlePointerDown = (e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId)
@@ -153,11 +144,12 @@ export const TransactionListPage: FC = () => {
     e.preventDefault()
   }
 
-  const handleEdit = (tx: Transaction, e: MouseEvent) => {
+  const handleEdit = useCallback((tx: Transaction, e: MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     setInvoiceTransaction(tx)
     setIsInvoiceOpen(true)
-  }
+  }, [])
 
   const handleStartEdit = (tx: Transaction) => {
     setIsInvoiceOpen(false)

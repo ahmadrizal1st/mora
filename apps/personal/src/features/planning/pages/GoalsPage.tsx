@@ -24,7 +24,7 @@ export function GoalsPage() {
   const [modalTargetFilter, setModalTargetFilter] = useState<'all' | 'under30' | 'above30'>('all')
 
   const filteredGoals = useMemo(() => {
-    return goals.filter((goal) => {
+    return goals.filter((goal: any) => {
       const isAchieved = goal.saved >= goal.target
       if (statusFilter === 'active' && isAchieved) return false
       if (statusFilter === 'achieved' && !isAchieved) return false
@@ -37,7 +37,7 @@ export function GoalsPage() {
   }, [goals, statusFilter, targetFilter])
 
   const modalFilteredGoals = useMemo(() => {
-    return goals.filter((goal) => {
+    return goals.filter((goal: any) => {
       const isAchieved = goal.saved >= goal.target
       if (modalStatusFilter === 'active' && isAchieved) return false
       if (modalStatusFilter === 'achieved' && !isAchieved) return false
@@ -143,7 +143,7 @@ export function GoalsPage() {
             </div>
             <div className="mt-3 pt-3 border-top border-white-subtle text-center">
               <Link
-                to="/achievements"
+                to="/planning"
                 className="btn btn-white btn-sm w-100 rounded-pill fw-bold"
                 style={{ color: '#f59f00' }}
               >
@@ -315,7 +315,7 @@ export function GoalsPage() {
                     </div>
                   </div>
                 ) : (
-                  filteredGoals.map((goal) => (
+                  filteredGoals.map((goal: any) => (
                     <div key={goal.id} className="col-12 col-md-6">
                       <GoalCard goal={goal} onClick={() => handleEditGoal?.(goal)} />
                     </div>
@@ -649,7 +649,7 @@ export function GoalsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {modalFilteredGoals.map((g) => {
+                  {modalFilteredGoals.map((g: any) => {
                     const pct = g.target > 0 ? Math.round((g.saved / g.target) * 100) : 0
                     return (
                       <tr

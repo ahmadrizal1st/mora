@@ -165,7 +165,7 @@ export const DesktopRadialMenu: FC = () => {
             return (
               <div
                 key={method.id}
-                ref={(el) => (buttonRefs.current[method.id] = el)}
+                ref={(el) => { buttonRefs.current[method.id] = el }}
                 className="position-absolute d-flex align-items-center justify-content-center"
                 style={{
                   right: `calc(38px - ${x}px)`,

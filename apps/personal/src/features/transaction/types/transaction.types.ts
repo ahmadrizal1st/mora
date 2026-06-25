@@ -46,7 +46,7 @@ export interface Account {
   balance?: number
   currency_id: string
   currency?: Currency
-  provider_id?: string
+  provider_id?: string | null
   provider?: Provider
   color: string
   account_type: 'cash' | 'bank' | 'e-wallet' | 'investment' | 'credit' | 'saving' | 'loan'
@@ -69,6 +69,7 @@ export interface AccountFilters {
     name?: string
     account_type?: string
     currency_id?: string
+    is_archived?: string | boolean
   }
   sort?: string
 }

@@ -19,9 +19,9 @@ export const AccountDetailPage: React.FC = () => {
   const accounts = accountsResponse?.data ?? []
 
   const { data: transactionsResponse, isLoading: isTransactionsLoading } = useTransactions({
-    'filter[account_id]': accountId,
+    account_id: accountId,
     search: search.search,
-    sort: search.sort,
+    sort_by: search.sort,
     page: search.page,
     per_page: search.per_page,
   })
@@ -188,7 +188,7 @@ export const AccountDetailPage: React.FC = () => {
                     {account.account_type.replace('-', ' ')}
                   </Badge>
                   {account.is_archived && (
-                    <Badge bg="dark" className="fw-bold">
+                    <Badge color="dark" className="fw-bold">
                       TERARSIP
                     </Badge>
                   )}
@@ -223,7 +223,7 @@ export const AccountDetailPage: React.FC = () => {
               </div>
               <div className="card-body p-0">
                 {chartData ? (
-                  <Chart chartId="account-detail-balance" chartData={chartData} height={300} />
+                  <Chart chartId="account-detail-balance" chartData={{ ...chartData, type: 'area' as const }} height={300} />
                 ) : (
                   <div className="text-center py-5 text-muted">
                     <Icon icon="chart-area" size={48} className="opacity-20 mb-3" />
@@ -304,7 +304,7 @@ export const AccountDetailPage: React.FC = () => {
                 className="form-control form-control-rounded"
                 placeholder="Cari transaksi..."
                 value={search.search || ''}
-                onChange={(e) => navigate({ search: { ...search, search: e.target.value } })}
+                onChange={(e) => navigate({ to: '/accounts/$accountId', params: { accountId }, search: (prev: any) => ({ ...prev, search: e.target.value }) })}
               />
             </div>
           </div>
@@ -314,21 +314,21 @@ export const AccountDetailPage: React.FC = () => {
               isLoading={isTransactionsLoading}
               onEdit={(tx) => navigate({ to: '/tracker/input', search: { id: tx.id } })}
               onDelete={() => {}}
-              onSort={(col) => navigate({ search: { ...search, sort: col } })}
+              onSort={(col) => navigate({ to: '/accounts/$accountId', params: { accountId }, search: (prev: any) => ({ ...prev, sort: col }) })}
               getSortIcon={() => null}
               formatCurrency={formatCurrency}
-              formatDate={(d, t) => formatDate(d, t === 'time' ? 'HH:mm' : 'dd MMM yyyy')}
+              formatDate={(d, t) => formatDate(d, t)}
             />
           </div>
-          {transactionsResponse?.meta && transactionsResponse.meta.last_page > 1 && (
+          {transactionsResponse && transactionsResponse.last_page > 1 && (
             <div className="card-footer bg-transparent border-0 pb-4 px-4 d-flex justify-content-center">
               <div className="btn-group">
-                {Array.from({ length: transactionsResponse.meta.last_page }, (_, i) => i + 1).map(
+                {Array.from({ length: transactionsResponse.last_page }, (_, i) => i + 1).map(
                   (p) => (
                     <button
                       key={p}
                       className={`btn btn-sm ${search.page === p ? 'btn-primary' : 'btn-outline-secondary'}`}
-                      onClick={() => navigate({ search: { ...search, page: p } })}
+                      onClick={() => navigate({ to: '/accounts/$accountId', params: { accountId }, search: (prev: any) => ({ ...prev, page: p }) })}
                     >
                       {p}
                     </button>

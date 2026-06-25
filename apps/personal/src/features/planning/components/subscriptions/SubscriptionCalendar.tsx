@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useMemo } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 import { PlanningContext } from '../../pages/PlanningLayout'
 
@@ -57,7 +57,7 @@ export function SubscriptionCalendar() {
           ))}
 
           {days.map((day) => {
-            const dayBills = bills.filter((b) => {
+            const dayBills = bills.filter((b: any) => {
               if (!b.dueDate) return false
               const d = new Date(b.dueDate)
               return d.getDate() === day
@@ -91,7 +91,7 @@ export function SubscriptionCalendar() {
                   </span>
                 </div>
                 <div className="mt-1 d-flex flex-column gap-1">
-                  {dayBills.map((b) => (
+                  {dayBills.map((b: any) => (
                     <div
                       key={b.id}
                       className="badge bg-primary-lt text-primary border-0 p-1 text-truncate d-flex align-items-center gap-1"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Modal, ModalHeader } from '@/shared/components/ui'
 

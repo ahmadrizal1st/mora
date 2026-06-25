@@ -20,9 +20,9 @@ export function BudgetPage() {
   const spent = budgetData?.spent || 0
   const safeToSpendPerDay = budgetData?.safeToSpendPerDay || 0
 
-  const needs = categories.filter((c) => c.type === 'needs')
-  const wants = categories.filter((c) => c.type === 'wants')
-  const savings = categories.filter((c) => c.type === 'savings')
+  const needs = categories.filter((c: any) => c.type === 'needs')
+  const wants = categories.filter((c: any) => c.type === 'wants')
+  const savings = categories.filter((c: any) => c.type === 'savings')
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 50)
@@ -94,14 +94,14 @@ export function BudgetPage() {
                   <div className="small text-muted" style={{ fontSize: '10px' }}>
                     Terpakai:{' '}
                     <span className="text-body fw-bold">
-                      {formatCurrency(needs.reduce((a, b) => a + b.spent, 0))}
+                      {formatCurrency(needs.reduce((a: any, b: any) => a + b.spent, 0))}
                     </span>{' '}
-                    / {formatCurrency(needs.reduce((a, b) => a + b.limit, 0))}
+                    / {formatCurrency(needs.reduce((a: any, b: any) => a + b.limit, 0))}
                   </div>
                 </div>
               </div>
               <div className="row g-4">
-                {needs.map((cat) => (
+                {needs.sort((a: any, b: any) => b.spent - a.spent).map((cat: any) => (
                   <div key={cat.id} className="col-12 col-md-6">
                     <BudgetCategoryItem category={cat} />
                   </div>
@@ -126,14 +126,14 @@ export function BudgetPage() {
                   <div className="small text-muted" style={{ fontSize: '10px' }}>
                     Terpakai:{' '}
                     <span className="text-body fw-bold">
-                      {formatCurrency(wants.reduce((a, b) => a + b.spent, 0))}
+                      {formatCurrency(wants.reduce((a: any, b: any) => a + b.spent, 0))}
                     </span>{' '}
-                    / {formatCurrency(wants.reduce((a, b) => a + b.limit, 0))}
+                    / {formatCurrency(wants.reduce((a: any, b: any) => a + b.limit, 0))}
                   </div>
                 </div>
               </div>
               <div className="row g-4">
-                {wants.map((cat) => (
+                {wants.sort((a: any, b: any) => b.spent - a.spent).map((cat: any) => (
                   <div key={cat.id} className="col-12 col-md-6">
                     <BudgetCategoryItem category={cat} />
                   </div>
@@ -158,14 +158,14 @@ export function BudgetPage() {
                   <div className="small text-muted" style={{ fontSize: '10px' }}>
                     Terpakai:{' '}
                     <span className="text-body fw-bold">
-                      {formatCurrency(savings.reduce((a, b) => a + b.spent, 0))}
+                      {formatCurrency(savings.reduce((a: any, b: any) => a + b.spent, 0))}
                     </span>{' '}
-                    / {formatCurrency(savings.reduce((a, b) => a + b.limit, 0))}
+                    / {formatCurrency(savings.reduce((a: any, b: any) => a + b.limit, 0))}
                   </div>
                 </div>
               </div>
               <div className="row g-4">
-                {savings.map((cat) => (
+                {savings.sort((a: any, b: any) => b.spent - a.spent).map((cat: any) => (
                   <div key={cat.id} className="col-12 col-md-6">
                     <BudgetCategoryItem category={cat} />
                   </div>
