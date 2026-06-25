@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\{
     Auth\GoogleAuthController,
-    Auth\LoginController,
+    Auth\AuthController,
     Auth\OtpController,
     Auth\PasswordController,
     Auth\ProfileController,
@@ -20,7 +20,6 @@ use App\Http\Controllers\{
     DebtController,
     GoalController,
     SubscriptionController,
-    DashboardController,
     ChatController,
 };
 use Illuminate\Support\Facades\Route;
@@ -43,7 +42,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
     Route::post('/verify-otp', [RegisterController::class, 'verifyOtp']);
 
-    Route::post('/login', [LoginController::class, 'login'])
+    Route::post('/login', [AuthController::class, 'login'])
         ->middleware('throttle:login');
 
     Route::post('/google', [GoogleAuthController::class, 'googleLogin']);
@@ -59,8 +58,8 @@ Route::prefix('auth')->group(function () {
     // ----- Protected routes (membutuhkan Sanctum token) -----
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [LoginController::class, 'logout']);
-        Route::post('/refresh', [LoginController::class, 'refresh']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/refresh', [AuthController::class, 'refresh']);
 
         Route::get('/me', [ProfileController::class, 'show']);
         Route::patch('/me', [ProfileController::class, 'update']);
@@ -80,10 +79,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('transactions', TransactionController::class);
     Route::get('transactions-summary', [TransactionController::class, 'summary']);
     Route::get('transactions-history', [TransactionController::class, 'history']);
+    Route::get('transactions-statistics', [TransactionController::class, 'statistics']);
 
     // Accounts
     Route::apiResource('accounts', AccountController::class);
     Route::get('accounts-summary', [AccountController::class, 'summary']);
+
+    // Assets
+    Route::apiResource('assets', \App\Http\Controllers\AssetController::class);
 
     // Debts
     Route::apiResource('debts', DebtController::class);
@@ -126,8 +129,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // OCR & Documents
 
 
-    // Dashboard
-    Route::get('dashboard-summary', [DashboardController::class, 'summary']);
+
 
     // Chat
     Route::post('chat/send', [ChatController::class, 'send']);

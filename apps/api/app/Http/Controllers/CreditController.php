@@ -15,7 +15,8 @@ class CreditController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = $request->input('per_page', 15);
-        $credits = CreditService::list($request->user(), $perPage);
+        $type = $request->input('type');
+        $credits = CreditService::list($request->user(), $perPage, $type);
 
         return response()->json([
             'data' => $credits

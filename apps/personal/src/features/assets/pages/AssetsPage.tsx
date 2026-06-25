@@ -8,90 +8,99 @@ import { PortfolioTargetsCard } from '@/shared/components/cards/PortfolioTargets
 import { FinanceScoreCard } from '@/shared/components/cards/FinanceScoreCard'
 import { CardBalanceCard } from '@/shared/components/cards/CardBalanceCard'
 import { RecentActivitiesCard } from '@/shared/components/cards/RecentActivitiesCard'
-import { useAccounts } from '@/features/transaction/hooks/useAccounts'
+import { useAssets } from '@/features/assets/hooks/useAssets'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { Icon } from '@tabler/icons-react'
 
 export default function AssetsPage() {
-  const { data: accountsResponse } = useAccounts()
-  const accounts = accountsResponse?.data || []
+  const { data: assets, isLoading } = useAssets()
 
   const stats = useMemo(() => {
-    const totals = {
-      cash: 0,
-      investment: 0,
-      saving: 0,
-      liabilities: 0,
+    if (!assets) return { total: 0, growth: '+0%', monthly: 0 }
+    const total = assets.reduce((sum, a) => sum + Number(a.value), 0)
+    return {
+      total,
+      growth: '+0%',
+      monthly: 0,
     }
+  }, [assets])
 
-    accounts.forEach((acc) => {
-      const balance = Number(acc.balance) || 0
-      if (['cash', 'bank', 'e-wallet'].includes(acc.account_type)) {
-        totals.cash += balance
-      } else if (acc.account_type === 'investment') {
-        totals.investment += balance
-      } else if (acc.account_type === 'saving') {
-        totals.saving += balance
-      } else if (['credit', 'loan'].includes(acc.account_type)) {
-        totals.liabilities += balance
-      }
-    })
-
-    return totals
-  }, [accounts])
-
-  const totalAssets = stats.cash + stats.investment + stats.saving
-  const netWorth = totalAssets - stats.liabilities
   return (
     <BaseLayout pageTitle="Asset">
       <div className="row row-cards g-3">
-        <div className="col-lg-6">
+        <div className="col-lg-9">
           <div className="row row-cards g-3">
-            <div className="col-md-6">
+            <div className="col-md-4">
               <VisualStatCard
-                title="Total Aset Bersih"
-                value={formatCurrency(netWorth)}
-                trendPercentage=""
+                title="Total Aset"
+                value={formatCurrency(stats.total)}
+                trendPercentage={stats.growth}
                 trendAbsolute=""
                 icon="building-bank"
-                isPositive={netWorth >= 0}
-              />
-            </div>
-
-            <div className="col-md-6">
-              <VisualStatCard
-                title="Kas & Rekening"
-                value={formatCurrency(stats.cash)}
-                trendPercentage=""
-                trendAbsolute=""
-                icon="wallet"
                 isPositive={true}
-              />
-            </div>
-
-            <div className="col-md-6">
-              <VisualStatCard
-                title="Tabungan"
-                value={formatCurrency(stats.saving)}
-                trendPercentage=""
-                trendAbsolute=""
-                icon="pig-money"
-                isPositive={true}
-              />
-            </div>
-
-            <div className="col-md-6">
-              <VisualStatCard
-                title="Total Kewajiban"
-                value={formatCurrency(stats.liabilities)}
-                trendPercentage=""
-                trendAbsolute=""
-                icon="credit-card"
-                isPositive={false}
               />
             </div>
 
             <div className="col-12">
-              <NetWorthGrowthCard currentNetWorth={totalAssets} />
+              <div className="card">
+                <div className="card-header">
+                  <h3 className="card-title">Daftar Aset</h3>
+                </div>
+                <div className="table-responsive">
+                  <table className="table card-table table-vcenter text-nowrap">
+                    <thead>
+                      <tr>
+                        <th>Nama Aset</th>
+                        <th>Kategori</th>
+                        <th>Nilai (Rp)</th>
+                        <th>Tanggal Pembelian</th>
+                        <th className="w-1"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {assets?.map((asset) => (
+                        <tr key={asset.id}>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <span className="avatar avatar-sm me-2 bg-primary-lt">
+                                <Icon icon="building-bank" />
+                              </span>
+                              <div className="fw-medium">{asset.name}</div>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="badge bg-blue-lt">{asset.category || '-'}</span>
+                          </td>
+                          <td>{formatCurrency(Number(asset.value))}</td>
+                          <td className="text-secondary">{asset.purchase_date || '-'}</td>
+                          <td>
+                            <div className="dropdown">
+                              <button className="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown">
+                                Actions
+                              </button>
+                              <div className="dropdown-menu dropdown-menu-end">
+                                <a className="dropdown-item" href="#">Edit</a>
+                                <a className="dropdown-item text-danger" href="#">Delete</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {!assets?.length && !isLoading && (
+                        <tr>
+                          <td colSpan={5} className="text-center py-4 text-secondary">
+                            Belum ada aset terdaftar
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-12">
+              <NetWorthGrowthCard currentNetWorth={stats.total} />
             </div>
             <div className="col-12">
               <VisualTransactionsCard />
@@ -107,11 +116,6 @@ export default function AssetsPage() {
             <div className="col-12">
               <PortfolioTargetsCard data={stats} />
             </div>
-          </div>
-        </div>
-
-        <div className="col-lg-3">
-          <div className="row row-cards g-3">
             <div className="col-12">
               <FinanceScoreCard />
             </div>

@@ -63,6 +63,13 @@ export const useTransactionSummary = (params?: {
   })
 }
 
+export const useTransactionStatistics = () => {
+  return useQuery({
+    queryKey: ['transaction-statistics'],
+    queryFn: () => transactionService.getStatistics(),
+  })
+}
+
 export const useCreateTransaction = () => {
   const queryClient = useQueryClient()
 

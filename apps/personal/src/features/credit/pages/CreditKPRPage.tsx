@@ -9,11 +9,7 @@ const MONTHS = ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', '
 
 export function CreditKPRPage() {
   const { openFormForType } = useCreditLayoutContext()
-  const { data: allCredits = [], isLoading } = useCredits()
-
-  const loans = useMemo(() => {
-    return allCredits.filter((acc) => acc.credit?.credit_type === 'kpr')
-  }, [allCredits])
+  const { data: loans = [], isLoading } = useCredits('kpr')
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
 

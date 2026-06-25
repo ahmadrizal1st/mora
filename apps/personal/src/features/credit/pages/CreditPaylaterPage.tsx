@@ -7,11 +7,7 @@ const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
 
 export function CreditPaylaterPage() {
   const { openFormForType } = useCreditLayoutContext()
-  const { data: allCredits = [], isLoading } = useCredits()
-
-  const providers = useMemo(() => {
-    return allCredits.filter((acc) => acc.credit?.credit_type === 'paylater')
-  }, [allCredits])
+  const { data: providers = [], isLoading } = useCredits('paylater')
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
 

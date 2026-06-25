@@ -9,11 +9,7 @@ const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
 
 export function CreditKTAPage() {
   const { openFormForType } = useCreditLayoutContext()
-  const { data: allCredits = [], isLoading } = useCredits()
-
-  const loans = useMemo(() => {
-    return allCredits.filter((acc) => acc.credit?.credit_type === 'kta')
-  }, [allCredits])
+  const { data: loans = [], isLoading } = useCredits('kta')
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
 

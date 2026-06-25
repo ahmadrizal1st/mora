@@ -142,4 +142,36 @@ class TransactionController extends Controller
             'data' => $history,
         ]);
     }
+
+    /**
+     * Get expense statistics by category.
+     *
+     * GET /api/transactions-statistics
+     */
+    public function statistics(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        
+        $stats = $user->transactions()
+            ->where('type', 'expense')
+            ->selectRaw('category_id, sum(amount) as total')
+            ->groupBy('category_id')
+            ->with('category')
+            ->get();
+            
+        $statSeries = $stats->map(function ($st) {
+            return [
+                'name' => $st->category ? $st->category->name : 'Uncategorized',
+                'data' => [(float)$st->total],
+                'color' => $st->category ? $st->category->color : 'gray',
+            ];
+        })->values()->toArray();
+
+        return response()->json([
+            'data' => [
+                'total' => $stats->sum('total'),
+                'series' => count($statSeries) > 0 ? $statSeries : []
+            ],
+        ]);
+    }
 }

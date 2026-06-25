@@ -10,10 +10,24 @@ import { MobileGridMenu } from './MobileGridMenu'
 
 import peopleData from '../../data/people.json'
 import { type Person } from '@/shared/types/common.types'
-import { useDashboardSummary } from '@/features/dashboard/hooks/useDashboard'
+import { useAccountSummary } from '@/features/transaction/hooks/useAccounts'
+import {
+  useTransactionSummary,
+  useTransactionHistory,
+  useTransactionStatistics,
+  useTransactions
+} from '@/features/transaction/hooks/useTransactions'
+import { useGoals, useBudgets } from '@/features/planning/hooks/usePlanning'
 
 export function DashboardContent() {
-  const { data: moraData, isLoading } = useDashboardSummary()
+  const { data: accountData, isLoading: isLoadingAccount } = useAccountSummary()
+  const { data: txSummary, isLoading: isLoadingTxSummary } = useTransactionSummary()
+  const { data: txHistory, isLoading: isLoadingTxHistory } = useTransactionHistory({ group_by: 'month' })
+  const { data: txStats, isLoading: isLoadingTxStats } = useTransactionStatistics()
+  const { data: recentTx, isLoading: isLoadingRecent } = useTransactions({ per_page: 5, sort_by: 'tx_date', sort_dir: 'desc' } as any)
+  const { data: goals, isLoading: isLoadingGoals } = useGoals()
+  const { data: budgets, isLoading: isLoadingBudgets } = useBudgets()
+
   const [activeTab, setActiveTab] = useState<'income' | 'expense'>('expense')
 
   const statsColors = [
@@ -24,11 +38,61 @@ export function DashboardContent() {
     'var(--tblr-secondary-lt)',
   ]
 
-  if (isLoading || !moraData) {
+  const isLoading = isLoadingAccount || isLoadingTxSummary || isLoadingTxHistory || isLoadingTxStats || isLoadingRecent || isLoadingGoals || isLoadingBudgets
+
+  if (isLoading) {
     return <div className="p-4 text-center text-muted">Loading dashboard...</div>
   }
 
-  const { summary, limits, savingsPlans, cashflow, statistics, recentTransactions, activities } = moraData
+  const formatCurrency = (value: number) => `Rp ${value.toLocaleString('id-ID')}`
+
+  const summary = {
+    balance: formatCurrency(accountData?.total_balance || 0),
+    income: formatCurrency(txSummary?.total_income || 0),
+    expense: formatCurrency(txSummary?.total_expense || 0),
+    savings: formatCurrency(goals?.totalSaved || 0),
+    incomeTrend: txSummary?.income_trend || 0,
+    expenseTrend: txSummary?.expense_trend || 0,
+    savingsTrend: 0,
+  }
+
+  const limits = {
+    monthly: {
+      total: formatCurrency(budgets?.totalBudget || 0),
+      spent: formatCurrency(budgets?.spent || 0),
+      progress: budgets?.totalBudget ? Math.min(100, Math.round(((budgets?.spent || 0) / budgets.totalBudget) * 100)) : 0,
+    }
+  }
+
+  const savingsPlans = goals?.goals?.map((g: any) => ({
+    name: g.name,
+    current: formatCurrency(g.saved),
+    target: formatCurrency(g.target),
+    progress: g.target > 0 ? Math.round((g.saved / g.target) * 100) : 0,
+    icon: g.icon || 'star',
+  })) || []
+
+  const cashflow = {
+    series: [
+      { name: 'Income', data: txHistory?.income || [] },
+      { name: 'Expense', data: txHistory?.expense || [] }
+    ],
+    months: txHistory?.income_labels || []
+  }
+
+  const statistics = {
+    series: txStats?.series || []
+  }
+
+  const recentTransactions = recentTx?.data?.map((tx: any) => ({
+    id: tx.id,
+    subject: tx.notes || tx.category?.name || 'Uncategorized',
+    client: tx.account?.name || '-',
+    date: new Date(tx.tx_date).toLocaleDateString('id-ID'),
+    status: tx.type === 'income' ? 'Income' : 'Expense',
+    statusColor: tx.type === 'income' ? 'success' : 'danger',
+    price: formatCurrency(Number(tx.amount)),
+  })) || []
 
   return (
     <div className="row g-2 g-lg-3">
@@ -44,31 +108,29 @@ export function DashboardContent() {
             <div className="card border-0 shadow-sm">
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <div className="subheader m-0 fw-bold">Daily Limit</div>
+                  <div className="subheader m-0 fw-bold">Budget Utilization</div>
                   <div className="dropdown">
                     <a
                       className="text-secondary small d-flex align-items-center gap-1 text-decoration-none"
                       href="#"
                       data-bs-toggle="dropdown"
                     >
-                      <span className="text-decoration-underline-hover">Today</span>
+                      <span className="text-decoration-underline-hover">This Month</span>
                       <Icon icon="chevron-down" size="xs" />
                     </a>
                     <div className="dropdown-menu dropdown-menu-end">
-                      <button className="dropdown-item">Today</button>
-                      <button className="dropdown-item">Yesterday</button>
-                      <button className="dropdown-item">This Week</button>
+                      <button className="dropdown-item">This Month</button>
                     </div>
                   </div>
                 </div>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <div className="small">
-                    <span className="fw-bold">{limits.daily.spent}</span>
+                    <span className="fw-bold">{limits.monthly.spent}</span>
                     <span className="ms-1 text-secondary" style={{ fontSize: '0.75rem' }}>
-                      spent of {limits.daily.total}
+                      spent of {limits.monthly.total}
                     </span>
                   </div>
-                  <div className="fw-bold small">{limits.daily.progress}%</div>
+                  <div className="fw-bold small">{limits.monthly.progress}%</div>
                 </div>
                 <div
                   className="progress rounded-pill overflow-hidden"
@@ -79,7 +141,7 @@ export function DashboardContent() {
                 >
                   <div
                     className="progress-bar bg-primary rounded-pill"
-                    style={{ width: `${limits.daily.progress}%` }}
+                    style={{ width: `${limits.monthly.progress}%` }}
                   />
                 </div>
               </div>
@@ -386,7 +448,7 @@ export function DashboardContent() {
                     chartId="statistic-donut-enhanced"
                     chartData={{
                       type: 'donut',
-                      series: statistics.series.map((s, idx) => ({
+                      series: statistics.series.map((s: any, idx: number) => ({
                         ...s,
                         color: statsColors[idx],
                       })),
@@ -400,7 +462,7 @@ export function DashboardContent() {
                 </div>
 
                 <div className="mt-4">
-                  {statistics.series.map((s, i) => {
+                  {statistics.series.map((s: any, i: number) => {
                     const totalVal = Number(summary.expense.replace(/[^0-9-]/g, ''))
                     const pct = totalVal > 0 ? Math.round((s.data[0] / totalVal) * 100) : 0
                     
@@ -446,9 +508,7 @@ export function DashboardContent() {
               </div>
               <div className="card-body p-0">
                 <ActivityCard
-                  activity={activities.map((a) => ({
-                    text: a.text,
-                  }))}
+                  activity={[]}
                   people={peopleData as Person[]}
                   hideHeader
                 />

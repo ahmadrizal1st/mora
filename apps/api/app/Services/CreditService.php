@@ -12,9 +12,9 @@ class CreditService
     /**
      * List all credit accounts for the user.
      */
-    public static function list(User $user, int $perPage = 15): LengthAwarePaginator
+    public static function list(User $user, int $perPage = 15, ?string $type = null): LengthAwarePaginator
     {
-        return CreditRepository::list($user, $perPage);
+        return CreditRepository::list($user, $perPage, $type);
     }
 
     /**

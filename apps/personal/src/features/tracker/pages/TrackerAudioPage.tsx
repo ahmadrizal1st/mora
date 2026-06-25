@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { Button, Icon } from '@/shared/components/ui'
-import { useUploadDocument } from '../hooks/useTracker'
+
 
 type RecordingState = 'idle' | 'recording' | 'stopped'
 
@@ -17,7 +17,7 @@ export default function TrackerAudioPage() {
   const chunksRef = useRef<Blob[]>([])
   const streamRef = useRef<MediaStream | null>(null)
   const navigate = useNavigate()
-  const uploadMutation = useUploadDocument()
+  const uploadMutation = { mutateAsync: async (data: any) => { throw new Error('Fitur OCR belum didukung.') } }
 
   useEffect(() => {
     let interval: NodeJS.Timeout

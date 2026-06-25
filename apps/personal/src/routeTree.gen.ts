@@ -33,7 +33,6 @@ import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AuthLockRouteImport } from './routes/auth-lock'
 import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as ActivityRouteImport } from './routes/activity'
-import { Route as AchievementsRouteImport } from './routes/achievements'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as R2StepVerificationCodeRouteImport } from './routes/2-step-verification-code'
 import { Route as R2StepVerificationRouteImport } from './routes/2-step-verification'
@@ -46,17 +45,12 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as CreditIndexRouteImport } from './routes/credit.index'
 import { Route as ChatIndexRouteImport } from './routes/chat.index'
 import { Route as TrackerTextRouteImport } from './routes/tracker.text'
-import { Route as TrackerPhotoRouteImport } from './routes/tracker.photo'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
 import { Route as TrackerImageRouteImport } from './routes/tracker.image'
-import { Route as TrackerFileRouteImport } from './routes/tracker.file'
 import { Route as TrackerAudioRouteImport } from './routes/tracker.audio'
 import { Route as PlanningSubscriptionsRouteImport } from './routes/planning.subscriptions'
 import { Route as PlanningGoalsRouteImport } from './routes/planning.goals'
 import { Route as PlanningBudgetRouteImport } from './routes/planning.budget'
-import { Route as GamificationStreakRouteImport } from './routes/gamification.streak'
-import { Route as GamificationStoreRouteImport } from './routes/gamification.store'
-import { Route as GamificationQuestsRouteImport } from './routes/gamification.quests'
 import { Route as DashboardAssetsRouteImport } from './routes/dashboard.assets'
 import { Route as CreditPaylaterRouteImport } from './routes/credit.paylater'
 import { Route as CreditOverviewRouteImport } from './routes/credit.overview'
@@ -189,11 +183,6 @@ const ActivityRoute = ActivityRouteImport.update({
   path: '/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AchievementsRoute = AchievementsRouteImport.update({
-  id: '/achievements',
-  path: '/achievements',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AccountsRoute = AccountsRouteImport.update({
   id: '/accounts',
   path: '/accounts',
@@ -254,11 +243,6 @@ const TrackerTextRoute = TrackerTextRouteImport.update({
   path: '/tracker/text',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TrackerPhotoRoute = TrackerPhotoRouteImport.update({
-  id: '/tracker/photo',
-  path: '/tracker/photo',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TrackerInputRoute = TrackerInputRouteImport.update({
   id: '/tracker/input',
   path: '/tracker/input',
@@ -267,11 +251,6 @@ const TrackerInputRoute = TrackerInputRouteImport.update({
 const TrackerImageRoute = TrackerImageRouteImport.update({
   id: '/tracker/image',
   path: '/tracker/image',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrackerFileRoute = TrackerFileRouteImport.update({
-  id: '/tracker/file',
-  path: '/tracker/file',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackerAudioRoute = TrackerAudioRouteImport.update({
@@ -293,21 +272,6 @@ const PlanningBudgetRoute = PlanningBudgetRouteImport.update({
   id: '/budget',
   path: '/budget',
   getParentRoute: () => PlanningRoute,
-} as any)
-const GamificationStreakRoute = GamificationStreakRouteImport.update({
-  id: '/gamification/streak',
-  path: '/gamification/streak',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamificationStoreRoute = GamificationStoreRouteImport.update({
-  id: '/gamification/store',
-  path: '/gamification/store',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamificationQuestsRoute = GamificationQuestsRouteImport.update({
-  id: '/gamification/quests',
-  path: '/gamification/quests',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardAssetsRoute = DashboardAssetsRouteImport.update({
   id: '/assets',
@@ -370,7 +334,6 @@ export interface FileRoutesByFullPath {
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRouteWithChildren
-  '/achievements': typeof AchievementsRoute
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -404,17 +367,12 @@ export interface FileRoutesByFullPath {
   '/credit/overview': typeof CreditOverviewRoute
   '/credit/paylater': typeof CreditPaylaterRoute
   '/dashboard/assets': typeof DashboardAssetsRoute
-  '/gamification/quests': typeof GamificationQuestsRoute
-  '/gamification/store': typeof GamificationStoreRoute
-  '/gamification/streak': typeof GamificationStreakRoute
   '/planning/budget': typeof PlanningBudgetRoute
   '/planning/goals': typeof PlanningGoalsRoute
   '/planning/subscriptions': typeof PlanningSubscriptionsRoute
   '/tracker/audio': typeof TrackerAudioRoute
-  '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
-  '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
   '/chat/': typeof ChatIndexRoute
   '/credit/': typeof CreditIndexRoute
@@ -431,7 +389,6 @@ export interface FileRoutesByTo {
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRouteWithChildren
-  '/achievements': typeof AchievementsRoute
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -459,17 +416,12 @@ export interface FileRoutesByTo {
   '/credit/overview': typeof CreditOverviewRoute
   '/credit/paylater': typeof CreditPaylaterRoute
   '/dashboard/assets': typeof DashboardAssetsRoute
-  '/gamification/quests': typeof GamificationQuestsRoute
-  '/gamification/store': typeof GamificationStoreRoute
-  '/gamification/streak': typeof GamificationStreakRoute
   '/planning/budget': typeof PlanningBudgetRoute
   '/planning/goals': typeof PlanningGoalsRoute
   '/planning/subscriptions': typeof PlanningSubscriptionsRoute
   '/tracker/audio': typeof TrackerAudioRoute
-  '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
-  '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
   '/chat': typeof ChatIndexRoute
   '/credit': typeof CreditIndexRoute
@@ -487,7 +439,6 @@ export interface FileRoutesById {
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRouteWithChildren
-  '/achievements': typeof AchievementsRoute
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -521,17 +472,12 @@ export interface FileRoutesById {
   '/credit/overview': typeof CreditOverviewRoute
   '/credit/paylater': typeof CreditPaylaterRoute
   '/dashboard/assets': typeof DashboardAssetsRoute
-  '/gamification/quests': typeof GamificationQuestsRoute
-  '/gamification/store': typeof GamificationStoreRoute
-  '/gamification/streak': typeof GamificationStreakRoute
   '/planning/budget': typeof PlanningBudgetRoute
   '/planning/goals': typeof PlanningGoalsRoute
   '/planning/subscriptions': typeof PlanningSubscriptionsRoute
   '/tracker/audio': typeof TrackerAudioRoute
-  '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
-  '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
   '/chat/': typeof ChatIndexRoute
   '/credit/': typeof CreditIndexRoute
@@ -550,7 +496,6 @@ export interface FileRouteTypes {
     | '/2-step-verification'
     | '/2-step-verification-code'
     | '/accounts'
-    | '/achievements'
     | '/activity'
     | '/assets'
     | '/auth-lock'
@@ -584,17 +529,12 @@ export interface FileRouteTypes {
     | '/credit/overview'
     | '/credit/paylater'
     | '/dashboard/assets'
-    | '/gamification/quests'
-    | '/gamification/store'
-    | '/gamification/streak'
     | '/planning/budget'
     | '/planning/goals'
     | '/planning/subscriptions'
     | '/tracker/audio'
-    | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
-    | '/tracker/photo'
     | '/tracker/text'
     | '/chat/'
     | '/credit/'
@@ -611,7 +551,6 @@ export interface FileRouteTypes {
     | '/2-step-verification'
     | '/2-step-verification-code'
     | '/accounts'
-    | '/achievements'
     | '/activity'
     | '/assets'
     | '/auth-lock'
@@ -639,17 +578,12 @@ export interface FileRouteTypes {
     | '/credit/overview'
     | '/credit/paylater'
     | '/dashboard/assets'
-    | '/gamification/quests'
-    | '/gamification/store'
-    | '/gamification/streak'
     | '/planning/budget'
     | '/planning/goals'
     | '/planning/subscriptions'
     | '/tracker/audio'
-    | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
-    | '/tracker/photo'
     | '/tracker/text'
     | '/chat'
     | '/credit'
@@ -666,7 +600,6 @@ export interface FileRouteTypes {
     | '/2-step-verification'
     | '/2-step-verification-code'
     | '/accounts'
-    | '/achievements'
     | '/activity'
     | '/assets'
     | '/auth-lock'
@@ -700,17 +633,12 @@ export interface FileRouteTypes {
     | '/credit/overview'
     | '/credit/paylater'
     | '/dashboard/assets'
-    | '/gamification/quests'
-    | '/gamification/store'
-    | '/gamification/streak'
     | '/planning/budget'
     | '/planning/goals'
     | '/planning/subscriptions'
     | '/tracker/audio'
-    | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
-    | '/tracker/photo'
     | '/tracker/text'
     | '/chat/'
     | '/credit/'
@@ -728,7 +656,6 @@ export interface RootRouteChildren {
   R2StepVerificationRoute: typeof R2StepVerificationRoute
   R2StepVerificationCodeRoute: typeof R2StepVerificationCodeRoute
   AccountsRoute: typeof AccountsRouteWithChildren
-  AchievementsRoute: typeof AchievementsRoute
   ActivityRoute: typeof ActivityRoute
   AssetsRoute: typeof AssetsRoute
   AuthLockRoute: typeof AuthLockRoute
@@ -755,14 +682,9 @@ export interface RootRouteChildren {
   SignUpRoute: typeof SignUpRoute
   AiChatRoute: typeof AiChatRouteWithChildren
   AiSearchRoute: typeof AiSearchRoute
-  GamificationQuestsRoute: typeof GamificationQuestsRoute
-  GamificationStoreRoute: typeof GamificationStoreRoute
-  GamificationStreakRoute: typeof GamificationStreakRoute
   TrackerAudioRoute: typeof TrackerAudioRoute
-  TrackerFileRoute: typeof TrackerFileRoute
   TrackerImageRoute: typeof TrackerImageRoute
   TrackerInputRoute: typeof TrackerInputRoute
-  TrackerPhotoRoute: typeof TrackerPhotoRoute
   TrackerTextRoute: typeof TrackerTextRoute
   TrackerIndexRoute: typeof TrackerIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
@@ -938,13 +860,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/achievements': {
-      id: '/achievements'
-      path: '/achievements'
-      fullPath: '/achievements'
-      preLoaderRoute: typeof AchievementsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/accounts': {
       id: '/accounts'
       path: '/accounts'
@@ -1029,13 +944,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackerTextRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tracker/photo': {
-      id: '/tracker/photo'
-      path: '/tracker/photo'
-      fullPath: '/tracker/photo'
-      preLoaderRoute: typeof TrackerPhotoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/tracker/input': {
       id: '/tracker/input'
       path: '/tracker/input'
@@ -1048,13 +956,6 @@ declare module '@tanstack/react-router' {
       path: '/tracker/image'
       fullPath: '/tracker/image'
       preLoaderRoute: typeof TrackerImageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tracker/file': {
-      id: '/tracker/file'
-      path: '/tracker/file'
-      fullPath: '/tracker/file'
-      preLoaderRoute: typeof TrackerFileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tracker/audio': {
@@ -1084,27 +985,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/planning/budget'
       preLoaderRoute: typeof PlanningBudgetRouteImport
       parentRoute: typeof PlanningRoute
-    }
-    '/gamification/streak': {
-      id: '/gamification/streak'
-      path: '/gamification/streak'
-      fullPath: '/gamification/streak'
-      preLoaderRoute: typeof GamificationStreakRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gamification/store': {
-      id: '/gamification/store'
-      path: '/gamification/store'
-      fullPath: '/gamification/store'
-      preLoaderRoute: typeof GamificationStoreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gamification/quests': {
-      id: '/gamification/quests'
-      path: '/gamification/quests'
-      fullPath: '/gamification/quests'
-      preLoaderRoute: typeof GamificationQuestsRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/dashboard/assets': {
       id: '/dashboard/assets'
@@ -1289,7 +1169,6 @@ const rootRouteChildren: RootRouteChildren = {
   R2StepVerificationRoute: R2StepVerificationRoute,
   R2StepVerificationCodeRoute: R2StepVerificationCodeRoute,
   AccountsRoute: AccountsRouteWithChildren,
-  AchievementsRoute: AchievementsRoute,
   ActivityRoute: ActivityRoute,
   AssetsRoute: AssetsRoute,
   AuthLockRoute: AuthLockRoute,
@@ -1316,14 +1195,9 @@ const rootRouteChildren: RootRouteChildren = {
   SignUpRoute: SignUpRoute,
   AiChatRoute: AiChatRouteWithChildren,
   AiSearchRoute: AiSearchRoute,
-  GamificationQuestsRoute: GamificationQuestsRoute,
-  GamificationStoreRoute: GamificationStoreRoute,
-  GamificationStreakRoute: GamificationStreakRoute,
   TrackerAudioRoute: TrackerAudioRoute,
-  TrackerFileRoute: TrackerFileRoute,
   TrackerImageRoute: TrackerImageRoute,
   TrackerInputRoute: TrackerInputRoute,
-  TrackerPhotoRoute: TrackerPhotoRoute,
   TrackerTextRoute: TrackerTextRoute,
   TrackerIndexRoute: TrackerIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,

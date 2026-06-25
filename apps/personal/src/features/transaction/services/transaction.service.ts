@@ -97,4 +97,9 @@ export const transactionService = {
     })
     return response.data.data
   },
+
+  async getStatistics(): Promise<any> {
+    const response = await api.get<{ data: any }>('/transactions-statistics')
+    return response.data.data
+  },
 }

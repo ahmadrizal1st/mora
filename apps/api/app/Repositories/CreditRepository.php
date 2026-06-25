@@ -10,11 +10,16 @@ class CreditRepository
     /**
      * List all accounts that have credit info.
      */
-    public static function list(User $user, int $perPage = 15): LengthAwarePaginator
+    public static function list(User $user, int $perPage = 15, ?string $type = null): LengthAwarePaginator
     {
-        return $user->accounts()
-            ->has('credit')
-            ->with(['credit', 'currency'])
-            ->paginate($perPage);
+        $query = $user->accounts()
+            ->whereHas('credit', function ($q) use ($type) {
+                if ($type) {
+                    $q->where('type', $type);
+                }
+            })
+            ->with(['credit', 'currency']);
+            
+        return $query->paginate($perPage);
     }
 }

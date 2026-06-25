@@ -98,29 +98,11 @@ class AccountController extends Controller
         
         $balances = \App\Repositories\AccountRepository::getBalances($user);
         $totalBalance = array_sum($balances);
-        $totalIncome = $user->transactions()->where('type', 'income')->sum('amount');
-        $totalExpense = $user->transactions()->where('type', 'expense')->sum('amount');
-        
-        $recentTransactions = $user->transactions()
-            ->with(['category', 'account'])
-            ->latest()
-            ->take(5)
-            ->get();
-            
-        $expensesByCategory = $user->transactions()
-            ->where('type', 'expense')
-            ->selectRaw('category_id, sum(amount) as total')
-            ->groupBy('category_id')
-            ->with('category')
-            ->get();
         
         return response()->json([
             'data' => [
                 'total_balance' => $totalBalance,
-                'total_income' => $totalIncome,
-                'total_expense' => $totalExpense,
-                'recent_transactions' => $recentTransactions,
-                'expenses_by_category' => $expensesByCategory,
+                'balances' => $balances,
             ]
         ]);
     }
