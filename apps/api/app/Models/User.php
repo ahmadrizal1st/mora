@@ -92,6 +92,26 @@ class User extends Authenticatable
         return $this->hasMany(Debt::class);
     }
 
+    public function gamificationProfile(): HasOne
+    {
+        return $this->hasOne(GamificationProfile::class);
+    }
+
+    public function userQuests(): HasMany
+    {
+        return $this->hasMany(UserQuest::class);
+    }
+
+    public function userBadges(): HasMany
+    {
+        return $this->hasMany(UserBadge::class);
+    }
+
+    public function streaks(): HasMany
+    {
+        return $this->hasMany(Streak::class);
+    }
+
     public function budgetPlans(): HasMany
     {
         return $this->hasMany(BudgetPlan::class);

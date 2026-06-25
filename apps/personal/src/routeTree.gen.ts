@@ -33,6 +33,7 @@ import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AuthLockRouteImport } from './routes/auth-lock'
 import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as ActivityRouteImport } from './routes/activity'
+import { Route as AchievementsRouteImport } from './routes/achievements'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as R2StepVerificationCodeRouteImport } from './routes/2-step-verification-code'
 import { Route as R2StepVerificationRouteImport } from './routes/2-step-verification'
@@ -181,6 +182,11 @@ const AssetsRoute = AssetsRouteImport.update({
 const ActivityRoute = ActivityRouteImport.update({
   id: '/activity',
   path: '/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AchievementsRoute = AchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountsRoute = AccountsRouteImport.update({
@@ -334,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRouteWithChildren
+  '/achievements': typeof AchievementsRoute
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -389,6 +396,7 @@ export interface FileRoutesByTo {
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRouteWithChildren
+  '/achievements': typeof AchievementsRoute
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -439,6 +447,7 @@ export interface FileRoutesById {
   '/2-step-verification': typeof R2StepVerificationRoute
   '/2-step-verification-code': typeof R2StepVerificationCodeRoute
   '/accounts': typeof AccountsRouteWithChildren
+  '/achievements': typeof AchievementsRoute
   '/activity': typeof ActivityRoute
   '/assets': typeof AssetsRoute
   '/auth-lock': typeof AuthLockRoute
@@ -496,6 +505,7 @@ export interface FileRouteTypes {
     | '/2-step-verification'
     | '/2-step-verification-code'
     | '/accounts'
+    | '/achievements'
     | '/activity'
     | '/assets'
     | '/auth-lock'
@@ -551,6 +561,7 @@ export interface FileRouteTypes {
     | '/2-step-verification'
     | '/2-step-verification-code'
     | '/accounts'
+    | '/achievements'
     | '/activity'
     | '/assets'
     | '/auth-lock'
@@ -600,6 +611,7 @@ export interface FileRouteTypes {
     | '/2-step-verification'
     | '/2-step-verification-code'
     | '/accounts'
+    | '/achievements'
     | '/activity'
     | '/assets'
     | '/auth-lock'
@@ -656,6 +668,7 @@ export interface RootRouteChildren {
   R2StepVerificationRoute: typeof R2StepVerificationRoute
   R2StepVerificationCodeRoute: typeof R2StepVerificationCodeRoute
   AccountsRoute: typeof AccountsRouteWithChildren
+  AchievementsRoute: typeof AchievementsRoute
   ActivityRoute: typeof ActivityRoute
   AssetsRoute: typeof AssetsRoute
   AuthLockRoute: typeof AuthLockRoute
@@ -858,6 +871,13 @@ declare module '@tanstack/react-router' {
       path: '/activity'
       fullPath: '/activity'
       preLoaderRoute: typeof ActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/achievements': {
+      id: '/achievements'
+      path: '/achievements'
+      fullPath: '/achievements'
+      preLoaderRoute: typeof AchievementsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accounts': {
@@ -1169,6 +1189,7 @@ const rootRouteChildren: RootRouteChildren = {
   R2StepVerificationRoute: R2StepVerificationRoute,
   R2StepVerificationCodeRoute: R2StepVerificationCodeRoute,
   AccountsRoute: AccountsRouteWithChildren,
+  AchievementsRoute: AchievementsRoute,
   ActivityRoute: ActivityRoute,
   AssetsRoute: AssetsRoute,
   AuthLockRoute: AuthLockRoute,

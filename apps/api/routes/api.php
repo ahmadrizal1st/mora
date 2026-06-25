@@ -98,7 +98,18 @@ Route::middleware('auth:sanctum')->group(function () {
     // Credits
     Route::get('credits', [CreditController::class, 'index']);
     Route::post('accounts/{account}/credit', [CreditController::class, 'store']);
+    Route::get('accounts/{account}/credit', [CreditController::class, 'show']);
+    Route::put('accounts/{account}/credit', [CreditController::class, 'update']);
     Route::delete('accounts/{account}/credit', [CreditController::class, 'destroy']);
+
+    // Gamification
+    Route::prefix('gamification')->group(function () {
+        Route::get('/stats', [\App\Http\Controllers\GamificationController::class, 'stats']);
+        Route::get('/achievements', [\App\Http\Controllers\GamificationController::class, 'achievements']);
+        Route::get('/leaderboard', [\App\Http\Controllers\GamificationController::class, 'leaderboard']);
+        Route::post('/achievements/{id}/claim', [\App\Http\Controllers\GamificationController::class, 'claim']);
+    });
+
 
     // Categories
     Route::get('categories', [CategoryController::class, 'index']);

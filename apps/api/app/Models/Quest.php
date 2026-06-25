@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Quest extends Model
+{
+    use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'title',
+        'type', // daily/weekly/achievement
+        'action_type',
+        'target_count',
+        'xp_reward',
+        'coin_reward',
+    ];
+
+    public function userQuests(): HasMany
+    {
+        return $this->hasMany(UserQuest::class);
+    }
+}
