@@ -1,6 +1,5 @@
 import { useState, useMemo, useContext, useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
-import { MOCK_GOALS_DATA } from '../data/mockPlanningData'
 import { GoalsOverviewCard } from '../components/goals/GoalsOverviewCard'
 import { GoalCard } from '../components/goals/GoalCard'
 import { GoalTrajectoryChart } from '../components/goals/GoalTrajectoryChart'
@@ -12,7 +11,7 @@ import { PlanningContext } from './PlanningLayout'
 
 export function GoalsPage() {
   const { goalsData, handleOpenAddGoal, handleEditGoal } = useContext(PlanningContext)
-  const data = goalsData || MOCK_GOALS_DATA
+  const data = goalsData || { totalSaved: 0, totalTarget: 0, goals: [], milestones: [] }
   const { totalSaved, totalTarget, goals, milestones } = data
 
   const [filterOpen, setFilterOpen] = useState(false)

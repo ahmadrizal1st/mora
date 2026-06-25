@@ -20,10 +20,6 @@ return new class extends Migration
             $table->foreign('document_extraction_id')->references('id')->on('document_extractions')->nullOnDelete();
             $table->foreign('split_bill_id')->references('id')->on('split_bills')->nullOnDelete();
         });
-
-        Schema::table('round_up_configs', function (Blueprint $table) {
-            $table->foreign('goal_id')->references('id')->on('goals')->nullOnDelete();
-        });
     }
 
     /**
@@ -31,10 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('round_up_configs', function (Blueprint $table) {
-            $table->dropForeign(['goal_id']);
-        });
-
         Schema::table('transactions', function (Blueprint $table) {
             $table->dropForeign(['to_account_id']);
             $table->dropForeign(['category_id']);

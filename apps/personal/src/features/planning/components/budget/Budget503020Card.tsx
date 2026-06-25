@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
-import { MOCK_BUDGET_DATA } from '../../data/mockPlanningData'
+import { useBudgets } from '../../hooks/usePlanning'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
 
 export function Budget503020Card() {
-  const { categories, totalBudget } = MOCK_BUDGET_DATA
+  const { data: budgetData } = useBudgets()
+  const categories = budgetData?.categories || []
+  const totalBudget = budgetData?.totalBudget || 0
 
   const needsCategories = categories.filter((c) => c.type === 'needs')
   const wantsCategories = categories.filter((c) => c.type === 'wants')

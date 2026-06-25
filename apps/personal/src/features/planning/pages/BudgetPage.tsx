@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MOCK_BUDGET_DATA } from '../data/mockPlanningData'
+import { useBudgets } from '../hooks/usePlanning'
 import { BudgetOverviewCard } from '../components/budget/BudgetOverviewCard'
 import { BudgetCategoryItem } from '../components/budget/BudgetCategoryItem'
 import { BudgetTrendChartCard } from '../components/budget/BudgetTrendChartCard'
@@ -13,7 +13,12 @@ import { formatCurrency } from '@/shared/utils/currencyUtils'
 
 export function BudgetPage() {
   const [mounted, setMounted] = useState(false)
-  const { categories, totalBudget, spent, safeToSpendPerDay } = MOCK_BUDGET_DATA
+  const { data: budgetData } = useBudgets()
+
+  const categories = budgetData?.categories || []
+  const totalBudget = budgetData?.totalBudget || 0
+  const spent = budgetData?.spent || 0
+  const safeToSpendPerDay = budgetData?.safeToSpendPerDay || 0
 
   const needs = categories.filter((c) => c.type === 'needs')
   const wants = categories.filter((c) => c.type === 'wants')

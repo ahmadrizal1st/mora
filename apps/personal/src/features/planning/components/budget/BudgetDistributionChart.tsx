@@ -1,9 +1,10 @@
 import { Chart } from '@/shared/components/ui/Chart'
 import { Icon } from '@/shared/components/ui/Icon'
-import { MOCK_BUDGET_DATA } from '../../data/mockPlanningData'
+import { useBudgets } from '../../hooks/usePlanning'
 
 export function BudgetDistributionChart() {
-  const { totalBudget } = MOCK_BUDGET_DATA
+  const { data: budgetData } = useBudgets()
+  const totalBudget = budgetData?.totalBudget || 0
 
   const colors = ['#4E5D78', '#7c6fff', '#FF8A65', '#E24B4A', '#4FC3F7', '#D4E157']
 

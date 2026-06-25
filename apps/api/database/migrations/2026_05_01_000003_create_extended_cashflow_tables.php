@@ -44,6 +44,9 @@ return new class extends Migration
             $table->date('next_billing_date')->nullable();
             $table->boolean('auto_renew')->default(true);
             $table->string('billing_cycle')->default('monthly'); // monthly/yearly/weekly
+            $table->string('status')->default('upcoming');
+            $table->string('icon')->nullable();
+            $table->string('color')->nullable();
             $table->timestamps();
         });
 
@@ -57,37 +60,6 @@ return new class extends Migration
             $table->boolean('is_sent')->default(false);
             $table->timestamps();
         });
-
-        Schema::create('automation_rules', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->string('trigger_type');
-            $table->json('condition')->nullable();
-            $table->json('action')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamp('last_triggered_at')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('round_up_configs', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignUuid('account_id')->constrained()->cascadeOnDelete();
-            $table->uuid('goal_id')->nullable(); // FK to goals (Step 3)
-            $table->string('round_to')->default('1000');
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
-
-        Schema::create('salary_split_configs', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignUuid('source_account_id')->constrained('accounts')->cascadeOnDelete();
-            $table->json('allocations')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
     }
 
     /**
@@ -95,9 +67,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('salary_split_configs');
-        Schema::dropIfExists('round_up_configs');
-        Schema::dropIfExists('automation_rules');
         Schema::dropIfExists('reminders');
         Schema::dropIfExists('subscriptions');
         Schema::dropIfExists('split_participants');

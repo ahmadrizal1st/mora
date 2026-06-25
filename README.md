@@ -82,8 +82,8 @@ php artisan db:seed
 
 ```env
 # App
-APP_URL=https://vistamora.test
-FRONTEND_URL=https://mora.test:5173
+APP_URL=https://api.mora.localhost
+FRONTEND_URL=https://mora.localhost
 
 # Database PostgreSQL
 DB_CONNECTION=pgsql

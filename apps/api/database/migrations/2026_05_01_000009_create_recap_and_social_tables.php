@@ -21,27 +21,6 @@ return new class extends Migration
             $table->bigInteger('score');
             $table->timestamp('created_at')->nullable();
         });
-
-        Schema::create('weekly_recaps', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            $table->date('week_start_date');
-            $table->decimal('total_income', 15, 2);
-            $table->decimal('total_expense', 15, 2);
-            $table->json('top_categories')->nullable();
-            $table->string('financial_health_score')->nullable();
-            $table->text('ai_insight')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('shareable_cards', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            $table->string('card_type'); // streak/wrapped/badge/goal/level_up/health_score
-            $table->string('image_url')->nullable();
-            $table->json('metadata')->nullable();
-            $table->timestamps();
-        });
     }
 
     /**
@@ -49,8 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shareable_cards');
-        Schema::dropIfExists('weekly_recaps');
         Schema::dropIfExists('leaderboard_snapshots');
     }
 };

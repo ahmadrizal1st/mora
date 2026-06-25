@@ -38,3 +38,21 @@ export interface SubscriptionsData {
   paidThisMonth: number
   subscriptions: Subscription[]
 }
+
+export interface BudgetCategory {
+  id: string
+  name: string
+  limit: number
+  spent: number
+  percentage_used: number
+  type?: string
+  icon: string
+  color: string
+}
+
+export interface BudgetData {
+  totalBudget: number
+  spent: number
+  safeToSpendPerDay: number
+  categories: BudgetCategory[]
+}

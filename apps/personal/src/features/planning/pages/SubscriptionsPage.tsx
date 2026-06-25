@@ -1,5 +1,4 @@
-import React, { useState, useMemo, useContext } from 'react'
-import { MOCK_SUBSCRIPTIONS_DATA } from '../data/mockPlanningData'
+import React, { useState, useMemo, useContext, useEffect } from 'react'
 import { UpcomingBillsCard } from '../components/subscriptions/UpcomingBillsCard'
 import { SubscriptionItem } from '../components/subscriptions/SubscriptionItem'
 import { SubscriptionDistributionChart } from '../components/subscriptions/SubscriptionDistributionChart'

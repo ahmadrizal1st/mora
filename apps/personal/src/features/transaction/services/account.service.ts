@@ -31,4 +31,9 @@ export const accountService = {
   async deleteAccount(id: string): Promise<void> {
     await api.delete(`/accounts/${id}`)
   },
+
+  async getAccountSummary(): Promise<any> {
+    const response = await api.get('/accounts-summary')
+    return response.data.data
+  }
 }

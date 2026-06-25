@@ -1,10 +1,11 @@
-import React from 'react'
-import { MOCK_SUBSCRIPTIONS_DATA } from '../../data/mockPlanningData'
+import React, { useContext } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
+import { PlanningContext } from '../../pages/PlanningLayout'
 
 export function SubscriptionCalendar() {
+  const { subsData } = useContext(PlanningContext)
   const days = Array.from({ length: 31 }, (_, i) => i + 1)
-  const bills = MOCK_SUBSCRIPTIONS_DATA.subscriptions
+  const bills = subsData?.subscriptions || []
 
   return (
     <div

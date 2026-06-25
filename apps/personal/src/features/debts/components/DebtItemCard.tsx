@@ -1,22 +1,24 @@
 import { Icon } from '@/shared/components/ui/Icon'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
-import type { DebtRecord } from '../data/mockDebtsData'
+import type { DebtRecord } from '../types/debt.types'
 
 interface DebtItemCardProps {
   debt: DebtRecord
 }
 
 export function DebtItemCard({ debt }: DebtItemCardProps) {
-  const isDebt = debt.type === 'debt'
-  const isPaid = debt.status === 'paid'
+  const isDebt = debt.type === 'Utang'
+  const isPaid = debt.status === 'Lunas'
   const remainingAmount = debt.amount - debt.amountPaid
   const progressPercent = debt.amount > 0 ? (debt.amountPaid / debt.amount) * 100 : 0
 
   const statusBadge = {
-    unpaid: { label: 'Belum Dibayar', class: 'bg-danger-lt text-danger border-danger-subtle' },
-    partially_paid: { label: 'Dicicil', class: 'bg-warning-lt text-warning border-warning-subtle' },
-    paid: { label: 'Lunas', class: 'bg-success-lt text-success border-success-subtle' },
-  }[debt.status]
+    'Belum Lunas': { label: 'Belum Dibayar', class: 'bg-danger-lt text-danger border-danger-subtle' },
+    'Sebagian': { label: 'Dicicil', class: 'bg-warning-lt text-warning border-warning-subtle' },
+    'Lunas': { label: 'Lunas', class: 'bg-success-lt text-success border-success-subtle' },
+    'Menunggu': { label: 'Menunggu', class: 'bg-secondary-lt text-secondary border-secondary-subtle' },
+    'Jatuh Tempo': { label: 'Jatuh Tempo', class: 'bg-danger text-white border-danger' },
+  }[debt.status] || { label: debt.status, class: 'bg-secondary-lt text-secondary' }
 
   // Dynamic border color based on type and hover for interactive feel
   const borderColor = isDebt ? 'border-danger' : 'border-success'

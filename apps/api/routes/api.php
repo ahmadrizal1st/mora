@@ -14,9 +14,14 @@ use App\Http\Controllers\{
     TagController,
     TransactionController,
     BudgetController,
-    DocumentExtractionController,
+
     NotificationController,
     ProviderController,
+    DebtController,
+    GoalController,
+    SubscriptionController,
+    DashboardController,
+    ChatController,
 };
 use Illuminate\Support\Facades\Route;
 
@@ -78,6 +83,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Accounts
     Route::apiResource('accounts', AccountController::class);
+    Route::get('accounts-summary', [AccountController::class, 'summary']);
+
+    // Debts
+    Route::apiResource('debts', DebtController::class);
+
+    // Planning
+    Route::apiResource('goals', GoalController::class);
+    Route::apiResource('subscriptions', SubscriptionController::class);
 
     // Credits
     Route::get('credits', [CreditController::class, 'index']);
@@ -111,6 +124,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('notifications/{id}', [NotificationController::class, 'destroy']);
 
     // OCR & Documents
-    Route::post('documents/upload', [DocumentExtractionController::class, 'upload']);
-    Route::post('documents/text', [DocumentExtractionController::class, 'processText']);
+
+
+    // Dashboard
+    Route::get('dashboard-summary', [DashboardController::class, 'summary']);
+
+    // Chat
+    Route::post('chat/send', [ChatController::class, 'send']);
 });

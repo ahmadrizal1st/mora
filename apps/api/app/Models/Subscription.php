@@ -20,6 +20,9 @@ class Subscription extends Model
         'next_billing_date',
         'auto_renew',
         'billing_cycle',
+        'status',
+        'icon',
+        'color',
     ];
 
     protected $casts = [

@@ -1,6 +1,11 @@
 import { Chart } from '@/shared/components/ui/Chart'
-import { MOCK_DEBT_TREND } from '../../data/mockDebtsData'
 import { Icon } from '@/shared/components/ui/Icon'
+
+const MOCK_DEBT_TREND = {
+  categories: ['1 Mei', '6 Mei', '11 Mei', '16 Mei', '21 Mei', '26 Mei', '31 Mei'],
+  piutang: [6000000, 11000000, 9000000, 7000000, 11000000, 10000000, 13000000],
+  utang: [3000000, 4000000, 5000000, 3000000, 5000000, 7000000, 6000000],
+}
 
 export function DebtTrendChart() {
   const chartData = {

@@ -1,3 +1,5 @@
+import { Icon } from '@/shared/components/ui'
+
 interface InvoiceRow {
   id?: string
   subject: string
@@ -42,34 +44,50 @@ export function RecentTransactionsTable({
             </tr>
           </thead>
           <tbody>
-            {invoices.map((inv, i) => (
-              <tr key={i} className="text-mobile-xs">
-                <td>
-                  <span className="text-secondary">
-                    {inv.id?.slice(-3) || (i + 1).toString().padStart(3, '0')}
-                  </span>
+            {invoices.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="text-center py-5">
+                  <div className="empty">
+                    <div className="empty-icon text-secondary">
+                      <Icon icon="mood-sad" size={32} />
+                    </div>
+                    <p className="empty-title">Tidak ada transaksi ditemukan</p>
+                    <p className="empty-subtitle">
+                      Coba gunakan filter lain atau buat transaksi baru.
+                    </p>
+                  </div>
                 </td>
-                <td className="text-truncate" style={{ maxWidth: '120px' }}>
-                  <a href="#" className="text-reset fw-medium">
-                    {inv.subject}
-                  </a>
-                </td>
-                <td className="text-truncate" style={{ maxWidth: '100px' }}>
-                  {inv.client}
-                </td>
-                <td className="d-none d-md-table-cell text-secondary">{inv.vatNo || '-'}</td>
-                <td className="d-none d-md-table-cell text-secondary">{inv.date}</td>
-                <td className="d-none d-sm-table-cell">
-                  {inv.status && (
-                    <>
-                      <span className={`badge bg-${inv.statusColor || 'secondary'} me-1`} />
-                      <span className="d-none d-lg-inline">{inv.status}</span>
-                    </>
-                  )}
-                </td>
-                <td className="fw-bold text-end">{inv.price}</td>
               </tr>
-            ))}
+            ) : (
+              invoices.map((inv, i) => (
+                <tr key={i} className="text-mobile-xs">
+                  <td>
+                    <span className="text-secondary">
+                      {inv.id?.slice(-3) || (i + 1).toString().padStart(3, '0')}
+                    </span>
+                  </td>
+                  <td className="text-truncate" style={{ maxWidth: '120px' }}>
+                    <a href="#" className="text-reset fw-medium">
+                      {inv.subject}
+                    </a>
+                  </td>
+                  <td className="text-truncate" style={{ maxWidth: '100px' }}>
+                    {inv.client}
+                  </td>
+                  <td className="d-none d-md-table-cell text-secondary">{inv.vatNo || '-'}</td>
+                  <td className="d-none d-md-table-cell text-secondary">{inv.date}</td>
+                  <td className="d-none d-sm-table-cell">
+                    {inv.status && (
+                      <>
+                        <span className={`badge bg-${inv.statusColor || 'secondary'} me-1`} />
+                        <span className="d-none d-lg-inline">{inv.status}</span>
+                      </>
+                    )}
+                  </td>
+                  <td className="fw-bold text-end">{inv.price}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

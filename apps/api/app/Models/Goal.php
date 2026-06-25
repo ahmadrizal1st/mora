@@ -19,12 +19,17 @@ class Goal extends Model
         'current_amount',
         'currency_id',
         'deadline_date',
+        'monthly_deposit',
+        'icon',
+        'color',
+        'image_url',
     ];
 
     protected $casts = [
         'deadline_date' => 'date',
         'target_amount' => 'decimal:2',
         'current_amount' => 'decimal:2',
+        'monthly_deposit' => 'decimal:2',
     ];
 
     public function user(): BelongsTo

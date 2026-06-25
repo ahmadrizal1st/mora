@@ -1,10 +1,12 @@
 import React from 'react'
-import { MOCK_BUDGET_DATA } from '../../data/mockPlanningData'
-import { formatCurrency } from '@/shared/utils/currencyUtils'
 import { Icon } from '@/shared/components/ui/Icon'
+import { useBudgets } from '../../hooks/usePlanning'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
+import type { BudgetCategory } from '../../types'
 
 export function BudgetDetailedTable() {
-  const { categories } = MOCK_BUDGET_DATA
+  const { data: budgetData } = useBudgets()
+  const categories = budgetData?.categories || []
 
   return (
     <div className="card shadow-sm border-0" style={{ borderRadius: '12px' }}>

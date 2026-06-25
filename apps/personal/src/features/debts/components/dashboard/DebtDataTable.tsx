@@ -1,18 +1,20 @@
 import { useState, useMemo } from 'react'
-import { MOCK_DEBTS_DATA } from '../../data/mockDebtsData'
 import { Icon } from '@/shared/components/ui/Icon'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { useDebts } from '../../hooks/useDebts'
+import { DebtRecord } from '../../types/debt.types'
 
 export function DebtDataTable() {
   const [activeTab, setActiveTab] = useState<'Semua' | 'Piutang' | 'Utang' | 'Jatuh Tempo'>('Semua')
+  const { data: debts = [], isLoading } = useDebts()
 
   const filteredData = useMemo(() => {
-    let data = MOCK_DEBTS_DATA
-    if (activeTab === 'Piutang') data = data.filter((d) => d.type === 'Piutang')
-    if (activeTab === 'Utang') data = data.filter((d) => d.type === 'Utang')
-    if (activeTab === 'Jatuh Tempo') data = data.filter((d) => d.status === 'Jatuh Tempo')
+    let data = debts
+    if (activeTab === 'Piutang') data = data.filter((d: DebtRecord) => d.type === 'Piutang')
+    if (activeTab === 'Utang') data = data.filter((d: DebtRecord) => d.type === 'Utang')
+    if (activeTab === 'Jatuh Tempo') data = data.filter((d: DebtRecord) => d.status === 'Jatuh Tempo')
     return data
-  }, [activeTab])
+  }, [activeTab, debts])
 
   const getStatusBadge = (status: string) => {
     switch (status) {

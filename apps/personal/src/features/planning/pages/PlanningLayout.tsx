@@ -5,17 +5,17 @@ import { PlanningSegmentedNav } from '../components/shared/PlanningSegmentedNav'
 import { PlanningMetricCard } from '../components/shared/PlanningMetricCard'
 import { Icon, MonthPicker, Modal, ModalHeader, Button } from '@/shared/components/ui'
 import {
-  MOCK_BUDGET_DATA,
   MOCK_GOALS_DATA,
   MOCK_SUBSCRIPTIONS_DATA,
 } from '../data/mockPlanningData'
 import type { Goal, GoalsData, SubscriptionsData } from '../types'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { useGoals, useSubscriptions, useBudgets } from '../hooks/usePlanning'
 
 export const PlanningContext = React.createContext<any>(null)
 
 export function PlanningLayout() {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date(2026, 4))
+  const [currentDate, setCurrentDate] = useState<Date>(new Date())
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -46,37 +46,29 @@ export function PlanningLayout() {
   const [subStatus, setSubStatus] = useState('upcoming')
   const [subIcon, setSubIcon] = useState('device-tv')
 
-  const [goalsData, setGoalsData] = useState<GoalsData>(() => {
-    const stored = localStorage.getItem('visatamora_goals')
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored)
-        if (parsed && Array.isArray(parsed.goals)) {
-          parsed.goals = parsed.goals.map((g: Goal) => ({
-            ...g,
-            color: g.color === '#5b9ef7' || g.color === '#7c6fff' ? '#ff6b00' : g.color,
-          }))
-        }
-        return parsed
-      } catch (e) {}
-    }
-    localStorage.setItem('visatamora_goals', JSON.stringify(MOCK_GOALS_DATA))
-    return MOCK_GOALS_DATA
-  })
+  const { data: apiGoalsData } = useGoals()
+  const { data: apiSubsData } = useSubscriptions()
+  const { data: budgetData } = useBudgets()
 
-  const [subsData, setSubsData] = useState<SubscriptionsData>(() => {
-    const stored = localStorage.getItem('visatamora_subscriptions')
-    if (stored) {
-      try {
-        return JSON.parse(stored)
-      } catch (e) {}
-    }
-    localStorage.setItem('visatamora_subscriptions', JSON.stringify(MOCK_SUBSCRIPTIONS_DATA))
-    return MOCK_SUBSCRIPTIONS_DATA
-  })
+  const [goalsData, setGoalsData] = useState<GoalsData>({ totalSaved: 0, totalTarget: 0, goals: [], milestones: [] })
+  const [subsData, setSubsData] = useState<SubscriptionsData>({ totalMonthly: 0, paidThisMonth: 0, subscriptions: [] })
 
-  const { totalBudget, spent } = MOCK_BUDGET_DATA
+  useEffect(() => {
+    if (apiGoalsData) {
+      setGoalsData(apiGoalsData)
+    }
+  }, [apiGoalsData])
+
+  useEffect(() => {
+    if (apiSubsData) {
+      setSubsData(apiSubsData)
+    }
+  }, [apiSubsData])
+
+  const totalBudget = budgetData?.totalBudget || 0
+  const spent = budgetData?.spent || 0
   const remaining = totalBudget - spent
+  const safeToSpendPerDay = budgetData?.safeToSpendPerDay || 0
 
   const formatMonthYear = (date: Date) => {
     const months = [
@@ -337,7 +329,7 @@ export function PlanningLayout() {
         <div className="col-3">
           <PlanningMetricCard
             title="Harian (Safe)"
-            value={formatCurrency(MOCK_BUDGET_DATA.safeToSpendPerDay)}
+            value={formatCurrency(safeToSpendPerDay)}
             subtext="Estimasi harian"
             icon="shield-check"
             valueColor="warning"
@@ -447,7 +439,7 @@ export function PlanningLayout() {
               className="fs-4 fw-bold text-warning mb-1 text-truncate"
               style={{ letterSpacing: '-0.5px' }}
             >
-              {formatCurrency(MOCK_BUDGET_DATA.safeToSpendPerDay)}
+              {formatCurrency(safeToSpendPerDay)}
             </div>
             <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
               Estimasi harian

@@ -11,7 +11,7 @@ import { TopMerchantsCard } from '../components/TopMerchantsCard'
 import { AccountStatsCard } from '../components/AccountStatsCard'
 import { Icon } from '@/shared/components/ui/Icon'
 import { AddAccountModal } from '../components/AddAccountModal'
-import { BUDGET_DATA } from '../data/mockData'
+import { useAccounts, useAccountSummary } from '../../transaction/hooks/useAccounts'
 
 export function AccountsPage() {
   const [isMobile, setIsMobile] = useState(
@@ -24,39 +24,103 @@ export function AccountsPage() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const { data: accountsResponse } = useAccounts({ group_by: 'month' })
+  const { data: summaryData } = useAccountSummary()
+  
+  const accounts = accountsResponse?.data || []
+
   const [cur, setCur] = useState(0)
   const [range, setRange] = useState('W')
   const [showAddModal, setShowAddModal] = useState(false)
-  const a = BUDGET_DATA[cur]
+  
+  const selectedAcc = accounts[cur]
+
+  const accData = useMemo(() => {
+    if (!selectedAcc) return null
+    
+    const inc = selectedAcc.history?.income?.reduce((a, b) => a + b, 0) || 0
+    const exp = selectedAcc.history?.expense?.reduce((a, b) => a + b, 0) || 0
+    const chg = inc - exp
+    
+    // Filter summary data for this account if needed, or just use global for now
+    // In a real app we'd fetch account-specific transactions/categories
+    const tx = summaryData?.recent_transactions || []
+    const rawCats = summaryData?.expenses_by_category || []
+    
+    const cats = rawCats.map((c: any) => ({
+      name: c.category?.name || 'Uncategorized',
+      amount: c.total,
+      color: c.category?.color || '#000000',
+      icon: c.category?.icon || 'box'
+    }))
+
+    return {
+      name: selectedAcc.name,
+      num: selectedAcc.id.substring(0, 8),
+      type: selectedAcc.account_type,
+      bal: selectedAcc.balance || 0,
+      inc,
+      exp,
+      chg: Math.abs(chg),
+      chgPos: chg >= 0,
+      logo: 'building-bank',
+      color: selectedAcc.color || '#4263eb',
+      tx,
+      cats
+    }
+  }, [selectedAcc, summaryData])
 
   const cfData = useMemo(() => {
-    const s = cur * 11
-    const map: Record<string, string[]> = {
-      W: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-      M: ['M1', 'M2', 'M3', 'M4'],
-      '3M': ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-      Y: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'],
+    if (!selectedAcc || !selectedAcc.history) {
+      return { lbl: ['M1', 'M2', 'M3', 'M4'], inc: [0, 0, 0, 0], exp: [0, 0, 0, 0] }
     }
-    const lbl = map[range] || map['W']
-    const inc = lbl.map((_, i) => Math.round(500 + Math.abs(Math.sin((i + s) * 1.4)) * 2000))
-    const exp = lbl.map((_, i) => Math.round(300 + Math.abs(Math.cos((i + s) * 1.8)) * 1200))
-    return { lbl, inc, exp }
-  }, [cur, range])
+    
+    // Fallback to mock logic for chart if history is empty (since it's a demo)
+    if (selectedAcc.history.labels.length === 0) {
+      const s = cur * 11
+      const map: Record<string, string[]> = {
+        W: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+        M: ['M1', 'M2', 'M3', 'M4'],
+        '3M': ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        Y: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'],
+      }
+      const lbl = map[range] || map['W']
+      const inc = lbl.map((_, i) => Math.round(500 + Math.abs(Math.sin((i + s) * 1.4)) * 2000))
+      const exp = lbl.map((_, i) => Math.round(300 + Math.abs(Math.cos((i + s) * 1.8)) * 1200))
+      return { lbl, inc, exp }
+    }
+
+    return { 
+      lbl: selectedAcc.history.labels, 
+      inc: selectedAcc.history.income, 
+      exp: selectedAcc.history.expense 
+    }
+  }, [selectedAcc, cur, range])
+
+  if (!accData) {
+    return (
+      <BaseLayout pageTitle="Detail Akun & Mutasi">
+        <div className="d-flex align-items-center justify-content-center" style={{ height: '50vh' }}>
+          <div className="text-muted">Loading accounts...</div>
+        </div>
+      </BaseLayout>
+    )
+  }
 
   return (
     <BaseLayout pageTitle="Detail Akun & Mutasi">
       <div className="d-flex align-items-stretch overflow-auto gap-3 pb-3 mb-4 no-scrollbar">
-        {BUDGET_DATA.map((acc, idx) => (
+        {accounts.map((acc, idx) => (
           <AccountCard
             key={idx}
             isActive={cur === idx}
-            type={acc.type}
+            type={acc.account_type as any}
             name={acc.name}
-            balance={acc.bal}
-            delta={acc.chg}
-            chgPos={acc.chgPos}
-            logo={acc.logo}
-            color={acc.color}
+            balance={acc.balance || 0}
+            delta={0}
+            chgPos={true}
+            logo={'building-bank'}
+            color={acc.color || '#4263eb'}
             onClick={() => setCur(idx)}
           />
         ))}
@@ -83,12 +147,12 @@ export function AccountsPage() {
 
       <div className="d-block d-lg-none mb-3">
         <AccountVisualCard
-          name={a.name}
-          num={a.num}
-          type={a.type}
-          balance={a.bal}
-          logo={a.logo}
-          color={a.color}
+          name={accData.name}
+          num={accData.num}
+          type={accData.type as any}
+          balance={accData.bal}
+          logo={accData.logo}
+          color={accData.color}
         />
       </div>
 
@@ -96,8 +160,8 @@ export function AccountsPage() {
         <div className="col-6 col-lg-3">
           <SummaryMetricCard
             title="Saldo Terkini"
-            value={a.bal}
-            subtext={a.name}
+            value={accData.bal}
+            subtext={accData.name}
             icon="wallet"
             iconColor="primary"
           />
@@ -105,8 +169,8 @@ export function AccountsPage() {
         <div className="col-6 col-lg-3">
           <SummaryMetricCard
             title="Total Pemasukan"
-            value={a.inc}
-            subtext="Mei 2025"
+            value={accData.inc}
+            subtext="Terkini"
             icon="trending-up"
             valueColor="success"
           />
@@ -114,8 +178,8 @@ export function AccountsPage() {
         <div className="col-6 col-lg-3">
           <SummaryMetricCard
             title="Total Pengeluaran"
-            value={a.exp}
-            subtext="12 Transaksi"
+            value={accData.exp}
+            subtext={`${accData.tx.length} Transaksi Terakhir`}
             icon="trending-down"
             valueColor="danger"
           />
@@ -123,10 +187,10 @@ export function AccountsPage() {
         <div className="col-6 col-lg-3">
           <SummaryMetricCard
             title="Net Mutasi"
-            value={a.chgPos ? `+${a.chg}` : `-${a.chg}`}
-            subtext="Tren vs bulan lalu"
+            value={accData.chgPos ? `+${accData.chg}` : `-${accData.chg}`}
+            subtext="Selisih In/Out"
             icon="arrows-exchange"
-            valueColor={a.chgPos ? 'success' : 'danger'}
+            valueColor={accData.chgPos ? 'success' : 'danger'}
           />
         </div>
       </div>
@@ -136,12 +200,12 @@ export function AccountsPage() {
           <div className="row row-cards g-3">
             <div className="col-12 d-none d-lg-block">
               <AccountVisualCard
-                name={a.name}
-                num={a.num}
-                type={a.type}
-                balance={a.bal}
-                logo={a.logo}
-                color={a.color}
+                name={accData.name}
+                num={accData.num}
+                type={accData.type as any}
+                balance={accData.bal}
+                logo={accData.logo}
+                color={accData.color}
               />
             </div>
             <div className="col-12">
@@ -159,7 +223,7 @@ export function AccountsPage() {
               <CashFlowChartCard range={range} setRange={setRange} data={cfData} />
             </div>
             <div className="col-12">
-              <TransactionListCard transactions={a.tx} />
+              <TransactionListCard transactions={accData.tx} />
             </div>
           </div>
         </div>
@@ -167,7 +231,7 @@ export function AccountsPage() {
         <div className="col-lg-3">
           <div className="row row-cards g-3">
             <div className="col-12">
-              <SpendingCategoryCard categories={a.cats} />
+              <SpendingCategoryCard categories={accData.cats as any} />
             </div>
             <div className="col-12">
               <RecentInsightsCard />

@@ -370,22 +370,41 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     })
 
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'ai',
-        content: `This is a mock AI response to: "${content}". In a real app, this would be an API call to an AI service like OpenAI.`,
-        timestamp: new Date().toISOString(),
-      }
+    setTimeout(async () => {
+      try {
+        const { chatService } = await import('../services/chat.service')
+        const data = await chatService.sendMessage(content)
+        
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: data.role,
+          content: data.content,
+          timestamp: data.timestamp,
+        }
 
-      set((state) => ({
-        messages: {
-          ...state.messages,
-          [activeSessionId]: [...(state.messages[activeSessionId] || []), aiMessage],
-        },
-        isTyping: false,
-      }))
-    }, 1500)
+        set((state) => ({
+          messages: {
+            ...state.messages,
+            [activeSessionId]: [...(state.messages[activeSessionId] || []), aiMessage],
+          },
+          isTyping: false,
+        }))
+      } catch (err) {
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'ai',
+          content: `Failed to connect to AI server.`,
+          timestamp: new Date().toISOString(),
+        }
+        set((state) => ({
+          messages: {
+            ...state.messages,
+            [activeSessionId]: [...(state.messages[activeSessionId] || []), aiMessage],
+          },
+          isTyping: false,
+        }))
+      }
+    }, 100)
   },
 
   editMessage: (messageId, newContent) => {

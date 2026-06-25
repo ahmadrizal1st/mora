@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { MOCK_DEBTS_DATA, getDebtsSummary } from '../data/mockDebtsData'
 import { Icon } from '@/shared/components/ui/Icon'
 
 import BaseLayout from '@/shared/layouts/BaseLayout'
@@ -9,9 +8,25 @@ import { DebtHealthScore } from '../components/dashboard/DebtHealthScore'
 import { DebtDataTable } from '../components/dashboard/DebtDataTable'
 import { DebtRemindersWidget } from '../components/dashboard/DebtRemindersWidget'
 import { DebtAnalyticsWidget } from '../components/dashboard/DebtAnalyticsWidget'
+import { useDebts } from '../hooks/useDebts'
 
 export function DebtsPage() {
-  const summary = useMemo(() => getDebtsSummary(MOCK_DEBTS_DATA), [])
+  const { data: debts = [], isLoading } = useDebts()
+  const summary = useMemo(() => {
+    const activeDebts = debts.filter((d: any) => d.type === 'Utang' && d.status !== 'Lunas')
+    const activeReceivables = debts.filter((d: any) => d.type === 'Piutang' && d.status !== 'Lunas')
+
+    const totalDebtAmount = activeDebts.reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
+    const totalReceivableAmount = activeReceivables.reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
+
+    return {
+      totalDebt: totalDebtAmount,
+      totalReceivable: totalReceivableAmount,
+      activeDebtCount: activeDebts.length,
+      activeReceivableCount: activeReceivables.length,
+      netCashflow: totalReceivableAmount - totalDebtAmount,
+    }
+  }, [debts])
 
   const pageActions = (
     <div className="btn-list">

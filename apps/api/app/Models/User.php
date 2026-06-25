@@ -76,4 +76,24 @@ class User extends Authenticatable
     {
         return $this->hasMany(Tag::class);
     }
+
+    public function goals(): HasMany
+    {
+        return $this->hasMany(Goal::class);
+    }
+
+    public function debts(): HasMany
+    {
+        return $this->hasMany(Debt::class);
+    }
+
+    public function budgetPlans(): HasMany
+    {
+        return $this->hasMany(BudgetPlan::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
 }

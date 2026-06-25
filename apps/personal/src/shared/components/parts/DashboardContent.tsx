@@ -8,13 +8,12 @@ import { RecentTransactionsTable } from '../cards/RecentTransactionsTable'
 import { ActivityCard } from '../cards/ActivityCard'
 import { MobileGridMenu } from './MobileGridMenu'
 
-import moraData from '../../data/mora-dashboard.json'
 import peopleData from '../../data/people.json'
 import { type Person } from '@/shared/types/common.types'
+import { useDashboardSummary } from '@/features/dashboard/hooks/useDashboard'
 
 export function DashboardContent() {
-  const { summary, limits, savingsPlans, cashflow, statistics, recentTransactions, activities } =
-    moraData
+  const { data: moraData, isLoading } = useDashboardSummary()
   const [activeTab, setActiveTab] = useState<'income' | 'expense'>('expense')
 
   const statsColors = [
@@ -24,6 +23,12 @@ export function DashboardContent() {
     'var(--tblr-secondary-lt)',
     'var(--tblr-secondary-lt)',
   ]
+
+  if (isLoading || !moraData) {
+    return <div className="p-4 text-center text-muted">Loading dashboard...</div>
+  }
+
+  const { summary, limits, savingsPlans, cashflow, statistics, recentTransactions, activities } = moraData
 
   return (
     <div className="row g-2 g-lg-3">
@@ -101,7 +106,7 @@ export function DashboardContent() {
                     className="h1 fw-bold m-0 text-mobile-lg"
                     style={{ fontSize: '1.75rem', letterSpacing: '-0.02em' }}
                   >
-                    Rp 84,500
+                    {summary.savings}
                   </div>
                 </div>
 
@@ -353,7 +358,7 @@ export function DashboardContent() {
                       className="subheader text-mobile-sm"
                       style={{ fontWeight: activeTab === 'income' ? 700 : 400 }}
                     >
-                      Income <span className="ms-1 text-secondary">(Rp 4,800)</span>
+                      Income <span className="ms-1 text-secondary">({summary.income})</span>
                     </span>
                   </div>
                   <div
@@ -371,7 +376,7 @@ export function DashboardContent() {
                       className="subheader text-mobile-sm"
                       style={{ fontWeight: activeTab === 'expense' ? 700 : 400 }}
                     >
-                      Expense <span className="ms-1 text-secondary">(Rp 3,500)</span>
+                      Expense <span className="ms-1 text-secondary">({summary.expense})</span>
                     </span>
                   </div>
                 </div>
@@ -386,7 +391,7 @@ export function DashboardContent() {
                         color: statsColors[idx],
                       })),
                       donutLabel: `Total ${activeTab === 'expense' ? 'Expense' : 'Income'}`,
-                      donutValue: activeTab === 'expense' ? 'Rp 3,500' : 'Rp 4,800',
+                      donutValue: activeTab === 'expense' ? summary.expense : summary.income,
                       legend: false,
                       height: 14,
                       hollowSize: '70%',
@@ -395,23 +400,28 @@ export function DashboardContent() {
                 </div>
 
                 <div className="mt-4">
-                  {statistics.series.map((s, i) => (
-                    <div key={i} className="d-flex align-items-center last-mb-0 small">
-                      <div
-                        className="rounded-3 px-2 py-1 me-3 text-center fw-bold shadow-sm"
-                        style={{
-                          width: '45px',
-                          fontSize: '0.65rem',
-                          background: statsColors[i],
-                          color: i === 0 ? 'var(--tblr-primary-fg)' : 'var(--tblr-body-color)',
-                        }}
-                      >
-                        {Math.round((s.data[0] / 3500) * 100)}%
+                  {statistics.series.map((s, i) => {
+                    const totalVal = Number(summary.expense.replace(/[^0-9-]/g, ''))
+                    const pct = totalVal > 0 ? Math.round((s.data[0] / totalVal) * 100) : 0
+                    
+                    return (
+                      <div key={i} className="d-flex align-items-center last-mb-0 small mb-2">
+                        <div
+                          className="rounded-3 px-2 py-1 me-3 text-center fw-bold shadow-sm"
+                          style={{
+                            width: '45px',
+                            fontSize: '0.65rem',
+                            background: statsColors[i],
+                            color: i === 0 ? 'var(--tblr-primary-fg)' : 'var(--tblr-body-color)',
+                          }}
+                        >
+                          {pct}%
+                        </div>
+                        <span className="fw-medium text-truncate" style={{ maxWidth: '100px' }}>{s.name}</span>
+                        <span className="ms-auto fw-bold text-nowrap">Rp {s.data[0].toLocaleString()}</span>
                       </div>
-                      <span className="fw-medium">{s.name}</span>
-                      <span className="ms-auto fw-bold">Rp {s.data[0].toLocaleString()}</span>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </div>

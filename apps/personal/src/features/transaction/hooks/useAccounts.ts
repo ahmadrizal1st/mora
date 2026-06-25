@@ -55,3 +55,10 @@ export const useDeleteAccount = () => {
     },
   })
 }
+
+export const useAccountSummary = () => {
+  return useQuery({
+    queryKey: ['accountSummary'],
+    queryFn: () => accountService.getAccountSummary(),
+  })
+}
