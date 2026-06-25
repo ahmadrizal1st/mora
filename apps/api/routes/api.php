@@ -143,5 +143,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     // Chat
+    Route::get('chat/sessions', [ChatController::class, 'sessions']);
+    Route::post('chat/sessions', [ChatController::class, 'createSession']);
+    Route::delete('chat/sessions', [ChatController::class, 'deleteSessions']);
+    Route::get('chat/sessions/{sessionId}/messages', [ChatController::class, 'messages']);
     Route::post('chat/send', [ChatController::class, 'send']);
 });

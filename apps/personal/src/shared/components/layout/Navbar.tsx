@@ -7,6 +7,7 @@ import type { NavItem } from './NavbarMenu'
 import { Icon } from '../ui/Icon'
 import { useTheme } from '@/shared/context/ThemeContext'
 import menuData from '../../data/menu.json'
+import { Link } from '@tanstack/react-router'
 
 interface MenuSub {
   title: string
@@ -234,7 +235,17 @@ export function Navbar({
               </div>
 
               <div className="col col-md-auto">
-                <ul className="navbar-nav">
+                <ul className="navbar-nav flex-row align-items-center gap-2">
+                  <li className="nav-item">
+                    <Link
+                      to="/ai/chat"
+                      className="nav-link d-flex align-items-center gap-2 px-3 rounded-pill bg-primary text-white hover-bg-primary-dark transition-colors shadow-sm"
+                      style={{ padding: '0.4rem 1rem' }}
+                    >
+                      <Icon icon="message-chatbot" size={16} />
+                      <span className="fw-semibold d-none d-sm-inline" style={{ fontSize: '14px' }}>Mora AI</span>
+                    </Link>
+                  </li>
                   <li className="nav-item">
                     <a
                       className="nav-link"

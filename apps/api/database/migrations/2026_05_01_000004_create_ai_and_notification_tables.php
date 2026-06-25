@@ -33,10 +33,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('base_url')->nullable();
             $table->text('api_key')->nullable();
-            $table->string('auth_type')->nullable();
-            $table->text('headers')->nullable();
-            $table->json('payload_template')->nullable();
-            $table->string('response_path')->nullable();
             $table->string('default_model')->nullable();
             $table->boolean('is_active')->default(true);
             $table->integer('priority')->default(0);

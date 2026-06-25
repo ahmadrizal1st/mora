@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { chatService } from '../services/chat.service'
 
 export type Role = 'user' | 'ai'
 
@@ -7,11 +8,8 @@ export interface Message {
   role: Role
   content: string
   timestamp: string
+  parent_id?: string | null
   isGenerating?: boolean
-  variants?: string[]
-  activeVariantIndex?: number
-
-  variantBranches?: Record<number, Message[]>
 }
 
 export interface ChatSession {
@@ -24,577 +22,335 @@ interface ChatState {
   sessions: ChatSession[]
   activeSessionId: string | null
   messages: Record<string, Message[]>
+  loadedSessions: Record<string, boolean>
+  activeLeafId: Record<string, string | null>
   isTyping: boolean
+  hasFetchedSessions: boolean
+  isLoadingSessions: boolean
+  
+  fetchSessions: (force?: boolean) => Promise<void>
+  loadSession: (id: string) => Promise<void>
   createNewSession: () => void
-  loadSession: (id: string) => void
-  sendMessage: (content: string) => void
-  editMessage: (messageId: string, newContent: string) => void
-  retryMessage: (messageId: string) => void
+  sendMessage: (content: string, parentId?: string | null) => Promise<void>
+  deleteSessions: (ids: string[]) => Promise<void>
+  
+  editMessage: (messageId: string, newContent: string) => Promise<void>
+  setActiveLeaf: (sessionId: string, leafId: string) => void
+  getActiveThread: (sessionId: string) => Message[]
+  getSiblings: (sessionId: string, parentId: string | null | undefined) => Message[]
   switchVariant: (messageId: string, direction: 'prev' | 'next') => void
-  deleteSessions: (ids: string[]) => void
-}
-
-const MOCK_SESSION_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
-
-const MOCK_INITIAL_SESSIONS: ChatSession[] = [
-  { id: MOCK_SESSION_ID, title: 'SOA Framework', updatedAt: new Date().toISOString() },
-]
-
-const MOCK_INITIAL_MESSAGES: Record<string, Message[]> = {
-  [MOCK_SESSION_ID]: [
-    {
-      id: 'm1',
-      role: 'user',
-      content:
-        'berikan jawaban singkat namun sesuai dengan soal tidak perlu dibuat dalam bentuk file\nJawab bagian A terlebih dahulu',
-      timestamp: new Date(Date.now() - 60000).toISOString(),
-    },
-    {
-      id: 'm2',
-      role: 'ai',
-      content: `# Panduan Lengkap Markdown
-
-## Apa itu Markdown?
-
-Markdown adalah bahasa markup ringan yang memungkinkan kamu memformat teks dengan sintaks sederhana. Diciptakan oleh John Gruber pada 2004, Markdown kini digunakan di GitHub, Reddit, Notion, dan banyak platform lainnya.
-
----
-
-## Heading
-
-\`\`\`markdown
-# Heading 1
-## Heading 2
-### Heading 3
-#### Heading 4
-##### Heading 5
-###### Heading 6
-\`\`\`
-
-# Heading 1
-## Heading 2
-### Heading 3
-#### Heading 4
-##### Heading 5
-###### Heading 6
-
----
-
-## Teks Formatting
-
-\`\`\`markdown
-**tebal**
-*miring*
-~~coret~~
-\`inline code\`
-**_tebal dan miring_**
-\`\`\`
-
-**tebal** — untuk penekanan kuat
-*miring* — untuk istilah atau penekanan
-~~coret~~ — untuk teks yang dihapus
-\`inline code\` — untuk kode pendek
-***tebal dan miring*** — kombinasi keduanya
-
----
-
-## List
-
-### Unordered List
-\`\`\`markdown
-- Item A
-  - Sub-item A1
-  - Sub-item A2
-- Item B
-- Item C
-\`\`\`
-
-- Item A
-  - Sub-item A1
-  - Sub-item A2
-- Item B
-- Item C
-
-### Ordered List
-\`\`\`markdown
-1. Langkah pertama
-2. Langkah kedua
-3. Langkah ketiga
-\`\`\`
-
-1. Langkah pertama
-2. Langkah kedua
-3. Langkah ketiga
-
-### Task List
-\`\`\`markdown
-- [x] Tugas selesai
-- [ ] Tugas belum selesai
-- [x] Review kode
-\`\`\`
-
-- [x] Tugas selesai
-- [ ] Tugas belum selesai
-- [x] Review kode
-
----
-
-## Tabel
-
-\`\`\`markdown
-| Nama    | Umur | Kota       |
-|---------|------|------------|
-| Andi    | 25   | Jakarta    |
-| Budi    | 30   | Bandung    |
-| Citra   | 22   | Surabaya   |
-\`\`\`
-
-| Nama  | Umur | Kota     |
-|-------|------|----------|
-| Andi  | 25   | Jakarta  |
-| Budi  | 30   | Bandung  |
-| Citra | 22   | Surabaya |
-
-### Tabel dengan Alignment
-
-\`\`\`markdown
-| Kiri       | Tengah     | Kanan      |
-|:-----------|:----------:|-----------:|
-| teks kiri  | teks tengah| teks kanan |
-| 100        | 200        | 300        |
-\`\`\`
-
-| Kiri      |   Tengah    |      Kanan |
-|:----------|:-----------:|-----------:|
-| teks kiri | teks tengah | teks kanan |
-| 100       |     200     |        300 |
-
----
-
-## Blockquote
-
-\`\`\`markdown
-> Ini adalah sebuah kutipan.
-> Bisa multi-baris.
->
-> > Kutipan bersarang.
-\`\`\`
-
-> Ini adalah sebuah kutipan.
-> Bisa multi-baris.
->
-> > Kutipan bersarang.
-
----
-
-## Kode
-
-### Inline Code
-\`\`\`markdown
-Gunakan fungsi \`print()\` untuk output.
-\`\`\`
-
-Gunakan fungsi \`print()\` untuk output.
-
-### Block Code
-\`\`\`\`markdown
-\`\`\`python
-def halo(nama):
-    print(f"Halo, {nama}!")
-
-halo("Dunia")
-\`\`\`
-\`\`\`\`
-
-\`\`\`python
-def halo(nama):
-    print(f"Halo, {nama}!")
-
-halo("Dunia")
-\`\`\`
-
----
-
-## Link & Gambar
-
-\`\`\`markdown
-[Teks Link](https://example.com)
-[Link dengan Tooltip](https://example.com "Ini tooltipnya")
-![Alt Gambar](https://example.com/gambar.jpg)
-\`\`\`
-
-[Teks Link](https://example.com)
-[Link dengan Tooltip](https://example.com "Ini tooltipnya")
-
----
-
-## Garis Horizontal
-
-\`\`\`markdown
----
-***
-___
-\`\`\`
-
----
-
-## Footnote
-
-\`\`\`markdown
-Ini teks dengan catatan kaki.[^1]
-
-[^1]: Ini isi catatan kakinya.
-\`\`\`
-
-Ini teks dengan catatan kaki.[^1]
-
-[^1]: Ini isi catatan kakinya.
-
----
-
-## Escape Character
-
-Gunakan backslash \`\\\` untuk menampilkan karakter khusus:
-
-\`\`\`markdown
-\\*bukan italic\\*
-\\# bukan heading
-\\[bukan link\\]
-\`\`\`
-
-\\*bukan italic\\*
-\\# bukan heading
-\\[bukan link\\]
-
----
-
-## Ringkasan Sintaks
-
-| Elemen        | Sintaks                   |
-|---------------|---------------------------|
-| Heading       | \`# H1\` hingga \`###### H6\` |
-| Tebal         | \`**teks**\`                |
-| Miring        | \`*teks*\`                  |
-| Coret         | \`~~teks~~\`                |
-| Link          | \`[teks](url)\`             |
-| Gambar        | \`![alt](url)\`             |
-| Kode Inline   | \`\` \`kode\` \`\`              |
-| Blockquote    | \`> teks\`                  |
-| List          | \`- item\` atau \`1. item\`   |
-| Tabel         | \`\\| col \\| col \\|\`        |
-| Garis Bawah   | \`---\`                     |`,
-      timestamp: new Date().toISOString(),
-    },
-  ],
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
-  sessions: MOCK_INITIAL_SESSIONS,
-  activeSessionId: MOCK_SESSION_ID,
-  messages: MOCK_INITIAL_MESSAGES,
+  sessions: [],
+  activeSessionId: null,
+  messages: {},
+  loadedSessions: {},
+  activeLeafId: {},
   isTyping: false,
+  isLoadingSessions: false,
+  hasFetchedSessions: false,
+
+  fetchSessions: async (force = false) => {
+    const state = get()
+    if (!force && state.hasFetchedSessions) return;
+    if (state.isLoadingSessions) return;
+
+    set({ isLoadingSessions: true })
+    try {
+      const data = await chatService.getSessions()
+      const formattedSessions = data.map((s: any) => ({
+        id: s.id,
+        title: s.title,
+        updatedAt: s.updated_at,
+      }))
+      set({ sessions: formattedSessions, isLoadingSessions: false, hasFetchedSessions: true })
+    } catch (error) {
+      console.error('Failed to fetch sessions:', error)
+      set({ isLoadingSessions: false })
+    }
+  },
+
+  loadSession: async (id) => {
+    set({ activeSessionId: id })
+    // If messages aren't loaded yet, fetch them
+    const state = get()
+    if (!state.loadedSessions[id]) {
+      try {
+        const msgs = await chatService.getMessages(id)
+        const formattedMsgs = msgs.map((m: any) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          parent_id: m.parent_id,
+          timestamp: m.created_at,
+        }))
+        set((state) => ({
+          messages: {
+            ...state.messages,
+            [id]: formattedMsgs,
+          },
+          loadedSessions: {
+            ...state.loadedSessions,
+            [id]: true,
+          },
+          activeLeafId: {
+            ...state.activeLeafId,
+            [id]: formattedMsgs.length > 0 ? formattedMsgs[formattedMsgs.length - 1].id : null
+          }
+        }))
+      } catch (error) {
+        console.error('Failed to fetch messages:', error)
+      }
+    }
+  },
 
   createNewSession: () => {
-    set((state) => {
-      const currentActiveId = state.activeSessionId
-      const currentMessages = currentActiveId ? state.messages[currentActiveId] || [] : []
-
-      if (currentActiveId && currentMessages.length === 0) {
-        return state
+    const newId = crypto.randomUUID()
+    set((state) => ({
+      activeSessionId: newId,
+      messages: {
+        ...state.messages,
+        [newId]: [],
+      },
+      loadedSessions: {
+        ...state.loadedSessions,
+        [newId]: true,
+      },
+      activeLeafId: {
+        ...state.activeLeafId,
+        [newId]: null,
       }
-
-      const newId = crypto.randomUUID()
-
-      return {
-        activeSessionId: newId,
-        messages: {
-          ...state.messages,
-          [newId]: [],
-        },
-      }
-    })
+    }))
   },
 
-  loadSession: (id) => {
-    set({ activeSessionId: id })
-  },
+  sendMessage: async (content, parentId) => {
+    const { activeSessionId, sessions } = get()
+    let currentSessionId = activeSessionId
 
-  sendMessage: (content) => {
-    const { activeSessionId } = get()
-    if (!activeSessionId) return
+    if (!currentSessionId) return
 
+    // Create session in backend if it's new (not in state)
+    const isNewSession = !sessions.some((s) => s.id === currentSessionId)
+    if (isNewSession) {
+      try {
+        const title = content.slice(0, 30) + (content.length > 30 ? '...' : '')
+        const newSession = await chatService.createSession(title)
+        
+        // We replace the local random UUID with the real database UUID
+        set((state) => {
+          const oldMessages = state.messages[currentSessionId!] || []
+          const updatedMessages = { ...state.messages, [newSession.id]: oldMessages }
+          delete updatedMessages[currentSessionId!]
+          
+          return {
+            activeSessionId: newSession.id,
+            sessions: [
+              { id: newSession.id, title: newSession.title, updatedAt: newSession.updated_at },
+              ...state.sessions,
+            ],
+            messages: updatedMessages,
+          }
+        })
+        currentSessionId = newSession.id
+      } catch (error) {
+        console.error('Failed to create session:', error)
+        return
+      }
+    }
+
+    const tempUserMsgId = `temp-${Date.now()}`
+    const activeLeaf = parentId !== undefined ? parentId : get().activeLeafId[currentSessionId!];
+    
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: tempUserMsgId,
       role: 'user',
       content,
+      parent_id: activeLeaf,
       timestamp: new Date().toISOString(),
     }
 
-    set((state) => {
-      const currentMessages = state.messages[activeSessionId] || []
-      let sessions = [...state.sessions]
+    // Optimistic UI update
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [currentSessionId!]: [...(state.messages[currentSessionId!] || []), userMessage],
+      },
+      activeLeafId: {
+        ...state.activeLeafId,
+        [currentSessionId!]: tempUserMsgId,
+      },
+      isTyping: true,
+    }))
 
-      const isNewSession = !sessions.some((s) => s.id === activeSessionId)
-
-      if (isNewSession) {
-        sessions.push({
-          id: activeSessionId,
-          title: content.slice(0, 30) + (content.length > 30 ? '...' : ''),
-          updatedAt: new Date().toISOString(),
-        })
-      } else {
-        sessions = sessions.map((s) => {
-          if (s.id === activeSessionId && s.title === 'New Conversation') {
-            return {
-              ...s,
-              title: content.slice(0, 30) + (content.length > 30 ? '...' : ''),
-              updatedAt: new Date().toISOString(),
-            }
-          }
-          if (s.id === activeSessionId) {
-            return { ...s, updatedAt: new Date().toISOString() }
-          }
-          return s
-        })
-      }
-
-      sessions.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-
-      return {
-        messages: {
-          ...state.messages,
-          [activeSessionId]: [...currentMessages, userMessage],
-        },
-        sessions,
-        isTyping: true,
-      }
-    })
-
-    setTimeout(async () => {
-      try {
-        const { chatService } = await import('../services/chat.service')
-        const data = await chatService.sendMessage(content)
+    try {
+      const data = await chatService.sendMessage(currentSessionId!, content, activeLeaf ?? undefined)
+      
+      set((state) => {
+        const msgs = state.messages[currentSessionId!] || []
+        // Replace temp message with real db message
+        const finalUserMsg = {
+          ...userMessage, 
+          id: data.user_message.id, 
+          parent_id: data.user_message.parent_id,
+          timestamp: data.user_message.timestamp
+        };
+        const updatedMsgs = msgs.map(m => m.id === tempUserMsgId ? finalUserMsg : m)
         
+        // Add AI message
         const aiMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: data.role,
-          content: data.content,
-          timestamp: data.timestamp,
+          id: data.ai_message.id,
+          role: data.ai_message.role,
+          content: data.ai_message.content,
+          parent_id: data.ai_message.parent_id,
+          timestamp: data.ai_message.timestamp,
         }
 
-        set((state) => ({
+        return {
           messages: {
             ...state.messages,
-            [activeSessionId]: [...(state.messages[activeSessionId] || []), aiMessage],
+            [currentSessionId!]: [...updatedMsgs, aiMessage],
+          },
+          activeLeafId: {
+            ...state.activeLeafId,
+            [currentSessionId!]: aiMessage.id,
           },
           isTyping: false,
-        }))
-      } catch (err) {
-        const aiMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'ai',
-          content: `Failed to connect to AI server.`,
-          timestamp: new Date().toISOString(),
         }
-        set((state) => ({
-          messages: {
-            ...state.messages,
-            [activeSessionId]: [...(state.messages[activeSessionId] || []), aiMessage],
-          },
-          isTyping: false,
-        }))
-      }
-    }, 100)
-  },
-
-  editMessage: (messageId, newContent) => {
-    const { activeSessionId } = get()
-    if (!activeSessionId) return
-    set((state) => {
-      const msgs = state.messages[activeSessionId] || []
-      const targetIndex = msgs.findIndex((m) => m.id === messageId)
-      if (targetIndex === -1) return state
-
-      const target = msgs[targetIndex]
-      const currentVariantIndex = target.activeVariantIndex ?? 0
-
-      const currentBranch = msgs.slice(targetIndex + 1)
-      const updatedBranches: Record<number, Message[]> = {
-        ...(target.variantBranches || {}),
-        [currentVariantIndex]: currentBranch,
-      }
-
-      const variants = target.variants || [target.content]
-      const newVariants = [...variants, newContent]
-      const newVariantIndex = newVariants.length - 1
-
-      const newMsgs = [
-        ...msgs.slice(0, targetIndex),
-        {
-          ...target,
-          content: newContent,
-          variants: newVariants,
-          activeVariantIndex: newVariantIndex,
-          variantBranches: updatedBranches,
-        },
-      ]
-      return { messages: { ...state.messages, [activeSessionId]: newMsgs }, isTyping: true }
-    })
-
-    const userContent = newContent
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: Date.now().toString(),
+      })
+    } catch (err) {
+      const errorMessage: Message = {
+        id: `err-${Date.now()}`,
         role: 'ai',
-        content: `This is a mock AI response to: "${userContent}". In a real app, this would be an API call to an AI service like OpenAI.`,
+        content: `Sorry, there was an error processing your request.`,
+        parent_id: userMessage.id,
         timestamp: new Date().toISOString(),
       }
       set((state) => ({
         messages: {
           ...state.messages,
-          [activeSessionId]: [...(state.messages[activeSessionId] || []), aiMessage],
+          [currentSessionId!]: [...(state.messages[currentSessionId!] || []), errorMessage],
+        },
+        activeLeafId: {
+          ...state.activeLeafId,
+          [currentSessionId!]: errorMessage.id,
         },
         isTyping: false,
       }))
-    }, 1500)
+    }
   },
 
-  retryMessage: (messageId) => {
-    const { activeSessionId } = get()
-    if (!activeSessionId) return
-
-    set((state) => {
-      const msgs = state.messages[activeSessionId] || []
-      const targetIndex = msgs.findIndex((m) => m.id === messageId)
-      if (targetIndex === -1) return state
-
-      const target = msgs[targetIndex]
-      let newMsgs = [...msgs]
-
-      if (target.role === 'ai') {
-        newMsgs = newMsgs.map((m) => {
-          if (m.id === messageId) {
-            const variants = m.variants || [m.content]
-            const newVariants = [...variants, '']
-            return {
-              ...m,
-              content: '',
-              variants: newVariants,
-              activeVariantIndex: newVariants.length - 1,
-              isGenerating: true,
-            }
-          }
-          return m
-        })
-      } else {
-        newMsgs = newMsgs.slice(0, targetIndex + 1)
-      }
-      return {
-        messages: { ...state.messages, [activeSessionId]: newMsgs },
-        isTyping: target.role === 'user',
-      }
-    })
-
-    setTimeout(() => {
+  deleteSessions: async (ids) => {
+    try {
+      await chatService.deleteSessions(ids)
       set((state) => {
-        const msgs = state.messages[activeSessionId] || []
-        const aiTarget = msgs.find((m) => m.id === messageId)
-        let newMsgs = [...msgs]
+        const remainingSessions = state.sessions.filter((s) => !ids.includes(s.id))
+        const newMessages = { ...state.messages }
+        ids.forEach((id) => delete newMessages[id])
 
-        if (aiTarget?.role === 'ai') {
-          newMsgs = newMsgs.map((m) => {
-            if (m.id === messageId) {
-              const variants = [...(m.variants || [])]
-              const newContent = `*(Regenerated Variant ${variants.length})*: Berikut adalah sudut pandang tambahan mengenai topik tersebut...`
-              variants[variants.length - 1] = newContent
-              return { ...m, content: newContent, variants, isGenerating: false }
-            }
-            return m
-          })
-        } else {
-          const userMsg = msgs.find((m) => m.id === messageId)
-          newMsgs.push({
-            id: Date.now().toString(),
-            role: 'ai',
-            content: `This is a mock AI response to: "${userMsg?.content}". In a real app, this would be an API call to an AI service like OpenAI.`,
-            timestamp: new Date().toISOString(),
-          })
+        let newActiveSessionId = state.activeSessionId
+        if (newActiveSessionId && ids.includes(newActiveSessionId)) {
+          newActiveSessionId = remainingSessions.length > 0 ? remainingSessions[0].id : null
         }
 
         return {
-          messages: { ...state.messages, [activeSessionId]: newMsgs },
-          isTyping: false,
+          sessions: remainingSessions,
+          messages: newMessages,
+          activeSessionId: newActiveSessionId,
         }
       })
-    }, 1500)
+    } catch (error) {
+      console.error('Failed to delete sessions:', error)
+    }
+  },
+
+  editMessage: async (messageId, newContent) => {
+    const { messages, activeSessionId, sendMessage } = get()
+    if (!activeSessionId) return
+    const msg = messages[activeSessionId]?.find(m => m.id === messageId)
+    if (!msg) return
+    
+    // Send a new message that attaches to the parent of the edited message
+    await sendMessage(newContent, msg.parent_id)
+  },
+
+  setActiveLeaf: (sessionId, leafId) => {
+    set((state) => ({
+      activeLeafId: {
+        ...state.activeLeafId,
+        [sessionId]: leafId,
+      }
+    }))
+  },
+
+  getActiveThread: (sessionId) => {
+    const { messages, activeLeafId } = get()
+    const allMessages = messages[sessionId] || []
+    let leafId = activeLeafId[sessionId]
+    
+    if (!leafId && allMessages.length > 0) {
+      leafId = allMessages[allMessages.length - 1].id
+    }
+
+    if (!leafId) return []
+
+    const thread: Message[] = []
+    let currentId: string | null | undefined = leafId
+
+    // Map for fast lookup
+    const msgMap = new Map(allMessages.map(m => [m.id, m]))
+
+    // Avoid infinite loops just in case
+    const visited = new Set<string>()
+
+    while (currentId && msgMap.has(currentId) && !visited.has(currentId)) {
+      visited.add(currentId)
+      const msg = msgMap.get(currentId)!
+      thread.unshift(msg)
+      currentId = msg.parent_id
+    }
+
+    return thread
+  },
+
+  getSiblings: (sessionId, parentId) => {
+    const { messages } = get()
+    const allMessages = messages[sessionId] || []
+    
+    // Siblings are all messages that share the same parent_id
+    // Sort them by created_at so they appear in chronological order
+    return allMessages.filter(m => (m.parent_id || null) === (parentId || null))
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
   },
 
   switchVariant: (messageId, direction) => {
-    const { activeSessionId } = get()
+    const { activeSessionId, messages, setActiveLeaf } = get()
     if (!activeSessionId) return
-    set((state) => {
-      const msgs = state.messages[activeSessionId] || []
-      const targetIndex = msgs.findIndex((m) => m.id === messageId)
-      if (targetIndex === -1) return state
+    const allMessages = messages[activeSessionId] || []
+    const msg = allMessages.find(m => m.id === messageId)
+    if (!msg) return
 
-      const target = msgs[targetIndex]
-      const variants = target.variants || [target.content]
-      const currentIndex = target.activeVariantIndex ?? 0
-      let nextIndex = currentIndex
-      if (direction === 'prev' && currentIndex > 0) nextIndex = currentIndex - 1
-      if (direction === 'next' && currentIndex < variants.length - 1) nextIndex = currentIndex + 1
-      if (nextIndex === currentIndex) return state
+    const siblings = get().getSiblings(activeSessionId, msg.parent_id)
+    if (siblings.length <= 1) return
 
-      if (target.role === 'user') {
-        const currentBranch = msgs.slice(targetIndex + 1)
-        const updatedBranches: Record<number, Message[]> = {
-          ...(target.variantBranches || {}),
-          [currentIndex]: currentBranch,
-        }
+    const currentIndex = siblings.findIndex(s => s.id === messageId)
+    let nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
+    
+    if (nextIndex < 0 || nextIndex >= siblings.length) return
 
-        const targetBranch = updatedBranches[nextIndex] || []
+    const selectedSibling = siblings[nextIndex]
 
-        const newMsgs = [
-          ...msgs.slice(0, targetIndex),
-          {
-            ...target,
-            content: variants[nextIndex],
-            activeVariantIndex: nextIndex,
-            variantBranches: updatedBranches,
-          },
-          ...targetBranch,
-        ]
-        return { messages: { ...state.messages, [activeSessionId]: newMsgs } }
-      } else {
-        const newMsgs = msgs.map((m) => {
-          if (m.id === messageId) {
-            return { ...m, content: variants[nextIndex], activeVariantIndex: nextIndex }
-          }
-          return m
-        })
-        return { messages: { ...state.messages, [activeSessionId]: newMsgs } }
-      }
-    })
-  },
+    // We must find the deepest descendant of this selected sibling to set as active leaf
+    let deepestLeaf = selectedSibling.id
+    let currentChildren = allMessages.filter(m => m.parent_id === deepestLeaf)
+    
+    while (currentChildren.length > 0) {
+      // Pick the most recent child
+      currentChildren.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      deepestLeaf = currentChildren[0].id
+      currentChildren = allMessages.filter(m => m.parent_id === deepestLeaf)
+    }
 
-  deleteSessions: (ids) => {
-    set((state) => {
-      const remainingSessions = state.sessions.filter((s) => !ids.includes(s.id))
-      const newMessages = { ...state.messages }
-      ids.forEach((id) => {
-        delete newMessages[id]
-      })
-
-      let newActiveSessionId = state.activeSessionId
-      if (newActiveSessionId && ids.includes(newActiveSessionId)) {
-        newActiveSessionId = remainingSessions.length > 0 ? remainingSessions[0].id : null
-      }
-
-      return {
-        sessions: remainingSessions,
-        messages: newMessages,
-        activeSessionId: newActiveSessionId,
-      }
-    })
-  },
+    setActiveLeaf(activeSessionId, deepestLeaf)
+  }
 }))

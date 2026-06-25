@@ -10,6 +10,28 @@ interface ChatHistoryDrawerProps {
   onToggle: () => void
 }
 
+function formatShortTime(dateString: string) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const now = new Date()
+  const isToday = date.toDateString() === now.toDateString()
+  const isYesterday = new Date(now.setDate(now.getDate() - 1)).toDateString() === date.toDateString()
+  
+  if (isToday) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  } else if (isYesterday) {
+    return 'Yesterday'
+  } else {
+    const diffTime = Math.abs(new Date().getTime() - date.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    if (diffDays < 7) {
+      return `${diffDays} days ago`
+    }
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+  }
+}
+
+
 export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -97,15 +119,17 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
             >
               <Icon icon="search" size={20} />
             </Link>
-            <button
-              className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-primary transition-colors"
+            <Link
+              to="/ai/templates"
+              className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-primary transition-colors text-decoration-none"
               title="Templates"
             >
               <Icon icon="wand" size={20} />
-            </button>
+            </Link>
             <button
               className="border-0 bg-transparent text-muted p-2 d-flex align-items-center justify-content-center rounded-3 hover-text-primary transition-colors"
               title="Documents"
+              onClick={() => window.alert('Fitur Dokumen akan segera hadir!')}
             >
               <Icon icon="file-invoice" size={20} />
             </button>
@@ -137,38 +161,36 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
               </div>
             </div>
 
-            <div className="px-2 pb-0 pt-2 d-flex flex-column gap-1">
+            <div className="px-3 pb-0 pt-3 d-flex flex-column gap-2">
               <button
-                className={navItemClass(currentPath === '/ai/chat/' || currentPath === '/ai/chat')}
+                className="btn btn-primary d-flex align-items-center justify-content-center gap-2 rounded-3 py-2 border-0 w-100"
+                style={{ backgroundColor: '#ff7a00', color: '#fff', fontWeight: 500 }}
                 onClick={handleNewSession}
               >
-                <Icon icon="pencil" size={16} className="flex-shrink-0" />
-                <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>
-                  New chat
-                </span>
+                <Icon icon="plus" size={16} />
+                <span>New chat</span>
               </button>
-
-              <Link
-                to="/ai/search"
-                className={navItemClass(isNavActive('/ai/search')) + ' text-decoration-none'}
-              >
-                <Icon icon="search" size={16} className="flex-shrink-0" />
-                <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>
-                  Search
-                </span>
-              </Link>
-              <button className={navItemClass(false)}>
-                <Icon icon="wand" size={16} className="flex-shrink-0" />
-                <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>
-                  Templates
-                </span>
-              </button>
-              <button className={navItemClass(false)}>
-                <Icon icon="file-invoice" size={16} className="flex-shrink-0" />
-                <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>
-                  Documents
-                </span>
-              </button>
+              
+              <div className="d-flex flex-column gap-1 mt-2">
+                <Link
+                  to="/ai/search"
+                  className={navItemClass(isNavActive('/ai/search')) + ' text-decoration-none'}
+                >
+                  <Icon icon="search" size={16} className="flex-shrink-0" />
+                  <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>
+                    Search
+                  </span>
+                </Link>
+                <Link
+                  to="/ai/templates"
+                  className={navItemClass(isNavActive('/ai/templates')) + ' text-decoration-none'}
+                >
+                  <Icon icon="wand" size={16} className="flex-shrink-0" />
+                  <span className="flex-grow-1" style={{ fontSize: '14px', lineHeight: '1.4' }}>
+                    Templates
+                  </span>
+                </Link>
+              </div>
             </div>
 
             <div
@@ -193,6 +215,7 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
                     )}
                     onClick={() => handleSessionClick(session.id)}
                   >
+                    <Icon icon="messages" size={16} className="text-muted flex-shrink-0" />
                     <div className="text-truncate flex-grow-1" style={{ minWidth: 0 }}>
                       <div
                         className="text-truncate d-block"
@@ -201,6 +224,9 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
                         {session.title}
                       </div>
                     </div>
+                    <span className="text-muted flex-shrink-0" style={{ fontSize: '11px' }}>
+                      {formatShortTime(session.updatedAt)}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -213,21 +239,26 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
               )}
             </div>
 
+
+
             <div
-              className="p-3 border-top border-light dark:border-dark mt-auto bg-white dark:bg-dark-card"
+              className="p-3 border-top border-light dark:border-dark mt-auto bg-white dark:bg-dark-card d-flex align-items-center justify-content-between"
               style={{ zIndex: 10 }}
             >
               <Button
                 to="/dashboard"
-                block
-                pill
-                white
+                ghost
                 size="md"
                 style={{ height: '42px' }}
                 icon="home"
                 text="Home"
-                className="fw-medium text-body"
+                className="fw-medium text-body px-2"
               />
+              <div className="rounded-circle overflow-hidden border border-light" style={{ width: '36px', height: '36px', background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)' }}>
+                <div className="w-100 h-100 d-flex align-items-center justify-content-center text-white fw-bold" style={{ fontSize: '14px' }}>
+                  AH
+                </div>
+              </div>
             </div>
           </div>
         )}

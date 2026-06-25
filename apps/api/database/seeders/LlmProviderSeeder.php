@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\LlmProvider;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LlmProviderSeeder extends Seeder
 {
@@ -12,54 +13,28 @@ class LlmProviderSeeder extends Seeder
      */
     public function run(): void
     {
-        LlmProvider::updateOrCreate(
+        DB::table('llm_providers')->updateOrInsert(
             ['name' => 'gemini'],
             [
+                'id' => Str::uuid()->toString(),
                 'is_default' => true,
                 'is_active' => true,
                 'priority' => 1,
-                'base_url' => 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
+                'base_url' => null,
                 'api_key' => env('GEMINI_API_KEY'),
-                'auth_type' => 'query_param',
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                ],
-                'payload_template' => [
-                    'contents' => [
-                        [
-                            'parts' => [
-                                ['text' => '{prompt}']
-                            ]
-                        ]
-                    ],
-                    'generationConfig' => [
-                        'maxOutputTokens' => 4096,
-                        'temperature' => 0.1,
-                    ]
-                ],
-                'response_path' => 'candidates.0.content.parts.0.text',
-                'default_model' => 'gemini-flash-latest',
+                'default_model' => 'gemini-1.5-flash',
             ]
         );
 
-        LlmProvider::updateOrCreate(
+        DB::table('llm_providers')->updateOrInsert(
             ['name' => 'groq'],
             [
+                'id' => Str::uuid()->toString(),
                 'is_default' => true,
                 'is_active' => true,
                 'priority' => 2,
-                'base_url' => 'https://api.groq.com/openai/v1/chat/completions',
+                'base_url' => null,
                 'api_key' => env('GROQ_API_KEY'),
-                'auth_type' => 'bearer',
-                'payload_template' => [
-                    'model' => '{model}',
-                    'messages' => [
-                        ['role' => 'user', 'content' => '{prompt}']
-                    ],
-                    'temperature' => 0.1,
-                    'max_tokens' => 4096,
-                ],
-                'response_path' => 'choices.0.message.content',
                 'default_model' => 'llama-3.1-8b-instant',
             ]
         );

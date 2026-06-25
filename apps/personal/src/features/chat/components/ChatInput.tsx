@@ -15,7 +15,7 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
   const adjustHeight = () => {
     const textarea = textareaRef.current
     if (textarea) {
-      textarea.style.height = '32px'
+      textarea.style.height = '40px'
       textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`
     }
   }
@@ -39,7 +39,7 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
 
       setTimeout(() => {
         if (textareaRef.current) {
-          textareaRef.current.style.height = '32px'
+          textareaRef.current.style.height = '40px'
         }
       }, 0)
     }
@@ -54,10 +54,10 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
 
   return (
     <>
-      <div className="p-2 bg-white dark:bg-dark-card">
+      <div className="p-0 bg-transparent">
         <form
           onSubmit={handleSubmit}
-          className="d-flex align-items-end gap-2 position-relative bg-light dark:bg-dark px-3 py-2 chat-input-textarea"
+          className="d-flex align-items-end gap-2 position-relative bg-transparent px-2 py-1 chat-input-textarea"
         >
           {isRecording ? (
             <VoiceRecorder
@@ -162,12 +162,12 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
                 ref={textareaRef}
                 value={inputValue}
                 onChange={handleChange}
-                className="form-control chat-input-textarea bg-transparent border-0 px-0 py-1 shadow-none text-body"
+                className="form-control chat-input-textarea bg-transparent border-0 px-0 py-2 shadow-none text-body"
                 placeholder="Ask anything"
                 rows={1}
                 style={{
                   resize: 'none',
-                  minHeight: '32px',
+                  minHeight: '40px',
                   maxHeight: '200px',
                   fontSize: '15px',
                   lineHeight: '24px',
@@ -189,17 +189,19 @@ export function ChatInput({ onSendMessage, isTyping }: ChatInputProps) {
                   <button
                     type="submit"
                     disabled={isTyping}
-                    className="btn btn-icon btn-sm rounded-circle border-0 shadow-sm w-32 bg-white text-dark"
+                    className="btn btn-icon btn-sm rounded-circle border-0 shadow-sm w-32 d-flex align-items-center justify-content-center text-white transition-colors"
+                    style={{ backgroundColor: '#ff7a00' }}
                   >
                     <Icon icon="arrow-up" size={18} />
                   </button>
                 ) : (
                   <button
                     type="button"
-                    className="btn btn-icon btn-sm rounded-circle border-0 shadow-sm w-32 bg-white text-dark"
+                    className="btn btn-icon btn-sm rounded-circle border-0 shadow-sm w-32 d-flex align-items-center justify-content-center text-white transition-colors"
+                    style={{ backgroundColor: '#ff7a00', opacity: 0.8 }}
                     title="Voice Mode"
                   >
-                    <Icon icon="headphones" size={18} />
+                    <Icon icon="arrow-up" size={18} />
                   </button>
                 )}
               </div>

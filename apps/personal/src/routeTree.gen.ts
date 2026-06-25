@@ -58,6 +58,7 @@ import { Route as CreditOverviewRouteImport } from './routes/credit.overview'
 import { Route as CreditKtaRouteImport } from './routes/credit.kta'
 import { Route as CreditKprRouteImport } from './routes/credit.kpr'
 import { Route as CreditCreditCardRouteImport } from './routes/credit.credit-card'
+import { Route as AiTemplatesRouteImport } from './routes/ai.templates'
 import { Route as AiSearchRouteImport } from './routes/ai.search'
 import { Route as AiChatRouteImport } from './routes/ai.chat'
 import { Route as AccountsAccountIdRouteImport } from './routes/accounts.$accountId'
@@ -309,6 +310,11 @@ const CreditCreditCardRoute = CreditCreditCardRouteImport.update({
   path: '/credit-card',
   getParentRoute: () => CreditRoute,
 } as any)
+const AiTemplatesRoute = AiTemplatesRouteImport.update({
+  id: '/ai/templates',
+  path: '/ai/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AiSearchRoute = AiSearchRouteImport.update({
   id: '/ai/search',
   path: '/ai/search',
@@ -368,6 +374,7 @@ export interface FileRoutesByFullPath {
   '/accounts/$accountId': typeof AccountsAccountIdRoute
   '/ai/chat': typeof AiChatRouteWithChildren
   '/ai/search': typeof AiSearchRoute
+  '/ai/templates': typeof AiTemplatesRoute
   '/credit/credit-card': typeof CreditCreditCardRoute
   '/credit/kpr': typeof CreditKprRoute
   '/credit/kta': typeof CreditKtaRoute
@@ -418,6 +425,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
   '/ai/search': typeof AiSearchRoute
+  '/ai/templates': typeof AiTemplatesRoute
   '/credit/credit-card': typeof CreditCreditCardRoute
   '/credit/kpr': typeof CreditKprRoute
   '/credit/kta': typeof CreditKtaRoute
@@ -475,6 +483,7 @@ export interface FileRoutesById {
   '/accounts/$accountId': typeof AccountsAccountIdRoute
   '/ai/chat': typeof AiChatRouteWithChildren
   '/ai/search': typeof AiSearchRoute
+  '/ai/templates': typeof AiTemplatesRoute
   '/credit/credit-card': typeof CreditCreditCardRoute
   '/credit/kpr': typeof CreditKprRoute
   '/credit/kta': typeof CreditKtaRoute
@@ -533,6 +542,7 @@ export interface FileRouteTypes {
     | '/accounts/$accountId'
     | '/ai/chat'
     | '/ai/search'
+    | '/ai/templates'
     | '/credit/credit-card'
     | '/credit/kpr'
     | '/credit/kta'
@@ -583,6 +593,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/accounts/$accountId'
     | '/ai/search'
+    | '/ai/templates'
     | '/credit/credit-card'
     | '/credit/kpr'
     | '/credit/kta'
@@ -639,6 +650,7 @@ export interface FileRouteTypes {
     | '/accounts/$accountId'
     | '/ai/chat'
     | '/ai/search'
+    | '/ai/templates'
     | '/credit/credit-card'
     | '/credit/kpr'
     | '/credit/kta'
@@ -695,6 +707,7 @@ export interface RootRouteChildren {
   SignUpRoute: typeof SignUpRoute
   AiChatRoute: typeof AiChatRouteWithChildren
   AiSearchRoute: typeof AiSearchRoute
+  AiTemplatesRoute: typeof AiTemplatesRoute
   TrackerAudioRoute: typeof TrackerAudioRoute
   TrackerImageRoute: typeof TrackerImageRoute
   TrackerInputRoute: typeof TrackerInputRoute
@@ -1048,6 +1061,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreditCreditCardRouteImport
       parentRoute: typeof CreditRoute
     }
+    '/ai/templates': {
+      id: '/ai/templates'
+      path: '/ai/templates'
+      fullPath: '/ai/templates'
+      preLoaderRoute: typeof AiTemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ai/search': {
       id: '/ai/search'
       path: '/ai/search'
@@ -1216,6 +1236,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignUpRoute: SignUpRoute,
   AiChatRoute: AiChatRouteWithChildren,
   AiSearchRoute: AiSearchRoute,
+  AiTemplatesRoute: AiTemplatesRoute,
   TrackerAudioRoute: TrackerAudioRoute,
   TrackerImageRoute: TrackerImageRoute,
   TrackerInputRoute: TrackerInputRoute,

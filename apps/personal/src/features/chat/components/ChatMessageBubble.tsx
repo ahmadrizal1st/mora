@@ -58,8 +58,9 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const editMessage = useChatStore((state) => state.editMessage)
-  const retryMessage = useChatStore((state) => state.retryMessage)
   const switchVariant = useChatStore((state) => state.switchVariant)
+  const activeSessionId = useChatStore((state) => state.activeSessionId)
+  const getSiblings = useChatStore((state) => state.getSiblings)
 
   const handleCopy = () => {
     navigator.clipboard.writeText(message.content)
@@ -83,9 +84,12 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
   }, [isEditing, editValue])
 
   const renderVariantSwitcher = () => {
-    if (!message.variants || message.variants.length <= 1) return null
-    const current = (message.activeVariantIndex ?? 0) + 1
-    const total = message.variants.length
+    if (!activeSessionId) return null
+    const siblings = getSiblings(activeSessionId, message.parent_id)
+    if (siblings.length <= 1) return null
+    
+    const current = siblings.findIndex(s => s.id === message.id) + 1
+    const total = siblings.length
 
     return (
       <div className="d-flex align-items-center gap-1 mx-1 text-muted text-12">
