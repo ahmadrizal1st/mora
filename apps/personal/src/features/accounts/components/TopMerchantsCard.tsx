@@ -44,29 +44,39 @@ export function TopMerchantsCard() {
         </div>
 
         <div className="divide-y">
-          {merchants.map((m, i) => (
-            <div key={i} className="py-2">
-              <div className="row align-items-center g-3">
-                <div className="col-auto">
-                  <div
-                    className={`d-flex align-items-center justify-content-center bg-${m.color} text-white shadow-sm`}
-                    style={{ width: '32px', height: '32px', borderRadius: '10px' }}
-                  >
-                    <Icon icon={m.icon} size="sm" />
+          {merchants.length === 0 ? (
+            <div className="text-center py-4">
+              <div className="empty-icon text-secondary mb-2">
+                <Icon icon="building-store" size={40} stroke={1.5} opacity={0.6} />
+              </div>
+              <div className="fw-bold text-body mb-1">Belum Ada Merchant</div>
+              <div className="text-muted small">Transaksi Anda akan muncul di sini.</div>
+            </div>
+          ) : (
+            merchants.map((m, i) => (
+              <div key={i} className="py-2">
+                <div className="row align-items-center g-3">
+                  <div className="col-auto">
+                    <div
+                      className={`d-flex align-items-center justify-content-center bg-${m.color} text-white shadow-sm`}
+                      style={{ width: '32px', height: '32px', borderRadius: '10px' }}
+                    >
+                      <Icon icon={m.icon} size="sm" />
+                    </div>
                   </div>
-                </div>
-                <div className="col">
-                  <div className="text-body fw-bold small">{m.name}</div>
-                  <div className="text-secondary small" style={{ fontSize: '0.7rem' }}>
-                    {m.count} transaksi • {m.cat}
+                  <div className="col">
+                    <div className="text-body fw-bold small">{m.name}</div>
+                    <div className="text-secondary small" style={{ fontSize: '0.7rem' }}>
+                      {m.count} transaksi • {m.cat}
+                    </div>
                   </div>
-                </div>
-                <div className="col-auto text-end">
-                  <div className="text-body fw-bold font-monospace small">{m.amount}</div>
+                  <div className="col-auto text-end">
+                    <div className="text-body fw-bold font-monospace small">{m.amount}</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

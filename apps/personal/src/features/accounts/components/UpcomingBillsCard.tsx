@@ -24,30 +24,40 @@ export function UpcomingBillsCard({ bills }: UpcomingBillsCardProps) {
         </div>
 
         <div className="list-group list-group-flush">
-          {bills.map((b, i) => (
-            <div key={i} className="list-group-item px-0 border-0 py-2">
-              <div className="row align-items-center g-3">
-                <div className="col-auto">
-                  <div className="avatar avatar-sm rounded bg-body-tertiary text-secondary">
-                    <span className="fs-3">{b.ico}</span>
+          {bills.length === 0 ? (
+            <div className="text-center py-4">
+              <div className="empty-icon text-secondary mb-2">
+                <Icon icon="calendar-off" size={40} stroke={1.5} opacity={0.6} />
+              </div>
+              <div className="fw-bold text-body mb-1">Tidak Ada Tagihan</div>
+              <div className="text-muted small">Anda sudah membayar semuanya!</div>
+            </div>
+          ) : (
+            bills.map((b, i) => (
+              <div key={i} className="list-group-item px-0 border-0 py-2">
+                <div className="row align-items-center g-3">
+                  <div className="col-auto">
+                    <div className="avatar avatar-sm rounded bg-body-tertiary text-secondary">
+                      <span className="fs-3">{b.ico}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="col">
-                  <div className="text-body fw-bold text-truncate" style={{ fontSize: '0.85rem' }}>
-                    {b.name}
+                  <div className="col">
+                    <div className="text-body fw-bold text-truncate" style={{ fontSize: '0.85rem' }}>
+                      {b.name}
+                    </div>
+                    <div className="text-secondary small" style={{ fontSize: '0.7rem' }}>
+                      {b.due}
+                    </div>
                   </div>
-                  <div className="text-secondary small" style={{ fontSize: '0.7rem' }}>
-                    {b.due}
-                  </div>
-                </div>
-                <div className="col-auto text-end">
-                  <div className="fw-bold font-monospace text-body" style={{ fontSize: '0.85rem' }}>
-                    {b.amt}
+                  <div className="col-auto text-end">
+                    <div className="fw-bold font-monospace text-body" style={{ fontSize: '0.85rem' }}>
+                      {b.amt}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

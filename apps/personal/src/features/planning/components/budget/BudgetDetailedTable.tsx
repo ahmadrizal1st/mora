@@ -27,59 +27,80 @@ export function BudgetDetailedTable() {
             </tr>
           </thead>
           <tbody>
-            {categories.map((cat) => {
-              const remaining = cat.limit - cat.spent
-              const isOver = remaining < 0
-              const percentage = Math.min(Math.round((cat.spent / cat.limit) * 100), 100)
+            {categories.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center py-5 border-bottom-0">
+                  <div className="empty">
+                    <div className="empty-icon text-secondary mb-3">
+                      <Icon icon="category-2" size={48} stroke={1.5} opacity={0.5} />
+                    </div>
+                    <p className="empty-title h4 fw-bold mb-1">Belum Ada Kategori</p>
+                    <p className="empty-subtitle text-muted small mb-3" style={{ maxWidth: '300px', margin: '0 auto' }}>
+                      Anda belum mengatur anggaran kategori apapun.
+                    </p>
+                    <div className="empty-action">
+                      <button className="btn btn-primary btn-sm rounded-pill">
+                        <Icon icon="plus" size={16} className="me-1" /> Buat Anggaran
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              categories.map((cat) => {
+                const remaining = cat.limit - cat.spent
+                const isOver = remaining < 0
+                const percentage = Math.min(Math.round((cat.spent / cat.limit) * 100), 100)
 
-              return (
-                <tr key={cat.id}>
-                  <td>
-                    <div className="d-flex align-items-center gap-2">
-                      <div
-                        className={`d-flex align-items-center justify-content-center bg-${cat.color}-lt text-${cat.color}`}
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: '10px',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Icon icon={cat.icon as any} size="sm" />
-                      </div>
-                      <div>
-                        <div className="fw-bold text-body">{cat.name}</div>
-                        <div className="text-muted small text-capitalize">{cat.type}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="text-secondary">{formatCurrency(cat.limit)}</td>
-                  <td className="fw-bold">{formatCurrency(cat.spent)}</td>
-                  <td>
-                    <div className="d-flex align-items-center gap-2" style={{ minWidth: '120px' }}>
-                      <div className="progress progress-xs flex-fill" style={{ height: '6px' }}>
+                return (
+                  <tr key={cat.id}>
+                    <td>
+                      <div className="d-flex align-items-center gap-2">
                         <div
-                          className={`progress-bar bg-${isOver ? 'danger' : 'primary'}`}
-                          style={{ width: `${percentage}%` }}
-                        ></div>
+                          className={`d-flex align-items-center justify-content-center bg-${cat.color}-lt text-${cat.color}`}
+                          style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '10px',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Icon icon={cat.icon as any} size="sm" />
+                        </div>
+                        <div>
+                          <div className="fw-bold text-body">{cat.name}</div>
+                          <div className="text-muted small text-capitalize">{cat.type}</div>
+                        </div>
                       </div>
-                      <span className="small fw-bold">{percentage}%</span>
-                    </div>
-                  </td>
-                  <td className={isOver ? 'text-danger fw-bold' : 'text-success fw-medium'}>
-                    {formatCurrency(Math.abs(remaining))}
-                    {isOver && <span className="ms-1 small">over</span>}
-                  </td>
-                  <td>
-                    <span
-                      className={`badge bg-${isOver ? 'danger' : 'success'}-lt text-${isOver ? 'danger' : 'success'} border-0`}
-                    >
-                      {isOver ? 'Over' : 'Safe'}
-                    </span>
-                  </td>
-                </tr>
-              )
-            })}
+                    </td>
+                    <td className="text-secondary">{formatCurrency(cat.limit)}</td>
+                    <td className="fw-bold">{formatCurrency(cat.spent)}</td>
+                    <td>
+                      <div className="d-flex align-items-center gap-2" style={{ minWidth: '120px' }}>
+                        <div className="progress progress-xs flex-fill" style={{ height: '6px' }}>
+                          <div
+                            className={`progress-bar bg-${isOver ? 'danger' : 'primary'}`}
+                            style={{ width: `${percentage}%` }}
+                          ></div>
+                        </div>
+                        <span className="small fw-bold">{percentage}%</span>
+                      </div>
+                    </td>
+                    <td className={isOver ? 'text-danger fw-bold' : 'text-success fw-medium'}>
+                      {formatCurrency(Math.abs(remaining))}
+                      {isOver && <span className="ms-1 small">over</span>}
+                    </td>
+                    <td>
+                      <span
+                        className={`badge bg-${isOver ? 'danger' : 'success'}-lt text-${isOver ? 'danger' : 'success'} border-0`}
+                      >
+                        {isOver ? 'Over' : 'Safe'}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })
+            )}
           </tbody>
         </table>
       </div>

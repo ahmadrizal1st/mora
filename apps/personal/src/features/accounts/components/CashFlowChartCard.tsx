@@ -116,7 +116,17 @@ export function CashFlowChartCard({ range, setRange, data }: CashFlowChartCardPr
         </div>
 
         <div className="mx-n3">
-          <Chart chartId="cashFlowMain" chartData={chartData as any} />
+          {data.lbl.length === 0 ? (
+            <div className="text-center py-5">
+              <div className="empty-icon text-secondary mb-2">
+                <Icon icon="chart-bar-off" size={40} stroke={1.5} opacity={0.6} />
+              </div>
+              <div className="fw-bold text-body mb-1">Data Cash Flow Kosong</div>
+              <div className="text-muted small">Belum ada aktivitas mutasi untuk periode ini.</div>
+            </div>
+          ) : (
+            <Chart chartId="cashFlowMain" chartData={chartData as any} />
+          )}
         </div>
       </div>
     </div>

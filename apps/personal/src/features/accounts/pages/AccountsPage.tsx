@@ -110,20 +110,35 @@ export function AccountsPage() {
   return (
     <BaseLayout pageTitle="Detail Akun & Mutasi">
       <div className="d-flex align-items-stretch overflow-auto gap-3 pb-3 mb-4 no-scrollbar">
-        {accounts.map((acc, idx) => (
-          <AccountCard
-            key={idx}
-            isActive={cur === idx}
-            type={acc.account_type as any}
-            name={acc.name}
-            balance={acc.balance || 0}
-            delta={0}
-            chgPos={true}
-            logo={'building-bank'}
-            color={acc.color || '#4263eb'}
-            onClick={() => setCur(idx)}
-          />
-        ))}
+        {accounts.length === 0 ? (
+          <div
+            className="card shadow-sm border-0 flex-fill d-flex align-items-center justify-content-center"
+            style={{ minHeight: '160px', background: 'var(--tblr-bg-surface-secondary, #f6f8fb)' }}
+          >
+            <div className="text-center py-4">
+              <div className="empty-icon text-secondary mb-2">
+                <Icon icon="wallet-off" size={40} stroke={1.5} opacity={0.6} />
+              </div>
+              <div className="fw-bold text-body mb-1">Belum Ada Akun</div>
+              <div className="text-muted small">Tambahkan akun pertama Anda</div>
+            </div>
+          </div>
+        ) : (
+          accounts.map((acc, idx) => (
+            <AccountCard
+              key={idx}
+              isActive={cur === idx}
+              type={acc.account_type as any}
+              name={acc.name}
+              balance={acc.balance || 0}
+              delta={0}
+              chgPos={true}
+              logo={'building-bank'}
+              color={acc.color || '#4263eb'}
+              onClick={() => setCur(idx)}
+            />
+          ))
+        )}
         <div
           className="card shadow-sm cursor-pointer"
           onClick={() => setShowAddModal(true)}

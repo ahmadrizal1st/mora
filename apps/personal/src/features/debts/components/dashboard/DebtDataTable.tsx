@@ -121,46 +121,67 @@ export function DebtDataTable() {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <div className="d-flex py-1 align-items-center">
-                      <span className="avatar avatar-sm me-3 bg-secondary-lt rounded-circle">
-                        {item.personName.charAt(0)}
-                      </span>
-                      <div className="flex-fill">
-                        <div className="font-weight-medium fw-bold text-dark">{item.personName}</div>
-                        <div className="text-muted small">{item.description}</div>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-5 border-bottom-0">
+                    <div className="empty">
+                      <div className="empty-icon text-secondary mb-3">
+                        <Icon icon="folder-off" size={48} stroke={1.5} opacity={0.5} />
+                      </div>
+                      <p className="empty-title h4 fw-bold mb-1">Belum Ada Data</p>
+                      <p className="empty-subtitle text-muted small mb-3" style={{ maxWidth: '300px', margin: '0 auto' }}>
+                        Anda belum memiliki catatan utang atau piutang saat ini.
+                      </p>
+                      <div className="empty-action">
+                        <button className="btn btn-primary btn-sm rounded-pill">
+                          <Icon icon="plus" size={16} className="me-1" /> Tambah Data
+                        </button>
                       </div>
                     </div>
                   </td>
-                  <td>
-                    {getTypeBadge(item.type)}
-                  </td>
-                  <td>
-                    <div className="fw-bold text-dark fs-4">{formatCurrency(item.amount)}</div>
-                  </td>
-                  <td>
-                    <div className="text-dark small">{new Date(item.dueDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
-                    {item.status === 'Jatuh Tempo' ? (
-                      <div className="text-danger" style={{ fontSize: '10px' }}>Lewat jatuh tempo</div>
-                    ) : (
-                      <div className="text-orange" style={{ fontSize: '10px' }}>8 hari lagi</div>
-                    )}
-                  </td>
-                  <td className="fw-semibold small">
-                    {getStatusBadge(item.status)}
-                  </td>
-                  <td>
-                    {getPriorityBadge(item.priority)}
-                  </td>
-                  <td>
-                    <button className="btn btn-ghost-secondary btn-icon btn-sm border-0">
-                      <Icon icon="dots-vertical" size={16} />
-                    </button>
-                  </td>
                 </tr>
-              ))}
+              ) : (
+                filteredData.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <div className="d-flex py-1 align-items-center">
+                        <span className="avatar avatar-sm me-3 bg-secondary-lt rounded-circle">
+                          {item.personName.charAt(0)}
+                        </span>
+                        <div className="flex-fill">
+                          <div className="font-weight-medium fw-bold text-dark">{item.personName}</div>
+                          <div className="text-muted small">{item.description}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      {getTypeBadge(item.type)}
+                    </td>
+                    <td>
+                      <div className="fw-bold text-dark fs-4">{formatCurrency(item.amount)}</div>
+                    </td>
+                    <td>
+                      <div className="text-dark small">{new Date(item.dueDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                      {item.status === 'Jatuh Tempo' ? (
+                        <div className="text-danger" style={{ fontSize: '10px' }}>Lewat jatuh tempo</div>
+                      ) : (
+                        <div className="text-orange" style={{ fontSize: '10px' }}>8 hari lagi</div>
+                      )}
+                    </td>
+                    <td className="fw-semibold small">
+                      {getStatusBadge(item.status)}
+                    </td>
+                    <td>
+                      {getPriorityBadge(item.priority)}
+                    </td>
+                    <td>
+                      <button className="btn btn-ghost-secondary btn-icon btn-sm border-0">
+                        <Icon icon="dots-vertical" size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

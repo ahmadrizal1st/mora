@@ -101,7 +101,7 @@ GEMINI_API_KEY=your_gemini_api_key
 GROQ_API_KEY=your_groq_api_key
 
 # AI Service (untuk tracker Image & File)
-AI_URL=http://localhost:8000/api/extract
+AI_URL=http://localhost:8001/api/extract
 AI_KEY=your-secret-api-key
 
 # OAuth Google
@@ -174,7 +174,7 @@ cp .env.template .env
 ```env
 APP_NAME="AI Service"
 APP_ENV="development"
-APP_PORT=8000
+APP_PORT=8001
 APP_HOST="0.0.0.0"
 
 UPLOAD_DIR="./uploads"
@@ -191,14 +191,14 @@ cd apps/ai
 source venv/bin/activate
 
 # Development (dengan auto-reload)
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main:app --reload --host 0.0.0.0 --port 8001
 
 # Production (multi-worker)
-uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+uvicorn main:app --host 0.0.0.0 --port 8001 --workers 4
 ```
 
-Service berjalan di: `http://localhost:8000`
-Dokumentasi API: `http://localhost:8000/docs`
+Service berjalan di: `http://localhost:8001`
+Dokumentasi API: `http://localhost:8001/docs`
 
 ### Alternatif — Jalankan dengan Docker
 
@@ -240,6 +240,37 @@ pnpm dev
 
 ---
 
+## 🌐 5. Caddy Server (Local HTTPS)
+
+Project ini menyertakan `Caddyfile` di *root directory* untuk memudahkan akses melalui HTTPS menggunakan custom domain `*.localhost`. Caddy berfungsi sebagai *Reverse Proxy* untuk service-service di atas.
+
+### Setup Caddy
+Install Caddy (macOS menggunakan Homebrew):
+```bash
+brew install caddy
+```
+
+### Konfigurasi Domain
+Berdasarkan `Caddyfile`, port yang diarahkan adalah:
+- **mora.localhost** ──→ `127.0.0.1:5173` (Frontend)
+- **api.mora.localhost** ──→ `127.0.0.1:8000` (Laravel API)
+- **ai.mora.localhost** ──→ `127.0.0.1:8001` (AI Service)
+
+### Menjalankan Caddy
+Buka terminal di **folder root project (`visatamora/`)**:
+```bash
+caddy start  # Menjalankan di background
+# ATAU
+caddy run    # Menjalankan di foreground (terlihat log)
+```
+
+Setelah Caddy dan aplikasi lain berjalan, Anda bisa mengakses project di:
+- **Frontend:** [https://mora.localhost](https://mora.localhost)
+- **API:** [https://api.mora.localhost](https://api.mora.localhost)
+- **AI Service:** [https://ai.mora.localhost](https://ai.mora.localhost)
+
+---
+
 ## 🚀 Urutan Menjalankan Semua Service
 
 ### Quick Start (setelah setup pertama kali selesai)
@@ -267,8 +298,8 @@ php artisan queue:restart
 ```bash
 cd apps/ai
 source venv/bin/activate
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-# Berjalan di: http://localhost:8000
+uvicorn main:app --reload --host 0.0.0.0 --port 8001
+# Berjalan di: http://localhost:8001
 # Dibutuhkan untuk tracker Image, File, dan Audio
 # Tracker Text TIDAK memerlukan service ini
 ```
@@ -311,7 +342,7 @@ cd apps/api && composer run dev
                ▼                               │
 ┌──────────────────────────┐                   │
 │   AI FastAPI (Python)   │                   │
-│   :8000/api/extract      │                   │
+│   :8001/api/extract      │                   │
 │   surya-ai / whisper    │                   │
 └──────────────┬───────────┘                   │
                │ raw_text                      │ raw_text
@@ -380,7 +411,7 @@ cd apps/api && composer run dev
 
 ### AI Service tidak bisa diakses
 - Pastikan venv aktif sebelum menjalankan uvicorn
-- Pastikan port 8000 tidak dipakai proses lain: `lsof -i :8000`
+- Pastikan port 8001 tidak dipakai proses lain: `lsof -i :8001`
 - Pastikan `API_KEY` di `.env` AI sama dengan `AI_KEY` di `.env` Laravel
 
 ### Error saat install requirements.txt (AI)

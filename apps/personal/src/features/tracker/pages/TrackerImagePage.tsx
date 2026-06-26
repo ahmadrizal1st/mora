@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { Button, Icon, Dropzone } from '@/shared/components/ui'
+import { useMutation } from '@tanstack/react-query'
+import { TrackerService } from '../services/tracker.service'
 
 import { getApiErrorMessage } from '@/shared/utils/errorUtils'
 
@@ -9,7 +11,11 @@ export default function TrackerImagePage() {
   const [files, setFiles] = useState<File[]>([])
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
-  const uploadMutation: any = { mutateAsync: async (_data: any) => { throw new Error('Fitur OCR belum didukung.') } }
+  const uploadMutation = useMutation({
+    mutationFn: async (data: { file: File; docType: string }) => {
+      return TrackerService.uploadDocument(data.file, data.docType)
+    }
+  })
 
   const handleProcess = async () => {
     if (files.length === 0) return

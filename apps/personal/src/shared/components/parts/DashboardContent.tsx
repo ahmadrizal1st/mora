@@ -75,7 +75,7 @@ export function DashboardContent() {
   const cashflow = {
     series: [
       { name: 'Income', data: txHistory?.income || [] },
-      { name: 'Expense', data: txHistory?.expense || [] }
+      { name: 'Expense', data: (txHistory?.expense || []).map((v: number) => -v) }
     ],
     months: txHistory?.income_labels || []
   }
@@ -324,15 +324,16 @@ export function DashboardContent() {
                   },
                 },
                 yaxis: {
-                  min: -8000,
-                  max: 8000,
                   tickAmount: 4,
                   labels: {
                     style: { fontSize: '11px', color: 'var(--tblr-secondary)' },
                     formatter: (val: number) => {
+                      if (val === undefined || val === null) return '';
                       const absoluteVal = Math.abs(val)
-                      if (absoluteVal >= 1000) return `${val / 1000}K`
-                      return val.toString()
+                      if (absoluteVal >= 1000000000) return `${(absoluteVal / 1000000000).toFixed(1)}M`
+                      if (absoluteVal >= 1000000) return `${(absoluteVal / 1000000).toFixed(1)}Jt`
+                      if (absoluteVal >= 1000) return `${(absoluteVal / 1000).toFixed(0)}K`
+                      return absoluteVal.toString()
                     },
                   },
                 },
@@ -348,6 +349,15 @@ export function DashboardContent() {
                   offsetY: -30,
                   markers: { radius: 4 },
                 },
+                extend: {
+                  tooltip: {
+                    y: {
+                      formatter: (val: number) => {
+                        return 'Rp ' + Math.abs(val).toLocaleString('id-ID')
+                      }
+                    }
+                  }
+                }
               }}
             />
           </div>
@@ -508,7 +518,9 @@ export function DashboardContent() {
               </div>
               <div className="card-body p-0">
                 <ActivityCard
-                  activity={[]}
+                  activity={recentTransactions.map((tx: any) => ({
+                    text: `<strong>%p</strong> ${tx.status === 'Expense' ? 'spent' : 'received'} <strong>${tx.price}</strong> at ${tx.subject}`
+                  }))}
                   people={peopleData as Person[]}
                   hideHeader
                 />

@@ -17,8 +17,11 @@ export default function ChatPage() {
   const urlSessionId = params?.sessionId
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
-  const { messages, activeSessionId, isTyping, sendMessage, loadSession, createNewSession, fetchSessions, getActiveThread } =
-    useChatStore()
+  const { 
+    messages, activeSessionId, isTyping, sendMessage, loadSession, 
+    createNewSession, fetchSessions, getActiveThread,
+    hasFetchedSessions, isLoadingSessions, loadedSessions
+  } = useChatStore()
 
   const { data: accountData } = useAccountSummary()
   const { data: txSummary } = useTransactionSummary()
@@ -110,7 +113,12 @@ export default function ChatPage() {
         </div>
 
         <div className="flex-grow-1 d-flex flex-column pt-5 mt-4 overflow-hidden">
-          {currentMessages.length === 0 ? (
+          {(!hasFetchedSessions || isLoadingSessions || (activeSessionId && !loadedSessions[activeSessionId])) ? (
+            <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+              <div className="spinner-border text-primary mb-3" role="status" style={{ width: '2.5rem', height: '2.5rem', borderWidth: '0.2em' }}></div>
+              <div className="text-muted fw-medium">Memuat percakapan...</div>
+            </div>
+          ) : currentMessages.length === 0 ? (
             <div className="flex-grow-1 d-flex flex-column align-items-center px-3 pt-4 pb-5 custom-scrollbar overflow-y-auto">
               <div className="w-100 mx-auto" style={{ maxWidth: '1000px' }}>
                 <div className="mb-4">

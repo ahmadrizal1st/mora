@@ -27,43 +27,53 @@ export function TransactionListCard({ transactions }: TransactionListCardProps) 
         </div>
 
         <div className="list-group list-group-flush list-group-hoverable">
-          {transactions.map((tx, i) => (
-            <div key={i} className="list-group-item px-0 border-0 py-2">
-              <div className="row align-items-center g-3">
-                <div className="col-auto">
-                  <div
-                    className={`d-flex align-items-center justify-content-center bg-${tx.color} text-white shadow-sm`}
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '10px',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Icon icon={tx.ico} size="sm" />
+          {transactions.length === 0 ? (
+            <div className="text-center py-5">
+              <div className="empty-icon text-secondary mb-2">
+                <Icon icon="receipt-off" size={40} stroke={1.5} opacity={0.6} />
+              </div>
+              <div className="fw-bold text-body mb-1">Transaksi Kosong</div>
+              <div className="text-muted small">Belum ada transaksi terbaru.</div>
+            </div>
+          ) : (
+            transactions.map((tx, i) => (
+              <div key={i} className="list-group-item px-0 border-0 py-2">
+                <div className="row align-items-center g-3">
+                  <div className="col-auto">
+                    <div
+                      className={`d-flex align-items-center justify-content-center bg-${tx.color} text-white shadow-sm`}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '10px',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Icon icon={tx.ico} size="sm" />
+                    </div>
                   </div>
-                </div>
-                <div className="col">
-                  <div className="text-body fw-bold text-truncate" style={{ fontSize: '0.85rem' }}>
-                    {tx.n}
+                  <div className="col">
+                    <div className="text-body fw-bold text-truncate" style={{ fontSize: '0.85rem' }}>
+                      {tx.n}
+                    </div>
+                    <div className="text-secondary small">{tx.c}</div>
                   </div>
-                  <div className="text-secondary small">{tx.c}</div>
-                </div>
-                <div className="col-auto text-end">
-                  <div
-                    className={`fw-bold font-monospace ${tx.p ? 'text-success' : 'text-body'}`}
-                    style={{ fontSize: '0.85rem' }}
-                  >
-                    {tx.p ? '+' : ''}
-                    {tx.a}
-                  </div>
-                  <div className="text-secondary small" style={{ fontSize: '0.7rem' }}>
-                    {tx.d}
+                  <div className="col-auto text-end">
+                    <div
+                      className={`fw-bold font-monospace ${tx.p ? 'text-success' : 'text-body'}`}
+                      style={{ fontSize: '0.85rem' }}
+                    >
+                      {tx.p ? '+' : ''}
+                      {tx.a}
+                    </div>
+                    <div className="text-secondary small" style={{ fontSize: '0.7rem' }}>
+                      {tx.d}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
