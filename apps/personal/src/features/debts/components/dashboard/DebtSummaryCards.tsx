@@ -1,5 +1,6 @@
 import { Icon } from '@/shared/components/ui/Icon'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { clsx } from 'clsx'
 
 interface DebtSummaryCardsProps {
   totalPiutang: number
@@ -22,20 +23,20 @@ export function DebtSummaryCards({
     <div className="row g-3">
       {/* Total Piutang */}
       <div className="col-sm-6 col-lg-3">
-        <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '12px' }}>
-          <div className="card-body p-4">
-            <div className="d-flex align-items-center mb-3">
+        <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
+          <div className="card-body p-3">
+            <div className="d-flex align-items-center gap-2 mb-3">
               <div 
-                className="avatar bg-green text-white rounded-3 me-2 d-flex align-items-center justify-content-center" 
-                style={{ width: '28px', height: '28px' }}
+                className="d-flex align-items-center justify-content-center text-white" 
+                style={{ borderRadius: '10px', width: '32px', height: '32px', backgroundColor: '#2fb344' }}
               >
-                <Icon icon="wallet" size={16} />
+                <Icon icon="wallet" size="sm" className="text-white" />
               </div>
-              <div className="text-muted text-uppercase fw-bold" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>
-                Total Piutang
+              <div className="subheader text-muted m-0 fw-bold" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>
+                TOTAL PIUTANG
               </div>
             </div>
-            <div className="h2 fw-bold text-dark mb-1" style={{ fontSize: '1.5rem', letterSpacing: '-0.5px' }}>
+            <div className="h1 mb-1 fw-bold lh-1 text-nowrap text-success" style={{ letterSpacing: '-0.5px' }}>
               {formatCurrency(totalPiutang)}
             </div>
             <div className="text-muted small" style={{ fontSize: '11px' }}>
@@ -47,20 +48,20 @@ export function DebtSummaryCards({
 
       {/* Total Utang */}
       <div className="col-sm-6 col-lg-3">
-        <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '12px' }}>
-          <div className="card-body p-4">
-            <div className="d-flex align-items-center mb-3">
+        <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
+          <div className="card-body p-3">
+            <div className="d-flex align-items-center gap-2 mb-3">
               <div 
-                className="avatar bg-red text-white rounded-3 me-2 d-flex align-items-center justify-content-center" 
-                style={{ width: '28px', height: '28px' }}
+                className="d-flex align-items-center justify-content-center text-white" 
+                style={{ borderRadius: '10px', width: '32px', height: '32px', backgroundColor: '#d63939' }}
               >
-                <Icon icon="file-invoice" size={16} />
+                <Icon icon="file-invoice" size="sm" className="text-white" />
               </div>
-              <div className="text-muted text-uppercase fw-bold" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>
-                Total Utang
+              <div className="subheader text-muted m-0 fw-bold" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>
+                TOTAL UTANG
               </div>
             </div>
-            <div className="h2 fw-bold text-danger mb-1" style={{ fontSize: '1.5rem', letterSpacing: '-0.5px' }}>
+            <div className="h1 mb-1 fw-bold lh-1 text-nowrap text-danger" style={{ letterSpacing: '-0.5px' }}>
               {formatCurrency(totalUtang)}
             </div>
             <div className="text-muted small" style={{ fontSize: '11px' }}>
@@ -72,21 +73,21 @@ export function DebtSummaryCards({
 
       {/* Jatuh Tempo */}
       <div className="col-sm-6 col-lg-3">
-        <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '12px' }}>
-          <div className="card-body p-4">
-            <div className="d-flex align-items-center mb-3">
+        <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
+          <div className="card-body p-3">
+            <div className="d-flex align-items-center gap-2 mb-3">
               <div 
-                className="avatar bg-orange text-white rounded-3 me-2 d-flex align-items-center justify-content-center" 
-                style={{ width: '28px', height: '28px' }}
+                className="d-flex align-items-center justify-content-center text-white" 
+                style={{ borderRadius: '10px', width: '32px', height: '32px', backgroundColor: '#f76707' }}
               >
-                <Icon icon="calendar-due" size={16} />
+                <Icon icon="calendar-due" size="sm" className="text-white" />
               </div>
-              <div className="text-muted text-uppercase fw-bold" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>
-                Jatuh Tempo Mgg Ini
+              <div className="subheader text-muted m-0 fw-bold" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>
+                JATUH TEMPO MGG INI
               </div>
             </div>
-            <div className="h2 fw-bold text-orange mb-1" style={{ fontSize: '1.5rem', letterSpacing: '-0.5px' }}>
-              {jatuhTempoCount} Transaksi
+            <div className="h1 mb-1 fw-bold lh-1 text-nowrap text-warning" style={{ letterSpacing: '-0.5px' }}>
+              {jatuhTempoCount} Trx
             </div>
             <div className="text-muted small" style={{ fontSize: '11px' }}>
               Total {formatCurrency(jatuhTempoAmount)}
@@ -97,20 +98,20 @@ export function DebtSummaryCards({
 
       {/* Arus Kas Bersih */}
       <div className="col-sm-6 col-lg-3">
-        <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '12px' }}>
-          <div className="card-body p-4">
-            <div className="d-flex align-items-center mb-3">
+        <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
+          <div className="card-body p-3">
+            <div className="d-flex align-items-center gap-2 mb-3">
               <div 
-                className="avatar bg-blue text-white rounded-3 me-2 d-flex align-items-center justify-content-center" 
-                style={{ width: '28px', height: '28px' }}
+                className="d-flex align-items-center justify-content-center text-white" 
+                style={{ borderRadius: '10px', width: '32px', height: '32px', backgroundColor: isSurplus ? '#2fb344' : '#d63939' }}
               >
-                <Icon icon="trending-up" size={16} />
+                <Icon icon="trending-up" size="sm" className="text-white" />
               </div>
-              <div className="text-muted text-uppercase fw-bold" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>
-                Arus Kas Bersih
+              <div className="subheader text-muted m-0 fw-bold" style={{ letterSpacing: '0.05em', fontSize: '10px' }}>
+                ARUS KAS BERSIH
               </div>
             </div>
-            <div className="h2 fw-bold text-blue mb-1" style={{ fontSize: '1.5rem', letterSpacing: '-0.5px' }}>
+            <div className={clsx('h1 mb-1 fw-bold lh-1 text-nowrap', isSurplus ? 'text-success' : 'text-danger')} style={{ letterSpacing: '-0.5px' }}>
               {isSurplus ? '+' : '-'}{formatCurrency(Math.abs(arusKasBersih))}
             </div>
             <div className="text-muted small" style={{ fontSize: '11px' }}>

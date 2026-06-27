@@ -7,7 +7,6 @@ import { DebtTrendChart } from '../components/dashboard/DebtTrendChart'
 import { DebtHealthScore } from '../components/dashboard/DebtHealthScore'
 import { DebtDataTable } from '../components/dashboard/DebtDataTable'
 import { DebtRemindersWidget } from '../components/dashboard/DebtRemindersWidget'
-import { DebtAnalyticsWidget } from '../components/dashboard/DebtAnalyticsWidget'
 import { useDebts } from '../hooks/useDebts'
 
 export function DebtsPage() {
@@ -28,23 +27,6 @@ export function DebtsPage() {
     }
   }, [debts])
 
-  const pageActions = (
-    <div className="btn-list">
-      <button className="btn btn-outline-secondary bg-white d-none d-sm-inline-flex align-items-center fw-medium border-0 shadow-sm me-2">
-        <Icon icon="download" className="me-2" size={18} />
-        Ekspor Laporan
-      </button>
-      <button className="btn btn-primary d-none d-sm-inline-flex align-items-center fw-medium shadow-sm" style={{ backgroundColor: '#ff7000', borderColor: '#ff7000' }}>
-        <Icon icon="plus" className="me-2" size={18} />
-        Tambah Baru
-      </button>
-      
-      <button className="btn btn-primary btn-icon d-sm-none" aria-label="Catat Baru" style={{ backgroundColor: '#ff7000', borderColor: '#ff7000' }}>
-        <Icon icon="plus" />
-      </button>
-    </div>
-  )
-
   return (
     <BaseLayout 
       pageTitle="Utang & Piutang"
@@ -52,7 +34,6 @@ export function DebtsPage() {
       containerFlushMobile={true}
       flush={true}
       bodyClass="px-0 bg-light"
-      pageActions={pageActions}
     >
       <div className="container-xl py-4">
         <div className="row row-cards g-3">
@@ -68,34 +49,26 @@ export function DebtsPage() {
             />
           </div>
 
-          {/* Main Content (Left Col) */}
-          <div className="col-12 col-lg-8">
-            <div className="row g-3">
-              {/* Trend Chart & Health Score */}
-              <div className="col-12 col-md-7 col-xl-8">
+          {/* Top Widgets Row */}
+          <div className="col-12 col-lg-8 d-flex flex-column">
+            <div className="row g-3 flex-grow-1">
+              <div className="col-12 col-md-7 col-xl-8 d-flex flex-column">
                 <DebtTrendChart />
               </div>
-              <div className="col-12 col-md-5 col-xl-4">
+              <div className="col-12 col-md-5 col-xl-4 d-flex flex-column">
                 <DebtHealthScore />
-              </div>
-
-              {/* Data Table */}
-              <div className="col-12">
-                <DebtDataTable />
               </div>
             </div>
           </div>
 
-          {/* Sidebar (Right Col) */}
-          <div className="col-12 col-lg-4">
-            <div className="row g-3">
-              <div className="col-12 col-md-6 col-lg-12">
-                <DebtRemindersWidget />
-              </div>
-              <div className="col-12 col-md-6 col-lg-12">
-                <DebtAnalyticsWidget />
-              </div>
-            </div>
+          {/* Sidebar Widget (Aligned with top row) */}
+          <div className="col-12 col-lg-4 d-flex flex-column">
+            <DebtRemindersWidget />
+          </div>
+
+          {/* Data Table (Full Width) */}
+          <div className="col-12">
+            <DebtDataTable />
           </div>
 
         </div>

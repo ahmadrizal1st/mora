@@ -36,7 +36,7 @@ export function CashFlowChartCard({ range, setRange, groupBy, setGroupBy, balanc
 
   const chartData = {
     type: 'bar' as const,
-    height: 18,
+    height: 15,
     series: [
       { name: 'Income', data: data.inc, color: 'primary' },
       { name: 'Expense', data: data.exp, color: 'secondary' },
@@ -80,7 +80,7 @@ export function CashFlowChartCard({ range, setRange, groupBy, setGroupBy, balanc
       horizontalAlign: 'right',
       fontSize: '12px',
       offsetY: -30,
-      markers: { radius: 4 },
+      markers: { width: 12, height: 12, radius: 0 },
     },
     extend: {
       tooltip: {
@@ -94,7 +94,7 @@ export function CashFlowChartCard({ range, setRange, groupBy, setGroupBy, balanc
   }
 
   return (
-    <div className="card border-0 shadow-sm flex-grow-1 d-flex flex-column h-100">
+    <div className="card border-0 shadow-sm d-flex flex-column">
       <div className="card-header">
         <h3 className="card-title">Cashflow</h3>
         <div className="card-actions d-flex align-items-center">
@@ -109,7 +109,9 @@ export function CashFlowChartCard({ range, setRange, groupBy, setGroupBy, balanc
                 <Icon icon="chevron-down" size="xs" />
               </a>
               <div className="dropdown-menu dropdown-menu-end">
-                <button className="dropdown-item" onClick={() => setGroupBy('day')}>Per Hari</button>
+                {range !== 'Y' && (
+                  <button className="dropdown-item" onClick={() => setGroupBy('day')}>Per Hari</button>
+                )}
                 {range !== 'W' && (
                   <button className="dropdown-item" onClick={() => setGroupBy('week')}>Per Minggu</button>
                 )}

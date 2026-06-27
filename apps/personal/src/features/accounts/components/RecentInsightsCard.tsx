@@ -26,7 +26,7 @@ export function RecentInsightsCard({ insights = [] }: RecentInsightsCardProps) {
           </div>
         ) : (
           <div className="d-flex flex-column gap-3">
-            {insights.map((insight, idx) => (
+            {insights.slice(0, 3).map((insight, idx) => (
               <div key={idx} className="d-flex gap-2 align-items-start">
                 <div
                   className={`d-flex align-items-center justify-content-center bg-${insight.color} text-white shadow-sm`}

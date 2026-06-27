@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
 import { Icon } from '@/shared/components/ui/Icon'
+import { Datepicker } from '@/shared/components/ui/Datepicker'
 
 const MOCK_DEBT_TREND = {
   categories: ['1 Mei', '6 Mei', '11 Mei', '16 Mei', '21 Mei', '26 Mei', '31 Mei'],
@@ -8,9 +10,36 @@ const MOCK_DEBT_TREND = {
 }
 
 export function DebtTrendChart() {
+  const [range, setRange] = useState('W')
+  const [groupBy, setGroupBy] = useState('day')
+  
+  const [showCustomModal, setShowCustomModal] = useState(false)
+  const [customStart, setCustomStart] = useState('')
+  const [customEnd, setCustomEnd] = useState('')
+  const [appliedCustomLabel, setAppliedCustomLabel] = useState('')
+
+  const rangeLabels: Record<string, string> = {
+    'W': 'This Week',
+    'M': 'This Month',
+    'Y': 'This Year',
+    'Custom': 'Custom Jarak Waktu...'
+  }
+
+  let displayLabel = rangeLabels[range] || 'Select Range'
+  if (range === 'Custom' && appliedCustomLabel) {
+    displayLabel = appliedCustomLabel
+  }
+
+  const handleSetRange = (r: string) => {
+    setRange(r)
+    if (r === 'W') setGroupBy('day')
+    else if (r === 'M') setGroupBy('week')
+    else if (r === 'Y') setGroupBy('month')
+  }
+
   const chartData = {
     type: 'line' as const,
-    height: 20,
+    height: 15,
     series: [
       { name: 'Piutang', data: MOCK_DEBT_TREND.piutang, color: 'success' },
       { name: 'Utang', data: MOCK_DEBT_TREND.utang, color: 'danger' },
@@ -18,6 +47,14 @@ export function DebtTrendChart() {
     sparkline: false,
     strokeWidth: [3, 3],
     strokeCurve: 'smooth',
+    legend: true,
+    legendOptions: {
+      position: 'top',
+      horizontalAlign: 'right',
+      fontSize: '12px',
+      offsetY: -30,
+      markers: { width: 12, height: 12, radius: 0 },
+    },
     extend: {
       xaxis: {
         categories: MOCK_DEBT_TREND.categories,
@@ -39,16 +76,7 @@ export function DebtTrendChart() {
         show: true,
         borderColor: 'var(--tblr-border-color)',
         strokeDashArray: 4,
-        padding: { top: 0, right: 10, left: 0, bottom: 0 },
-      },
-      legend: {
-        show: true,
-        position: 'top',
-        horizontalAlign: 'left',
-        offsetY: 0,
-        fontSize: '13px',
-        fontWeight: 600,
-        markers: { radius: 12 },
+        padding: { bottom: 5 },
       },
       markers: {
         size: 0,
@@ -57,29 +85,99 @@ export function DebtTrendChart() {
   }
 
   return (
-    <div className="card shadow-sm border-0 h-100 overflow-hidden" style={{ borderRadius: '16px' }}>
-      <div className="card-header border-bottom-0 bg-transparent pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
-        <h3 className="card-title fw-bold m-0 d-flex align-items-center gap-2">
-          Debt & Receivable Trend
-          <Icon icon="info-circle" size={16} className="text-muted ms-1" />
-        </h3>
-        <div className="d-flex gap-2">
-          <div className="btn-group shadow-sm rounded-2 overflow-hidden">
-            <button className="btn btn-sm btn-ghost-secondary border-0 bg-surface">Mingguan</button>
-            <button className="btn btn-sm btn-primary border-0">Bulanan</button>
-            <button className="btn btn-sm btn-ghost-secondary border-0 bg-surface">Tahunan</button>
+    <>
+      <div className="card border-0 shadow-sm d-flex flex-column h-100">
+        <div className="card-header">
+          <h3 className="card-title">Debt & Receivable Trend</h3>
+          <div className="card-actions d-flex align-items-center">
+            <div className="dropdown me-3">
+              <a
+                href="#"
+                className="text-secondary small d-flex align-items-center gap-1 text-decoration-none"
+                data-bs-toggle="dropdown"
+              >
+                <span className="text-decoration-underline-hover">Per {groupBy === 'day' ? 'Hari' : groupBy === 'week' ? 'Minggu' : 'Bulan'}</span>
+                <Icon icon="chevron-down" size="xs" />
+              </a>
+              <div className="dropdown-menu dropdown-menu-end">
+                {range !== 'Y' && (
+                  <button className="dropdown-item" onClick={() => setGroupBy('day')}>Per Hari</button>
+                )}
+                {range !== 'W' && (
+                  <button className="dropdown-item" onClick={() => setGroupBy('week')}>Per Minggu</button>
+                )}
+                {(range !== 'W' && range !== 'M') && (
+                  <button className="dropdown-item" onClick={() => setGroupBy('month')}>Per Bulan</button>
+                )}
+              </div>
+            </div>
+            <div className="dropdown">
+              <a
+                href="#"
+                className="text-secondary small d-flex align-items-center gap-1 text-decoration-none"
+                data-bs-toggle="dropdown"
+              >
+                <span className="text-decoration-underline-hover">{displayLabel}</span>
+                <Icon icon="chevron-down" size="xs" />
+              </a>
+              <div className="dropdown-menu dropdown-menu-end">
+                <button className="dropdown-item" onClick={() => handleSetRange('W')}>This Week</button>
+                <button className="dropdown-item" onClick={() => handleSetRange('M')}>This Month</button>
+                <button className="dropdown-item" onClick={() => handleSetRange('Y')}>This Year</button>
+                <div className="dropdown-divider"></div>
+                <button className="dropdown-item" onClick={() => {
+                  handleSetRange('Custom')
+                  setShowCustomModal(true)
+                }}>
+                  <Icon icon="calendar-event" size="sm" className="me-2" />
+                  Custom Jarak Waktu...
+                </button>
+              </div>
+            </div>
           </div>
-          <button className="btn btn-sm btn-light border-0 shadow-sm d-flex align-items-center gap-2">
-            Mei 2026
-            <Icon icon="calendar" size={14} />
-          </button>
         </div>
-      </div>
-      <div className="card-body p-4 pt-2">
-        <div style={{ margin: '0 -10px' }}>
+        <div className="card-body d-flex flex-column gap-2">
+          <div>
+            <div className="subheader text-muted text-mobile-xs">NET BALANCE</div>
+            <div className="h1 mb-0 h1-mobile">
+              Rp {(MOCK_DEBT_TREND.piutang[MOCK_DEBT_TREND.piutang.length - 1] - MOCK_DEBT_TREND.utang[MOCK_DEBT_TREND.utang.length - 1]).toLocaleString('id-ID')}
+            </div>
+          </div>
           <Chart chartId="debtTrendChart" chartData={chartData as any} />
         </div>
       </div>
-    </div>
+
+      {showCustomModal && (
+        <div className="modal modal-blur fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1055 }} tabIndex={-1}>
+          <div className="modal-dialog modal-dialog-centered modal-sm">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Pilih Jarak Waktu</h5>
+                <button type="button" className="btn-close" onClick={() => setShowCustomModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Tanggal Mulai</label>
+                  <Datepicker value={customStart} onChange={setCustomStart} />
+                </div>
+                <div>
+                  <label className="form-label">Tanggal Akhir</label>
+                  <Datepicker value={customEnd} onChange={setCustomEnd} />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-link link-secondary" onClick={() => setShowCustomModal(false)}>Batal</button>
+                <button type="button" className="btn btn-primary" onClick={() => {
+                  if (customStart && customEnd) {
+                    setAppliedCustomLabel(`${customStart} s/d ${customEnd}`)
+                    setShowCustomModal(false)
+                  }
+                }}>Terapkan</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
