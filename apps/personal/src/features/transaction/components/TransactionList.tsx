@@ -1,15 +1,14 @@
 import { useMemo, type FC, type MouseEvent } from 'react'
 import { Icon, Spinner } from '@/shared/components/ui'
+import clsx from 'clsx'
 import type { Transaction } from '../types/transaction.types'
 
 interface TransactionListProps {
   transactions: Transaction[] | undefined
   isLoading: boolean
   onEdit: (tx: Transaction, e: MouseEvent) => void
-  onDelete: (id: string) => void
   formatCurrency: (amount: number) => string
   formatDate: (dateString: string, type?: 'date' | 'time') => string
-  deletePendingId?: string | null
   hasNextPage?: boolean
   isFetchingNextPage?: boolean
   lastElementRef?: (node: HTMLDivElement) => void
@@ -66,8 +65,8 @@ export const TransactionList: FC<TransactionListProps> = ({
   return (
     <div className="bg-surface rounded-0 overflow-hidden">
       {monthKeys.map((month, monthIndex) => (
-        <div key={month} className="mb-4">
-          <div className="px-3 px-md-4 py-3 bg-body-tertiary d-flex align-items-center gap-2">
+        <div key={month}>
+          <div className="px-3 px-md-4 py-1 bg-body-tertiary d-flex align-items-center gap-2">
             <div
               style={{
                 width: 4,
@@ -84,7 +83,7 @@ export const TransactionList: FC<TransactionListProps> = ({
             </span>
           </div>
 
-          <div>
+          <div className="list-group list-group-flush">
             {groupedByMonth[month].map((tx, txIndex) => {
               const txDate = new Date(tx.tx_date)
               const day = txDate.getDate()
@@ -100,7 +99,10 @@ export const TransactionList: FC<TransactionListProps> = ({
                       ? lastElementRef
                       : undefined
                   }
-                  className="d-flex align-items-center py-3 px-3 px-md-4 border-bottom position-relative"
+                  className={clsx(
+                    'd-flex align-items-center py-3 px-3 px-md-4 position-relative',
+                    txIndex < groupedByMonth[month].length - 1 ? 'border-bottom' : ''
+                  )}
                   onClick={(e) => onEdit(tx, e as unknown as MouseEvent)}
                   style={{ cursor: 'pointer' }}
                 >

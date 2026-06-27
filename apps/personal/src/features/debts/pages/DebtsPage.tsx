@@ -35,43 +35,44 @@ export function DebtsPage() {
       flush={true}
       bodyClass="px-0 bg-light"
     >
-      <div className="container-xl py-4">
-        <div className="row row-cards g-3">
-          
-          {/* Top Summary Cards */}
-          <div className="col-12">
-            <DebtSummaryCards 
-              totalPiutang={summary.totalReceivable}
-              totalUtang={summary.totalDebt}
-              jatuhTempoCount={8}
-              jatuhTempoAmount={3850000}
-              arusKasBersih={summary.netCashflow}
-            />
-          </div>
+      <div className="d-flex flex-column gap-3">
+        
+        {/* Top Summary Cards */}
+        <div>
+          <DebtSummaryCards 
+            totalPiutang={summary.totalReceivable}
+            totalUtang={summary.totalDebt}
+            jatuhTempoCount={8}
+            jatuhTempoAmount={3850000}
+            arusKasBersih={summary.netCashflow}
+          />
+        </div>
 
+        {/* Main Content Area (Widgets + Sidebar) */}
+        <div className="d-flex flex-wrap gap-3">
+          
           {/* Top Widgets Row */}
-          <div className="col-12 col-lg-8 d-flex flex-column">
-            <div className="row g-3 flex-grow-1">
-              <div className="col-12 col-md-7 col-xl-8 d-flex flex-column">
-                <DebtTrendChart />
-              </div>
-              <div className="col-12 col-md-5 col-xl-4 d-flex flex-column">
-                <DebtHealthScore />
-              </div>
+          <div className="d-flex flex-wrap gap-3 flex-grow-1" style={{ flexBasis: '60%' }}>
+            <div className="d-flex flex-column flex-grow-1" style={{ flexBasis: '55%', minWidth: '300px' }}>
+              <DebtTrendChart />
+            </div>
+            <div className="d-flex flex-column flex-grow-1" style={{ flexBasis: '40%', minWidth: '250px' }}>
+              <DebtHealthScore />
             </div>
           </div>
 
           {/* Sidebar Widget (Aligned with top row) */}
-          <div className="col-12 col-lg-4 d-flex flex-column">
+          <div className="d-flex flex-column flex-grow-1" style={{ flexBasis: '30%', minWidth: '300px' }}>
             <DebtRemindersWidget />
           </div>
 
-          {/* Data Table (Full Width) */}
-          <div className="col-12">
-            <DebtDataTable />
-          </div>
-
         </div>
+
+        {/* Data Table (Full Width) */}
+        <div>
+          <DebtDataTable />
+        </div>
+
       </div>
       
       {/* Floating Action Button (Mobile) */}

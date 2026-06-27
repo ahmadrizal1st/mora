@@ -265,7 +265,7 @@ export const TransactionListPage: FC = () => {
         </div>
       }
     >
-      <div className="container-xl">
+      <div className="d-flex flex-column gap-3">
         {!isMobile && (
           <>
             <TransactionSummaryCards
@@ -288,20 +288,22 @@ export const TransactionListPage: FC = () => {
             <div className="card-header border-0 bg-transparent py-3">
               <h3 className="card-title fw-bold">Semua Transaksi</h3>
               <div className="card-actions d-flex align-items-center gap-2">
-                <div className="btn-group shadow-sm rounded-2 overflow-hidden me-2">
+                <div className="d-flex shadow-sm rounded-1 overflow-hidden me-2 border bg-white" style={{ height: '28px' }}>
                   <button
-                    className={`btn btn-icon border-0 ${viewMode === 'list' ? 'btn-primary' : 'btn-ghost-secondary bg-surface'}`}
+                    className={`d-flex align-items-center justify-content-center border-0 rounded-0 ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-transparent text-secondary'}`}
+                    style={{ width: '36px', height: '100%', cursor: 'pointer', outline: 'none', transition: 'background-color 0.2s' }}
                     onClick={() => setViewMode('list')}
                     title="Tampilan Daftar"
                   >
-                    <Icon icon="list" size={18} />
+                    <Icon icon="list" size={16} />
                   </button>
                   <button
-                    className={`btn btn-icon border-0 ${viewMode === 'table' ? 'btn-primary' : 'btn-ghost-secondary bg-surface'}`}
+                    className={`d-flex align-items-center justify-content-center border-0 rounded-0 ${viewMode === 'table' ? 'bg-primary text-white' : 'bg-transparent text-secondary'}`}
+                    style={{ width: '36px', height: '100%', cursor: 'pointer', outline: 'none', transition: 'background-color 0.2s' }}
                     onClick={() => setViewMode('table')}
                     title="Tampilan Tabel"
                   >
-                    <Icon icon="table" size={18} />
+                    <Icon icon="table" size={16} />
                   </button>
                 </div>
               </div>
@@ -314,22 +316,18 @@ export const TransactionListPage: FC = () => {
                 transactions={allTransactions}
                 isLoading={isMobile ? isLoadingInfinite : isLoadingTx}
                 onEdit={handleEdit}
-                onDelete={(id) => setTxToDelete(id)}
                 onSort={handleSort}
                 getSortIcon={getSortIcon}
                 formatCurrency={formatCurrency}
                 formatDate={formatDate}
-                deletePendingId={deleteMutation.isPending ? deleteMutation.variables : null}
               />
             ) : (
               <TransactionList
                 transactions={allTransactions}
                 isLoading={isMobile ? isLoadingInfinite : isLoadingTx}
                 onEdit={handleEdit}
-                onDelete={(id) => setTxToDelete(id)}
                 formatCurrency={formatCurrency}
                 formatDate={formatDate}
-                deletePendingId={deleteMutation.isPending ? deleteMutation.variables : null}
                 hasNextPage={isMobile ? hasNextPage : false}
                 isFetchingNextPage={isMobile ? isFetchingNextPage : false}
                 lastElementRef={isMobile ? lastElementRef : undefined}
@@ -338,7 +336,7 @@ export const TransactionListPage: FC = () => {
           </div>
 
           {!isMobile && response && response.total > 0 && (
-            <div className="card-footer d-flex flex-column flex-md-row align-items-center justify-content-between bg-transparent border-top-0 py-3 gap-3">
+            <div className="card-footer d-flex flex-column flex-md-row align-items-center justify-content-between bg-transparent py-2 gap-3">
               <div className="text-secondary small d-flex align-items-center">
                 Menampilkan&nbsp;<strong>{response.from || 0}</strong>&nbsp;–&nbsp;
                 <strong>{response.to || 0}</strong>&nbsp;dari&nbsp;<strong>{response.total}</strong>
@@ -349,7 +347,7 @@ export const TransactionListPage: FC = () => {
                   <Pagination
                     activeItem={filters.page || 1}
                     count={response.last_page}
-                    className="m-0"
+                    className="m-0 pagination-sm"
                     onPageChange={(page) => setFilters({ ...filters, page })}
                   />
                 </div>

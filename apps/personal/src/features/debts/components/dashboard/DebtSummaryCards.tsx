@@ -20,9 +20,15 @@ export function DebtSummaryCards({
   const isSurplus = arusKasBersih >= 0
 
   return (
-    <div className="row g-3">
+    <div 
+      style={{ 
+        display: 'grid', 
+        gap: '12px', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' 
+      }}
+    >
       {/* Total Piutang */}
-      <div className="col-sm-6 col-lg-3">
+      <div>
         <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
           <div className="card-body p-3">
             <div className="d-flex align-items-center gap-2 mb-3">
@@ -47,7 +53,7 @@ export function DebtSummaryCards({
       </div>
 
       {/* Total Utang */}
-      <div className="col-sm-6 col-lg-3">
+      <div>
         <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
           <div className="card-body p-3">
             <div className="d-flex align-items-center gap-2 mb-3">
@@ -72,7 +78,7 @@ export function DebtSummaryCards({
       </div>
 
       {/* Jatuh Tempo */}
-      <div className="col-sm-6 col-lg-3">
+      <div>
         <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
           <div className="card-body p-3">
             <div className="d-flex align-items-center gap-2 mb-3">
@@ -97,7 +103,7 @@ export function DebtSummaryCards({
       </div>
 
       {/* Arus Kas Bersih */}
-      <div className="col-sm-6 col-lg-3">
+      <div>
         <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
           <div className="card-body p-3">
             <div className="d-flex align-items-center gap-2 mb-3">

@@ -27,6 +27,7 @@ interface TransactionFormProps {
   onSubmit: (data: TransactionFormValues) => void
   isLoading?: boolean
   onCancel?: () => void
+  onDelete?: (id: string) => void
 }
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
@@ -34,6 +35,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   onSubmit,
   isLoading,
   onCancel,
+  onDelete,
 }) => {
   const {
     register,
@@ -294,19 +296,34 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         />
       </div>
 
-      <div className="mt-4 d-flex justify-content-end gap-2">
-        {onCancel ? (
-          <Button element="button" type="button" link className="text-muted" onClick={onCancel}>
-            Batal
+      <div className="mt-4 d-flex justify-content-between align-items-center gap-2">
+        <div>
+          {initialData?.id && onDelete && (
+            <Button
+              element="button"
+              type="button"
+              color="danger"
+              icon="trash"
+              onClick={() => onDelete(initialData.id!)}
+            >
+              Hapus
+            </Button>
+          )}
+        </div>
+        <div className="d-flex gap-2">
+          {onCancel ? (
+            <Button element="button" type="button" link className="text-muted" onClick={onCancel}>
+              Batal
+            </Button>
+          ) : (
+            <Button link to="/transactions" className="text-muted">
+              Batal
+            </Button>
+          )}
+          <Button element="button" type="submit" color="primary" loading={isLoading} icon="check">
+            {initialData?.id ? 'Simpan Perubahan' : 'Simpan Transaksi'}
           </Button>
-        ) : (
-          <Button link to="/transactions" className="text-muted">
-            Batal
-          </Button>
-        )}
-        <Button element="button" type="submit" color="primary" loading={isLoading} icon="check">
-          {initialData?.id ? 'Simpan Perubahan' : 'Simpan Transaksi'}
-        </Button>
+        </div>
       </div>
     </form>
   )

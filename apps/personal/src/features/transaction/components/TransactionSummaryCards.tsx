@@ -37,8 +37,14 @@ export const TransactionSummaryCards: FC<TransactionSummaryCardsProps> = ({
   formatCurrency,
 }) => {
   return (
-    <div className="row row-cards g-2 g-lg-3 mb-3">
-      <div className="col-6 col-md-6 col-lg-3">
+    <div 
+      style={{ 
+        display: 'grid', 
+        gap: '12px', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' 
+      }}
+    >
+      <div>
         <MetricAreaChartCard
           title="Total Pemasukan"
           value={isLoading ? '...' : formatCurrency(summary?.total_income || 0)}
@@ -50,7 +56,7 @@ export const TransactionSummaryCards: FC<TransactionSummaryCardsProps> = ({
           style={{ height: '140px' }}
         />
       </div>
-      <div className="col-6 col-md-6 col-lg-3">
+      <div>
         <MetricAreaChartCard
           title="Total Pengeluaran"
           value={isLoading ? '...' : formatCurrency(summary?.total_expense || 0)}
@@ -62,7 +68,7 @@ export const TransactionSummaryCards: FC<TransactionSummaryCardsProps> = ({
           style={{ height: '140px' }}
         />
       </div>
-      <div className="col-6 col-md-6 col-lg-3">
+      <div>
         <ComparisonChartCard
           title="Saldo Bersih"
           value={isLoading ? '...' : formatCurrency(summary?.net_balance || 0)}
@@ -72,7 +78,7 @@ export const TransactionSummaryCards: FC<TransactionSummaryCardsProps> = ({
           style={{ height: '140px' }}
         />
       </div>
-      <div className="col-6 col-md-6 col-lg-3">
+      <div>
         <SummaryChartCard
           title="Jumlah Transaksi"
           value={isLoading ? '...' : (summary?.transaction_count || 0).toString()}

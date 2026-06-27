@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
-import { Modal, ModalHeader, Button } from '@/shared/components/ui'
+import { Modal, ModalHeader, Button, Pagination } from '@/shared/components/ui'
 
 interface DebtRecord {
   id: string
@@ -12,7 +12,7 @@ interface DebtRecord {
   notes?: string
 }
 
-const INITIAL_DATA: DebtRecord[] = [
+const BASE_DATA: DebtRecord[] = [
   { id: '1', personName: 'Budi Santoso', type: 'Utang', status: 'Belum Lunas', dueDate: '2026-07-10', amount: 1200000, notes: 'Pinjaman untuk renovasi' },
   { id: '2', personName: 'Siti Rahayu', type: 'Piutang', status: 'Menunggu', dueDate: '2026-07-05', amount: 850000 },
   { id: '3', personName: 'Ahmad Fauzi', type: 'Utang', status: 'Jatuh Tempo', dueDate: '2026-06-20', amount: 3500000, notes: 'KTA Bank' },
@@ -23,20 +23,21 @@ const INITIAL_DATA: DebtRecord[] = [
   { id: '8', personName: 'Dewi Lestari', type: 'Piutang', status: 'Jatuh Tempo', dueDate: '2026-06-25', amount: 1100000 },
   { id: '9', personName: 'Hendra Gunawan', type: 'Utang', status: 'Belum Lunas', dueDate: '2026-08-01', amount: 600000 },
   { id: '10', personName: 'Yeni Kurniawati', type: 'Piutang', status: 'Lunas', dueDate: '2026-06-10', amount: 925000 },
-  { id: '11', personName: 'Rizky Pratama', type: 'Utang', status: 'Jatuh Tempo', dueDate: '2026-06-18', amount: 2750000, notes: 'Tagihan listrik bareng' },
-  { id: '12', personName: 'Anita Susanti', type: 'Piutang', status: 'Menunggu', dueDate: '2026-07-25', amount: 1350000 },
-  { id: '13', personName: 'Bambang Sutrisno', type: 'Utang', status: 'Sebagian', dueDate: '2026-07-15', amount: 800000 },
-  { id: '14', personName: 'Fitri Handayani', type: 'Piutang', status: 'Belum Lunas', dueDate: '2026-08-05', amount: 450000 },
-  { id: '15', personName: 'Irwan Setiawan', type: 'Utang', status: 'Lunas', dueDate: '2026-06-01', amount: 3200000 },
-  { id: '16', personName: 'Nurul Hidayah', type: 'Piutang', status: 'Jatuh Tempo', dueDate: '2026-06-22', amount: 670000 },
-  { id: '17', personName: 'Agus Salim', type: 'Utang', status: 'Menunggu', dueDate: '2026-07-30', amount: 1800000, notes: 'Patungan beli laptop' },
-  { id: '18', personName: 'Sri Wahyuni', type: 'Piutang', status: 'Lunas', dueDate: '2026-06-08', amount: 990000 },
-  { id: '19', personName: 'Teguh Santoso', type: 'Utang', status: 'Belum Lunas', dueDate: '2026-08-10', amount: 2300000 },
-  { id: '20', personName: 'Lina Marlina', type: 'Piutang', status: 'Menunggu', dueDate: '2026-07-18', amount: 560000 },
 ]
 
+const INITIAL_DATA: DebtRecord[] = Array.from({ length: 60 }, (_, i) => ({
+  ...BASE_DATA[i % BASE_DATA.length],
+  id: String(i + 1),
+  personName: `${BASE_DATA[i % BASE_DATA.length].personName} ${Math.floor(i / BASE_DATA.length) > 0 ? Math.floor(i / BASE_DATA.length) + 1 : ''}`.trim(),
+}))
+
 const PAGE_SIZE = 7
-const STATUSES = ['Belum Lunas', 'Menunggu', 'Sebagian', 'Jatuh Tempo', 'Lunas']
+const STATUSES = ['Belum Lunas', 'Sebagian', 'Menunggu', 'Jatuh Tempo', 'Lunas'] as const
+const styles = `
+  .debt-row:hover {
+    background-color: var(--tblr-table-hover-bg, rgba(0, 0, 0, 0.04));
+  }
+`
 const EMPTY_FORM: Omit<DebtRecord, 'id'> = {
   personName: '', type: 'Utang', status: 'Belum Lunas', dueDate: '', amount: 0, notes: '',
 }
@@ -90,11 +91,12 @@ export function DebtDataTable() {
       'Jatuh Tempo': 'text-danger', 'Menunggu': 'text-warning', 'Sebagian': 'text-success',
       'Belum Lunas': 'text-warning', 'Lunas': 'text-success',
     }
-    return <span className={`fw-semibold ${map[status] || 'text-muted'}`} style={{ fontSize: '11px' }}>{status}</span>
+    return <span className={`fw-semibold ${map[status] || 'text-muted'}`}>{status}</span>
   }
 
   return (
     <>
+      <style>{styles}</style>
       <div className="card shadow-sm border-0">
         {/* Tabs + Add button */}
         <div className="card-header d-flex align-items-center justify-content-between">
@@ -156,35 +158,34 @@ export function DebtDataTable() {
                 return (
                   <div
                     key={item.id}
-                    className="d-flex justify-content-between align-items-center px-4 py-1"
-                    style={{ borderBottom: i < paginatedData.length - 1 ? '1px solid var(--tblr-border-color-light, #fafafa)' : undefined }}
+                    className="d-flex justify-content-between align-items-center px-4 py-3 debt-row"
+                    style={{ 
+                      borderBottom: i < paginatedData.length - 1 ? '1px solid #f1f5f9' : undefined,
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s ease'
+                    }}
+                    onClick={() => openEdit(item)}
                   >
                     <div className="flex-grow-1 overflow-hidden me-2">
-                      <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
+                      <div className="fw-bold text-truncate text-body" style={{ fontSize: '15px' }}>
                         {item.personName}
                       </div>
-                      <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
+                      <div className="d-flex align-items-center gap-2 flex-wrap mt-2" style={{ fontSize: '12px', color: 'var(--tblr-gray-500)' }}>
                         <span
-                          className="rounded px-1 fw-semibold"
-                          style={{ background: isPiutang ? '#38a16922' : '#e53e3e22', color, fontSize: '10px' }}
+                          className="rounded-pill px-2 fw-bold d-inline-flex align-items-center justify-content-center"
+                          style={{ background: isPiutang ? '#38a16922' : '#e53e3e22', color, fontSize: '10px', height: '20px' }}
                         >
                           {item.type}
                         </span>
-                        <span>· {getStatusText(item.status)}</span>
-                        <span>· {new Date(item.dueDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                        <span>·</span>
+                        <span>{getStatusText(item.status)}</span>
+                        <span>·</span>
+                        <span>{new Date(item.dueDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                       </div>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      <div className="fw-bold flex-shrink-0" style={{ color, fontSize: '14px' }}>
+                      <div className="fw-bold flex-shrink-0" style={{ color, fontSize: '15px' }}>
                         {prefix}Rp {Number(item.amount).toLocaleString('id-ID')}
-                      </div>
-                      <div className="d-flex gap-1 ms-2">
-                        <button className="btn btn-sm btn-ghost-secondary p-1" onClick={() => openEdit(item)} title="Edit">
-                          <Icon icon="pencil" size={14} />
-                        </button>
-                        <button className="btn btn-sm btn-ghost-danger p-1" onClick={() => setDeleteTarget(item)} title="Hapus">
-                          <Icon icon="trash" size={14} />
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -195,20 +196,19 @@ export function DebtDataTable() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="d-flex justify-content-between align-items-center px-4 py-2 border-top">
-              <span className="text-muted" style={{ fontSize: '12px' }}>Hal. {page} dari {totalPages}</span>
-              <div className="d-flex gap-1">
-                <button className="btn btn-sm btn-ghost-secondary px-2 py-1" disabled={page === 1} onClick={() => setPage(p => p - 1)} style={{ fontSize: '12px' }}>
-                  <Icon icon="chevron-left" size="xs" />
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <button key={p} className={`btn btn-sm px-2 py-1 ${page === p ? 'btn-primary' : 'btn-ghost-secondary'}`} onClick={() => setPage(p)} style={{ fontSize: '12px', minWidth: '28px' }}>
-                    {p}
-                  </button>
-                ))}
-                <button className="btn btn-sm btn-ghost-secondary px-2 py-1" disabled={page === totalPages} onClick={() => setPage(p => p + 1)} style={{ fontSize: '12px' }}>
-                  <Icon icon="chevron-right" size="xs" />
-                </button>
+            <div className="card-footer d-flex flex-column flex-md-row align-items-center justify-content-between bg-transparent border-top py-2 gap-3">
+              <div className="text-secondary small d-flex align-items-center">
+                Menampilkan&nbsp;<strong>{(page - 1) * PAGE_SIZE + 1}</strong>&nbsp;–&nbsp;
+                <strong>{Math.min(page * PAGE_SIZE, filteredData.length)}</strong>&nbsp;dari&nbsp;<strong>{filteredData.length}</strong>
+                &nbsp;data
+              </div>
+              <div className="pagination-wrapper">
+                <Pagination
+                  activeItem={page}
+                  count={totalPages}
+                  className="m-0 pagination-sm"
+                  onPageChange={(p) => setPage(p)}
+                />
               </div>
             </div>
           )}
@@ -294,11 +294,29 @@ export function DebtDataTable() {
             />
           </div>
 
-          <div className="mt-4 d-flex justify-content-end gap-2">
-            <Button element="button" type="button" link className="text-muted" onClick={() => setShowForm(false)}>Batal</Button>
-            <Button element="button" type="button" color="primary" icon="check" onClick={handleSave}>
-              {editTarget ? 'Simpan Perubahan' : 'Simpan Catatan'}
-            </Button>
+          <div className="mt-4 d-flex justify-content-between align-items-center gap-2">
+            <div>
+              {editTarget && (
+                <Button 
+                  element="button" 
+                  type="button" 
+                  color="danger"
+                  icon="trash" 
+                  onClick={() => {
+                    setShowForm(false)
+                    setDeleteTarget(editTarget)
+                  }}
+                >
+                  Hapus
+                </Button>
+              )}
+            </div>
+            <div className="d-flex gap-2">
+              <Button element="button" type="button" link className="text-muted" onClick={() => setShowForm(false)}>Batal</Button>
+              <Button element="button" type="button" color="primary" icon="check" onClick={handleSave}>
+                {editTarget ? 'Simpan Perubahan' : 'Simpan Catatan'}
+              </Button>
+            </div>
           </div>
         </div>
       </Modal>

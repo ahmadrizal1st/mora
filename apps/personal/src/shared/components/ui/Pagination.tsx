@@ -76,7 +76,17 @@ export function Pagination({
   ) => (
     <li className={clsx('page-item', isDisabled && 'disabled', extraClass)}>
       <a
-        className={clsx('page-link', text && 'page-text')}
+        className={clsx('page-link border-0 d-flex align-items-center justify-content-center', text && 'page-text')}
+        style={{
+          backgroundColor: 'transparent',
+          color: isDisabled ? 'var(--tblr-gray-400)' : 'var(--tblr-gray-600)',
+          minWidth: '30px',
+          height: '30px',
+          padding: text ? '0 8px' : '0',
+          margin: 0,
+          boxShadow: 'none',
+          outline: 'none'
+        }}
         href="#"
         onClick={(e) => handlePageClick(e, page)}
         tabIndex={isDisabled ? -1 : undefined}
@@ -112,14 +122,24 @@ export function Pagination({
         if (item === 'DOTS') {
           return (
             <li key={`dots-${idx}`} className="page-item disabled">
-              <span className="page-link border-0 bg-transparent opacity-50">&hellip;</span>
+              <span 
+                className="page-link border-0 bg-transparent opacity-50 d-flex align-items-center justify-content-center"
+                style={{ width: '30px', height: '30px', minWidth: '30px', padding: 0, margin: 0 }}
+              >
+                &hellip;
+              </span>
             </li>
           )
         }
 
         return (
           <li key={item} className={clsx('page-item', item === activeItem && 'active')}>
-            <a className="page-link" href="#" onClick={(e) => handlePageClick(e, item)}>
+            <a 
+              className={clsx('page-link border-0 d-flex align-items-center justify-content-center', item === activeItem ? 'rounded-1' : 'bg-transparent text-secondary')}
+              style={item === activeItem ? { width: '30px', height: '30px', minWidth: '30px', padding: 0, margin: 0, boxShadow: 'none', outline: 'none' } : { width: '30px', height: '30px', minWidth: '30px', padding: 0, margin: 0, boxShadow: 'none', outline: 'none' }}
+              href="#" 
+              onClick={(e) => handlePageClick(e, item)}
+            >
               {item}
             </a>
           </li>

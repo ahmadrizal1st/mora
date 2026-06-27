@@ -55,6 +55,7 @@ export const GlobalTransactionModals: FC = () => {
         txToDelete={txToDelete}
         onDeleteClose={() => setTxToDelete(null)}
         onDeleteConfirm={handleDeleteConfirm}
+        onRequestDelete={(id) => setTxToDelete(id)}
         isDeleteLoading={deleteMutation.isPending}
       />
     </>

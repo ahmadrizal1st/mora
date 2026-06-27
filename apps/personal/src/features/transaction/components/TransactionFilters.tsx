@@ -72,10 +72,10 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   ]
 
   return (
-    <div className="card mb-0 mb-md-3 border-0 shadow-sm">
+    <div className="card border-0 shadow-sm">
       <div className="card-body p-2 p-md-4">
-        <div className="row g-3">
-          <div className="col-md-12 col-lg-3">
+        <div className="d-flex flex-wrap gap-3">
+          <div style={{ flex: '1 1 250px' }}>
             <label className="form-label">Cari Transaksi</label>
             <div className="input-icon">
               <span className="input-icon-addon">
@@ -93,7 +93,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             </div>
           </div>
 
-          <div className="col-md-4 col-lg-2">
+          <div style={{ flex: '1 1 120px' }}>
             <label className="form-label">Tipe</label>
             <Select
               options={typeOptions}
@@ -106,7 +106,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div className="col-md-4 col-lg-2">
+          <div style={{ flex: '1 1 120px' }}>
             <label className="form-label">Akun</label>
             <Select
               options={accountOptions}
@@ -116,7 +116,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div className="col-md-4 col-lg-2">
+          <div style={{ flex: '1 1 120px' }}>
             <label className="form-label">Kat.</label>
             <Select
               options={categoryOptions}
@@ -126,7 +126,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div className="col-md-4 col-lg-3">
+          <div style={{ flex: '1 1 200px' }}>
             <label className="form-label">Tags</label>
             <Select
               multiple
@@ -139,18 +139,18 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div className="col-md-8 col-lg-5">
+          <div style={{ flex: '1 1 300px' }}>
             <label className="form-label">Rentang Tanggal</label>
-            <div className="row g-2">
-              <div className="col">
+            <div className="d-flex align-items-center gap-2">
+              <div className="flex-grow-1">
                 <Datepicker
                   value={filters.date_from || ''}
                   onChange={(val) => handleFilterChange('date_from', val)}
                   placeholder="Mulai"
                 />
               </div>
-              <div className="col-auto align-self-center text-muted">-</div>
-              <div className="col">
+              <div className="text-muted">-</div>
+              <div className="flex-grow-1">
                 <Datepicker
                   value={filters.date_to || ''}
                   onChange={(val) => handleFilterChange('date_to', val)}
@@ -160,7 +160,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             </div>
           </div>
 
-          <div className="col-md-4 col-lg-2">
+          <div style={{ flex: '1 1 120px' }}>
             <label className="form-label">Status</label>
             <Select
               options={statusOptions}
@@ -171,7 +171,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div className="col-md-4 col-lg-2">
+          <div style={{ flex: '1 1 100px' }}>
             <label className="form-label">Baris</label>
             <Select
               options={perPageOptions}
@@ -181,7 +181,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div className="col-md-4 col-lg-3 d-flex align-items-end">
+          <div className="d-flex align-items-end" style={{ flex: '1 1 120px' }}>
             <Button element="button" onClick={onClear} white block icon="rotate-clockwise">
               Reset
             </Button>

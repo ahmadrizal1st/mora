@@ -1278,3 +1278,8 @@ div.shadow-sm:not(.badge):not(.btn):not(.dropdown-menu) {
   border: 1px solid #e2e8f0 !important;
   box-shadow: none !important;
 }
+
+/* Custom Table Utility Classes */
+.table-faint-borders td, .table-faint-borders th {
+  border-bottom-color: #f1f5f9 !important;
+}

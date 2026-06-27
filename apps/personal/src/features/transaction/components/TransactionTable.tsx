@@ -1,49 +1,44 @@
 import { type FC, type MouseEvent, type ReactNode } from 'react'
 import { Icon, Badge, Spinner } from '@/shared/components/ui'
-import { Link } from '@tanstack/react-router'
 import type { Transaction } from '../types/transaction.types'
 
 interface TransactionTableProps {
   transactions: Transaction[] | undefined
   isLoading: boolean
   onEdit: (tx: Transaction, e: MouseEvent) => void
-  onDelete: (id: string) => void
   onSort: (column: string) => void
   getSortIcon: (column: string) => ReactNode
   formatCurrency: (amount: number) => string
   formatDate: (dateString: string, type?: 'date' | 'time') => string
-  deletePendingId?: string | null
 }
 
 export const TransactionTable: FC<TransactionTableProps> = ({
   transactions,
   isLoading,
   onEdit,
-  onDelete,
   onSort,
   getSortIcon,
   formatCurrency,
   formatDate,
-  deletePendingId,
 }) => {
   const transactionList = transactions ?? []
   return (
-    <div className="table-responsive">
+    <div className="table-responsive border-0">
       <table
-        className="table table-vcenter table-hover card-table"
+        className="table table-vcenter table-hover card-table mb-0 border-bottom-0 table-faint-borders"
         style={{ tableLayout: 'fixed', width: '100%', minWidth: '1100px' }}
       >
         <thead className="bg-body-tertiary">
           <tr>
             <th
-              className="text-secondary opacity-7 fw-bold cursor-pointer"
+              className="text-secondary opacity-7 fw-bold cursor-pointer py-2"
               style={{ width: '100px' }}
               onClick={() => onSort('tx_date')}
             >
               <div className="d-flex align-items-center">Tanggal {getSortIcon('tx_date')}</div>
             </th>
             <th
-              className="text-secondary opacity-7 fw-bold cursor-pointer"
+              className="text-secondary opacity-7 fw-bold cursor-pointer py-2"
               style={{ width: '150px' }}
               onClick={() => onSort('merchant')}
             >
@@ -51,28 +46,28 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                 Keterangan / Merchant {getSortIcon('merchant')}
               </div>
             </th>
-            <th className="text-secondary opacity-7 fw-bold" style={{ width: '220px' }}>
+            <th className="text-secondary opacity-7 fw-bold py-2" style={{ width: '220px' }}>
               Tag
             </th>
             <th
-              className="text-secondary opacity-7 fw-bold cursor-pointer"
+              className="text-secondary opacity-7 fw-bold cursor-pointer py-2"
               style={{ width: '160px' }}
               onClick={() => onSort('category')}
             >
               <div className="d-flex align-items-center">Kategori {getSortIcon('category')}</div>
             </th>
             <th
-              className="text-secondary opacity-7 fw-bold cursor-pointer"
+              className="text-secondary opacity-7 fw-bold cursor-pointer py-2"
               style={{ width: '140px' }}
               onClick={() => onSort('account')}
             >
               <div className="d-flex align-items-center">Akun {getSortIcon('account')}</div>
             </th>
-            <th className="text-secondary opacity-7 fw-bold" style={{ width: '100px' }}>
+            <th className="text-secondary opacity-7 fw-bold py-2" style={{ width: '100px' }}>
               Status
             </th>
             <th
-              className="text-secondary opacity-7 fw-bold text-end cursor-pointer"
+              className="text-secondary opacity-7 fw-bold text-end cursor-pointer py-2"
               style={{ width: '110px' }}
               onClick={() => onSort('nominal')}
             >
@@ -80,15 +75,12 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                 Nominal {getSortIcon('nominal')}
               </div>
             </th>
-            <th className="text-secondary opacity-7 fw-bold text-center" style={{ width: '80px' }}>
-              Aksi
-            </th>
           </tr>
         </thead>
         <tbody className="table-tbody">
           {isLoading ? (
             <tr>
-              <td colSpan={8} className="text-center py-4">
+              <td colSpan={7} className="text-center py-4">
                 <div className="empty">
                   <div className="empty-img">
                     <Spinner />
@@ -99,7 +91,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
             </tr>
           ) : transactions?.length === 0 ? (
             <tr>
-              <td colSpan={8} className="text-center py-4">
+              <td colSpan={7} className="text-center py-4">
                 <div className="empty">
                   <div className="empty-icon text-secondary">
                     <Icon icon="mood-sad" size={32} />
@@ -113,12 +105,12 @@ export const TransactionTable: FC<TransactionTableProps> = ({
             </tr>
           ) : (
             transactionList.map((tx) => (
-              <tr key={tx.id}>
-                <td className="text-nowrap">
+              <tr key={tx.id} style={{ cursor: 'pointer' }} onClick={(e) => onEdit(tx, e)}>
+                <td className="text-nowrap py-3">
                   <div className="fw-medium">{formatDate(tx.tx_date)}</div>
                   <div className="text-secondary small">{formatDate(tx.created_at, 'time')}</div>
                 </td>
-                <td className="td-truncate">
+                <td className="td-truncate py-3">
                   <div className="d-flex flex-column">
                     <div className="d-flex align-items-center gap-1">
                       {tx.input_method === 'image' && (
@@ -164,7 +156,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     )}
                   </div>
                 </td>
-                <td className="align-middle">
+                <td className="align-middle py-3">
                   <div className="d-flex flex-wrap gap-1" style={{ maxWidth: '180px' }}>
                     {tx.tags?.map((tag) => (
                       <span
@@ -188,7 +180,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     <span className="text-muted small">-</span>
                   )}
                 </td>
-                <td className="align-middle">
+                <td className="align-middle py-3">
                   {tx.category ? (
                     <div className="d-inline-flex align-items-center">
                       <Badge
@@ -212,7 +204,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     <span className="text-muted small">Tanpa Kategori</span>
                   )}
                 </td>
-                <td className="align-middle">
+                <td className="align-middle py-3">
                   <div className="d-flex align-items-center">
                     <span
                       className="status-dot me-2"
@@ -223,7 +215,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     </span>
                   </div>
                 </td>
-                <td className="align-middle">
+                <td className="align-middle py-3">
                   {tx.status ? (
                     <span
                       className="badge fw-medium"
@@ -239,41 +231,11 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     <span className="badge bg-body-tertiary text-muted">Draft</span>
                   )}
                 </td>
-                <td
-                  className={`text-end fw-bold align-middle ${tx.type === 'income' ? 'text-success' : tx.type === 'expense' ? 'text-danger' : 'text-primary'}`}
-                >
-                  <span className="text-nowrap">
+                <td className="text-end fw-bold align-middle py-3">
+                  <span className={`text-nowrap ${tx.type === 'income' ? 'text-success' : tx.type === 'expense' ? 'text-danger' : 'text-primary'}`}>
                     {tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : ''}
                     {formatCurrency(tx.amount)}
                   </span>
-                </td>
-                <td className="align-middle text-center" style={{ width: '90px' }}>
-                  <div className="d-flex align-items-center justify-content-center gap-3">
-                    <Link
-                      to="/tracker/input"
-                      search={{ id: tx.id }}
-                      style={{
-                        color: 'var(--tblr-warning)',
-                        textDecoration: 'none',
-                        transition: 'none',
-                      }}
-                      title="Edit"
-                      onClick={(e) => onEdit(tx, e)}
-                    >
-                      <Icon icon="edit" size={20} />
-                    </Link>
-                    <span
-                      style={{ color: 'var(--tblr-danger)', cursor: 'pointer', transition: 'none' }}
-                      title="Hapus"
-                      onClick={() => onDelete(tx.id)}
-                    >
-                      {deletePendingId === tx.id ? (
-                        <Spinner size="sm" />
-                      ) : (
-                        <Icon icon="trash" size={20} />
-                      )}
-                    </span>
-                  </div>
                 </td>
               </tr>
             ))

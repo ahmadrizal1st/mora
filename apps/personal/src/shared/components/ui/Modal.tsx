@@ -119,7 +119,7 @@ export function Modal({
       tabIndex={-1}
       role="dialog"
       aria-modal={isShown ? 'true' : 'false'}
-      aria-hidden={!isShown}
+      inert={!isShown ? true : undefined}
       onClick={handleBackdropClick}
     >
       <div className={dialogClasses} role="document">

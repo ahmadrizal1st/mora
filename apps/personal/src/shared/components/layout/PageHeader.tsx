@@ -28,9 +28,9 @@ export function PageHeader({
     <div className={clsx('page-header', 'd-print-none', className)}>
       <div className={clsx('container-xl', containerClass)}>
         <div className="row g-2 align-items-center">
-          <div className="col">
+          <div className="col d-flex flex-column gap-1">
             {pretitle && <div className="page-pretitle">{pretitle}</div>}
-            <h1 className="page-title">
+            <h1 className="page-title m-0">
               {showBackButton && (
                 <a
                   href="#"
@@ -56,7 +56,7 @@ export function PageHeader({
               )}
               {title}
             </h1>
-            {description && <div className="text-secondary mt-1">{description}</div>}
+            {description && <div className="text-secondary">{description}</div>}
           </div>
           {actions && <div className="col-auto ms-auto d-print-none">{actions}</div>}
         </div>

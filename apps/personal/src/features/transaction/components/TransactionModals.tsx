@@ -12,6 +12,7 @@ interface TransactionModalsProps {
   txToDelete: string | null
   onDeleteClose: () => void
   onDeleteConfirm: () => Promise<void>
+  onRequestDelete: (id: string) => void
   isDeleteLoading: boolean
 }
 
@@ -24,6 +25,7 @@ export const TransactionModals: React.FC<TransactionModalsProps> = ({
   txToDelete,
   onDeleteClose,
   onDeleteConfirm,
+  onRequestDelete,
   isDeleteLoading,
 }) => {
   return (
@@ -39,6 +41,14 @@ export const TransactionModals: React.FC<TransactionModalsProps> = ({
             initialData={editingTransaction}
             onSubmit={onFormSubmit}
             onCancel={onFormClose}
+            onDelete={
+              editingTransaction
+                ? () => {
+                    onFormClose()
+                    onRequestDelete(editingTransaction.id)
+                  }
+                : undefined
+            }
             isLoading={isFormLoading}
           />
         </div>
