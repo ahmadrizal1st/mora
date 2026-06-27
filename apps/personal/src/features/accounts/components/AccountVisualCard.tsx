@@ -9,6 +9,17 @@ interface AccountVisualCardProps {
   color?: string
 }
 
+function getContrastYIQ(hexcolor: string) {
+  if (!hexcolor || !hexcolor.startsWith('#')) return 'text-white'
+  let hex = hexcolor.replace('#', '')
+  if (hex.length === 3) hex = hex.split('').map((c) => c + c).join('')
+  const r = parseInt(hex.substr(0, 2), 16)
+  const g = parseInt(hex.substr(2, 2), 16)
+  const b = parseInt(hex.substr(4, 2), 16)
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000
+  return yiq >= 128 ? 'text-dark' : 'text-white'
+}
+
 export function AccountVisualCard({
   name,
   num,
@@ -25,9 +36,13 @@ export function AccountVisualCard({
   const cardIcon = isBank ? 'building-bank' : isInvest ? 'trending-up' : 'wallet'
   const cardLabel = isBank ? 'Debit Card' : isInvest ? 'Investasi' : 'E-Wallet'
 
+  const isHex = color?.startsWith('#')
+  const textColorClass = isHex ? getContrastYIQ(color!) : 'text-white'
+  const isDarkText = textColorClass === 'text-dark'
+
   const bgStyle = color
     ? {
-        backgroundColor: `var(--tblr-${color})`,
+        backgroundColor: isHex ? color : `var(--tblr-${color})`,
         backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.2) 100%)',
       }
     : {
@@ -38,7 +53,7 @@ export function AccountVisualCard({
 
   return (
     <div
-      className="card border-0 text-white overflow-hidden shadow-lg mb-3"
+      className={`card border-0 ${textColorClass} overflow-hidden shadow-lg`}
       style={{
         ...bgStyle,
         borderRadius: '16px',
@@ -59,7 +74,7 @@ export function AccountVisualCard({
             height: '120px',
             objectFit: 'contain',
             opacity: 0.15,
-            filter: 'brightness(0) invert(1)',
+            filter: isDarkText ? 'brightness(0)' : 'brightness(0) invert(1)',
             pointerEvents: 'none',
           }}
         />
@@ -70,7 +85,7 @@ export function AccountVisualCard({
             left: '-8px',
             bottom: '-8px',
             opacity: 0.12,
-            color: '#fff',
+            color: isDarkText ? '#000' : '#fff',
             pointerEvents: 'none',
           }}
         >
@@ -80,7 +95,7 @@ export function AccountVisualCard({
 
       <div
         className="position-absolute end-0 top-0 opacity-10"
-        style={{ transform: 'translate(20%, -20%)' }}
+        style={{ transform: 'translate(20%, -20%)', color: isDarkText ? '#000' : 'inherit' }}
       >
         <Icon icon={cardIcon} size={120} />
       </div>
@@ -92,7 +107,7 @@ export function AccountVisualCard({
         <div className="d-flex justify-content-between align-items-start">
           <div>
             <div
-              className="fs-6 opacity-75 mb-0 text-uppercase fw-semibold"
+              className={`fs-6 mb-0 text-uppercase fw-semibold ${isDarkText ? 'opacity-75' : 'opacity-75'}`}
               style={{ letterSpacing: '0.08em' }}
             >
               {cardLabel}
@@ -106,7 +121,7 @@ export function AccountVisualCard({
           <div className="font-monospace h2 mb-1">**** **** **** {num.slice(-4)}</div>
           <div className="d-flex justify-content-between align-items-end">
             <div className="h3 fw-bold mb-0 font-monospace">{balance}</div>
-            <div className="text-uppercase small fw-bold opacity-75">MORA PAY</div>
+            <div className={`text-uppercase small fw-bold ${isDarkText ? 'opacity-75' : 'opacity-75'}`}>MORA PAY</div>
           </div>
         </div>
       </div>

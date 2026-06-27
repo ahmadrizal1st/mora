@@ -1224,9 +1224,8 @@ button[role="tab"]:focus-visible {
   cursor: pointer;
   transition: all 0.2s ease;
   background-color: var(--tblr-bg-surface);
-  border: 1px solid rgba(32, 107, 196, 0.12);
+  border: 1px solid #e2e8f0;
   border-radius: 16px !important;
-  box-shadow: var(--tblr-shadow-sm);
 }
 .credit-loan-card.active {
   background-color: var(--tblr-primary-lt);
@@ -1252,3 +1251,24 @@ button[role="tab"]:focus-visible {
 .w-150 { width: 150px !important; }
 .text-13 { font-size: 13px !important; }
 
+/* ============================================================
+   Global Style: Replace shadow-sm with clean border on cards/containers
+   ============================================================ */
+
+/* Remove shadow from all elements using shadow-sm */
+.shadow-sm {
+  box-shadow: none !important;
+}
+
+/* Add border to card elements that had shadow-sm */
+.card.shadow-sm,
+.card[class*="shadow"] {
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+/* Div containers using shadow-sm get border too */
+div.shadow-sm:not(.badge):not(.btn):not(.dropdown-menu) {
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}

@@ -311,6 +311,16 @@ pnpm dev
 # Berjalan di: http://localhost:5173
 ```
 
+**Terminal 5 — Caddy (Reverse Proxy)**
+```bash
+caddy run
+# Mengarahkan domain *.localhost ke port di atas
+```
+
+> ✨ **Akses Aplikasi:** Setelah semua service berjalan, buka browser Anda ke:
+> - 🌐 **[http://mora.localhost](http://mora.localhost)** (Untuk melihat tampilan UI/Frontend)
+> - ⚙️ **[http://api.mora.localhost](http://api.mora.localhost)** (Untuk mengakses API backend)
+
 > 💡 **Shortcut:** Untuk Terminal 1 + 2 sekaligus, gunakan `composer run dev` di `apps/api`. Perintah ini menjalankan Laravel server, queue worker, dan log viewer dalam satu proses menggunakan `concurrently`.
 
 ```bash

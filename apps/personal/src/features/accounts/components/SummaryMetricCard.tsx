@@ -35,7 +35,7 @@ export function SummaryMetricCard({
 
   return (
     <div className="card shadow-sm border-0 h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-body p-3 p-lg-4">
+      <div className="card-body p-3">
         <div className="d-flex align-items-center gap-2 mb-3">
           <div
             className="d-flex align-items-center justify-content-center text-white"

@@ -29,18 +29,18 @@ export function ActivityFeed({ activity = [], people = [], limit = 40 }: Activit
           .replace('%c', person.company || '')
 
         return (
-          <div key={index} className="py-3">
-            <div className="row align-items-center">
+          <div key={index} className="py-1">
+            <div className="row align-items-center g-2">
               <div className="col-auto">
-                <Avatar person={person} />
+                <Avatar person={person} size="sm" />
               </div>
               <div className="col">
-                <div className="text-truncate" dangerouslySetInnerHTML={{ __html: text }} />
-                <div className="text-secondary">{index + 1}h ago</div>
+                <div className="text-truncate" style={{ fontSize: '12px', lineHeight: '1.2' }} dangerouslySetInnerHTML={{ __html: text }} />
+                <div className="text-secondary mt-1" style={{ fontSize: '10px' }}>{index + 1}h ago</div>
               </div>
               {index < 5 && (
-                <div className="col-auto align-self-center">
-                  <div className="badge bg-primary" />
+                <div className="col-auto align-self-center pe-2">
+                  <div className="badge bg-primary" style={{ width: '6px', height: '6px', minHeight: '6px', padding: 0 }} />
                 </div>
               )}
             </div>

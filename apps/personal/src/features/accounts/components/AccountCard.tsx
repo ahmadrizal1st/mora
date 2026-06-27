@@ -1,6 +1,17 @@
 import { clsx } from 'clsx'
 import { Icon } from '@/shared/components/ui/Icon'
 
+function getContrastYIQ(hexcolor: string) {
+  if (!hexcolor || !hexcolor.startsWith('#')) return 'white'
+  let hex = hexcolor.replace('#', '')
+  if (hex.length === 3) hex = hex.split('').map((c) => c + c).join('')
+  const r = parseInt(hex.substr(0, 2), 16)
+  const g = parseInt(hex.substr(2, 2), 16)
+  const b = parseInt(hex.substr(4, 2), 16)
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000
+  return yiq >= 128 ? 'black' : 'white'
+}
+
 interface AccountCardProps {
   isActive?: boolean
   type: string
@@ -31,7 +42,16 @@ export function AccountCard({
   const isCash = type.toLowerCase().includes('tunai') || type.toLowerCase().includes('cash')
 
   const typeIcon = isBank ? 'building-bank' : isInvest ? 'trending-up' : isCash ? 'cash' : 'wallet'
-  const badgeStyle = { width: '26px', height: '26px', color: 'white' }
+  
+  const isHex = color?.startsWith('#')
+  const textColor = isHex ? getContrastYIQ(color!) : 'white'
+
+  const badgeStyle = { 
+    width: '26px', 
+    height: '26px', 
+    color: textColor,
+    backgroundColor: isHex ? color : undefined,
+  }
 
   return (
     <div
@@ -61,10 +81,16 @@ export function AccountCard({
           ) : (
             <div
               className={clsx(
-                'd-flex align-items-center justify-content-center text-white shadow-sm',
-                color ? `bg-${color}` : 'bg-primary'
+                'd-flex align-items-center justify-content-center shadow-sm',
+                !isHex && color ? `bg-${color}` : !isHex ? 'bg-primary' : ''
               )}
-              style={{ borderRadius: '10px', width: '32px', height: '32px' }}
+              style={{ 
+                borderRadius: '10px', 
+                width: '32px', 
+                height: '32px',
+                color: textColor,
+                backgroundColor: isHex ? color : undefined
+              }}
             >
               <Icon icon={isBank ? 'building-bank' : 'wallet'} size="sm" />
             </div>
@@ -72,7 +98,7 @@ export function AccountCard({
           <span
             className={clsx(
               'badge d-flex align-items-center justify-content-center rounded-circle p-1 shadow-sm',
-              color ? `bg-${color}` : 'bg-primary'
+              !isHex && color ? `bg-${color}` : !isHex ? 'bg-primary' : ''
             )}
             style={badgeStyle}
           >

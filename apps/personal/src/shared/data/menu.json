@@ -41,5 +41,11 @@
     "title": "Achievements",
     "icon": "trophy",
     "url": "achievements"
+  },
+
+  "reports": {
+    "title": "Laporan",
+    "icon": "report",
+    "url": "reports"
   }
 }

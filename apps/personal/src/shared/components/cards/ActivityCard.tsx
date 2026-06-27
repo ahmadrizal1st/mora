@@ -33,7 +33,7 @@ export function ActivityCard({
           <h3 className="card-title">{title}</h3>
         </div>
       )}
-      <div className="card-body">
+      <div className="card-body px-3 py-2">
         <ActivityFeed activity={activity} people={people} limit={limit} />
       </div>
     </div>

@@ -5,9 +5,12 @@ export const planningService = {
   async getGoals(): Promise<GoalsData> {
     const response = await api.get('/goals')
     
-    const goals: Goal[] = response.data.data.map((item: any) => {
+    let rawData = response.data?.data || []
+    
+    const goals: Goal[] = rawData.map((item: any) => {
       let eta = ''
       if (item.deadline_date) {
+
         const date = new Date(item.deadline_date)
         eta = date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })
       }

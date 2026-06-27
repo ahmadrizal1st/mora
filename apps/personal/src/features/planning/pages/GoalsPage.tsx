@@ -588,138 +588,61 @@ export function GoalsPage() {
               </div>
             </div>
           ) : (
-            <div className="table-responsive">
-              <table className="table table-vcenter card-table table-hover">
-                <thead>
-                  <tr>
-                    <th
-                      className="text-secondary small fw-bold px-3 py-2"
-                      style={{
-                        backgroundColor: 'var(--tblr-bg-surface-secondary)',
-                        minWidth: '180px',
+            <div className="card-body p-0 m-0">
+              <div>
+                {modalFilteredGoals.map((g: any, i: number) => {
+                  const pct = g.target > 0 ? Math.round((g.saved / g.target) * 100) : 0
+                  return (
+                    <div
+                      key={g.id}
+                      className="d-flex justify-content-between align-items-center px-4 py-3 cursor-pointer hover-bg-surface"
+                      style={{ borderBottom: i < modalFilteredGoals.length - 1 ? '1px solid #fafafa' : undefined }}
+                      onClick={() => {
+                        setIsDetailOpen(false)
+                        handleEditGoal?.(g)
                       }}
                     >
-                      Nama Impian
-                    </th>
-                    <th
-                      className="text-secondary small fw-bold py-2"
-                      style={{
-                        backgroundColor: 'var(--tblr-bg-surface-secondary)',
-                        minWidth: '130px',
-                      }}
-                    >
-                      Target
-                    </th>
-                    <th
-                      className="text-secondary small fw-bold py-2"
-                      style={{
-                        backgroundColor: 'var(--tblr-bg-surface-secondary)',
-                        minWidth: '130px',
-                      }}
-                    >
-                      Terkumpul
-                    </th>
-                    <th
-                      className="text-secondary small fw-bold py-2"
-                      style={{
-                        backgroundColor: 'var(--tblr-bg-surface-secondary)',
-                        minWidth: '160px',
-                      }}
-                    >
-                      Progres
-                    </th>
-                    <th
-                      className="text-secondary small fw-bold py-2 text-center"
-                      style={{
-                        backgroundColor: 'var(--tblr-bg-surface-secondary)',
-                        minWidth: '120px',
-                      }}
-                    >
-                      Target Selesai
-                    </th>
-                    <th
-                      className="text-secondary small fw-bold py-2 text-end"
-                      style={{
-                        backgroundColor: 'var(--tblr-bg-surface-secondary)',
-                        minWidth: '140px',
-                      }}
-                    >
-                      Saran Tabungan
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {modalFilteredGoals.map((g: any) => {
-                    const pct = g.target > 0 ? Math.round((g.saved / g.target) * 100) : 0
-                    return (
-                      <tr
-                        key={g.id}
-                        className="align-middle cursor-pointer animate-in fade-in"
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          setIsDetailOpen(false)
-                          handleEditGoal?.(g)
-                        }}
-                      >
-                        <td className="px-3 py-3" style={{ minWidth: '180px' }}>
-                          <div className="d-flex align-items-center gap-2">
-                            <span
-                              className="avatar avatar-xs rounded-circle text-white shadow-sm d-flex align-items-center justify-content-center"
-                              style={{
-                                backgroundColor: g.color || '#ff6b00',
-                                width: '28px',
-                                height: '28px',
-                              }}
-                            >
-                              <Icon icon={g.icon as string} size={12} className="m-0 text-white" />
-                            </span>
-                            <span className="fw-bold">{g.name}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 fw-medium" style={{ minWidth: '130px' }}>
-                          {formatCurrency(g.target)}
-                        </td>
-                        <td className="py-3 text-success fw-bold" style={{ minWidth: '130px' }}>
-                          {formatCurrency(g.saved)}
-                        </td>
-                        <td className="py-3" style={{ minWidth: '160px' }}>
-                          <div className="d-flex align-items-center gap-2">
-                            <div
-                              className="progress progress-sm flex-grow-1"
-                              style={{ height: '8px', borderRadius: '10px', minWidth: '80px' }}
-                            >
-                              <div
-                                className="progress-bar bg-orange"
-                                style={{ width: `${pct}%` }}
-                              />
-                            </div>
-                            <span
-                              className="small fw-bold text-orange"
-                              style={{ minWidth: '35px', textAlign: 'right' }}
-                            >
-                              {pct}%
-                            </span>
-                          </div>
-                        </td>
-                        <td className="py-3 text-center" style={{ minWidth: '120px' }}>
-                          <span
-                            className="badge bg-orange-lt text-orange border-0 px-2 py-1"
-                            style={{ fontSize: '10px' }}
-                          >
-                            {g.eta}
-                          </span>
-                        </td>
-                        <td
-                          className="py-3 text-end fw-semibold text-secondary"
-                          style={{ minWidth: '140px' }}
+                      <div className="d-flex align-items-center gap-3 flex-grow-1 overflow-hidden me-2">
+                        <div
+                          className="d-flex align-items-center justify-content-center text-white"
+                          style={{
+                            backgroundColor: g.color || '#ff6b00',
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '10px',
+                            flexShrink: 0,
+                          }}
                         >
+                          <Icon icon={g.icon as string} size="sm" />
+                        </div>
+                        <div className="overflow-hidden">
+                          <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
+                            {g.name}
+                          </div>
+                          <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
+                            <span
+                              className="badge bg-orange-lt text-orange border-0 px-1 py-0"
+                              style={{ fontSize: '10px' }}
+                            >
+                              {g.eta}
+                            </span>
+                            <span>&middot; Target: {formatCurrency(g.target)}</span>
+                            <span>&middot; Progres: {pct}%</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-end flex-shrink-0">
+                        <div className="fw-bold text-success" style={{ fontSize: '14px' }}>
+                          {formatCurrency(g.saved)}
+                        </div>
+                        <div className="mt-1 fw-medium text-secondary" style={{ fontSize: '11px' }}>
                           {g.monthlyDeposit ? `${formatCurrency(g.monthlyDeposit)}/bln` : '-'}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )}
         </div>

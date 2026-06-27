@@ -284,71 +284,30 @@ export function CreditKTAPage() {
               </div>
             </div>
             <div className="card-body p-0 m-0">
-              <div className="table-responsive d-none d-md-block">
-                <table className="table table-vcenter card-table table-hover">
-                  <thead>
-                    <tr>
-                      <th className="text-secondary small fw-bold px-4 py-2 bg-surface-secondary w-120">
-                        Bulan
-                      </th>
-                      <th className="text-secondary small fw-bold py-2 bg-surface-secondary">
-                        Keterangan
-                      </th>
-                      <th className="text-secondary small fw-bold text-end py-2 bg-surface-secondary w-150">
-                        Pokok
-                      </th>
-                      <th className="text-secondary small fw-bold text-end py-2 bg-surface-secondary w-150">
-                        Bunga
-                      </th>
-                      <th className="text-secondary small fw-bold text-end px-4 py-2 bg-surface-secondary w-150">
-                        Total Tagihan
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[...Array(6)].map((_, i) => (
-                      <tr key={i}>
-                        <td className="px-4 py-3 text-nowrap">Mei 2026</td>
-                        <td className="py-3">
-                          <div className="fw-bold">Angsuran Ke-{8 + i}</div>
-                          <div className="text-muted small">Status: Terjadwal</div>
-                        </td>
-                        <td className="text-end py-3 text-secondary">
-                          {fmt(credit.installment_amount * 0.75).replace('Rp ', '')}
-                        </td>
-                        <td className="text-end py-3 text-secondary">
-                          {fmt(credit.installment_amount * 0.25).replace('Rp ', '')}
-                        </td>
-                        <td className="text-end">
-                          <div className="fw-bold text-dark">
-                            {fmt(credit.installment_amount).replace('Rp ', '')}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="d-block d-md-none">
-                <div className="list-group list-group-flush">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="list-group-item">
-                      <div className="d-flex justify-content-between align-items-center mb-1">
-                        <div className="fw-bold">Angsuran Ke-{8 + i}</div>
-                        <div className="fw-bold text-dark">
-                          {fmt(credit.installment_amount).replace('Rp ', '')}
-                        </div>
+              <div>
+                {[...Array(6)].map((_, i) => (
+                  <div 
+                    key={i}
+                    className="d-flex justify-content-between align-items-center px-4 py-3"
+                    style={{ borderBottom: i < 5 ? '1px solid #fafafa' : undefined }}
+                  >
+                    <div className="flex-grow-1 overflow-hidden me-2">
+                      <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
+                        Angsuran Ke-{8 + i}
                       </div>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div className="text-muted small">Mei 2026 • Terjadwal</div>
-                        <div className="text-secondary small text-10">
-                          P: {fmt(credit.installment_amount * 0.75).replace('Rp ', '')} | B:{' '}
-                          {fmt(credit.installment_amount * 0.25).replace('Rp ', '')}
-                        </div>
+                      <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
+                        <span className="rounded px-1 fw-semibold" style={{ background: '#f6ad5522', color: '#dd6b20', fontSize: '10px' }}>
+                          Terjadwal
+                        </span>
+                        <span>&middot; Mei 2026</span>
+                        <span>&middot; P: {fmt(credit.installment_amount * 0.75).replace('Rp ', '')} | B: {fmt(credit.installment_amount * 0.25).replace('Rp ', '')}</span>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    <div className="fw-bold flex-shrink-0" style={{ color: '#e53e3e', fontSize: '14px' }}>
+                      -{fmt(credit.installment_amount).replace('Rp ', '')}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

@@ -40,6 +40,7 @@ import { Route as R2StepVerificationRouteImport } from './routes/2-step-verifica
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions.index'
 import { Route as TrackerIndexRouteImport } from './routes/tracker.index'
+import { Route as ReportsIndexRouteImport } from './routes/reports.index'
 import { Route as PlanningIndexRouteImport } from './routes/planning.index'
 import { Route as DebtsIndexRouteImport } from './routes/debts.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
@@ -49,6 +50,7 @@ import { Route as TrackerTextRouteImport } from './routes/tracker.text'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
 import { Route as TrackerImageRouteImport } from './routes/tracker.image'
 import { Route as TrackerAudioRouteImport } from './routes/tracker.audio'
+import { Route as ReportsPeriodIdRouteImport } from './routes/reports.$periodId'
 import { Route as PlanningSubscriptionsRouteImport } from './routes/planning.subscriptions'
 import { Route as PlanningGoalsRouteImport } from './routes/planning.goals'
 import { Route as PlanningBudgetRouteImport } from './routes/planning.budget'
@@ -63,6 +65,7 @@ import { Route as AiSearchRouteImport } from './routes/ai.search'
 import { Route as AiChatRouteImport } from './routes/ai.chat'
 import { Route as AccountsAccountIdRouteImport } from './routes/accounts.$accountId'
 import { Route as AiChatIndexRouteImport } from './routes/ai.chat.index'
+import { Route as ReportsRecapPeriodIdRouteImport } from './routes/reports.recap.$periodId'
 import { Route as AiChatSessionIdRouteImport } from './routes/ai.chat.$sessionId'
 
 const SignUpRoute = SignUpRouteImport.update({
@@ -220,6 +223,11 @@ const TrackerIndexRoute = TrackerIndexRouteImport.update({
   path: '/tracker/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportsIndexRoute = ReportsIndexRouteImport.update({
+  id: '/reports/',
+  path: '/reports/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlanningIndexRoute = PlanningIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -263,6 +271,11 @@ const TrackerImageRoute = TrackerImageRouteImport.update({
 const TrackerAudioRoute = TrackerAudioRouteImport.update({
   id: '/tracker/audio',
   path: '/tracker/audio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsPeriodIdRoute = ReportsPeriodIdRouteImport.update({
+  id: '/reports/$periodId',
+  path: '/reports/$periodId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanningSubscriptionsRoute = PlanningSubscriptionsRouteImport.update({
@@ -335,6 +348,11 @@ const AiChatIndexRoute = AiChatIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AiChatRoute,
 } as any)
+const ReportsRecapPeriodIdRoute = ReportsRecapPeriodIdRouteImport.update({
+  id: '/reports/recap/$periodId',
+  path: '/reports/recap/$periodId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AiChatSessionIdRoute = AiChatSessionIdRouteImport.update({
   id: '/$sessionId',
   path: '/$sessionId',
@@ -384,6 +402,7 @@ export interface FileRoutesByFullPath {
   '/planning/budget': typeof PlanningBudgetRoute
   '/planning/goals': typeof PlanningGoalsRoute
   '/planning/subscriptions': typeof PlanningSubscriptionsRoute
+  '/reports/$periodId': typeof ReportsPeriodIdRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
@@ -393,9 +412,11 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/debts/': typeof DebtsIndexRoute
   '/planning/': typeof PlanningIndexRoute
+  '/reports/': typeof ReportsIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
   '/ai/chat/$sessionId': typeof AiChatSessionIdRoute
+  '/reports/recap/$periodId': typeof ReportsRecapPeriodIdRoute
   '/ai/chat/': typeof AiChatIndexRoute
 }
 export interface FileRoutesByTo {
@@ -435,6 +456,7 @@ export interface FileRoutesByTo {
   '/planning/budget': typeof PlanningBudgetRoute
   '/planning/goals': typeof PlanningGoalsRoute
   '/planning/subscriptions': typeof PlanningSubscriptionsRoute
+  '/reports/$periodId': typeof ReportsPeriodIdRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
@@ -444,9 +466,11 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/debts': typeof DebtsIndexRoute
   '/planning': typeof PlanningIndexRoute
+  '/reports': typeof ReportsIndexRoute
   '/tracker': typeof TrackerIndexRoute
   '/transactions': typeof TransactionsIndexRoute
   '/ai/chat/$sessionId': typeof AiChatSessionIdRoute
+  '/reports/recap/$periodId': typeof ReportsRecapPeriodIdRoute
   '/ai/chat': typeof AiChatIndexRoute
 }
 export interface FileRoutesById {
@@ -493,6 +517,7 @@ export interface FileRoutesById {
   '/planning/budget': typeof PlanningBudgetRoute
   '/planning/goals': typeof PlanningGoalsRoute
   '/planning/subscriptions': typeof PlanningSubscriptionsRoute
+  '/reports/$periodId': typeof ReportsPeriodIdRoute
   '/tracker/audio': typeof TrackerAudioRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
@@ -502,9 +527,11 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/debts/': typeof DebtsIndexRoute
   '/planning/': typeof PlanningIndexRoute
+  '/reports/': typeof ReportsIndexRoute
   '/tracker/': typeof TrackerIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
   '/ai/chat/$sessionId': typeof AiChatSessionIdRoute
+  '/reports/recap/$periodId': typeof ReportsRecapPeriodIdRoute
   '/ai/chat/': typeof AiChatIndexRoute
 }
 export interface FileRouteTypes {
@@ -552,6 +579,7 @@ export interface FileRouteTypes {
     | '/planning/budget'
     | '/planning/goals'
     | '/planning/subscriptions'
+    | '/reports/$periodId'
     | '/tracker/audio'
     | '/tracker/image'
     | '/tracker/input'
@@ -561,9 +589,11 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/debts/'
     | '/planning/'
+    | '/reports/'
     | '/tracker/'
     | '/transactions/'
     | '/ai/chat/$sessionId'
+    | '/reports/recap/$periodId'
     | '/ai/chat/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -603,6 +633,7 @@ export interface FileRouteTypes {
     | '/planning/budget'
     | '/planning/goals'
     | '/planning/subscriptions'
+    | '/reports/$periodId'
     | '/tracker/audio'
     | '/tracker/image'
     | '/tracker/input'
@@ -612,9 +643,11 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/debts'
     | '/planning'
+    | '/reports'
     | '/tracker'
     | '/transactions'
     | '/ai/chat/$sessionId'
+    | '/reports/recap/$periodId'
     | '/ai/chat'
   id:
     | '__root__'
@@ -660,6 +693,7 @@ export interface FileRouteTypes {
     | '/planning/budget'
     | '/planning/goals'
     | '/planning/subscriptions'
+    | '/reports/$periodId'
     | '/tracker/audio'
     | '/tracker/image'
     | '/tracker/input'
@@ -669,9 +703,11 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/debts/'
     | '/planning/'
+    | '/reports/'
     | '/tracker/'
     | '/transactions/'
     | '/ai/chat/$sessionId'
+    | '/reports/recap/$periodId'
     | '/ai/chat/'
   fileRoutesById: FileRoutesById
 }
@@ -708,12 +744,15 @@ export interface RootRouteChildren {
   AiChatRoute: typeof AiChatRouteWithChildren
   AiSearchRoute: typeof AiSearchRoute
   AiTemplatesRoute: typeof AiTemplatesRoute
+  ReportsPeriodIdRoute: typeof ReportsPeriodIdRoute
   TrackerAudioRoute: typeof TrackerAudioRoute
   TrackerImageRoute: typeof TrackerImageRoute
   TrackerInputRoute: typeof TrackerInputRoute
   TrackerTextRoute: typeof TrackerTextRoute
+  ReportsIndexRoute: typeof ReportsIndexRoute
   TrackerIndexRoute: typeof TrackerIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
+  ReportsRecapPeriodIdRoute: typeof ReportsRecapPeriodIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -935,6 +974,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackerIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reports/': {
+      id: '/reports/'
+      path: '/reports'
+      fullPath: '/reports/'
+      preLoaderRoute: typeof ReportsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/planning/': {
       id: '/planning/'
       path: '/'
@@ -996,6 +1042,13 @@ declare module '@tanstack/react-router' {
       path: '/tracker/audio'
       fullPath: '/tracker/audio'
       preLoaderRoute: typeof TrackerAudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports/$periodId': {
+      id: '/reports/$periodId'
+      path: '/reports/$periodId'
+      fullPath: '/reports/$periodId'
+      preLoaderRoute: typeof ReportsPeriodIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/planning/subscriptions': {
@@ -1095,6 +1148,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/ai/chat/'
       preLoaderRoute: typeof AiChatIndexRouteImport
       parentRoute: typeof AiChatRoute
+    }
+    '/reports/recap/$periodId': {
+      id: '/reports/recap/$periodId'
+      path: '/reports/recap/$periodId'
+      fullPath: '/reports/recap/$periodId'
+      preLoaderRoute: typeof ReportsRecapPeriodIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/ai/chat/$sessionId': {
       id: '/ai/chat/$sessionId'
@@ -1237,12 +1297,15 @@ const rootRouteChildren: RootRouteChildren = {
   AiChatRoute: AiChatRouteWithChildren,
   AiSearchRoute: AiSearchRoute,
   AiTemplatesRoute: AiTemplatesRoute,
+  ReportsPeriodIdRoute: ReportsPeriodIdRoute,
   TrackerAudioRoute: TrackerAudioRoute,
   TrackerImageRoute: TrackerImageRoute,
   TrackerInputRoute: TrackerInputRoute,
   TrackerTextRoute: TrackerTextRoute,
+  ReportsIndexRoute: ReportsIndexRoute,
   TrackerIndexRoute: TrackerIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,
+  ReportsRecapPeriodIdRoute: ReportsRecapPeriodIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

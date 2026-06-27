@@ -31,16 +31,14 @@ export function RecentTransactionsTable({
       )}
 
       <div className="table-responsive">
-        <table className="table table-vcenter card-table text-nowrap">
+        <table className="table table-sm table-vcenter card-table text-nowrap">
           <thead>
             <tr className="text-mobile-xs">
-              <th className="w-1">No.</th>
               <th>Subject</th>
-              <th>Client</th>
-              <th className="d-none d-md-table-cell">VAT No.</th>
-              <th className="d-none d-md-table-cell">Created</th>
+              <th>Account</th>
+              <th className="d-none d-md-table-cell">Date</th>
               <th className="d-none d-sm-table-cell">Status</th>
-              <th className="text-end">Price</th>
+              <th className="text-end">Amount</th>
             </tr>
           </thead>
           <tbody>
@@ -61,11 +59,6 @@ export function RecentTransactionsTable({
             ) : (
               invoices.map((inv, i) => (
                 <tr key={i} className="text-mobile-xs">
-                  <td>
-                    <span className="text-secondary">
-                      {inv.id?.slice(-3) || (i + 1).toString().padStart(3, '0')}
-                    </span>
-                  </td>
                   <td className="text-truncate" style={{ maxWidth: '120px' }}>
                     <a href="#" className="text-reset fw-medium">
                       {inv.subject}
@@ -74,7 +67,6 @@ export function RecentTransactionsTable({
                   <td className="text-truncate" style={{ maxWidth: '100px' }}>
                     {inv.client}
                   </td>
-                  <td className="d-none d-md-table-cell text-secondary">{inv.vatNo || '-'}</td>
                   <td className="d-none d-md-table-cell text-secondary">{inv.date}</td>
                   <td className="d-none d-sm-table-cell">
                     {inv.status && (

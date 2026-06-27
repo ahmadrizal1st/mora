@@ -22,7 +22,7 @@ export function BottomNav() {
 
   const navItems = [
     { label: 'Home', icon: 'home', href: '/dashboard' },
-    { label: 'Activity', icon: 'file-invoice', href: '/activity' },
+    { label: 'Laporan', icon: 'report', href: '/reports' },
     { label: 'Tracker', icon: 'scan', href: '#', isAction: true },
     { label: 'Planning', icon: 'target', href: '/planning' },
     { label: 'Chat', icon: 'message-circle', href: '/ai/chat/' },

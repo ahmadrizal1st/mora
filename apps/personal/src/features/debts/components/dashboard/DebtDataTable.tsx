@@ -106,84 +106,77 @@ export function DebtDataTable() {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="table-responsive">
-          <table className="table table-vcenter card-table">
-            <thead>
-              <tr>
-                <th className="text-muted fw-bold text-uppercase border-bottom-0" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>Transaksi</th>
-                <th className="text-muted fw-bold text-uppercase border-bottom-0" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>Jenis</th>
-                <th className="text-muted fw-bold text-uppercase border-bottom-0" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>Nominal</th>
-                <th className="text-muted fw-bold text-uppercase border-bottom-0" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>Jatuh Tempo</th>
-                <th className="text-muted fw-bold text-uppercase border-bottom-0" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>Status</th>
-                <th className="text-muted fw-bold text-uppercase border-bottom-0" style={{ fontSize: '10px', letterSpacing: '0.05em' }}>Prioritas</th>
-                <th className="w-1 border-bottom-0"></th>
-              </tr>
-            </thead>
-            <tbody>
+        {/* Table replacement */}
+        <div className="card border-0 rounded-4 shadow-sm">
+          <div className="card-body p-0">
+            <div className="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+              <span className="fw-bold" style={{ fontSize: '14px' }}>Daftar Utang / Piutang</span>
+              <span className="text-secondary" style={{ fontSize: '13px' }}>{filteredData.length} item</span>
+            </div>
+
+            <div>
               {filteredData.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-5 border-bottom-0">
-                    <div className="empty">
-                      <div className="empty-icon text-secondary mb-3">
-                        <Icon icon="folder-off" size={48} stroke={1.5} opacity={0.5} />
-                      </div>
-                      <p className="empty-title h4 fw-bold mb-1">Belum Ada Data</p>
-                      <p className="empty-subtitle text-muted small mb-3" style={{ maxWidth: '300px', margin: '0 auto' }}>
-                        Anda belum memiliki catatan utang atau piutang saat ini.
-                      </p>
-                      <div className="empty-action">
-                        <button className="btn btn-primary btn-sm rounded-pill">
-                          <Icon icon="plus" size={16} className="me-1" /> Tambah Data
-                        </button>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
+                <div className="text-center py-5">
+                  <div className="empty-icon text-secondary mb-3">
+                    <Icon icon="folder-off" size={48} stroke={1.5} opacity={0.5} />
+                  </div>
+                  <p className="empty-title h4 fw-bold mb-1">Belum Ada Data</p>
+                  <p className="empty-subtitle text-muted small mb-3" style={{ maxWidth: '300px', margin: '0 auto' }}>
+                    Anda belum memiliki catatan utang atau piutang saat ini.
+                  </p>
+                  <button className="btn btn-primary btn-sm rounded-pill">
+                    <Icon icon="plus" size={16} className="me-1" /> Tambah Data
+                  </button>
+                </div>
               ) : (
-                filteredData.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <div className="d-flex py-1 align-items-center">
-                        <span className="avatar avatar-sm me-3 bg-secondary-lt rounded-circle">
-                          {item.personName.charAt(0)}
-                        </span>
-                        <div className="flex-fill">
-                          <div className="font-weight-medium fw-bold text-dark">{item.personName}</div>
-                          <div className="text-muted small">{item.description}</div>
+                filteredData.map((item, i) => {
+                  const isPiutang = item.type === 'Piutang'
+                  const color = isPiutang ? '#38a169' : '#e53e3e'
+                  const prefix = isPiutang ? '+' : '-'
+                  
+                  return (
+                    <div 
+                      key={item.id} 
+                      className="d-flex justify-content-between align-items-center px-4 py-3"
+                      style={{ borderBottom: i < filteredData.length - 1 ? '1px solid #fafafa' : undefined }}
+                    >
+                      <div className="flex-grow-1 overflow-hidden me-2">
+                        <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
+                          {item.personName}
+                        </div>
+                        <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
+                          <span 
+                            className="rounded px-1 fw-semibold" 
+                            style={{ 
+                              background: isPiutang ? '#38a16922' : '#e53e3e22', 
+                              color: color, 
+                              fontSize: '10px' 
+                            }}
+                          >
+                            {item.type}
+                          </span>
+                          <span>&middot; {getStatusBadge(item.status)}</span>
+                          <span>&middot; {new Date(item.dueDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                         </div>
                       </div>
-                    </td>
-                    <td>
-                      {getTypeBadge(item.type)}
-                    </td>
-                    <td>
-                      <div className="fw-bold text-dark fs-4">{formatCurrency(item.amount)}</div>
-                    </td>
-                    <td>
-                      <div className="text-dark small">{new Date(item.dueDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
-                      {item.status === 'Jatuh Tempo' ? (
-                        <div className="text-danger" style={{ fontSize: '10px' }}>Lewat jatuh tempo</div>
-                      ) : (
-                        <div className="text-orange" style={{ fontSize: '10px' }}>8 hari lagi</div>
-                      )}
-                    </td>
-                    <td className="fw-semibold small">
-                      {getStatusBadge(item.status)}
-                    </td>
-                    <td>
-                      {getPriorityBadge(item.priority)}
-                    </td>
-                    <td>
-                      <button className="btn btn-ghost-secondary btn-icon btn-sm border-0">
-                        <Icon icon="dots-vertical" size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                      <div className="text-end flex-shrink-0">
+                        <div className="fw-bold" style={{ color, fontSize: '14px' }}>
+                          {prefix}{formatCurrency(item.amount).replace(/Rp\s?|-/g, '')}
+                        </div>
+                        <div className="text-secondary mt-1" style={{ fontSize: '11px' }}>
+                          {item.status === 'Jatuh Tempo' ? (
+                            <span className="text-danger">Lewat jatuh tempo</span>
+                          ) : (
+                            <span>8 hari lagi</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })
               )}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>

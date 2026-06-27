@@ -180,56 +180,53 @@ export function DebtPayoffPlannerPreview() {
                 <span className="badge bg-orange-lt text-orange border-0">Terdekat</span>
               </div>
             </div>
-            <div className="table-responsive">
-              <table className="table table-vcenter card-table table-nowrap table-borderless">
-                <thead>
-                  <tr>
-                    <th>Jatuh Tempo</th>
-                    <th>Akun</th>
-                    <th className="text-end">Jumlah</th>
-                    <th className="w-1" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {upcomingBills.map((b, i) => {
-                    const daysLeft = b.credit!.due_date
-                      ? Math.ceil(
-                          (new Date(b.credit!.due_date).getTime() - new Date().getTime()) /
-                            (1000 * 60 * 60 * 24)
-                        )
-                      : 0
-                    const isUrgent = daysLeft <= 7
-                    return (
-                      <tr key={i}>
-                        <td>
-                          <div className="fw-bold small">
-                            {new Date(b.credit!.due_date!).toLocaleDateString('id-ID', {
+            <div className="card-body p-0 m-0">
+              <div>
+                {upcomingBills.map((b, i) => {
+                  const daysLeft = b.credit!.due_date
+                    ? Math.ceil(
+                        (new Date(b.credit!.due_date).getTime() - new Date().getTime()) /
+                          (1000 * 60 * 60 * 24)
+                      )
+                    : 0
+                  const isUrgent = daysLeft <= 7
+                  return (
+                    <div 
+                      key={i}
+                      className="d-flex justify-content-between align-items-center px-4 py-3"
+                      style={{ borderBottom: i < upcomingBills.length - 1 ? '1px solid #fafafa' : undefined }}
+                    >
+                      <div className="flex-grow-1 overflow-hidden me-2">
+                        <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
+                          {b.name}
+                        </div>
+                        <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
+                          <span
+                            className={`rounded px-1 fw-semibold bg-${isUrgent ? 'danger' : 'primary'}-lt text-${isUrgent ? 'danger' : 'primary'}`}
+                            style={{ fontSize: '10px' }}
+                          >
+                            {daysLeft} hari lagi
+                          </span>
+                          <span>&middot; Jatuh Tempo: {new Date(b.credit!.due_date!).toLocaleDateString('id-ID', {
                               day: 'numeric',
                               month: 'short',
-                            })}
-                          </div>
-                          <div className={`small ${isUrgent ? 'text-danger' : 'text-muted'}`}>
-                            {daysLeft} hari lagi
-                          </div>
-                        </td>
-                        <td>
-                          <div className="fw-bold small">{b.name}</div>
-                          <div className="text-muted small">{b.provider?.name || 'Bank'}</div>
-                        </td>
-                        <td className="text-end">
-                          <div className="fw-bold small">
-                            {fmt(b.credit?.installment_amount || b.credit?.total_amount || 0)}
-                          </div>
-                        </td>
-                        <td style={{ width: '80px' }}>
+                            })}</span>
+                          <span>&middot; {b.provider?.name || 'Bank'}</span>
+                        </div>
+                      </div>
+                      <div className="text-end flex-shrink-0 d-flex align-items-center gap-3">
+                        <div className="fw-bold" style={{ color: '#e53e3e', fontSize: '14px' }}>
+                          -{fmt(b.credit?.installment_amount || b.credit?.total_amount || 0).replace('Rp ', '')}
+                        </div>
+                        <div style={{ width: '60px' }}>
                           {isUrgent ? (
                             <Button
                               block
                               size="sm"
                               element="button"
                               color="danger"
-                              className="fw-bold"
-                              style={{ fontSize: '10px', padding: '0.25rem 0.5rem' }}
+                              className="fw-bold w-100"
+                              style={{ fontSize: '10px', padding: '4px 8px' }}
                               text="Bayar"
                             />
                           ) : (
@@ -238,21 +235,21 @@ export function DebtPayoffPlannerPreview() {
                               size="sm"
                               element="button"
                               white={true}
-                              className="fw-bold text-body"
+                              className="fw-bold text-body w-100"
                               style={{
                                 fontSize: '10px',
-                                padding: '0.25rem 0.5rem',
+                                padding: '4px 8px',
                                 color: 'var(--tblr-emphasis-color)',
                               }}
                               text="Detail"
                             />
                           )}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
         </div>

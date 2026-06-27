@@ -63,8 +63,12 @@ export function AccountsPage() {
       exp,
       chg: Math.abs(chg),
       chgPos: chg >= 0,
-      logo: 'building-bank',
-      color: selectedAcc.color || '#4263eb',
+      logo: selectedAcc.account_type?.toLowerCase().includes('tunai') || selectedAcc.account_type?.toLowerCase().includes('cash')
+        ? 'https://cdn-icons-png.flaticon.com/512/2017/2017461.png'
+        : null,
+      color: (selectedAcc.account_type?.toLowerCase().includes('tunai') || selectedAcc.account_type?.toLowerCase().includes('cash'))
+        ? '#2fb344'
+        : (selectedAcc.color || '#4263eb'),
       tx,
       cats
     }
@@ -109,7 +113,8 @@ export function AccountsPage() {
 
   return (
     <BaseLayout pageTitle="Detail Akun & Mutasi">
-      <div className="d-flex align-items-stretch overflow-auto gap-3 pb-3 mb-4 no-scrollbar">
+      <div className="d-flex flex-column gap-4">
+        <div className="d-flex align-items-stretch overflow-auto gap-3 no-scrollbar">
         {accounts.length === 0 ? (
           <div
             className="card shadow-sm border-0 flex-fill d-flex align-items-center justify-content-center"
@@ -133,8 +138,16 @@ export function AccountsPage() {
               balance={acc.balance || 0}
               delta={0}
               chgPos={true}
-              logo={'building-bank'}
-              color={acc.color || '#4263eb'}
+              logo={
+                acc.account_type?.toLowerCase().includes('tunai') || acc.account_type?.toLowerCase().includes('cash')
+                  ? 'https://cdn-icons-png.flaticon.com/512/2017/2017461.png'
+                  : null
+              }
+              color={
+                (acc.account_type?.toLowerCase().includes('tunai') || acc.account_type?.toLowerCase().includes('cash'))
+                  ? '#2fb344'
+                  : (acc.color || '#4263eb')
+              }
               onClick={() => setCur(idx)}
             />
           ))
@@ -160,7 +173,7 @@ export function AccountsPage() {
         </div>
       </div>
 
-      <div className="d-block d-lg-none mb-3">
+      <div className="d-block d-lg-none">
         <AccountVisualCard
           name={accData.name}
           num={accData.num}
@@ -171,89 +184,70 @@ export function AccountsPage() {
         />
       </div>
 
-      <div className="row g-2 g-md-3 mb-4">
-        <div className="col-6 col-lg-3">
-          <SummaryMetricCard
-            title="Saldo Terkini"
-            value={accData.bal}
-            subtext={accData.name}
-            icon="wallet"
-            iconColor="primary"
-          />
-        </div>
-        <div className="col-6 col-lg-3">
-          <SummaryMetricCard
-            title="Total Pemasukan"
-            value={accData.inc}
-            subtext="Terkini"
-            icon="trending-up"
-            valueColor="success"
-          />
-        </div>
-        <div className="col-6 col-lg-3">
-          <SummaryMetricCard
-            title="Total Pengeluaran"
-            value={accData.exp}
-            subtext={`${accData.tx.length} Transaksi Terakhir`}
-            icon="trending-down"
-            valueColor="danger"
-          />
-        </div>
-        <div className="col-6 col-lg-3">
-          <SummaryMetricCard
-            title="Net Mutasi"
-            value={accData.chgPos ? `+${accData.chg}` : `-${accData.chg}`}
-            subtext="Selisih In/Out"
-            icon="arrows-exchange"
-            valueColor={accData.chgPos ? 'success' : 'danger'}
-          />
-        </div>
+      <div 
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
+          gap: '1rem' 
+        }}
+      >
+        <SummaryMetricCard
+          title="Saldo Terkini"
+          value={accData.bal}
+          subtext={accData.name}
+          icon="wallet"
+          iconColor="primary"
+        />
+        <SummaryMetricCard
+          title="Total Pemasukan"
+          value={accData.inc}
+          subtext="Terkini"
+          icon="trending-up"
+          valueColor="success"
+        />
+        <SummaryMetricCard
+          title="Total Pengeluaran"
+          value={accData.exp}
+          subtext={`${accData.tx.length} Transaksi Terakhir`}
+          icon="trending-down"
+          valueColor="danger"
+        />
+        <SummaryMetricCard
+          title="Net Mutasi"
+          value={accData.chgPos ? `+${accData.chg}` : `-${accData.chg}`}
+          subtext="Selisih In/Out"
+          icon="arrows-exchange"
+          valueColor={accData.chgPos ? 'success' : 'danger'}
+        />
       </div>
 
-      <div className="row row-cards g-3">
-        <div className="col-lg-3">
-          <div className="row row-cards g-3">
-            <div className="col-12 d-none d-lg-block">
-              <AccountVisualCard
-                name={accData.name}
-                num={accData.num}
-                type={accData.type as any}
-                balance={accData.bal}
-                logo={accData.logo}
-                color={accData.color}
-              />
-            </div>
-            <div className="col-12">
-              <AccountStatsCard />
-            </div>
-            <div className="col-12">
-              <TopMerchantsCard />
-            </div>
+      <div className="d-flex flex-column flex-lg-row gap-3">
+        <div className="d-flex flex-column gap-3 h-100" style={{ flex: 1 }}>
+          <div className="d-none d-lg-block">
+            <AccountVisualCard
+              name={accData.name}
+              num={accData.num}
+              type={accData.type as any}
+              balance={accData.bal}
+              logo={accData.logo}
+              color={accData.color}
+            />
           </div>
+          <AccountStatsCard />
+          <TopMerchantsCard />
         </div>
 
-        <div className="col-lg-6">
-          <div className="row row-cards g-3">
-            <div className="col-12">
-              <CashFlowChartCard range={range} setRange={setRange} data={cfData} />
-            </div>
-            <div className="col-12">
-              <TransactionListCard transactions={accData.tx} />
-            </div>
-          </div>
+        <div className="d-flex flex-column gap-3 h-100" style={{ flex: 2 }}>
+          <CashFlowChartCard range={range} setRange={setRange} data={cfData} />
+          <TransactionListCard transactions={accData.tx} />
         </div>
 
-        <div className="col-lg-3">
-          <div className="row row-cards g-3">
-            <div className="col-12">
-              <SpendingCategoryCard categories={accData.cats as any} />
-            </div>
-            <div className="col-12">
-              <RecentInsightsCard />
-            </div>
-          </div>
+        <div className="d-flex flex-column gap-3 h-100" style={{ flex: 1 }}>
+          <SpendingCategoryCard categories={accData.cats as any} />
+          <RecentInsightsCard />
         </div>
       </div>
+    </div>
 
       <AddAccountModal show={showAddModal} onClose={() => setShowAddModal(false)} />
     </BaseLayout>

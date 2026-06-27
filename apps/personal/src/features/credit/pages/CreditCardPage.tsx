@@ -309,163 +309,60 @@ export function CreditCardPage() {
               </div>
             </div>
             <div className="card-body p-0 m-0">
-              <div className="table-responsive d-none d-md-block">
-                <table className="table table-vcenter card-table table-hover">
-                  <thead>
-                    <tr>
-                      <th className="text-secondary small fw-bold px-4 py-2 bg-surface-secondary w-120">
-                        Tanggal
-                      </th>
-                      <th className="text-secondary small fw-bold py-2 bg-surface-secondary">
-                        Keterangan
-                      </th>
-                      <th className="text-secondary small fw-bold py-2 bg-surface-secondary w-150">
-                        Kategori
-                      </th>
-                      <th className="text-secondary small fw-bold text-end py-2 bg-surface-secondary w-150">
-                        Nominal
-                      </th>
-                      <th className="text-secondary small fw-bold text-center px-4 py-2 bg-surface-secondary w-120">
-                        Status
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      {
-                        name: 'Tokopedia',
-                        date: '2026-05-12',
-                        amount: -450000,
-                        category: 'Shopping',
-                        color: '#ff922b',
-                      },
-                      {
-                        name: 'Starbucks Coffee',
-                        date: '2026-05-11',
-                        amount: -55000,
-                        category: 'Food & Bev',
-                        color: '#51cf66',
-                      },
-                      {
-                        name: 'Grab Transport',
-                        date: '2026-05-10',
-                        amount: -25000,
-                        category: 'Transport',
-                        color: '#339af0',
-                      },
-                    ].map((t, i) => {
-                      const txDate = new Date(t.date)
-                      const formattedDate = txDate.toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                      })
-
-                      return (
-                        <tr key={i}>
-                          <td className="px-4 py-3">
-                            <div className="fw-medium text-nowrap">{formattedDate}</div>
-                          </td>
-                          <td className="py-3">
-                            <div className="fw-bold text-body">{t.name}</div>
-                          </td>
-                          <td className="py-3">
-                            <span
-                              className="badge badge-outline"
-                              style={{
-                                borderColor: `${t.color}40`,
-                                color: t.color,
-                                backgroundColor: `${t.color}08`,
-                                fontSize: '10px',
-                                padding: '2px 8px',
-                              }}
-                            >
-                              {t.category}
-                            </span>
-                          </td>
-                          <td className="text-end py-3">
-                            <div className="fw-bold text-danger">
-                              -{fmt(Math.abs(t.amount)).replace('Rp ', '')}
-                            </div>
-                          </td>
-                          <td className="text-center">
-                            <span
-                              className="badge bg-success-lt text-success border-0 px-2 py-1"
-                              style={{ fontSize: '10px' }}
-                            >
-                              Selesai
-                            </span>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              <div className="d-block d-md-none">
-                <div className="list-group list-group-flush">
-                  {[
-                    {
-                      name: 'Tokopedia',
-                      date: '2026-05-12',
-                      amount: -450000,
-                      category: 'Shopping',
-                      color: '#ff922b',
-                    },
-                    {
-                      name: 'Starbucks Coffee',
-                      date: '2026-05-11',
-                      amount: -55000,
-                      category: 'Food & Bev',
-                      color: '#51cf66',
-                    },
-                    {
-                      name: 'Grab Transport',
-                      date: '2026-05-10',
-                      amount: -25000,
-                      category: 'Transport',
-                      color: '#339af0',
-                    },
-                  ].map((t, i) => {
-                    const txDate = new Date(t.date)
-                    const formattedDate = txDate.toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'short',
-                    })
-                    return (
-                      <div key={i} className="list-group-item">
-                        <div className="d-flex justify-content-between align-items-center mb-1">
-                          <div className="fw-bold text-body">{t.name}</div>
-                          <div className="fw-bold text-danger">
-                            -{fmt(Math.abs(t.amount)).replace('Rp ', '')}
-                          </div>
+              <div>
+                {[
+                  {
+                    name: 'Tokopedia',
+                    date: '2026-05-12',
+                    amount: -450000,
+                    category: 'Shopping',
+                    color: '#ff922b',
+                  },
+                  {
+                    name: 'Starbucks Coffee',
+                    date: '2026-05-11',
+                    amount: -55000,
+                    category: 'Food & Bev',
+                    color: '#51cf66',
+                  },
+                  {
+                    name: 'Grab Transport',
+                    date: '2026-05-10',
+                    amount: -25000,
+                    category: 'Transport',
+                    color: '#339af0',
+                  },
+                ].map((t, i) => {
+                  const txDate = new Date(t.date)
+                  const formattedDate = txDate.toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                  })
+                  
+                  return (
+                    <div 
+                      key={i}
+                      className="d-flex justify-content-between align-items-center px-4 py-3"
+                      style={{ borderBottom: i < 2 ? '1px solid #fafafa' : undefined }}
+                    >
+                      <div className="flex-grow-1 overflow-hidden me-2">
+                        <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
+                          {t.name}
                         </div>
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div className="d-flex align-items-center gap-2">
-                            <div className="text-muted small">{formattedDate}</div>
-                            <span
-                              className="badge badge-outline"
-                              style={{
-                                borderColor: `${t.color}40`,
-                                color: t.color,
-                                backgroundColor: `${t.color}08`,
-                                fontSize: '9px',
-                                padding: '2px 6px',
-                              }}
-                            >
-                              {t.category}
-                            </span>
-                          </div>
-                          <span
-                            className="badge bg-success-lt text-success border-0 px-2 py-1"
-                            style={{ fontSize: '9px' }}
-                          >
-                            Selesai
+                        <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
+                          <span className="rounded px-1 fw-semibold" style={{ background: t.color + '22', color: t.color, fontSize: '10px' }}>
+                            {t.category}
                           </span>
+                          <span>&middot; Selesai</span>
+                          <span>&middot; {formattedDate}</span>
                         </div>
                       </div>
-                    )
-                  })}
-                </div>
+                      <div className="fw-bold flex-shrink-0" style={{ color: '#e53e3e', fontSize: '14px' }}>
+                        -{fmt(Math.abs(t.amount)).replace('Rp ', '')}
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
