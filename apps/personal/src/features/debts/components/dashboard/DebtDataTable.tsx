@@ -1,57 +1,35 @@
 import { useState, useMemo } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
-import { Modal, ModalHeader, Button, Pagination } from '@/shared/components/ui'
+import { Modal, ModalHeader, Button, Pagination, Spinner } from '@/shared/components/ui'
 
-interface DebtRecord {
-  id: string
-  personName: string
-  type: 'Utang' | 'Piutang'
-  status: string
-  dueDate: string
-  amount: number
-  notes?: string
-}
+import type { DebtRecord, DebtStatus, DebtType, PriorityType } from '../../types/debt.types'
+import { useCreateDebt, useUpdateDebt, useDeleteDebt } from '../../hooks/useDebts'
 
-const BASE_DATA: DebtRecord[] = [
-  { id: '1', personName: 'Budi Santoso', type: 'Utang', status: 'Belum Lunas', dueDate: '2026-07-10', amount: 1200000, notes: 'Pinjaman untuk renovasi' },
-  { id: '2', personName: 'Siti Rahayu', type: 'Piutang', status: 'Menunggu', dueDate: '2026-07-05', amount: 850000 },
-  { id: '3', personName: 'Ahmad Fauzi', type: 'Utang', status: 'Jatuh Tempo', dueDate: '2026-06-20', amount: 3500000, notes: 'KTA Bank' },
-  { id: '4', personName: 'Rina Wulandari', type: 'Piutang', status: 'Lunas', dueDate: '2026-06-15', amount: 500000 },
-  { id: '5', personName: 'Doni Prasetyo', type: 'Utang', status: 'Belum Lunas', dueDate: '2026-07-20', amount: 2000000 },
-  { id: '6', personName: 'Maya Sari', type: 'Piutang', status: 'Menunggu', dueDate: '2026-07-12', amount: 750000 },
-  { id: '7', personName: 'Joko Widodo', type: 'Utang', status: 'Sebagian', dueDate: '2026-07-08', amount: 4500000, notes: 'Cicilan motor' },
-  { id: '8', personName: 'Dewi Lestari', type: 'Piutang', status: 'Jatuh Tempo', dueDate: '2026-06-25', amount: 1100000 },
-  { id: '9', personName: 'Hendra Gunawan', type: 'Utang', status: 'Belum Lunas', dueDate: '2026-08-01', amount: 600000 },
-  { id: '10', personName: 'Yeni Kurniawati', type: 'Piutang', status: 'Lunas', dueDate: '2026-06-10', amount: 925000 },
-]
-
-const INITIAL_DATA: DebtRecord[] = Array.from({ length: 60 }, (_, i) => ({
-  ...BASE_DATA[i % BASE_DATA.length],
-  id: String(i + 1),
-  personName: `${BASE_DATA[i % BASE_DATA.length].personName} ${Math.floor(i / BASE_DATA.length) > 0 ? Math.floor(i / BASE_DATA.length) + 1 : ''}`.trim(),
-}))
-
-const PAGE_SIZE = 7
+const PAGE_SIZE = 10
 const STATUSES = ['Belum Lunas', 'Sebagian', 'Menunggu', 'Jatuh Tempo', 'Lunas'] as const
 const styles = `
   .debt-row:hover {
     background-color: var(--tblr-table-hover-bg, rgba(0, 0, 0, 0.04));
   }
 `
-const EMPTY_FORM: Omit<DebtRecord, 'id'> = {
-  personName: '', type: 'Utang', status: 'Belum Lunas', dueDate: '', amount: 0, notes: '',
+const EMPTY_FORM: Omit<DebtRecord, 'id' | 'createdAt'> = {
+  personName: '', type: 'Utang', status: 'Belum Lunas', dueDate: '', amount: 0, amountPaid: 0, description: '', priority: 'Sedang',
 }
 
-export function DebtDataTable() {
+export function DebtDataTable({ records = [], isLoading = false }: { records?: DebtRecord[]; isLoading?: boolean }) {
   const [activeTab, setActiveTab] = useState<'Semua' | 'Piutang' | 'Utang' | 'Jatuh Tempo'>('Semua')
   const [page, setPage] = useState(1)
-  const [records, setRecords] = useState<DebtRecord[]>(INITIAL_DATA)
+
+  // API Hooks
+  const createDebt = useCreateDebt()
+  const updateDebt = useUpdateDebt()
+  const deleteDebt = useDeleteDebt()
 
   // Modal state
   const [showForm, setShowForm] = useState(false)
   const [editTarget, setEditTarget] = useState<DebtRecord | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<DebtRecord | null>(null)
-  const [form, setForm] = useState<Omit<DebtRecord, 'id'>>(EMPTY_FORM)
+  const [form, setForm] = useState<Omit<DebtRecord, 'id' | 'createdAt'>>(EMPTY_FORM)
 
   const filteredData = useMemo(() => {
     let data = records
@@ -67,22 +45,34 @@ export function DebtDataTable() {
   const handleTabChange = (tab: typeof activeTab) => { setActiveTab(tab); setPage(1) }
 
   const openCreate = () => { setForm(EMPTY_FORM); setEditTarget(null); setShowForm(true) }
-  const openEdit = (item: DebtRecord) => { setForm({ personName: item.personName, type: item.type, status: item.status, dueDate: item.dueDate, amount: item.amount, notes: item.notes || '' }); setEditTarget(item); setShowForm(true) }
+  const openEdit = (item: DebtRecord) => { 
+    setForm({ 
+      personName: item.personName, 
+      type: item.type, 
+      status: item.status, 
+      dueDate: item.dueDate, 
+      amount: item.amount, 
+      amountPaid: item.amountPaid,
+      description: item.description || '',
+      priority: item.priority || 'Sedang'
+    })
+    setEditTarget(item)
+    setShowForm(true) 
+  }
 
   const handleSave = () => {
     if (!form.personName || !form.dueDate || !form.amount) return
     if (editTarget) {
-      setRecords((prev) => prev.map((r) => r.id === editTarget.id ? { ...editTarget, ...form } : r))
+      updateDebt.mutate({ id: editTarget.id, data: form })
     } else {
-      const newId = String(Date.now())
-      setRecords((prev) => [{ id: newId, ...form }, ...prev])
+      createDebt.mutate(form)
     }
     setShowForm(false)
   }
 
   const handleDelete = () => {
     if (!deleteTarget) return
-    setRecords((prev) => prev.filter((r) => r.id !== deleteTarget.id))
+    deleteDebt.mutate(deleteTarget.id)
     setDeleteTarget(null)
   }
 
@@ -138,7 +128,11 @@ export function DebtDataTable() {
 
           {/* List */}
           <div className="d-flex flex-column flex-grow-1">
-            {filteredData.length === 0 ? (
+            {isLoading ? (
+              <div className="text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+                <Spinner />
+              </div>
+            ) : filteredData.length === 0 ? (
               <div className="text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
                 <div className="d-flex justify-content-center text-secondary mb-3">
                   <Icon icon="folder-off" size={40} stroke={1.5} opacity={0.6} />
@@ -252,7 +246,7 @@ export function DebtDataTable() {
             </div>
             <div className="col-md-6 mb-3">
               <label className="form-label">Status</label>
-              <select className="form-select" value={form.status} onChange={(e) => setForm(f => ({ ...f, status: e.target.value }))}>
+              <select className="form-select" value={form.status} onChange={(e) => setForm(f => ({ ...f, status: e.target.value as DebtStatus }))}>
                 {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
@@ -289,8 +283,8 @@ export function DebtDataTable() {
               className="form-control"
               rows={3}
               placeholder="Tambahkan catatan jika perlu..."
-              value={form.notes || ''}
-              onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))}
+              value={form.description || ''}
+              onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
             />
           </div>
 

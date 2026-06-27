@@ -74,8 +74,8 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
   return (
     <div className="card border-0 shadow-sm">
       <div className="card-body p-2 p-md-4">
-        <div className="d-flex flex-wrap gap-3">
-          <div style={{ flex: '1 1 250px' }}>
+        <div className="row g-3">
+          <div className="col-12 col-sm-6 col-md-4 col-lg-3">
             <label className="form-label">Cari Transaksi</label>
             <div className="input-icon">
               <span className="input-icon-addon">
@@ -93,7 +93,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             </div>
           </div>
 
-          <div style={{ flex: '1 1 120px' }}>
+          <div className="col-6 col-md-4 col-lg-2">
             <label className="form-label">Tipe</label>
             <Select
               options={typeOptions}
@@ -106,7 +106,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div style={{ flex: '1 1 120px' }}>
+          <div className="col-6 col-md-4 col-lg-2">
             <label className="form-label">Akun</label>
             <Select
               options={accountOptions}
@@ -116,7 +116,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div style={{ flex: '1 1 120px' }}>
+          <div className="col-6 col-md-4 col-lg-2">
             <label className="form-label">Kat.</label>
             <Select
               options={categoryOptions}
@@ -126,7 +126,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div style={{ flex: '1 1 200px' }}>
+          <div className="col-12 col-md-4 col-lg-3">
             <label className="form-label">Tags</label>
             <Select
               multiple
@@ -139,7 +139,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div style={{ flex: '1 1 300px' }}>
+          <div className="col-12 col-md-6 col-lg-4">
             <label className="form-label">Rentang Tanggal</label>
             <div className="d-flex align-items-center gap-2">
               <div className="flex-grow-1">
@@ -160,7 +160,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             </div>
           </div>
 
-          <div style={{ flex: '1 1 120px' }}>
+          <div className="col-6 col-md-3 col-lg-2">
             <label className="form-label">Status</label>
             <Select
               options={statusOptions}
@@ -171,7 +171,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div style={{ flex: '1 1 100px' }}>
+          <div className="col-6 col-md-3 col-lg-2">
             <label className="form-label">Baris</label>
             <Select
               options={perPageOptions}
@@ -181,7 +181,7 @@ export const TransactionFiltersComponent: React.FC<TransactionFiltersProps> = ({
             />
           </div>
 
-          <div className="d-flex align-items-end" style={{ flex: '1 1 120px' }}>
+          <div className="col-12 col-md-12 col-lg-2 d-flex align-items-end">
             <Button element="button" onClick={onClear} white block icon="rotate-clockwise">
               Reset
             </Button>

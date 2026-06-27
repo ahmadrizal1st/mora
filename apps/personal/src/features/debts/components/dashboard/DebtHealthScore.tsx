@@ -1,20 +1,43 @@
 import { useMemo } from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
+import type { DebtRecord } from '../../types/debt.types'
 
-export function DebtHealthScore() {
+export function DebtHealthScore({ debts = [] }: { debts?: DebtRecord[] }) {
+  const stats = useMemo(() => {
+    let belumLunas = 0
+    let jatuhTempo = 0
+    let lunas = 0
+
+    debts.forEach(d => {
+      // Treat Utang and Piutang together for overall composition
+      if (d.status === 'Lunas') lunas += d.amount
+      else if (d.status === 'Jatuh Tempo' || new Date(d.dueDate) < new Date()) jatuhTempo += d.amount
+      else belumLunas += d.amount
+    })
+
+    const total = belumLunas + jatuhTempo + lunas || 1 // prevent div by zero
+    
+    return {
+      belumLunas: { amount: belumLunas, pct: Number(((belumLunas / total) * 100).toFixed(1)) },
+      jatuhTempo: { amount: jatuhTempo, pct: Number(((jatuhTempo / total) * 100).toFixed(1)) },
+      lunas: { amount: lunas, pct: Number(((lunas / total) * 100).toFixed(1)) },
+      total,
+    }
+  }, [debts])
+
   const chartData = useMemo(
     () => ({
       type: 'donut' as const,
       height: 10,
       series: [
-        { name: 'Belum Lunas', data: [59.1], color: '#f59f00' },
-        { name: 'Jatuh Tempo', data: [30.7], color: '#d63939' },
-        { name: 'Lunas', data: [10.2], color: '#2fb344' }
+        { name: 'Belum Lunas', data: [stats.belumLunas.pct || 0], color: '#f59f00' },
+        { name: 'Jatuh Tempo', data: [stats.jatuhTempo.pct || 0], color: '#d63939' },
+        { name: 'Lunas', data: [stats.lunas.pct || 0], color: '#2fb344' }
       ],
       labels: ['Belum Lunas', 'Jatuh Tempo', 'Lunas'],
       colors: ['#f59f00', '#d63939', '#2fb344'],
       sparkline: true,
-      donutValue: '3,1JT',
+      donutValue: `Rp ${(stats.total / 1000000).toFixed(1)}JT`,
       donutLabel: 'Total',
       extend: {
         dataLabels: {
@@ -32,13 +55,13 @@ export function DebtHealthScore() {
         },
       },
     }),
-    []
+    [stats]
   )
 
   const items = [
-    { label: 'Belum Lunas', amount: '1.850.000', pct: 59.1, color: '#f59f00' },
-    { label: 'Jatuh Tempo', amount: '960.000', pct: 30.7, color: '#d63939' },
-    { label: 'Lunas', amount: '320.000', pct: 10.2, color: '#2fb344' },
+    { label: 'Belum Lunas', amount: stats.belumLunas.amount.toLocaleString('id-ID'), pct: stats.belumLunas.pct, color: '#f59f00' },
+    { label: 'Jatuh Tempo', amount: stats.jatuhTempo.amount.toLocaleString('id-ID'), pct: stats.jatuhTempo.pct, color: '#d63939' },
+    { label: 'Lunas', amount: stats.lunas.amount.toLocaleString('id-ID'), pct: stats.lunas.pct, color: '#2fb344' },
   ]
 
   return (

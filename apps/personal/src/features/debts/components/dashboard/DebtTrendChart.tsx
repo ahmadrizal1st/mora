@@ -1,15 +1,10 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Datepicker } from '@/shared/components/ui/Datepicker'
+import type { DebtRecord } from '../../types/debt.types'
 
-const MOCK_DEBT_TREND = {
-  categories: ['1 Mei', '6 Mei', '11 Mei', '16 Mei', '21 Mei', '26 Mei', '31 Mei'],
-  piutang: [6000000, 11000000, 9000000, 7000000, 11000000, 10000000, 13000000],
-  utang: [3000000, 4000000, 5000000, 3000000, 5000000, 7000000, 6000000],
-}
-
-export function DebtTrendChart() {
+export function DebtTrendChart({ debts = [] }: { debts?: DebtRecord[] }) {
   const [range, setRange] = useState('W')
   const [groupBy, setGroupBy] = useState('day')
   
@@ -37,12 +32,51 @@ export function DebtTrendChart() {
     else if (r === 'Y') setGroupBy('month')
   }
 
+  // Compute trend data dynamically
+  const trendData = useMemo(() => {
+    if (!debts || debts.length === 0) {
+      return { categories: ['Kosong'], piutang: [0], utang: [0] }
+    }
+    
+    // Sort debts by due date ascending
+    const sorted = [...debts].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+    
+    // Group by month-year for simplicity in this demo (or could use day)
+    const grouped: Record<string, { utang: number, piutang: number }> = {}
+    
+    sorted.forEach(d => {
+      const date = new Date(d.dueDate)
+      const label = date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })
+      if (!grouped[label]) grouped[label] = { utang: 0, piutang: 0 }
+      
+      if (d.type === 'Utang' && d.status !== 'Lunas') {
+        grouped[label].utang += d.amount
+      } else if (d.type === 'Piutang' && d.status !== 'Lunas') {
+        grouped[label].piutang += d.amount
+      }
+    })
+
+    const categories = Object.keys(grouped)
+    if (categories.length === 0) return { categories: ['Kosong'], piutang: [0], utang: [0] }
+    
+    const piutang = categories.map(c => grouped[c].piutang)
+    const utang = categories.map(c => grouped[c].utang)
+
+    return { categories, piutang, utang }
+  }, [debts])
+
+  const currentNetBalance = useMemo(() => {
+    const totalUtang = debts.filter(d => d.type === 'Utang' && d.status !== 'Lunas').reduce((sum, d) => sum + d.amount, 0)
+    const totalPiutang = debts.filter(d => d.type === 'Piutang' && d.status !== 'Lunas').reduce((sum, d) => sum + d.amount, 0)
+    return totalPiutang - totalUtang
+  }, [debts])
+
   const chartData = {
     type: 'line' as const,
-    height: 15,
+    height: 16,
     series: [
-      { name: 'Piutang', data: MOCK_DEBT_TREND.piutang, color: 'success' },
-      { name: 'Utang', data: MOCK_DEBT_TREND.utang, color: 'danger' },
+      { name: 'Piutang', data: trendData.piutang, color: 'success' },
+      { name: 'Utang', data: trendData.utang, color: 'danger' },
     ],
     sparkline: false,
     strokeWidth: [3, 3],
@@ -57,7 +91,7 @@ export function DebtTrendChart() {
     },
     extend: {
       xaxis: {
-        categories: MOCK_DEBT_TREND.categories,
+        categories: trendData.categories,
         labels: {
           show: true,
           style: { fontSize: '12px', fontWeight: 500, cssClass: 'text-muted' },
@@ -69,17 +103,17 @@ export function DebtTrendChart() {
         show: true,
         labels: {
           style: { fontSize: '12px', fontWeight: 500, cssClass: 'text-muted' },
-          formatter: (val: number) => `${val / 1000000}jt`,
+          formatter: (val: number) => `Rp ${(val / 1000000).toFixed(1)}jt`,
         },
       },
       grid: {
         show: true,
         borderColor: 'var(--tblr-border-color)',
         strokeDashArray: 4,
-        padding: { bottom: 5 },
+        padding: { bottom: 0, top: -20 },
       },
       markers: {
-        size: 0,
+        size: 4,
       },
     },
   }
@@ -136,14 +170,16 @@ export function DebtTrendChart() {
             </div>
           </div>
         </div>
-        <div className="card-body d-flex flex-column gap-2">
+        <div className="card-body d-flex flex-column gap-2 flex-grow-1">
           <div>
             <div className="subheader text-muted text-mobile-xs">NET BALANCE</div>
             <div className="h1 mb-0 h1-mobile">
-              Rp {(MOCK_DEBT_TREND.piutang[MOCK_DEBT_TREND.piutang.length - 1] - MOCK_DEBT_TREND.utang[MOCK_DEBT_TREND.utang.length - 1]).toLocaleString('id-ID')}
+              Rp {currentNetBalance.toLocaleString('id-ID')}
             </div>
           </div>
-          <Chart chartId="debtTrendChart" chartData={chartData as any} />
+          <div className="flex-grow-1 d-flex flex-column justify-content-end" style={{ marginTop: '-40px' }}>
+            <Chart chartId="debtTrendChart" chartData={chartData as any} />
+          </div>
         </div>
       </div>
 

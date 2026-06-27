@@ -18,5 +18,39 @@ export const debtsService = {
       dueDate: item.due_date,
       createdAt: item.created_at,
     }))
+  },
+
+  async createDebt(data: Omit<DebtRecord, 'id' | 'createdAt'>): Promise<DebtRecord> {
+    const payload = {
+      person_name: data.personName,
+      description: data.description,
+      type: data.type.toLowerCase(),
+      amount: data.amount,
+      amount_paid: data.amountPaid || 0,
+      status: data.status,
+      priority: data.priority || 'Sedang',
+      due_date: data.dueDate,
+    }
+    const response = await api.post('/debts', payload)
+    return response.data.data
+  },
+
+  async updateDebt(id: string, data: Partial<Omit<DebtRecord, 'id' | 'createdAt'>>): Promise<DebtRecord> {
+    const payload: any = {}
+    if (data.personName !== undefined) payload.person_name = data.personName
+    if (data.description !== undefined) payload.description = data.description
+    if (data.type !== undefined) payload.type = data.type.toLowerCase()
+    if (data.amount !== undefined) payload.amount = data.amount
+    if (data.amountPaid !== undefined) payload.amount_paid = data.amountPaid
+    if (data.status !== undefined) payload.status = data.status
+    if (data.priority !== undefined) payload.priority = data.priority
+    if (data.dueDate !== undefined) payload.due_date = data.dueDate
+
+    const response = await api.put(`/debts/${id}`, payload)
+    return response.data.data
+  },
+
+  async deleteDebt(id: string): Promise<void> {
+    await api.delete(`/debts/${id}`)
   }
 }

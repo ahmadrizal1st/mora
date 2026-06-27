@@ -18,12 +18,19 @@ export function DebtsPage() {
     const totalDebtAmount = activeDebts.reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
     const totalReceivableAmount = activeReceivables.reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
 
+    // Calculate overdue (Jatuh Tempo)
+    const overdueDebts = activeDebts.filter((d: any) => new Date(d.dueDate) < new Date() || d.status === 'Jatuh Tempo')
+    const overdueCount = overdueDebts.length
+    const overdueAmount = overdueDebts.reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
+
     return {
       totalDebt: totalDebtAmount,
       totalReceivable: totalReceivableAmount,
       activeDebtCount: activeDebts.length,
       activeReceivableCount: activeReceivables.length,
       netCashflow: totalReceivableAmount - totalDebtAmount,
+      overdueCount,
+      overdueAmount,
     }
   }, [debts])
 
@@ -42,8 +49,8 @@ export function DebtsPage() {
           <DebtSummaryCards 
             totalPiutang={summary.totalReceivable}
             totalUtang={summary.totalDebt}
-            jatuhTempoCount={8}
-            jatuhTempoAmount={3850000}
+            jatuhTempoCount={summary.overdueCount}
+            jatuhTempoAmount={summary.overdueAmount}
             arusKasBersih={summary.netCashflow}
           />
         </div>
@@ -54,23 +61,23 @@ export function DebtsPage() {
           {/* Top Widgets Row */}
           <div className="d-flex flex-wrap gap-3 flex-grow-1" style={{ flexBasis: '60%' }}>
             <div className="d-flex flex-column flex-grow-1" style={{ flexBasis: '55%', minWidth: '300px' }}>
-              <DebtTrendChart />
+              <DebtTrendChart debts={debts} />
             </div>
             <div className="d-flex flex-column flex-grow-1" style={{ flexBasis: '40%', minWidth: '250px' }}>
-              <DebtHealthScore />
+              <DebtHealthScore debts={debts} />
             </div>
           </div>
 
           {/* Sidebar Widget (Aligned with top row) */}
           <div className="d-flex flex-column flex-grow-1" style={{ flexBasis: '30%', minWidth: '300px' }}>
-            <DebtRemindersWidget />
+            <DebtRemindersWidget debts={debts} />
           </div>
 
         </div>
 
         {/* Data Table (Full Width) */}
         <div>
-          <DebtDataTable />
+          <DebtDataTable records={debts} isLoading={isLoading} />
         </div>
 
       </div>
