@@ -85,6 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Accounts
     Route::apiResource('accounts', AccountController::class);
     Route::get('accounts-summary', [AccountController::class, 'summary']);
+    Route::get('accounts-analytics', [AccountController::class, 'analytics']);
 
     // Assets
     Route::apiResource('assets', \App\Http\Controllers\AssetController::class);

@@ -23,6 +23,12 @@ body {
   overflow-x: hidden;
 }
 
+/* Ensure consistent horizontal padding across navbar, page-header, and page-body */
+.container-xl {
+  --bs-gutter-x: 2rem;
+}
+
+
 .apexcharts-canvas,
 .apexcharts-canvas *,
 .apexcharts-canvas:focus,

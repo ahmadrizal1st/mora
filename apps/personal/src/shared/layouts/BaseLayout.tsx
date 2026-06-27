@@ -113,7 +113,7 @@ export default function BaseLayout({
             description={pageDescription}
             actions={pageActions}
             showBackButton={showBackButton}
-            containerClass={containerFlushMobile ? 'px-2 px-md-2' : undefined}
+            containerClass={undefined}
             className={clsx(navbarOverlap && navbarDark && 'text-white', pageHeaderClass)}
           />
         )}

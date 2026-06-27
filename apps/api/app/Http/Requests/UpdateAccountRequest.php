@@ -29,6 +29,7 @@ class UpdateAccountRequest extends FormRequest
             'currency_id' => ['sometimes', 'uuid', 'exists:currencies,id'],
             'provider_id' => ['nullable', 'uuid', 'exists:providers,id'],
             'color' => ['nullable', 'string', 'max:20'],
+            'logo' => ['nullable', 'string', 'max:500'],
             'account_type' => ['sometimes', "in:{$types}"],
             'is_archived' => ['sometimes', 'boolean'],
         ];

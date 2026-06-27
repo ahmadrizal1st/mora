@@ -140,9 +140,9 @@ export function Navbar({
       className={clsx(headerClasses, 'border-0 border-md-bottom')}
       onClick={handleNavClick}
       {...(dark ? { 'data-bs-theme': 'dark' } : {})}
-      {...(backgroundColor ? { style: { background: backgroundColor } } : {})}
+      {...(backgroundColor ? { style: { background: backgroundColor, height: '60px' } } : { style: { height: '60px' } })}
     >
-      <div className="container-xl px-2 px-md-3">
+      <div className="container-xl d-flex align-items-center justify-content-between" style={{ height: '60px', paddingLeft: '1rem', paddingRight: '1rem' }}>
         <button
           className="navbar-toggler d-none"
           type="button"
@@ -219,12 +219,12 @@ export function Navbar({
   )
 
   const menuBar = !condensed && (
-    <div className={clsx(`navbar-expand-${breakpoint}`)} onClick={handleNavClick}>
-      <div className="collapse navbar-collapse" id="navbar-menu">
-        <div className="navbar">
-          <div className="container-xl">
-            <div className="row flex-column flex-md-row flex-fill align-items-center">
-              <div className="col">
+    <div className={clsx(`navbar-expand-${breakpoint}`)} onClick={handleNavClick} style={{ height: '56px' }}>
+      <div className="collapse navbar-collapse h-100" id="navbar-menu">
+        <div className="navbar h-100 p-0 border-0">
+          <div className="container-xl h-100 d-flex align-items-center" style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
+            <div className="d-flex flex-column flex-md-row align-items-center w-100">
+              <div className="flex-grow-1">
                 <nav aria-label="Primary">
                   <NavbarMenu
                     items={navigationData}
@@ -234,7 +234,7 @@ export function Navbar({
                 </nav>
               </div>
 
-              <div className="col col-md-auto">
+              <div className="flex-shrink-0">
                 <ul className="navbar-nav flex-row align-items-center gap-2">
                   <li className="nav-item">
                     <Link

@@ -62,3 +62,10 @@ export const useAccountSummary = () => {
     queryFn: () => accountService.getAccountSummary(),
   })
 }
+
+export const useAccountAnalytics = (accountId?: string, month?: number, year?: number) => {
+  return useQuery({
+    queryKey: ['accountAnalytics', accountId, month, year],
+    queryFn: () => accountService.getAccountAnalytics(accountId, month, year),
+  })
+}

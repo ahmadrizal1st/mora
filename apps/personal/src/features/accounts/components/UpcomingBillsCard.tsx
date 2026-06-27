@@ -15,7 +15,7 @@ interface UpcomingBillsCardProps {
 
 export function UpcomingBillsCard({ bills }: UpcomingBillsCardProps) {
   return (
-    <div className="card shadow-sm border-0 h-100">
+    <div className="card shadow-sm border-0 flex-grow-1">
       <div className="card-body p-3 d-flex flex-column">
         <div className="d-flex align-items-center justify-content-between mb-4">
           <span className="text-secondary text-uppercase fw-semibold fs-5">Tagihan Mendatang</span>

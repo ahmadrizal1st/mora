@@ -4,7 +4,7 @@ import { Chart } from '../ui/Chart'
 import { CoinestCard } from '../cards/CoinestCard'
 import { QuickActions } from './QuickActions'
 import { SparklineStatCard } from '../cards/SparklineStatCard'
-import { RecentTransactionsTable } from '../cards/RecentTransactionsTable'
+import { TransactionListCard } from '@/features/accounts/components/TransactionListCard'
 import { UpcomingBillsCard } from '@/features/accounts/components/UpcomingBillsCard'
 import { MobileGridMenu } from './MobileGridMenu'
 
@@ -18,8 +18,9 @@ import {
   useTransactions
 } from '@/features/transaction/hooks/useTransactions'
 import { useGoals, useBudgets, useSubscriptions } from '@/features/planning/hooks/usePlanning'
-
+import { useAuth } from '@/features/auth/hooks/useAuth'
 export function DashboardContent() {
+  const { user } = useAuth()
   const { data: accountData, isLoading: isLoadingAccount } = useAccountSummary()
   const { data: txSummary, isLoading: isLoadingTxSummary } = useTransactionSummary()
   const { data: txHistory, isLoading: isLoadingTxHistory } = useTransactionHistory({ group_by: 'month' })
@@ -96,13 +97,13 @@ export function DashboardContent() {
   }
 
   const recentTransactions = recentTx?.data?.map((tx: any) => ({
-    id: tx.id,
-    subject: tx.notes || tx.category?.name || 'Uncategorized',
-    client: tx.account?.name || '-',
-    date: new Date(tx.tx_date).toLocaleDateString('id-ID'),
-    status: tx.type === 'income' ? 'Income' : 'Expense',
-    statusColor: tx.type === 'income' ? 'success' : 'danger',
-    price: formatCurrency(Number(tx.amount)),
+    ico: tx.category?.icon || 'receipt',
+    color: tx.category?.color || 'blue',
+    n: tx.title || tx.category?.name || 'Transaksi',
+    c: tx.category?.name || 'Lainnya',
+    a: formatCurrency(Number(tx.amount)),
+    d: new Date(tx.tx_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+    p: tx.type === 'income'
   })) || []
 
   const upcomingBills = subs?.subscriptions?.slice(0, 5).map((s: any) => ({
@@ -115,7 +116,7 @@ export function DashboardContent() {
   return (
     <div className="d-flex flex-column flex-lg-row gap-2 gap-lg-3">
       <div className="d-flex flex-column gap-2 gap-lg-3" style={{ flex: 1, minWidth: 0 }}>
-        <CoinestCard balance={summary.balance} name="Andrew Forbist" />
+        <CoinestCard balance={summary.balance} name={user?.name || 'User'} />
         <QuickActions />
         <div className="card border-0 shadow-sm d-none d-lg-flex flex-column">
               <div className="card-body">
@@ -266,7 +267,7 @@ export function DashboardContent() {
           className="d-flex gap-2 gap-lg-3 overflow-x-auto hide-scrollbar"
           style={{ scrollSnapType: 'x mandatory' }}
         >
-          <div className="mobile-slider-item" style={{ flex: '1 1 30%', minWidth: '240px' }}>
+          <div className="mobile-slider-item" style={{ flex: 1, minWidth: '160px' }}>
             <SparklineStatCard
               title="Total Income"
               value={summary.income}
@@ -275,7 +276,7 @@ export function DashboardContent() {
               color="green"
             />
           </div>
-          <div className="mobile-slider-item" style={{ flex: '1 1 30%', minWidth: '240px' }}>
+          <div className="mobile-slider-item" style={{ flex: 1, minWidth: '160px' }}>
             <SparklineStatCard
               title="Total Expense"
               value={summary.expense}
@@ -284,7 +285,7 @@ export function DashboardContent() {
               color="red"
             />
           </div>
-          <div className="mobile-slider-item" style={{ flex: '1 1 30%', minWidth: '240px' }}>
+          <div className="mobile-slider-item" style={{ flex: 1, minWidth: '160px' }}>
             <SparklineStatCard
               title="Total Savings"
               value={summary.savings}
@@ -384,34 +385,8 @@ export function DashboardContent() {
           </div>
         </div>
 
-        <div className="card border-0 shadow-sm flex-grow-1 d-flex flex-column">
-          <div className="card-header">
-            <h3 className="card-title">Recent Transactions</h3>
-            <div className="card-actions">
-              <div className="dropdown">
-                <a
-                  href="#"
-                  className="text-secondary small d-flex align-items-center gap-1 text-decoration-none"
-                  data-bs-toggle="dropdown"
-                >
-                  <span className="text-decoration-underline-hover">This Month</span>
-                  <Icon icon="chevron-down" size="xs" />
-                </a>
-                <div className="dropdown-menu dropdown-menu-end">
-                  <button className="dropdown-item">This Month</button>
-                  <button className="dropdown-item">Last Month</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="p-0">
-            <RecentTransactionsTable invoices={recentTransactions} hideHeader hideFooter />
-          </div>
-          <div className="card-footer bg-transparent border-0 text-center p-3">
-            <a href="#" className="text-secondary text-mobile-xs text-decoration-none">
-              View all transactions
-            </a>
-          </div>
+        <div className="flex-grow-1 d-flex flex-column">
+          <TransactionListCard transactions={recentTransactions} />
         </div>
       </div>
 
@@ -517,7 +492,7 @@ export function DashboardContent() {
               </div>
             </div>
 
-        <div className="d-none d-lg-block flex-grow-1">
+        <div className="d-none d-lg-block flex-grow-1 d-flex flex-column">
           <UpcomingBillsCard bills={upcomingBills} />
         </div>
       </div>

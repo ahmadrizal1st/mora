@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   const domain = env.VITE_DOMAIN || 'mora.localhost'
-  const apiUrl = env.VITE_API_URL || 'https://api.mora.localhost'
+  const apiUrl = env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 
   return {

@@ -49,6 +49,7 @@ export interface Account {
   provider_id?: string | null
   provider?: Provider
   color: string
+  logo?: string
   account_type: 'cash' | 'bank' | 'e-wallet' | 'investment' | 'credit' | 'saving' | 'loan'
   is_archived: boolean
   credit?: CreditAccount

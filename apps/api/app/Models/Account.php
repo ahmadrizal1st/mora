@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['user_id', 'name', 'currency_id', 'provider_id', 'color', 'account_type', 'is_archived'])]
+#[Fillable(['user_id', 'name', 'currency_id', 'provider_id', 'color', 'logo', 'account_type', 'is_archived'])]
 class Account extends Model
 {
     use HasUuids;

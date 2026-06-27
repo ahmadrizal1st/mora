@@ -17,9 +17,23 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             \App\Http\Middleware\ApiKeyMiddleware::class,
         ]);
+
+        $middleware->redirectGuestsTo(fn (Request $request) => 
+            $request->is('api/*') || $request->expectsJson() 
+                ? abort(response()->json(['message' => 'Unauthenticated. Silakan login terlebih dahulu.'], 401)) 
+                : route('login')
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
+            if ($request->is('api/*')) {
+                return true;
+            }
+            return $request->expectsJson();
+        });
+
         $exceptions->render(function (AuthenticationException $e, Request $request) {
+            \Log::info("AuthException Path: " . $request->path() . " ExpectsJSON: " . ($request->expectsJson() ? "yes" : "no"));
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'message' => 'Unauthenticated. Silakan login terlebih dahulu.',
@@ -28,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (\Illuminate\Database\QueryException $e, Request $request) {
+            \Log::info("AuthException Path: " . $request->path() . " ExpectsJSON: " . ($request->expectsJson() ? "yes" : "no"));
             if ($request->is('api/*') || $request->expectsJson()) {
                 $message = $e->getMessage();
                 
@@ -45,6 +60,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (\PDOException $e, Request $request) {
+            \Log::info("AuthException Path: " . $request->path() . " ExpectsJSON: " . ($request->expectsJson() ? "yes" : "no"));
             if ($request->is('api/*') || $request->expectsJson()) {
                 $message = $e->getMessage();
                 if (str_contains($message, '08006') || 

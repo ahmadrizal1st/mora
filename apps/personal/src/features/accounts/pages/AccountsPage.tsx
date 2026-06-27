@@ -1,17 +1,20 @@
 import { useState, useMemo, useEffect } from 'react'
+import dayjs from 'dayjs'
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { SummaryMetricCard } from '../components/SummaryMetricCard'
 import { AccountCard } from '../components/AccountCard'
 import { CashFlowChartCard } from '../components/CashFlowChartCard'
 import { TransactionListCard } from '../components/TransactionListCard'
 import { SpendingCategoryCard } from '../components/SpendingCategoryCard'
+import { BudgetOverviewCard } from '../components/BudgetOverviewCard'
 import { AccountVisualCard } from '../components/AccountVisualCard'
 import { RecentInsightsCard } from '../components/RecentInsightsCard'
 import { TopMerchantsCard } from '../components/TopMerchantsCard'
 import { AccountStatsCard } from '../components/AccountStatsCard'
 import { Icon } from '@/shared/components/ui/Icon'
+import { Modal, ModalHeader } from '@/shared/components/ui/Modal'
 import { AddAccountModal } from '../components/AddAccountModal'
-import { useAccounts, useAccountSummary } from '../../transaction/hooks/useAccounts'
+import { useAccounts, useAccountSummary, useAccountAnalytics, useDeleteAccount } from '../../transaction/hooks/useAccounts'
 
 export function AccountsPage() {
   const [isMobile, setIsMobile] = useState(
@@ -24,16 +27,41 @@ export function AccountsPage() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const { data: accountsResponse } = useAccounts({ group_by: 'month' })
+  const [cur, setCur] = useState(0)
+  const [range, setRange] = useState('W')
+  const [groupBy, setGroupBy] = useState('day')
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [editData, setEditData] = useState<any>(null)
+  
+  const deleteAccount = useDeleteAccount()
+
+  const handleSetRange = (r: string) => {
+    setRange(r)
+    if (r === 'W') setGroupBy('day')
+    else if (r === 'M') setGroupBy('week')
+    else if (r === 'Y') setGroupBy('month')
+  }
+
+  const dateParams = useMemo(() => {
+    const today = dayjs()
+    if (range === 'W') {
+      return { date_from: today.startOf('week').format('YYYY-MM-DD'), date_to: today.endOf('week').format('YYYY-MM-DD') }
+    } else if (range === 'M') {
+      return { date_from: today.startOf('month').format('YYYY-MM-DD'), date_to: today.endOf('month').format('YYYY-MM-DD') }
+    } else if (range === 'Y') {
+      return { date_from: today.startOf('year').format('YYYY-MM-DD'), date_to: today.endOf('year').format('YYYY-MM-DD') }
+    }
+    return {}
+  }, [range])
+
+  const { data: accountsResponse } = useAccounts({ group_by: groupBy, ...dateParams })
   const { data: summaryData } = useAccountSummary()
   
   const accounts = accountsResponse?.data || []
-
-  const [cur, setCur] = useState(0)
-  const [range, setRange] = useState('W')
-  const [showAddModal, setShowAddModal] = useState(false)
   
   const selectedAcc = accounts[cur]
+  const { data: analyticsData } = useAccountAnalytics(selectedAcc?.id)
 
   const accData = useMemo(() => {
     if (!selectedAcc) return null
@@ -44,17 +72,31 @@ export function AccountsPage() {
     
     // Filter summary data for this account if needed, or just use global for now
     // In a real app we'd fetch account-specific transactions/categories
-    const tx = summaryData?.recent_transactions || []
-    const rawCats = summaryData?.expenses_by_category || []
-    
-    const cats = rawCats.map((c: any) => ({
-      name: c.category?.name || 'Uncategorized',
-      amount: c.total,
-      color: c.category?.color || '#000000',
-      icon: c.category?.icon || 'box'
+    const tx = (analyticsData?.recent_transactions || []).map((t: any) => ({
+      ico: t.category?.icon || 'box',
+      color: t.category?.color || '#000000',
+      n: t.merchant || 'Transaksi',
+      c: t.category?.name || 'Uncategorized',
+      a: t.type === 'expense' ? `Rp -${Number(t.amount).toLocaleString('id-ID')}` : `Rp +${Number(t.amount).toLocaleString('id-ID')}`,
+      d: dayjs(t.tx_date).format('D MMM, HH:mm'),
+      p: t.type === 'income'
     }))
+    const totalExp = analyticsData?.stats?.total_expense || 1
+    const rawCats = analyticsData?.expenses_by_category || []
+    
+    const cats = rawCats.map((c: any) => {
+      const amount = Number(c.total)
+      return {
+        n: c.category?.name || 'Uncategorized',
+        v: `Rp ${amount.toLocaleString('id-ID')}`,
+        pct: Math.round((amount / totalExp) * 100),
+        color: c.category?.color || 'gray',
+        ico: c.category?.icon || 'box'
+      }
+    })
 
     return {
+      id: selectedAcc.id,
       name: selectedAcc.name,
       num: selectedAcc.id.substring(0, 8),
       type: selectedAcc.account_type,
@@ -63,35 +105,20 @@ export function AccountsPage() {
       exp,
       chg: Math.abs(chg),
       chgPos: chg >= 0,
-      logo: selectedAcc.account_type?.toLowerCase().includes('tunai') || selectedAcc.account_type?.toLowerCase().includes('cash')
+      logo: selectedAcc.logo || (selectedAcc.account_type?.toLowerCase().includes('tunai') || selectedAcc.account_type?.toLowerCase().includes('cash')
         ? 'https://cdn-icons-png.flaticon.com/512/2017/2017461.png'
-        : null,
+        : null),
       color: (selectedAcc.account_type?.toLowerCase().includes('tunai') || selectedAcc.account_type?.toLowerCase().includes('cash'))
         ? '#2fb344'
         : (selectedAcc.color || '#4263eb'),
       tx,
       cats
     }
-  }, [selectedAcc, summaryData])
+  }, [selectedAcc, summaryData, analyticsData])
 
   const cfData = useMemo(() => {
-    if (!selectedAcc || !selectedAcc.history) {
-      return { lbl: ['M1', 'M2', 'M3', 'M4'], inc: [0, 0, 0, 0], exp: [0, 0, 0, 0] }
-    }
-    
-    // Fallback to mock logic for chart if history is empty (since it's a demo)
-    if (selectedAcc.history.labels.length === 0) {
-      const s = cur * 11
-      const map: Record<string, string[]> = {
-        W: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-        M: ['M1', 'M2', 'M3', 'M4'],
-        '3M': ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        Y: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'],
-      }
-      const lbl = map[range] || map['W']
-      const inc = lbl.map((_, i) => Math.round(500 + Math.abs(Math.sin((i + s) * 1.4)) * 2000))
-      const exp = lbl.map((_, i) => Math.round(300 + Math.abs(Math.cos((i + s) * 1.8)) * 1200))
-      return { lbl, inc, exp }
+    if (!selectedAcc || !selectedAcc.history || selectedAcc.history.labels.length === 0) {
+      return { lbl: [], inc: [], exp: [] }
     }
 
     return { 
@@ -135,13 +162,13 @@ export function AccountsPage() {
               isActive={cur === idx}
               type={acc.account_type as any}
               name={acc.name}
-              balance={acc.balance || 0}
+              balance={`Rp ${Number(acc.balance || 0).toLocaleString('id-ID')}`}
               delta={0}
               chgPos={true}
               logo={
-                acc.account_type?.toLowerCase().includes('tunai') || acc.account_type?.toLowerCase().includes('cash')
+                acc.logo || (acc.account_type?.toLowerCase().includes('tunai') || acc.account_type?.toLowerCase().includes('cash')
                   ? 'https://cdn-icons-png.flaticon.com/512/2017/2017461.png'
-                  : null
+                  : null)
               }
               color={
                 (acc.account_type?.toLowerCase().includes('tunai') || acc.account_type?.toLowerCase().includes('cash'))
@@ -178,78 +205,139 @@ export function AccountsPage() {
           name={accData.name}
           num={accData.num}
           type={accData.type as any}
-          balance={accData.bal}
+          balance={`Rp ${Number(accData.bal || 0).toLocaleString('id-ID')}`}
           logo={accData.logo}
           color={accData.color}
+          onEdit={() => { setEditData(accData); setShowAddModal(true); }}
+          onDelete={() => setShowDeleteModal(true)}
         />
       </div>
 
-      <div 
-        style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-          gap: '1rem' 
-        }}
-      >
-        <SummaryMetricCard
-          title="Saldo Terkini"
-          value={accData.bal}
-          subtext={accData.name}
-          icon="wallet"
-          iconColor="primary"
-        />
-        <SummaryMetricCard
-          title="Total Pemasukan"
-          value={accData.inc}
-          subtext="Terkini"
-          icon="trending-up"
-          valueColor="success"
-        />
-        <SummaryMetricCard
-          title="Total Pengeluaran"
-          value={accData.exp}
-          subtext={`${accData.tx.length} Transaksi Terakhir`}
-          icon="trending-down"
-          valueColor="danger"
-        />
-        <SummaryMetricCard
-          title="Net Mutasi"
-          value={accData.chgPos ? `+${accData.chg}` : `-${accData.chg}`}
-          subtext="Selisih In/Out"
-          icon="arrows-exchange"
-          valueColor={accData.chgPos ? 'success' : 'danger'}
-        />
+      <div className="row g-3">
+        <div className="col-12 col-md-3">
+          <SummaryMetricCard
+            title="Saldo Terkini"
+            value={`Rp ${Number(accData.bal || 0).toLocaleString('id-ID')}`}
+            subtext={accData.name}
+            icon="wallet"
+            valueColor="primary"
+          />
+        </div>
+        <div className="col-12 col-md-3">
+          <SummaryMetricCard
+            title="Total Pemasukan"
+            value={`Rp ${Number(analyticsData?.stats?.total_income || 0).toLocaleString('id-ID')}`}
+            subtext="Bulan Ini"
+            icon="trending-up"
+            valueColor="success"
+          />
+        </div>
+        <div className="col-12 col-md-3">
+          <SummaryMetricCard
+            title="Total Pengeluaran"
+            value={`Rp ${Number(analyticsData?.stats?.total_expense || 0).toLocaleString('id-ID')}`}
+            subtext="Bulan Ini"
+            icon="trending-down"
+            valueColor="danger"
+          />
+        </div>
+        <div className="col-12 col-md-3">
+          <SummaryMetricCard
+            title="Net Mutasi"
+            value={(analyticsData?.stats?.net_balance > 0 ? "+ Rp " : analyticsData?.stats?.net_balance < 0 ? "- Rp " : "Rp ") + `${Math.abs(analyticsData?.stats?.net_balance || 0).toLocaleString('id-ID')}`}
+            subtext="Bulan Ini"
+            icon="arrows-exchange"
+            valueColor={analyticsData?.stats?.net_balance > 0 ? "success" : "danger"}
+          />
+        </div>
       </div>
 
-      <div className="d-flex flex-column flex-lg-row gap-3">
-        <div className="d-flex flex-column gap-3 h-100" style={{ flex: 1 }}>
+      <div className="d-flex flex-column flex-lg-row gap-3 align-items-stretch">
+        <div className="d-flex flex-column gap-3" style={{ flex: 1 }}>
           <div className="d-none d-lg-block">
             <AccountVisualCard
               name={accData.name}
               num={accData.num}
               type={accData.type as any}
-              balance={accData.bal}
+              balance={`Rp ${Number(accData.bal || 0).toLocaleString('id-ID')}`}
               logo={accData.logo}
               color={accData.color}
+              onEdit={() => { setEditData(accData); setShowAddModal(true); }}
+              onDelete={() => setShowDeleteModal(true)}
             />
           </div>
-          <AccountStatsCard />
-          <TopMerchantsCard />
+          <AccountStatsCard stats={analyticsData?.stats} />
+          <div className="flex-grow-1 d-flex flex-column">
+            <TopMerchantsCard merchants={analyticsData?.merchants} />
+          </div>
         </div>
 
-        <div className="d-flex flex-column gap-3 h-100" style={{ flex: 2 }}>
-          <CashFlowChartCard range={range} setRange={setRange} data={cfData} />
-          <TransactionListCard transactions={accData.tx} />
+        <div className="d-flex flex-column gap-3" style={{ flex: 2 }}>
+          <CashFlowChartCard 
+            balance={accData.bal} 
+            range={range} 
+            setRange={handleSetRange} 
+            groupBy={groupBy}
+            setGroupBy={setGroupBy}
+            data={cfData} 
+          />
+          <div className="flex-grow-1 d-flex flex-column">
+            <TransactionListCard transactions={accData.tx} />
+          </div>
         </div>
 
-        <div className="d-flex flex-column gap-3 h-100" style={{ flex: 1 }}>
+        <div className="d-flex flex-column gap-3" style={{ flex: 1 }}>
           <SpendingCategoryCard categories={accData.cats as any} />
-          <RecentInsightsCard />
+          <div className="flex-grow-1 d-flex flex-column">
+            <RecentInsightsCard insights={analyticsData?.insights} />
+          </div>
         </div>
       </div>
     </div>
 
-      <AddAccountModal show={showAddModal} onClose={() => setShowAddModal(false)} />
+      <AddAccountModal show={showAddModal} onClose={() => { setShowAddModal(false); setEditData(null); }} initialData={editData} />
+
+      <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)} size="sm">
+        <ModalHeader onClose={() => setShowDeleteModal(false)}>
+          <div className="d-flex align-items-center gap-2">
+            <Icon icon="alert-triangle" className="text-danger" size="md" />
+            Hapus Akun
+          </div>
+        </ModalHeader>
+        <div className="modal-body text-center py-4">
+          <p className="mb-0 fs-3">
+            Hapus <strong>{accData.name}</strong>?
+          </p>
+          <div className="text-secondary small mt-2">
+            Tindakan ini tidak dapat dibatalkan.
+          </div>
+        </div>
+        <div className="modal-footer border-0 pt-0">
+          <div className="row w-100 m-0">
+            <div className="col">
+              <button className="btn btn-ghost-secondary w-100" onClick={() => setShowDeleteModal(false)}>
+                Batal
+              </button>
+            </div>
+            <div className="col">
+              <button 
+                className="btn btn-danger w-100" 
+                onClick={() => {
+                  deleteAccount.mutate(accData.id, {
+                    onSuccess: () => {
+                      setShowDeleteModal(false)
+                      setCur(0)
+                    }
+                  })
+                }}
+                disabled={deleteAccount.isPending}
+              >
+                {deleteAccount.isPending ? 'Loading...' : 'Hapus'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </BaseLayout>
   )
 }

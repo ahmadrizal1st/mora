@@ -7,6 +7,8 @@ interface AccountVisualCardProps {
   balance: string
   logo?: string
   color?: string
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
 function getContrastYIQ(hexcolor: string) {
@@ -27,6 +29,8 @@ export function AccountVisualCard({
   balance,
   logo,
   color,
+  onEdit,
+  onDelete,
 }: AccountVisualCardProps) {
   const isBank = type.toLowerCase().includes('bank')
   const isInvest = ['invest', 'bibit', 'ajaib', 'bareksa'].some((k) =>
@@ -114,7 +118,36 @@ export function AccountVisualCard({
             </div>
             <div className="h3 fw-bold mb-0">{name}</div>
           </div>
-          <Icon icon="nfc" size="md" />
+          <div className="d-flex align-items-center gap-2">
+            <Icon icon="nfc" size="md" />
+            {(onEdit || onDelete) && (
+              <div className="dropdown">
+                <a
+                  href="#"
+                  className={`btn-action dropdown-toggle ${isDarkText ? 'text-dark' : 'text-white'}`}
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style={{ opacity: 0.8 }}
+                >
+                  <Icon icon="dots-vertical" size="sm" />
+                </a>
+                <div className="dropdown-menu dropdown-menu-end">
+                  {onEdit && (
+                    <button className="dropdown-item" onClick={onEdit}>
+                      <Icon icon="pencil" className="me-2 text-secondary" size="sm" />
+                      Edit Akun
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button className="dropdown-item text-danger" onClick={onDelete}>
+                      <Icon icon="trash" className="me-2 text-danger" size="sm" />
+                      Hapus Akun
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div>

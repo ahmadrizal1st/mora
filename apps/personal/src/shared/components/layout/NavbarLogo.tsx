@@ -19,7 +19,7 @@ export function NavbarLogo({
   header,
   className,
 }: NavbarLogoProps) {
-  const linkClass = clsx(`${prefix}-brand`, `${prefix}-brand-autodark`, className)
+  const linkClass = clsx(`${prefix}-brand`, `${prefix}-brand-autodark`, 'py-0', className)
 
   const logoContent = (
     <>

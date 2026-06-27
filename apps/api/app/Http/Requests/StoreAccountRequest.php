@@ -29,6 +29,7 @@ class StoreAccountRequest extends FormRequest
             'currency_id' => ['required', 'uuid', 'exists:currencies,id'],
             'provider_id' => ['nullable', 'uuid', 'exists:providers,id'],
             'color' => ['nullable', 'string', 'max:20'],
+            'logo' => ['nullable', 'string', 'max:500'],
             'account_type' => ['required', "in:{$types}"],
         ];
     }

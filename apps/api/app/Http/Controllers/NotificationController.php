@@ -21,7 +21,7 @@ class NotificationController extends Controller
             $request->validated()
         );
 
-        return response()->json([
+        \Log::info($request->headers->all()); return response()->json([
             'data' => NotificationData::collect($notifications, DataCollection::class),
             'meta' => [
                 'current_page' => $notifications->currentPage(),
@@ -37,7 +37,7 @@ class NotificationController extends Controller
      */
     public function unreadCount(Request $request): JsonResponse
     {
-        return response()->json([
+        \Log::info($request->headers->all()); return response()->json([
             'unread_count' => $request->user()->unreadNotifications()->count()
         ]);
     }
@@ -49,7 +49,7 @@ class NotificationController extends Controller
     {
         NotificationService::markAsRead($request->user(), $id);
 
-        return response()->json(['message' => 'Notification marked as read.']);
+        \Log::info($request->headers->all()); return response()->json(['message' => 'Notification marked as read.']);
     }
 
     /**
@@ -59,7 +59,7 @@ class NotificationController extends Controller
     {
         NotificationService::markAllAsRead($request->user());
 
-        return response()->json(['message' => 'All notifications marked as read.']);
+        \Log::info($request->headers->all()); return response()->json(['message' => 'All notifications marked as read.']);
     }
 
     /**
@@ -69,7 +69,7 @@ class NotificationController extends Controller
     {
         $isStarred = NotificationService::toggleStar($request->user(), $id);
 
-        return response()->json([
+        \Log::info($request->headers->all()); return response()->json([
             'message' => 'Notification starred status updated.', 
             'is_starred' => $isStarred
         ]);
@@ -82,6 +82,6 @@ class NotificationController extends Controller
     {
         NotificationService::destroy($request->user(), $id);
 
-        return response()->json(['message' => 'Notification deleted.']);
+        \Log::info($request->headers->all()); return response()->json(['message' => 'Notification deleted.']);
     }
 }

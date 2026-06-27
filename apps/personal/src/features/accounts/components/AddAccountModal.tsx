@@ -12,6 +12,8 @@ import {
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useCurrencies } from '../../transaction/hooks/useLookups'
+import { useCreateAccount, useUpdateAccount } from '../../transaction/hooks/useAccounts'
 
 const accountSchema = z.object({
   name: z.string().min(1, 'Nama akun wajib diisi'),
@@ -26,6 +28,7 @@ type AccountFormValues = z.infer<typeof accountSchema>
 interface AddAccountModalProps {
   show: boolean
   onClose: () => void
+  initialData?: any
 }
 
 const ACCOUNT_CATEGORIES = [
@@ -143,11 +146,15 @@ const ACCOUNT_CATEGORIES = [
   },
 ]
 
-export function AddAccountModal({ show, onClose }: AddAccountModalProps) {
+export function AddAccountModal({ show, onClose, initialData }: AddAccountModalProps) {
   const [step, setStep] = useState<'selection' | 'form'>('selection')
   const [activeTab, setActiveTab] = useState('bank')
   const [isCustom, setIsCustom] = useState(false)
   const [selectedPredefined, setSelectedPredefined] = useState<any>(null)
+
+  const { data: currencies = [] } = useCurrencies()
+  const createAccount = useCreateAccount()
+  const updateAccount = useUpdateAccount()
 
   const {
     register,
@@ -171,19 +178,37 @@ export function AddAccountModal({ show, onClose }: AddAccountModalProps) {
 
   useEffect(() => {
     if (show) {
-      setStep('selection')
-      setActiveTab('bank')
-      setIsCustom(false)
-      setSelectedPredefined(null)
-      reset({
-        name: '',
-        type: 'Bank',
-        balance: 0,
-        color: '#066fd1',
-        logo: '',
-      })
+      if (initialData) {
+        setStep('form')
+        setIsCustom(true)
+        setSelectedPredefined(null)
+        let typeStr = 'Bank'
+        if (initialData.type === 'cash') typeStr = 'Cash'
+        else if (initialData.type === 'e-wallet') typeStr = 'E-wallet'
+        else if (initialData.type === 'investment') typeStr = 'Investment'
+
+        reset({
+          name: initialData.name || '',
+          type: typeStr,
+          balance: (initialData.balance ?? initialData.bal) || 0,
+          color: initialData.color || '#066fd1',
+          logo: initialData.logo || '',
+        })
+      } else {
+        setStep('selection')
+        setActiveTab('bank')
+        setIsCustom(false)
+        setSelectedPredefined(null)
+        reset({
+          name: '',
+          type: 'Bank',
+          balance: 0,
+          color: '#066fd1',
+          logo: '',
+        })
+      }
     }
-  }, [show, reset])
+  }, [show, initialData, reset])
 
   const handleSelectAccount = (item: any) => {
     if (item.value === 'Custom') {
@@ -205,16 +230,37 @@ export function AddAccountModal({ show, onClose }: AddAccountModalProps) {
   }
 
   const onSubmit = (data: AccountFormValues) => {
-    console.log('New Account Data:', data)
+    let accType = 'bank'
+    const typeLower = data.type.toLowerCase()
+    if (typeLower.includes('wallet')) accType = 'e-wallet'
+    else if (typeLower.includes('invest') || typeLower.includes('bibit')) accType = 'investment'
+    else if (typeLower.includes('cash') || typeLower.includes('tunai')) accType = 'cash'
 
-    onClose()
+    const payload = {
+      name: data.name,
+      account_type: accType as any,
+      currency_id: currencies[0]?.id || '',
+      color: data.color || '#4263eb',
+      logo: data.logo || undefined,
+      is_archived: false,
+    }
+
+    if (initialData?.id) {
+      updateAccount.mutate({ id: initialData.id, data: payload }, {
+        onSuccess: () => onClose()
+      })
+    } else {
+      createAccount.mutate(payload, {
+        onSuccess: () => onClose()
+      })
+    }
   }
 
   return (
     <Modal show={show} onClose={onClose} size="md">
       <ModalHeader onClose={onClose}>
         <div className="d-flex align-items-center gap-2">
-          {step === 'form' && (
+          {step === 'form' && !initialData && (
             <button
               type="button"
               className="btn btn-icon btn-sm btn-ghost-secondary me-2"

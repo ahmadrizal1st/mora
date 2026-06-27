@@ -262,7 +262,6 @@ export const TransactionListPage: FC = () => {
               <Icon icon="filter" size={24} stroke={1.5} />
             </button>
           )}
-          {!isMobile && <DropdownGrouping defaultValue={groupBy} onChange={setGroupBy} />}
         </div>
       }
     >

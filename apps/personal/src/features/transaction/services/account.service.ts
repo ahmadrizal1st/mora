@@ -35,5 +35,14 @@ export const accountService = {
   async getAccountSummary(): Promise<any> {
     const response = await api.get('/accounts-summary')
     return response.data.data
+  },
+
+  async getAccountAnalytics(accountId?: string, month?: number, year?: number): Promise<any> {
+    const params: any = {}
+    if (accountId) params.account_id = accountId
+    if (month) params.month = month
+    if (year) params.year = year
+    const response = await api.get('/accounts-analytics', { params })
+    return response.data.data
   }
 }
