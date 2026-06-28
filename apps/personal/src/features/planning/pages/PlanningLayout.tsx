@@ -64,26 +64,7 @@ export function PlanningLayout() {
 
   const totalBudget = budgetData?.totalBudget || 0
   const spent = budgetData?.spent || 0
-  const remaining = totalBudget - spent
   const safeToSpendPerDay = budgetData?.safeToSpendPerDay || 0
-
-  const formatMonthYear = (date: Date) => {
-    const months = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ]
-    return `${months[date.getMonth()]} ${date.getFullYear()}`
-  }
 
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
 
@@ -296,7 +277,12 @@ export function PlanningLayout() {
       }
     >
       <div className="row row-cards g-3 mb-4">
-        <BudgetSummaryCards totalBudget={totalBudget} spent={spent} safeToSpendPerDay={safeToSpendPerDay} />
+        <BudgetSummaryCards 
+          totalBudget={totalBudget} 
+          spent={spent} 
+          safeToSpendPerDay={safeToSpendPerDay} 
+          currentDate={currentDate}
+        />
       </div>
 
       <div className="mb-4 d-flex justify-content-center">

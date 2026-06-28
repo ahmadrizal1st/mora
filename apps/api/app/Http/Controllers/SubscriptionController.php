@@ -2,59 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subscription;
+use App\Http\Requests\StoreSubscriptionRequest;
+use App\Http\Requests\UpdateSubscriptionRequest;
+use App\Data\SubscriptionData;
+use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class SubscriptionController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $subscriptions = $request->user()->subscriptions()->latest()->get();
-        return response()->json(['data' => $subscriptions]);
+        $subscriptions = SubscriptionService::list($request->user());
+        return response()->json(['data' => SubscriptionData::collect($subscriptions)]);
     }
 
-    public function store(Request $request)
+    public function store(StoreSubscriptionRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'amount' => 'required|numeric',
-            'next_billing_date' => 'required|date',
-            'status' => 'nullable|string',
-            'icon' => 'nullable|string',
-            'color' => 'nullable|string',
-        ]);
-
-        $subscription = $request->user()->subscriptions()->create($validated);
-        return response()->json(['data' => $subscription], 201);
+        $subscription = SubscriptionService::store($request->user(), $request->validated());
+        return response()->json(['data' => SubscriptionData::from($subscription)], 201);
     }
 
-    public function show(Request $request, string $id)
+    public function show(Request $request, string $id): JsonResponse
     {
-        $subscription = $request->user()->subscriptions()->findOrFail($id);
-        return response()->json(['data' => $subscription]);
+        $subscription = SubscriptionService::show($request->user(), $id);
+        return response()->json(['data' => SubscriptionData::from($subscription)]);
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateSubscriptionRequest $request, string $id): JsonResponse
     {
-        $subscription = $request->user()->subscriptions()->findOrFail($id);
-
-        $validated = $request->validate([
-            'name' => 'sometimes|string',
-            'amount' => 'sometimes|numeric',
-            'next_billing_date' => 'sometimes|date',
-            'status' => 'sometimes|string',
-            'icon' => 'sometimes|string|nullable',
-            'color' => 'sometimes|string|nullable',
-        ]);
-
-        $subscription->update($validated);
-        return response()->json(['data' => $subscription]);
+        $subscription = SubscriptionService::update($request->user(), $id, $request->validated());
+        return response()->json(['data' => SubscriptionData::from($subscription)]);
     }
 
-    public function destroy(Request $request, string $id)
+    public function destroy(Request $request, string $id): JsonResponse
     {
-        $subscription = $request->user()->subscriptions()->findOrFail($id);
-        $subscription->delete();
+        SubscriptionService::destroy($request->user(), $id);
         return response()->json(null, 204);
     }
 }

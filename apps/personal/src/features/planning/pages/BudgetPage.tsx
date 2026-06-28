@@ -65,7 +65,7 @@ export function BudgetPage() {
           </div>
           <div className="card-body p-4">
             <div className="mb-5">
-              <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary-subtle">
+              <div className="d-flex align-items-center justify-between mb-3 pb-2 border-bottom border-secondary-subtle">
                 <div className="d-flex align-items-center gap-2">
                   <div className="avatar avatar-xs rounded bg-primary text-white shadow-sm">
                     <Icon icon="home" size="xs" />
@@ -97,7 +97,7 @@ export function BudgetPage() {
             </div>
 
             <div className="mb-5">
-              <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary-subtle">
+              <div className="d-flex align-items-center justify-between mb-3 pb-2 border-bottom border-secondary-subtle">
                 <div className="d-flex align-items-center gap-2">
                   <div className="avatar avatar-xs rounded bg-warning text-white shadow-sm">
                     <Icon icon="star" size="xs" />
@@ -129,7 +129,7 @@ export function BudgetPage() {
             </div>
 
             <div>
-              <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary-subtle">
+              <div className="d-flex align-items-center justify-between mb-3 pb-2 border-bottom border-secondary-subtle">
                 <div className="d-flex align-items-center gap-2">
                   <div className="avatar avatar-xs rounded bg-success text-white shadow-sm">
                     <Icon icon="pig-money" size="xs" />

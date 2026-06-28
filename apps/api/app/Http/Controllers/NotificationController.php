@@ -21,7 +21,7 @@ class NotificationController extends Controller
             $request->validated()
         );
 
-        \Log::info($request->headers->all()); return response()->json([
+        return response()->json([
             'data' => NotificationData::collect($notifications, DataCollection::class),
             'meta' => [
                 'current_page' => $notifications->currentPage(),
@@ -32,56 +32,41 @@ class NotificationController extends Controller
         ]);
     }
 
-    /**
-     * Get unread notifications count.
-     */
     public function unreadCount(Request $request): JsonResponse
     {
-        \Log::info($request->headers->all()); return response()->json([
+        return response()->json([
             'unread_count' => $request->user()->unreadNotifications()->count()
         ]);
     }
 
-    /**
-     * Mark a specific notification as read.
-     */
     public function markAsRead(Request $request, $id): JsonResponse
     {
         NotificationService::markAsRead($request->user(), $id);
 
-        \Log::info($request->headers->all()); return response()->json(['message' => 'Notification marked as read.']);
+        return response()->json(['message' => 'Notification marked as read.']);
     }
 
-    /**
-     * Mark all notifications as read.
-     */
     public function markAllAsRead(Request $request): JsonResponse
     {
         NotificationService::markAllAsRead($request->user());
 
-        \Log::info($request->headers->all()); return response()->json(['message' => 'All notifications marked as read.']);
+        return response()->json(['message' => 'All notifications marked as read.']);
     }
 
-    /**
-     * Toggle starred status of a notification.
-     */
     public function toggleStar(Request $request, $id): JsonResponse
     {
         $isStarred = NotificationService::toggleStar($request->user(), $id);
 
-        \Log::info($request->headers->all()); return response()->json([
+        return response()->json([
             'message' => 'Notification starred status updated.', 
             'is_starred' => $isStarred
         ]);
     }
 
-    /**
-     * Delete a notification.
-     */
     public function destroy(Request $request, $id): JsonResponse
     {
         NotificationService::destroy($request->user(), $id);
 
-        \Log::info($request->headers->all()); return response()->json(['message' => 'Notification deleted.']);
+        return response()->json(['message' => 'Notification deleted.']);
     }
 }

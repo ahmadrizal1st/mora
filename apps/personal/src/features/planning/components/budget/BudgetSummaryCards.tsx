@@ -5,15 +5,15 @@ interface BudgetSummaryCardsProps {
   totalBudget: number
   spent: number
   safeToSpendPerDay: number
+  currentDate: Date
 }
 
-export function BudgetSummaryCards({ totalBudget, spent, safeToSpendPerDay }: BudgetSummaryCardsProps) {
+export function BudgetSummaryCards({ totalBudget, spent, safeToSpendPerDay, currentDate }: BudgetSummaryCardsProps) {
   const sisaAnggaran = totalBudget - spent
   const percentage = totalBudget > 0 ? Math.round((spent / totalBudget) * 100) : 0
   
   // Format current month and year (e.g. "Juni 2026")
-  const date = new Date()
-  const monthYear = date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+  const monthYear = currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 
   return (
     <>

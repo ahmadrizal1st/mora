@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProviderRequest;
+use App\Data\ProviderData;
 use App\Models\Provider;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class ProviderController extends Controller
 {
@@ -19,41 +20,20 @@ class ProviderController extends Controller
             ->orderBy('name')
             ->get();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $providers
-        ]);
+        return response()->json(['data' => ProviderData::collect($providers)]);
     }
 
     /**
      * Store a newly created custom provider in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreProviderRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => [
-                'required', 
-                'string', 
-                'max:255',
-                Rule::unique('providers')->where(function ($query) use ($request) {
-                    return $query->where('user_id', $request->user()->id)
-                                 ->orWhere('is_global', true);
-                })
-            ],
-            'type' => ['required', Rule::in(['bank', 'ewallet', 'investment', 'other'])],
-            'logo_url' => ['nullable', 'url'],
-            'color' => ['nullable', 'string', 'max:20'],
-        ]);
-
         $provider = Provider::create([
-            ...$validated,
+            ...$request->validated(),
             'is_global' => false,
             'user_id' => $request->user()->id,
         ]);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $provider
-        ], 201);
+        return response()->json(['data' => ProviderData::from($provider)], 201);
     }
 }

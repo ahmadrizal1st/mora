@@ -2,63 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Debt;
+use App\Http\Requests\StoreDebtRequest;
+use App\Http\Requests\UpdateDebtRequest;
+use App\Data\DebtData;
+use App\Services\DebtService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class DebtController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $debts = $request->user()->debts()->latest()->get();
-        return response()->json(['data' => $debts]);
+        $debts = DebtService::list($request->user());
+        return response()->json(['data' => DebtData::collect($debts)]);
     }
 
-    public function store(Request $request)
+    public function store(StoreDebtRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'person_name' => 'required|string',
-            'type' => 'required|string|in:utang,piutang',
-            'amount' => 'required|numeric',
-            'amount_paid' => 'nullable|numeric',
-            'status' => 'nullable|string',
-            'priority' => 'nullable|string',
-            'due_date' => 'required|date',
-            'description' => 'nullable|string',
-        ]);
-
-        $debt = $request->user()->debts()->create($validated);
-        return response()->json(['data' => $debt], 201);
+        $debt = DebtService::store($request->user(), $request->validated());
+        return response()->json(['data' => DebtData::from($debt)], 201);
     }
 
-    public function show(Request $request, string $id)
+    public function show(Request $request, string $id): JsonResponse
     {
-        $debt = $request->user()->debts()->findOrFail($id);
-        return response()->json(['data' => $debt]);
+        $debt = DebtService::show($request->user(), $id);
+        return response()->json(['data' => DebtData::from($debt)]);
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateDebtRequest $request, string $id): JsonResponse
     {
-        $debt = $request->user()->debts()->findOrFail($id);
-
-        $validated = $request->validate([
-            'person_name' => 'sometimes|string',
-            'type' => 'sometimes|string|in:utang,piutang',
-            'amount' => 'sometimes|numeric',
-            'amount_paid' => 'sometimes|numeric',
-            'status' => 'sometimes|string',
-            'priority' => 'sometimes|string',
-            'due_date' => 'sometimes|date',
-            'description' => 'sometimes|string|nullable',
-        ]);
-
-        $debt->update($validated);
-        return response()->json(['data' => $debt]);
+        $debt = DebtService::update($request->user(), $id, $request->validated());
+        return response()->json(['data' => DebtData::from($debt)]);
     }
 
-    public function destroy(Request $request, string $id)
+    public function destroy(Request $request, string $id): JsonResponse
     {
-        $debt = $request->user()->debts()->findOrFail($id);
-        $debt->delete();
+        DebtService::destroy($request->user(), $id);
         return response()->json(null, 204);
     }
 }
