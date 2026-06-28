@@ -13,17 +13,11 @@ use Carbon\Carbon;
 
 class TransactionService
 {
-    /**
-     * List transactions for a user with filters and pagination.
-     */
     public static function list(User $user, array $filters = []): LengthAwarePaginator
     {
         return TransactionRepository::list($user, $filters);
     }
 
-    /**
-     * Create a new transaction and update account balances.
-     */
     public static function store(User $user, array $data): Transaction
     {
         return DB::transaction(function () use ($user, $data) {
@@ -50,7 +44,6 @@ class TransactionService
                 'dynamic_fields' => $data['dynamic_fields'] ?? null,
             ];
 
-            // Auto-fill budget_item_id from default category mapping if not provided
             if (empty($txData['budget_item_id']) && !empty($txData['category_id'])) {
                 $mapping = BudgetItemCategory::where('category_id', $txData['category_id'])
                     ->whereHas('budgetItem.plan', function ($query) use ($user) {
@@ -96,9 +89,6 @@ class TransactionService
         });
     }
 
-    /**
-     * Get a single transaction with all relationships.
-     */
     public static function show(User $user, string $id): Transaction
     {
         return $user->transactions()
@@ -106,9 +96,6 @@ class TransactionService
             ->findOrFail($id);
     }
 
-    /**
-     * Update a transaction and re-calculate account balances.
-     */
     public static function update(User $user, string $id, array $data): Transaction
     {
         return DB::transaction(function () use ($user, $id, $data) {
@@ -141,9 +128,6 @@ class TransactionService
         });
     }
 
-    /**
-     * Delete a transaction and revert its balance effect.
-     */
     public static function destroy(User $user, string $id): void
     {
         DB::transaction(function () use ($user, $id) {
@@ -154,9 +138,6 @@ class TransactionService
         });
     }
 
-    /**
-     * Get summary statistics for a period.
-     */
     public static function summary(User $user, array $filters = []): array
     {
         $dateFromRaw = $filters['date_from'] ?? null;
@@ -209,9 +190,6 @@ class TransactionService
         ];
     }
 
-    /**
-     * Get historical aggregated data for charts.
-     */
     public static function history(User $user, array $filters = []): array
     {
         $groupBy = $filters['group_by'] ?? 'day';
@@ -237,7 +215,6 @@ class TransactionService
             $currentTo   = Carbon::parse($baseFilters['date_to'])->endOfDay();
         }
 
-        // Align boundaries
         match ($groupBy) {
             'week'  => [$currentFrom->startOfWeek(), $currentTo->endOfWeek()],
             'month' => [$currentFrom->startOfMonth(), $currentTo->endOfMonth()],
@@ -294,9 +271,6 @@ class TransactionService
         ];
     }
 
-    /**
-     * Get aggregated account history data for multiple accounts.
-     */
     public static function getAccountsHistory(User $user, string $groupBy = 'day', array $filters = []): array
     {
         $pgFormat = match ($groupBy) {
@@ -359,13 +333,12 @@ class TransactionService
         return ['labels' => $labels, 'income' => $income, 'expense' => $expense, 'initial_balances' => $initialBalances];
     }
 
-    /**
-     * Build running balance history from net changes and initial balance.
-     */
     public static function buildAccountHistory(int $initialBalance, array $netChanges, array $labels): array
     {
-        $incomeByLabel = $netChanges['income'] ?? []; $expenseByLabel = $netChanges['expense'] ?? [];
-        $balance = $income = $expense = []; $currentRunningTarget = $initialBalance;
+        $incomeByLabel = $netChanges['income'] ?? [];
+        $expenseByLabel = $netChanges['expense'] ?? [];
+        $balance = $income = $expense = [];
+        $currentRunningTarget = $initialBalance;
         foreach ($labels as $label) {
             $inc = (int)($incomeByLabel[$label] ?? 0);
             $exp = (int)($expenseByLabel[$label] ?? 0);
@@ -377,5 +350,23 @@ class TransactionService
             $balance[] = $currentRunningTarget;
         }
         return ['balance' => $balance, 'income' => $income, 'expense' => $expense];
+    }
+
+    public static function statistics(User $user): array
+    {
+        $stats = TransactionRepository::getCategoryStatistics($user);
+        
+        $statSeries = $stats->map(function ($st) {
+            return [
+                'name' => $st->category ? $st->category->name : 'Uncategorized',
+                'data' => [(float)$st->total],
+                'color' => $st->category ? $st->category->color : 'gray',
+            ];
+        })->values()->toArray();
+
+        return [
+            'total' => $stats->sum('total'),
+            'series' => $statSeries
+        ];
     }
 }

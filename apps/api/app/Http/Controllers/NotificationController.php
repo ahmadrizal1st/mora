@@ -11,9 +11,6 @@ use Spatie\LaravelData\DataCollection;
 
 class NotificationController extends Controller
 {
-    /**
-     * Get user notifications.
-     */
     public function index(ListNotificationRequest $request): JsonResponse
     {
         $notifications = NotificationService::list(

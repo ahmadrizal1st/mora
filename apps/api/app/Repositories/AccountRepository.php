@@ -9,9 +9,6 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class AccountRepository
 {
-    /**
-     * Get a base query builder for accounts for a specific user.
-     */
     public static function queryForUser(User $user): QueryBuilder
     {
         return QueryBuilder::for(Account::class)
@@ -27,9 +24,6 @@ class AccountRepository
             ->withCount(['transactions', 'incomingTransfers']);
     }
 
-    /**
-     * Get all accounts for a user with basic relationships.
-     */
     public static function getAllForUser(User $user)
     {
         return self::queryForUser($user)
@@ -37,26 +31,17 @@ class AccountRepository
             ->get();
     }
 
-    /**
-     * Find a specific account for a user.
-     */
     public static function findForUser(User $user, string $id): Account
     {
         return self::queryForUser($user)
             ->findOrFail($id);
     }
 
-    /**
-     * Check if an account has any transactions or incoming transfers.
-     */
     public static function hasTransactions(Account $account): bool
     {
         return $account->transactions()->exists() || $account->incomingTransfers()->exists();
     }
 
-    /**
-     * Get the current absolute balance for all accounts of a user.
-     */
     public static function getBalances(User $user): array
     {
         $tIncome = \App\Models\Transaction::TYPE_INCOME;
@@ -65,7 +50,6 @@ class AccountRepository
 
         $balances = [];
 
-        // Outgoing/Direct
         $out = \Illuminate\Support\Facades\DB::select("
             SELECT account_id, 
                    SUM(CASE WHEN type = '{$tIncome}' THEN amount ELSE 0 END) - 
@@ -79,7 +63,6 @@ class AccountRepository
             $balances[(string)$row->account_id] = (float) $row->net;
         }
 
-        // Incoming Transfers
         $in = \Illuminate\Support\Facades\DB::select("
             SELECT to_account_id as account_id, 
                    SUM(amount) as net
@@ -94,5 +77,77 @@ class AccountRepository
         }
 
         return $balances;
+    }
+
+    public static function getAnalyticsQuery(User $user, ?string $accountId, int $month, int $year)
+    {
+        $query = $user->transactions()
+            ->whereMonth('tx_date', $month)
+            ->whereYear('tx_date', $year);
+
+        if ($accountId) {
+            $query->where('account_id', $accountId);
+        }
+
+        return $query;
+    }
+
+    public static function getTopMerchants($query, int $limit = 5): \Illuminate\Support\Collection
+    {
+        return (clone $query)
+            ->where('type', \App\Models\Transaction::TYPE_EXPENSE)
+            ->whereNotNull('merchant')
+            ->selectRaw('merchant as name, count(*) as count, sum(amount) as amount, MAX(CAST(category_id AS varchar)) as category_id')
+            ->groupBy('merchant')
+            ->orderByDesc('amount')
+            ->limit($limit)
+            ->with('category')
+            ->get();
+    }
+
+    public static function getExpensesByCategory($query): \Illuminate\Support\Collection
+    {
+        return (clone $query)
+            ->where('type', \App\Models\Transaction::TYPE_EXPENSE)
+            ->selectRaw('category_id, sum(amount) as total')
+            ->groupBy('category_id')
+            ->with('category')
+            ->orderByDesc('total')
+            ->get();
+    }
+
+    public static function getRecentTransactions($query, int $limit = 10): \Illuminate\Support\Collection
+    {
+        return (clone $query)
+            ->with(['category', 'account'])
+            ->orderByDesc('tx_date')
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get();
+    }
+
+    public static function getTotalExpense($query): float
+    {
+        return (float)(clone $query)->where('type', \App\Models\Transaction::TYPE_EXPENSE)->sum('amount');
+    }
+
+    public static function getTotalIncome($query): float
+    {
+        return (float)(clone $query)->where('type', \App\Models\Transaction::TYPE_INCOME)->sum('amount');
+    }
+
+    public static function getTransactionCount($query): int
+    {
+        return (clone $query)->count();
+    }
+
+    public static function getMostExpensiveDay($query): ?object
+    {
+        return (clone $query)
+            ->where('type', \App\Models\Transaction::TYPE_EXPENSE)
+            ->selectRaw('tx_date, sum(amount) as total')
+            ->groupBy('tx_date')
+            ->orderByDesc('total')
+            ->first();
     }
 }

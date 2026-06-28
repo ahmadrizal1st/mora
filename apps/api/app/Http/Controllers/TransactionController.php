@@ -12,11 +12,6 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    /**
-     * List transactions with filters and pagination.
-     *
-     * GET /api/transactions
-     */
     public function index(Request $request): JsonResponse
     {
         $filters = $request->only([
@@ -46,11 +41,6 @@ class TransactionController extends Controller
         ]);
     }
 
-    /**
-     * Create a new transaction.
-     *
-     * POST /api/transactions
-     */
     public function store(StoreTransactionRequest $request): JsonResponse
     {
         $transaction = TransactionService::store(
@@ -64,11 +54,6 @@ class TransactionController extends Controller
         ], 201);
     }
 
-    /**
-     * Show a single transaction.
-     *
-     * GET /api/transactions/{id}
-     */
     public function show(Request $request, string $id): JsonResponse
     {
         $transaction = TransactionService::show($request->user(), $id);
@@ -78,11 +63,6 @@ class TransactionController extends Controller
         ]);
     }
 
-    /**
-     * Update a transaction.
-     *
-     * PUT /api/transactions/{id}
-     */
     public function update(UpdateTransactionRequest $request, string $id): JsonResponse
     {
         $transaction = TransactionService::update(
@@ -97,11 +77,6 @@ class TransactionController extends Controller
         ]);
     }
 
-    /**
-     * Delete a transaction.
-     *
-     * DELETE /api/transactions/{id}
-     */
     public function destroy(Request $request, string $id): JsonResponse
     {
         TransactionService::destroy($request->user(), $id);
@@ -111,11 +86,6 @@ class TransactionController extends Controller
         ]);
     }
 
-    /**
-     * Get transaction summary statistics.
-     *
-     * GET /api/transactions-summary
-     */
     public function summary(Request $request): JsonResponse
     {
         $filters = $request->only(['date_from', 'date_to', 'account_id', 'group_by']);
@@ -127,11 +97,6 @@ class TransactionController extends Controller
         ]);
     }
 
-    /**
-     * Get historical aggregated data for charts.
-     *
-     * GET /api/transactions-history
-     */
     public function history(Request $request): JsonResponse
     {
         $filters = $request->only(['date_from', 'date_to', 'account_id', 'group_by']);
@@ -143,35 +108,12 @@ class TransactionController extends Controller
         ]);
     }
 
-    /**
-     * Get expense statistics by category.
-     *
-     * GET /api/transactions-statistics
-     */
     public function statistics(Request $request): JsonResponse
     {
-        $user = $request->user();
-        
-        $stats = $user->transactions()
-            ->where('type', 'expense')
-            ->selectRaw('category_id, sum(amount) as total')
-            ->groupBy('category_id')
-            ->with('category')
-            ->get();
-            
-        $statSeries = $stats->map(function ($st) {
-            return [
-                'name' => $st->category ? $st->category->name : 'Uncategorized',
-                'data' => [(float)$st->total],
-                'color' => $st->category ? $st->category->color : 'gray',
-            ];
-        })->values()->toArray();
+        $stats = TransactionService::statistics($request->user());
 
         return response()->json([
-            'data' => [
-                'total' => $stats->sum('total'),
-                'series' => count($statSeries) > 0 ? $statSeries : []
-            ],
+            'data' => $stats,
         ]);
     }
 }

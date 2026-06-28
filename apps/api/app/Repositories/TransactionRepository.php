@@ -216,4 +216,17 @@ class TransactionRepository
 
         return $query->min('tx_date');
     }
+
+    /**
+     * Get expense statistics grouped by category.
+     */
+    public static function getCategoryStatistics(User $user): Collection
+    {
+        return $user->transactions()
+            ->where('type', Transaction::TYPE_EXPENSE)
+            ->selectRaw('category_id, SUM(amount) as total')
+            ->groupBy('category_id')
+            ->with('category')
+            ->get();
+    }
 }
