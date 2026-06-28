@@ -180,11 +180,9 @@ export default function CreditLayout() {
       pageActions={<CreditAlertsDropdown />}
     >
       <div className="container-xl pt-3 pb-5">
-        <CreditHeroBanner />
-
-        <CreditSegmentedNav />
-
-        <div>
+        <div className="d-flex flex-column gap-3">
+          <CreditHeroBanner />
+          <CreditSegmentedNav />
           <CreditLayoutContext.Provider value={{ openFormForType }}>
             <Outlet />
           </CreditLayoutContext.Provider>

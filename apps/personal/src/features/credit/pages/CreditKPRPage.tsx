@@ -5,8 +5,6 @@ import { useCreditLayoutContext } from '../context/CreditLayoutContext'
 
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
 
-const MONTHS = ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei']
-
 export function CreditKPRPage() {
   const { openFormForType } = useCreditLayoutContext()
   const { data: loans = [], isLoading } = useCredits('kpr')
@@ -45,34 +43,18 @@ export function CreditKPRPage() {
   const credit = loan.credit!
   const paidAmount = Math.max(0, credit.limit - credit.total_amount)
   const paidPct = credit.limit > 0 ? Math.round((paidAmount / credit.limit) * 100) : 0
-  const daysLeft = credit.due_date
-    ? Math.ceil(
-        (new Date(credit.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-      )
-    : null
-  const urgentColor = daysLeft !== null && daysLeft <= 7 ? 'danger' : 'warning'
-
-  const paymentHistory = [true, true, true, true, true, true, true, true, true, true, true, true]
-  const principalHistory = [
-    paidAmount * 0.9,
-    paidAmount * 0.92,
-    paidAmount * 0.94,
-    paidAmount * 0.96,
-    paidAmount * 0.98,
-    paidAmount,
-  ]
-  const amortization = [
-    {
-      bulan: 'Segera',
-      pokok: credit.installment_amount * 0.4,
-      bunga: credit.installment_amount * 0.6,
-      total: credit.installment_amount,
-    },
-  ]
 
   return (
-    <div>
-      <div className="d-flex flex-nowrap overflow-x-auto gap-3 pb-3 mb-4 hide-scrollbar">
+    <div className="d-flex flex-column gap-3">
+      <div
+        className="d-flex flex-nowrap overflow-x-auto gap-3 hide-scrollbar"
+        style={{
+          paddingTop: '8px',
+          paddingBottom: '8px',
+          marginTop: '-8px',
+          marginBottom: '-8px'
+        }}
+      >
         {loans.map((l) => {
           const lPct =
             l.credit!.limit > 0
@@ -154,7 +136,7 @@ export function CreditKPRPage() {
       </div>
 
       <div className="d-flex flex-column flex-lg-row gap-3">
-        <div className="col-6" style={{ flex: '1 1 32%' }}>
+        <div className="w-100" style={{ flex: '1 1 32%', minWidth: 0 }}>
           <div className="card modern-card h-100 overflow-hidden">
             <div className="card-body p-3 d-flex flex-column">
               <div className="d-flex align-items-center gap-2 mb-3">
@@ -318,7 +300,7 @@ export function CreditKPRPage() {
         </div>
       </div>
 
-      <div className="mt-3">
+      <div>
         <div className="card border-0 shadow-sm overflow-hidden credit-kta-card">
             <div className="card-header d-flex align-items-center justify-content-between">
               <ul className="nav gap-3" style={{ borderBottom: 'none' }}>

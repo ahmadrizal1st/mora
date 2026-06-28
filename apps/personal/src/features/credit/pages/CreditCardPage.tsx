@@ -48,13 +48,20 @@ export function CreditCardPage() {
   const usedPct = credit.limit > 0 ? Math.round((credit.total_amount / credit.limit) * 100) : 0
 
   return (
-    <div>
-      <div className="d-flex flex-nowrap overflow-x-auto gap-2 pb-3 mb-4 scrollbar-hide hide-scrollbar">
+    <div className="d-flex flex-column gap-3">
+      <div
+        className="d-flex flex-nowrap overflow-x-auto gap-3 scrollbar-hide hide-scrollbar"
+        style={{
+          paddingTop: '8px',
+          paddingBottom: '8px',
+          marginTop: '-8px',
+          marginBottom: '-8px'
+        }}
+      >
         {cards.map((c) => {
           const cUsedPct =
             c.credit!.limit > 0 ? Math.round((c.credit!.total_amount / c.credit!.limit) * 100) : 0
           const isActive = activeCardId === c.id
-          const themeColor = c.color || '#206bc4'
           const daysLeft = c.credit?.due_date
             ? Math.ceil(
                 (new Date(c.credit.due_date).getTime() - new Date().getTime()) /
@@ -126,7 +133,7 @@ export function CreditCardPage() {
       </div>
 
       <div className="d-flex flex-column flex-lg-row gap-3">
-        <div className="col-6" style={{ flex: '1 1 32%' }}>
+        <div className="w-100" style={{ flex: '1 1 32%', minWidth: 0 }}>
           <div className="card modern-card h-100 overflow-hidden">
             <div className="card-body p-3 d-flex flex-column">
               <div className="d-flex align-items-center gap-2 mb-3">
@@ -304,7 +311,7 @@ export function CreditCardPage() {
         </div>
       </div>
 
-      <div className="mt-3">
+      <div>
         <div className="card border-0 shadow-sm overflow-hidden credit-kta-card">
             <div className="card-header d-flex align-items-center justify-content-between">
               <ul className="nav gap-3" style={{ borderBottom: 'none' }}>

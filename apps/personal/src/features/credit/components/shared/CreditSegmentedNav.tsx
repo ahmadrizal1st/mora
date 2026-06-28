@@ -17,7 +17,7 @@ export function CreditSegmentedNav() {
   ] as const
 
   return (
-    <div className="w-100 mb-2">
+    <div className="w-100">
       <div className="d-flex w-100" style={{ borderBottom: '1px solid #e6e8eb' }} role="tablist">
         {tabs.map((tab) => {
           const isActive =

@@ -21,7 +21,7 @@ export function CreditHeroBanner() {
 
   if (isLoading) {
     return (
-      <div className="mb-4">
+      <div>
         <div className="d-flex gap-3">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="w-100">
@@ -53,7 +53,7 @@ export function CreditHeroBanner() {
 
   return (
     <>
-      <div className="mb-4 d-none d-md-block">
+      <div className="d-none d-md-block">
         <div className="d-flex gap-3">
           <div className="w-100">
             <SummaryMetricCard
@@ -98,7 +98,7 @@ export function CreditHeroBanner() {
       </div>
 
       <div
-        className="card border-0 shadow-sm mb-4 overflow-hidden d-block d-md-none"
+        className="card border-0 shadow-sm overflow-hidden d-block d-md-none"
         style={{ borderRadius: '16px' }}
       >
         <div className="row g-0">

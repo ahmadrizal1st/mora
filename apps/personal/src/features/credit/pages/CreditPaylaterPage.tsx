@@ -44,8 +44,16 @@ export function CreditPaylaterPage() {
   const usedPct = credit.limit > 0 ? Math.round((credit.total_amount / credit.limit) * 100) : 0
 
   return (
-    <div>
-      <div className="d-flex flex-nowrap overflow-x-auto gap-3 pb-3 mb-4 hide-scrollbar">
+    <div className="d-flex flex-column gap-3">
+      <div
+        className="d-flex flex-nowrap overflow-x-auto gap-3 hide-scrollbar"
+        style={{
+          paddingTop: '8px',
+          paddingBottom: '8px',
+          marginTop: '-8px',
+          marginBottom: '-8px'
+        }}
+      >
         {providers.map((p) => {
           const pPct =
             p.credit!.limit > 0 ? Math.round((p.credit!.total_amount / p.credit!.limit) * 100) : 0
@@ -123,7 +131,7 @@ export function CreditPaylaterPage() {
       </div>
 
       <div className="d-flex flex-column flex-lg-row gap-3">
-        <div className="col-6" style={{ flex: '1 1 32%' }}>
+        <div className="w-100" style={{ flex: '1 1 32%', minWidth: 0 }}>
           <div className="card modern-card h-100 overflow-hidden">
             <div className="card-body p-3 d-flex flex-column">
               <div className="d-flex align-items-center gap-2 mb-3">
@@ -300,7 +308,7 @@ export function CreditPaylaterPage() {
         </div>
       </div>
 
-      <div className="mt-3">
+      <div>
         <div className="card border-0 shadow-sm overflow-hidden credit-kta-card">
             <div className="card-header d-flex align-items-center justify-content-between">
               <ul className="nav gap-3" style={{ borderBottom: 'none' }}>
