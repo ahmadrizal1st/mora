@@ -7,11 +7,7 @@ const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
 
 export function CreditCardPage() {
   const { openFormForType } = useCreditLayoutContext()
-  const { data: allCredits = [], isLoading } = useCredits()
-
-  const cards = useMemo(() => {
-    return allCredits.filter((acc) => acc.credit?.credit_type === 'credit_card')
-  }, [allCredits])
+  const { data: cards = [], isLoading } = useCredits('credit_card')
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
@@ -342,9 +338,9 @@ export function CreditCardPage() {
               </div>
             </div>
             <div className="card-body p-0 d-flex flex-column">
-              <div className="d-flex justify-content-between align-items-center px-4 py-2 border-bottom flex-shrink-0">
-                <span className="fw-bold" style={{ fontSize: '14px' }}>Transaksi Terbaru</span>
-                <span className="text-secondary" style={{ fontSize: '13px' }}>3 item</span>
+              <div className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom flex-shrink-0">
+                <span className="fw-bold" style={{ fontSize: '13px' }}>Transaksi Terbaru</span>
+                <span className="text-secondary" style={{ fontSize: '12px' }}>3 item</span>
               </div>
               <div className="d-flex flex-column flex-grow-1">
                 {[
@@ -374,13 +370,13 @@ export function CreditCardPage() {
                   const formattedDate = txDate.toLocaleDateString('id-ID', {
                     day: 'numeric',
                     month: 'short',
-                  })
+                  }) + ', 07:00'
                   
                   const itemsLength = 3
                   return (
                     <div 
                       key={i}
-                      className="d-flex justify-content-between align-items-center px-4 py-3"
+                      className="d-flex justify-content-between align-items-center px-3 py-2"
                       style={{ 
                         borderBottom: i < itemsLength - 1 ? '1px solid #f1f5f9' : undefined,
                         cursor: 'pointer',
@@ -388,21 +384,19 @@ export function CreditCardPage() {
                       }}
                     >
                       <div className="flex-grow-1 overflow-hidden me-2">
-                        <div className="fw-bold text-truncate text-body" style={{ fontSize: '15px' }}>
+                        <div className="fw-semibold text-truncate text-body" style={{ fontSize: '13.5px', marginBottom: '2px' }}>
                           {t.name}
                         </div>
-                        <div className="d-flex align-items-center gap-2 flex-wrap mt-2" style={{ fontSize: '12px', color: 'var(--tblr-gray-500)' }}>
-                          <span className="rounded-pill px-2 fw-bold d-inline-flex align-items-center justify-content-center" style={{ background: t.color + '22', color: t.color, fontSize: '10px', height: '20px' }}>
+                        <div className="d-flex align-items-center gap-2 flex-wrap" style={{ fontSize: '11px', color: 'var(--tblr-gray-500)' }}>
+                          <span className="rounded-pill px-2 fw-bold d-inline-flex align-items-center justify-content-center" style={{ background: t.color + '15', color: t.color, fontSize: '9px', height: '18px' }}>
                             {t.category}
                           </span>
-                          <span>&middot;</span>
-                          <span>Selesai</span>
                           <span>&middot;</span>
                           <span>{formattedDate}</span>
                         </div>
                       </div>
                       <div className="d-flex align-items-center gap-2">
-                        <div className="fw-bold flex-shrink-0" style={{ color: '#e53e3e', fontSize: '15px' }}>
+                        <div className="fw-bold flex-shrink-0" style={{ color: '#e53e3e', fontSize: '13.5px' }}>
                           - Rp {Math.abs(t.amount).toLocaleString('id-ID')}
                         </div>
                       </div>

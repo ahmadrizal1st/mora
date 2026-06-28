@@ -20,9 +20,9 @@ export function TransactionListCard({ transactions }: TransactionListCardProps) 
   return (
     <div className="card border-0 rounded-4 shadow-sm flex-grow-1 h-100">
       <div className="card-body p-0 d-flex flex-column">
-        <div className="d-flex justify-content-between align-items-center px-4 py-3 border-bottom flex-shrink-0">
-          <span className="fw-bold" style={{ fontSize: '14px' }}>Transaksi Terbaru</span>
-          <a href="#" className="text-primary text-decoration-none" style={{ fontSize: '13px' }}>
+        <div className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom flex-shrink-0">
+          <span className="fw-bold" style={{ fontSize: '13px' }}>Transaksi Terbaru</span>
+          <a href="#" className="text-primary text-decoration-none" style={{ fontSize: '12px' }}>
             Lihat Semua
           </a>
         </div>
@@ -42,27 +42,27 @@ export function TransactionListCard({ transactions }: TransactionListCardProps) 
             </div>
           ) : (
             transactions.slice(0, 5).map((tx, i) => {
-              const prefix = tx.p ? '+' : '-'
               const color = tx.p ? '#38a169' : '#e53e3e'
               
               return (
                 <div 
                   key={i} 
-                  className="d-flex justify-content-between align-items-center px-4 py-2"
+                  className="d-flex justify-content-between align-items-center px-3 py-2"
                   style={{ borderBottom: i < Math.min(transactions.length, 5) - 1 ? '1px solid #fafafa' : undefined }}
                 >
                   <div className="flex-grow-1 overflow-hidden me-2">
-                    <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
+                    <div className="fw-semibold text-truncate text-body" style={{ fontSize: '13.5px', marginBottom: '2px' }}>
                       {tx.n}
                     </div>
-                    <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
-                      <span className="rounded px-1 fw-semibold" style={{ fontSize: '10px', backgroundColor: tx.color.startsWith('#') ? tx.color + '20' : `var(--tblr-${tx.color}-lt)`, color: tx.color.startsWith('#') ? tx.color : `var(--tblr-${tx.color})` }}>
+                    <div className="d-flex align-items-center gap-2 flex-wrap" style={{ fontSize: '11px', color: 'var(--tblr-gray-500)' }}>
+                      <span className="rounded-pill px-2 fw-bold d-inline-flex align-items-center justify-content-center" style={{ backgroundColor: tx.color.startsWith('#') ? tx.color + '15' : `var(--tblr-${tx.color}-lt)`, color: tx.color.startsWith('#') ? tx.color : `var(--tblr-${tx.color})`, fontSize: '9px', height: '18px' }}>
                         {tx.c}
                       </span>
-                      <span>&middot; {tx.d}</span>
+                      <span>&middot;</span>
+                      <span>{tx.d}</span>
                     </div>
                   </div>
-                  <div className="fw-bold flex-shrink-0" style={{ color, fontSize: '14px' }}>
+                  <div className="fw-bold flex-shrink-0" style={{ color, fontSize: '13.5px' }}>
                     {tx.p ? '+ ' : '- '}Rp {tx.a.replace(/[^0-9.,]/g, '')}
                   </div>
                 </div>

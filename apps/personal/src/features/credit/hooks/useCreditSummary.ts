@@ -15,19 +15,23 @@ interface CreditSummary {
   isError: boolean
 }
 
-export const useCreditSummary = (): CreditSummary => {
+export const useCreditSummary = (type?: string | null): CreditSummary => {
   const { data: credits = [], isLoading, isError } = useCredits()
 
   const summary = useMemo(() => {
     let totalLimit = 0
     let totalOutstanding = 0
     let totalMonthlyBurden = 0
-    let activeCount = credits.length
+
+    const filtered = type
+      ? credits.filter((c) => c.credit?.credit_type === type)
+      : credits
+    const activeCount = filtered.length
 
     let nextDue: Date | null = null
     let nextDueAmount = 0
 
-    credits.forEach((acc) => {
+    filtered.forEach((acc) => {
       const credit = acc.credit
       if (credit) {
         totalLimit += credit.limit || 0
@@ -62,7 +66,7 @@ export const useCreditSummary = (): CreditSummary => {
       creditScore: 742,
       scoreTrend: 8,
     }
-  }, [credits])
+  }, [credits, type])
 
   return {
     ...summary,

@@ -129,9 +129,9 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
 
         <div className="card-body p-0 d-flex flex-column">
           {/* Header */}
-          <div className="d-flex justify-content-between align-items-center px-4 py-2 border-bottom flex-shrink-0">
-            <span className="fw-bold" style={{ fontSize: '14px' }}>Daftar Utang / Piutang</span>
-            <span className="text-secondary" style={{ fontSize: '13px' }}>{filteredData.length} item</span>
+          <div className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom flex-shrink-0">
+            <span className="fw-bold" style={{ fontSize: '13px' }}>Daftar Utang / Piutang</span>
+            <span className="text-secondary" style={{ fontSize: '12px' }}>{filteredData.length} item</span>
           </div>
 
           {/* List */}
@@ -167,7 +167,7 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
                 return (
                   <div
                     key={item.id}
-                    className="d-flex justify-content-between align-items-center px-4 py-3 debt-row"
+                    className="d-flex justify-content-between align-items-center px-3 py-2 debt-row"
                     style={{ 
                       borderBottom: i < paginatedData.length - 1 ? '1px solid #f1f5f9' : undefined,
                       cursor: 'pointer',
@@ -176,13 +176,13 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
                     onClick={() => openEdit(item)}
                   >
                     <div className="flex-grow-1 overflow-hidden me-2">
-                      <div className="fw-bold text-truncate text-body" style={{ fontSize: '15px' }}>
+                      <div className="fw-semibold text-truncate text-body" style={{ fontSize: '13.5px', marginBottom: '2px' }}>
                         {item.personName}
                       </div>
-                      <div className="d-flex align-items-center gap-2 flex-wrap mt-2" style={{ fontSize: '12px', color: 'var(--tblr-gray-500)' }}>
+                      <div className="d-flex align-items-center gap-2 flex-wrap" style={{ fontSize: '11px', color: 'var(--tblr-gray-500)' }}>
                         <span
                           className="rounded-pill px-2 fw-bold d-inline-flex align-items-center justify-content-center"
-                          style={{ background: isPiutang ? '#38a16922' : '#e53e3e22', color, fontSize: '10px', height: '20px' }}
+                          style={{ background: isPiutang ? '#38a16915' : '#e53e3e15', color, fontSize: '9px', height: '18px' }}
                         >
                           {item.type}
                         </span>
@@ -193,7 +193,7 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
                       </div>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      <div className="fw-bold flex-shrink-0" style={{ color, fontSize: '15px' }}>
+                      <div className="fw-bold flex-shrink-0" style={{ color, fontSize: '13.5px' }}>
                         {prefix}Rp {Number(item.amount).toLocaleString('id-ID')}
                       </div>
                     </div>

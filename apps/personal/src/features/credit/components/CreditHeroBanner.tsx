@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+import { useLocation } from '@tanstack/react-router'
 import { Icon } from '@/shared/components/ui'
 import { useCreditSummary } from '../hooks/useCreditSummary'
 import { SummaryMetricCard } from '@/features/accounts/components/SummaryMetricCard'
@@ -7,6 +9,16 @@ const shortFmt = (n: number) => {
 }
 
 export function CreditHeroBanner() {
+  const location = useLocation()
+
+  const activeType = useMemo(() => {
+    if (location.pathname.includes('/credit/credit-card')) return 'credit_card'
+    if (location.pathname.includes('/credit/kta')) return 'kta'
+    if (location.pathname.includes('/credit/kpr')) return 'kpr'
+    if (location.pathname.includes('/credit/paylater')) return 'paylater'
+    return null
+  }, [location.pathname])
+
   const {
     totalLimit,
     totalOutstanding,
@@ -17,7 +29,7 @@ export function CreditHeroBanner() {
     scoreTrend,
     activeCount,
     isLoading,
-  } = useCreditSummary()
+  } = useCreditSummary(activeType)
 
   if (isLoading) {
     return (
@@ -51,6 +63,21 @@ export function CreditHeroBanner() {
 
   const utilColor = utilizationPct > 70 ? 'danger' : utilizationPct > 40 ? 'warning' : 'success'
 
+  const getUnit = (type: string | null) => {
+    switch (type) {
+      case 'credit_card':
+        return 'kartu'
+      case 'kta':
+        return 'pinjaman'
+      case 'kpr':
+        return 'properti'
+      case 'paylater':
+        return 'provider'
+      default:
+        return 'kredit'
+    }
+  }
+
   return (
     <>
       <div className="d-none d-md-block">
@@ -59,7 +86,7 @@ export function CreditHeroBanner() {
             <SummaryMetricCard
               title="Batas Pinjaman (Plafon)"
               value={shortFmt(totalLimit)}
-              subtext={`Total dari ${activeCount} pinjaman`}
+              subtext={`Total dari ${activeCount} ${getUnit(activeType)}`}
               icon="credit-card"
               valueColor="primary"
             />
@@ -124,7 +151,7 @@ export function CreditHeroBanner() {
               {shortFmt(totalLimit)}
             </div>
             <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
-              {activeCount} jalur kredit aktif
+              {activeCount} {getUnit(activeType)} aktif
             </div>
           </div>
 

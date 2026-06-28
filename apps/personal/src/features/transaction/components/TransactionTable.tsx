@@ -106,11 +106,11 @@ export const TransactionTable: FC<TransactionTableProps> = ({
           ) : (
             transactionList.map((tx) => (
               <tr key={tx.id} style={{ cursor: 'pointer' }} onClick={(e) => onEdit(tx, e)}>
-                <td className="text-nowrap py-3">
+                <td className="text-nowrap py-2">
                   <div className="fw-medium">{formatDate(tx.tx_date)}</div>
                   <div className="text-secondary small">{formatDate(tx.created_at, 'time')}</div>
                 </td>
-                <td className="td-truncate py-3">
+                <td className="td-truncate py-2">
                   <div className="d-flex flex-column">
                     <div className="d-flex align-items-center gap-1">
                       {tx.input_method === 'image' && (
@@ -156,7 +156,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     )}
                   </div>
                 </td>
-                <td className="align-middle py-3">
+                <td className="align-middle py-2">
                   <div className="d-flex flex-wrap gap-1" style={{ maxWidth: '180px' }}>
                     {tx.tags?.map((tag) => (
                       <span
@@ -180,7 +180,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     <span className="text-muted small">-</span>
                   )}
                 </td>
-                <td className="align-middle py-3">
+                <td className="align-middle py-2">
                   {tx.category ? (
                     <div className="d-inline-flex align-items-center">
                       <Badge
@@ -204,7 +204,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     <span className="text-muted small">Tanpa Kategori</span>
                   )}
                 </td>
-                <td className="align-middle py-3">
+                <td className="align-middle py-2">
                   <div className="d-flex align-items-center">
                     <span
                       className="status-dot me-2"
@@ -215,7 +215,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     </span>
                   </div>
                 </td>
-                <td className="align-middle py-3">
+                <td className="align-middle py-2">
                   {tx.status ? (
                     <span
                       className="badge fw-medium"
@@ -231,7 +231,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     <span className="badge bg-body-tertiary text-muted">Draft</span>
                   )}
                 </td>
-                <td className="text-end fw-bold align-middle py-3">
+                <td className="text-end fw-bold align-middle py-2">
                   <span className={`text-nowrap ${tx.type === 'income' ? 'text-success' : tx.type === 'expense' ? 'text-danger' : 'text-primary'}`}>
                     {tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : ''}
                     {formatCurrency(tx.amount)}
