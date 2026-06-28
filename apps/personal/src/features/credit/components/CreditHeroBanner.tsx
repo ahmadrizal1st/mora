@@ -1,5 +1,6 @@
 import { Icon } from '@/shared/components/ui'
 import { useCreditSummary } from '../hooks/useCreditSummary'
+import { SummaryMetricCard } from '@/features/accounts/components/SummaryMetricCard'
 
 const shortFmt = (n: number) => {
   if (n >= 1_000_000_000) return 'Rp ' + (n / 1_000_000_000).toFixed(1) + ' M'
@@ -57,128 +58,43 @@ export function CreditHeroBanner() {
       <div className="mb-4 d-none d-md-block">
         <div className="row g-2 g-lg-3">
           <div className="col-6 col-lg-3">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body p-3 p-lg-4">
-                <div className="d-flex align-items-center gap-2 mb-3">
-                  <div
-                    className="avatar avatar-sm bg-red text-white"
-                    style={{ borderRadius: '10px' }}
-                  >
-                    <Icon icon="credit-card" size={16} />
-                  </div>
-                  <div
-                    className="subheader text-muted m-0"
-                    style={{ letterSpacing: '0.05em', fontSize: '10px' }}
-                  >
-                    TOTAL LIMIT
-                  </div>
-                </div>
-                <div className="h1 fw-bold m-0 mb-1">{shortFmt(totalLimit)}</div>
-                <div className="text-muted small">{activeCount} jalur kredit aktif</div>
-              </div>
-            </div>
+            <SummaryMetricCard
+              title="Total Limit"
+              value={shortFmt(totalLimit)}
+              subtext={`${activeCount} jalur kredit aktif`}
+              icon="credit-card"
+              valueColor="primary"
+            />
           </div>
 
           <div className="col-6 col-lg-3">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body p-3 p-lg-4">
-                <div className="d-flex align-items-center gap-2 mb-3">
-                  <div
-                    className="avatar avatar-sm bg-azure text-white"
-                    style={{ borderRadius: '10px' }}
-                  >
-                    <Icon icon="chart-pie" size={16} />
-                  </div>
-                  <div
-                    className="subheader text-muted m-0"
-                    style={{ letterSpacing: '0.05em', fontSize: '10px' }}
-                  >
-                    OUTSTANDING
-                  </div>
-                </div>
-                <div className="h1 fw-bold m-0 mb-1 text-danger">{shortFmt(totalOutstanding)}</div>
-                <div className="d-flex align-items-center gap-2">
-                  <span
-                    className={`badge bg-${utilColor}-lt text-${utilColor} border-0 px-2 rounded-pill`}
-                    style={{ fontSize: '10px' }}
-                  >
-                    {utilizationPct.toFixed(0)}% Utilisasi
-                  </span>
-                </div>
-              </div>
-            </div>
+            <SummaryMetricCard
+              title="Outstanding"
+              value={shortFmt(totalOutstanding)}
+              subtext={`${utilizationPct.toFixed(0)}% Utilisasi`}
+              icon="chart-pie"
+              valueColor="danger"
+            />
           </div>
 
           <div className="col-6 col-lg-3">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body p-3 p-lg-4">
-                <div className="d-flex align-items-center gap-2 mb-3">
-                  <div
-                    className="avatar avatar-sm bg-orange text-white"
-                    style={{ borderRadius: '10px' }}
-                  >
-                    <Icon icon="calendar-event" size={16} />
-                  </div>
-                  <div
-                    className="subheader text-muted m-0"
-                    style={{ letterSpacing: '0.05em', fontSize: '10px' }}
-                  >
-                    JATUH TEMPO
-                  </div>
-                </div>
-                <div className="h1 fw-bold m-0 mb-1 text-warning">{formattedDate}</div>
-                <div className="d-flex align-items-center justify-content-between">
-                  {dueDate instanceof Date ? (
-                    <>
-                      <span className="text-muted" style={{ fontSize: '11px' }}>
-                        Sisa {daysRemaining} hari
-                      </span>
-                      <span className="fw-bold text-dark" style={{ fontSize: '12px' }}>
-                        {shortFmt(nextDueAmount)}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-muted small">Tidak ada tagihan</span>
-                  )}
-                </div>
-              </div>
-            </div>
+            <SummaryMetricCard
+              title="Jatuh Tempo"
+              value={formattedDate}
+              subtext={dueDate instanceof Date ? `Sisa ${daysRemaining} hari - ${shortFmt(nextDueAmount)}` : 'Tidak ada tagihan'}
+              icon="calendar-event"
+              valueColor="warning"
+            />
           </div>
 
           <div className="col-6 col-lg-3">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body p-3 p-lg-4">
-                <div className="d-flex align-items-center gap-2 mb-3">
-                  <div
-                    className="avatar avatar-sm bg-blue text-white"
-                    style={{ borderRadius: '10px' }}
-                  >
-                    <Icon icon="award" size={16} />
-                  </div>
-                  <div
-                    className="subheader text-muted m-0"
-                    style={{ letterSpacing: '0.05em', fontSize: '10px' }}
-                  >
-                    CREDIT SCORE
-                  </div>
-                </div>
-                <div className="d-flex align-items-baseline gap-2 mb-1">
-                  <div className="h1 fw-bold m-0 text-success">{creditScore}</div>
-                  <span className="small text-success fw-bold">↑ +{scoreTrend}</span>
-                </div>
-                <div className="d-flex align-items-center justify-content-between">
-                  <span
-                    className="badge bg-blue-lt text-blue border-0 px-2 rounded-pill"
-                    style={{ fontSize: '10px' }}
-                  >
-                    Very Good
-                  </span>
-                  <span className="text-muted" style={{ fontSize: '11px' }}>
-                    SLIK/OJK
-                  </span>
-                </div>
-              </div>
-            </div>
+            <SummaryMetricCard
+              title="Credit Score"
+              value={creditScore.toString()}
+              subtext="SLIK/OJK"
+              icon="shield-check"
+              valueColor="success"
+            />
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { clsx } from 'clsx'
 import { Icon } from '../ui/Icon'
 import { Avatar } from '../ui/Avatar'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import type { Person } from '@/shared/types/common.types'
 
 import peopleData from '../../data/people.json'
@@ -16,6 +17,7 @@ interface NavbarSideUserProps {
 export function NavbarSideUser({ hideUsername, dark }: NavbarSideUserProps) {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const { enableAdvancedCredit, toggleAdvancedCredit } = useSettingsStore()
 
   const defaultPerson = peopleData[0]
 
@@ -58,6 +60,27 @@ export function NavbarSideUser({ hideUsername, dark }: NavbarSideUserProps) {
         <Link to="/profile" className="dropdown-item">
           <Icon icon="user" className="dropdown-item-icon" /> Profile
         </Link>
+        <div className="dropdown-divider" />
+        
+        {/* Toggle Credit Feature */}
+        <div className="dropdown-item d-flex justify-content-between align-items-center pe-3" style={{ minWidth: '260px' }}>
+          <div>
+            <div className="fw-medium">Fitur Kredit Lanjutan</div>
+            <div className="text-muted" style={{ fontSize: '11px', whiteSpace: 'normal', lineHeight: '1.2' }}>
+              Aktifkan modul Kartu Kredit, KPR, KTA, dan Paylater.
+            </div>
+          </div>
+          <label className="form-check form-switch m-0 ms-3" onClick={(e) => e.stopPropagation()}>
+            <input 
+              className="form-check-input" 
+              type="checkbox" 
+              checked={enableAdvancedCredit}
+              onChange={toggleAdvancedCredit}
+              style={{ cursor: 'pointer' }}
+            />
+          </label>
+        </div>
+        
         <div className="dropdown-divider" />
         <Link to="/settings" className="dropdown-item">
           Settings & Privacy

@@ -18,7 +18,7 @@ class CreditRepository
                     $q->where('type', $type);
                 }
             })
-            ->with(['credit', 'currency']);
+            ->with(['credit.schedules', 'currency']);
             
         return $query->paginate($perPage);
     }

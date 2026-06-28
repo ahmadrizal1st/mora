@@ -2,7 +2,6 @@ import React, { useMemo } from 'react'
 import { Icon, Chart } from '@/shared/components/ui'
 import { CreditTypeCards } from '../components/CreditTypeCards'
 import { CreditScoreGauge, getCreditScoreColor } from '../components/CreditScoreGauge'
-import { DebtPayoffPlannerPreview } from '../components/DebtPayoffPlannerPreview'
 import { useCreditSummary } from '../hooks/useCreditSummary'
 import { useCredits } from '../hooks/useCredits'
 
@@ -261,10 +260,6 @@ export function CreditOverviewPage() {
       </div>
 
       <CreditTypeCards />
-
-      <div className="d-none d-lg-block">
-        <DebtPayoffPlannerPreview />
-      </div>
     </>
   )
 }

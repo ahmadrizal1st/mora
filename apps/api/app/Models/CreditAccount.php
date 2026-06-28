@@ -27,6 +27,37 @@ class CreditAccount extends Model
         ];
     }
 
+    protected $appends = ['limit', 'total_amount', 'installment_amount', 'due_date', 'credit_type'];
+
+    public function getCreditTypeAttribute(): string
+    {
+        return $this->type;
+    }
+
+    public function getLimitAttribute(): float
+    {
+        return (float) $this->principal_amount;
+    }
+
+    public function getTotalAmountAttribute(): float
+    {
+        return (float) $this->principal_amount;
+    }
+
+    public function getInstallmentAmountAttribute(): float
+    {
+        if ($this->tenor_months > 0) {
+            return (float) $this->principal_amount / $this->tenor_months;
+        }
+        return 0;
+    }
+
+    public function getDueDateAttribute(): ?string
+    {
+        $schedule = $this->schedules->where('is_paid', false)->sortBy('due_date')->first();
+        return $schedule && $schedule->due_date ? $schedule->due_date->format('Y-m-d') : null;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

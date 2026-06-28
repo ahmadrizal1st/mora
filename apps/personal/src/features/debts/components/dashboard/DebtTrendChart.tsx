@@ -123,52 +123,6 @@ export function DebtTrendChart({ debts = [] }: { debts?: DebtRecord[] }) {
       <div className="card border-0 shadow-sm d-flex flex-column h-100">
         <div className="card-header">
           <h3 className="card-title">Debt & Receivable Trend</h3>
-          <div className="card-actions d-flex align-items-center">
-            <div className="dropdown me-3">
-              <a
-                href="#"
-                className="text-secondary small d-flex align-items-center gap-1 text-decoration-none"
-                data-bs-toggle="dropdown"
-              >
-                <span className="text-decoration-underline-hover">Per {groupBy === 'day' ? 'Hari' : groupBy === 'week' ? 'Minggu' : 'Bulan'}</span>
-                <Icon icon="chevron-down" size="xs" />
-              </a>
-              <div className="dropdown-menu dropdown-menu-end">
-                {range !== 'Y' && (
-                  <button className="dropdown-item" onClick={() => setGroupBy('day')}>Per Hari</button>
-                )}
-                {range !== 'W' && (
-                  <button className="dropdown-item" onClick={() => setGroupBy('week')}>Per Minggu</button>
-                )}
-                {(range !== 'W' && range !== 'M') && (
-                  <button className="dropdown-item" onClick={() => setGroupBy('month')}>Per Bulan</button>
-                )}
-              </div>
-            </div>
-            <div className="dropdown">
-              <a
-                href="#"
-                className="text-secondary small d-flex align-items-center gap-1 text-decoration-none"
-                data-bs-toggle="dropdown"
-              >
-                <span className="text-decoration-underline-hover">{displayLabel}</span>
-                <Icon icon="chevron-down" size="xs" />
-              </a>
-              <div className="dropdown-menu dropdown-menu-end">
-                <button className="dropdown-item" onClick={() => handleSetRange('W')}>This Week</button>
-                <button className="dropdown-item" onClick={() => handleSetRange('M')}>This Month</button>
-                <button className="dropdown-item" onClick={() => handleSetRange('Y')}>This Year</button>
-                <div className="dropdown-divider"></div>
-                <button className="dropdown-item" onClick={() => {
-                  handleSetRange('Custom')
-                  setShowCustomModal(true)
-                }}>
-                  <Icon icon="calendar-event" size="sm" className="me-2" />
-                  Custom Jarak Waktu...
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
         <div className="card-body d-flex flex-column gap-2 flex-grow-1">
           <div>

@@ -28,7 +28,7 @@ export function DebtHealthScore({ debts = [] }: { debts?: DebtRecord[] }) {
   const chartData = useMemo(
     () => ({
       type: 'donut' as const,
-      height: 10,
+      height: 12,
       series: [
         { name: 'Belum Lunas', data: [stats.belumLunas.pct || 0], color: '#f59f00' },
         { name: 'Jatuh Tempo', data: [stats.jatuhTempo.pct || 0], color: '#d63939' },
@@ -73,12 +73,12 @@ export function DebtHealthScore({ debts = [] }: { debts?: DebtRecord[] }) {
       </div>
       <div className="card-body p-4 d-flex flex-column justify-content-center align-items-center">
         {/* Donut Chart */}
-        <div className="mb-4 w-100 d-flex justify-content-center" style={{ minHeight: '160px' }}>
+        <div className="mb-0 w-100 d-flex justify-content-center align-items-center" style={{ minHeight: '180px' }}>
           <Chart chartId="debtCompositionDonut" chartData={chartData as any} />
         </div>
 
         {/* Legends with Progress Bars */}
-        <div className="w-100 mt-2">
+        <div className="w-100">
           <div className="d-flex flex-column gap-3">
             {items.map((item, idx) => (
               <div key={idx}>

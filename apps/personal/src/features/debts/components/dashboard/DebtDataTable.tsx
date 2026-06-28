@@ -35,7 +35,15 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
     let data = records
     if (activeTab === 'Piutang') data = data.filter((d) => d.type === 'Piutang')
     if (activeTab === 'Utang') data = data.filter((d) => d.type === 'Utang')
-    if (activeTab === 'Jatuh Tempo') data = data.filter((d) => d.status === 'Jatuh Tempo')
+    if (activeTab === 'Jatuh Tempo') {
+      const now = new Date()
+      now.setHours(0, 0, 0, 0)
+      data = data.filter((d) => {
+        const dDate = new Date(d.dueDate)
+        dDate.setHours(0, 0, 0, 0)
+        return d.status === 'Jatuh Tempo' || (dDate.getTime() <= now.getTime() && d.status !== 'Lunas')
+      })
+    }
     return data
   }, [activeTab, records])
 
@@ -148,6 +156,13 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
                 const isPiutang = item.type === 'Piutang'
                 const color = isPiutang ? '#38a169' : '#e53e3e'
                 const prefix = isPiutang ? '+ ' : '- '
+                
+                const now = new Date()
+                now.setHours(0, 0, 0, 0)
+                const dDate = new Date(item.dueDate)
+                dDate.setHours(0, 0, 0, 0)
+                const isOverdue = dDate.getTime() <= now.getTime() && item.status !== 'Lunas'
+                const displayStatus = isOverdue ? 'Jatuh Tempo' : item.status
 
                 return (
                   <div
@@ -172,7 +187,7 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
                           {item.type}
                         </span>
                         <span>·</span>
-                        <span>{getStatusText(item.status)}</span>
+                        <span>{getStatusText(displayStatus)}</span>
                         <span>·</span>
                         <span>{new Date(item.dueDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                       </div>

@@ -1,13 +1,14 @@
-import { useRef, useCallback } from 'react'
+import { useRef, useCallback, useMemo } from 'react'
 import { clsx } from 'clsx'
 import { NavbarLogo } from './NavbarLogo'
 import { NavbarSide } from './NavbarSide'
 import { NavbarMenu } from './NavbarMenu'
 import type { NavItem } from './NavbarMenu'
 import { Icon } from '../ui/Icon'
+import { Button } from '../ui/Button'
 import { useTheme } from '@/shared/context/ThemeContext'
+import { useSettingsStore } from '@/shared/store/useSettingsStore'
 import menuData from '../../data/menu.json'
-import { Link } from '@tanstack/react-router'
 
 interface MenuSub {
   title: string
@@ -29,38 +30,6 @@ interface MenuSection {
   children?: Record<string, MenuChild>
 }
 
-const navigationData: NavItem[] = Object.values(menuData as Record<string, MenuSection>).map(
-  (section) => ({
-    label: section.title,
-    icon: section.icon,
-    href: section.url
-      ? `/${section.url
-          .replace('.html', '')
-          .replace(/^index$/, 'dashboard')
-          .replace(/\/index$/, '')}`
-      : '#',
-    dropdown: !!section.children,
-    columns: section.columns,
-    items: section.children
-      ? Object.values(section.children).map((child) => ({
-          label: child.title,
-          href: child.url
-            ? `/${child.url
-                .replace('.html', '')
-                .replace(/^index$/, 'dashboard')
-                .replace(/\/index$/, '')}`
-            : '#',
-          badge: child.badge,
-          items: child.children
-            ? Object.values(child.children).map((sub) => ({
-                label: sub.title,
-                href: sub.url ? `/${sub.url.replace('.html', '').replace(/\/index$/, '')}` : '#',
-              }))
-            : undefined,
-        }))
-      : undefined,
-  })
-)
 
 interface NavbarProps {
   breakpoint?: string
@@ -112,7 +81,49 @@ export function Navbar({
   hideLogo,
 }: NavbarProps) {
   const { openSettings } = useTheme()
+  const { enableAdvancedCredit } = useSettingsStore()
   const headerRef = useRef<HTMLElement>(null)
+
+  const navigationData: NavItem[] = useMemo(() => {
+    const filteredMenuData = Object.entries(menuData).reduce((acc, [key, section]) => {
+      if (key === 'credit' && !enableAdvancedCredit) return acc
+      acc[key] = section as MenuSection
+      return acc
+    }, {} as Record<string, MenuSection>)
+
+    return Object.values(filteredMenuData).map(
+      (section) => ({
+        label: section.title,
+        icon: section.icon,
+        href: section.url
+          ? `/${section.url
+              .replace('.html', '')
+              .replace(/^index$/, 'dashboard')
+              .replace(/\/index$/, '')}`
+          : '#',
+        dropdown: !!section.children,
+        columns: section.columns,
+        items: section.children
+          ? Object.values(section.children).map((child) => ({
+              label: child.title,
+              href: child.url
+                ? `/${child.url
+                    .replace('.html', '')
+                    .replace(/^index$/, 'dashboard')
+                    .replace(/\/index$/, '')}`
+                : '#',
+              badge: child.badge,
+              items: child.children
+                ? Object.values(child.children).map((sub) => ({
+                    label: sub.title,
+                    href: sub.url ? `/${sub.url.replace('.html', '').replace(/\/index$/, '')}` : '#',
+                  }))
+                : undefined,
+            }))
+          : undefined,
+      })
+    )
+  }, [enableAdvancedCredit])
 
   const handleNavClick = useCallback((e: React.MouseEvent) => {
     const target = e.target as HTMLElement
@@ -236,15 +247,15 @@ export function Navbar({
 
               <div className="flex-shrink-0">
                 <ul className="navbar-nav flex-row align-items-center gap-2">
-                  <li className="nav-item">
-                    <Link
+                  <li className="nav-item d-flex align-items-center">
+                    <Button
                       to="/ai/chat"
-                      className="nav-link d-flex align-items-center gap-2 px-3 rounded-pill bg-primary text-white hover-bg-primary-dark transition-colors shadow-sm"
-                      style={{ padding: '0.4rem 1rem' }}
-                    >
-                      <Icon icon="message-chatbot" size={16} />
-                      <span className="fw-semibold d-none d-sm-inline" style={{ fontSize: '14px' }}>Mora AI</span>
-                    </Link>
+                      ghost
+                      size="sm"
+                      icon="message-chatbot"
+                      text="Mora AI"
+                      className="fw-medium text-body px-2"
+                    />
                   </li>
                   <li className="nav-item">
                     <a

@@ -18,6 +18,36 @@ export function DebtsPage() {
     const totalDebtAmount = activeDebts.reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
     const totalReceivableAmount = activeReceivables.reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
 
+    // Calculate trends based on new debts added this month vs last month
+    const now = new Date()
+    const currentMonth = now.getMonth()
+    const currentYear = now.getFullYear()
+    
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1
+    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear
+
+    const isThisMonth = (dateString: string) => {
+      const d = new Date(dateString)
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear
+    }
+
+    const isLastMonth = (dateString: string) => {
+      const d = new Date(dateString)
+      return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear
+    }
+
+    const piutangThisMonth = debts.filter((d: any) => d.type === 'Piutang' && isThisMonth(d.createdAt)).reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
+    const piutangLastMonth = debts.filter((d: any) => d.type === 'Piutang' && isLastMonth(d.createdAt)).reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
+    const trendPiutang = piutangLastMonth === 0 ? (piutangThisMonth > 0 ? 100 : 0) : ((piutangThisMonth - piutangLastMonth) / piutangLastMonth) * 100
+
+    const utangThisMonth = debts.filter((d: any) => d.type === 'Utang' && isThisMonth(d.createdAt)).reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
+    const utangLastMonth = debts.filter((d: any) => d.type === 'Utang' && isLastMonth(d.createdAt)).reduce((acc: number, curr: any) => acc + Number(curr.amount), 0)
+    const trendUtang = utangLastMonth === 0 ? (utangThisMonth > 0 ? 100 : 0) : ((utangThisMonth - utangLastMonth) / utangLastMonth) * 100
+
+    const cashflowThisMonth = piutangThisMonth - utangThisMonth
+    const cashflowLastMonth = piutangLastMonth - utangLastMonth
+    const trendCashflow = cashflowLastMonth === 0 ? (cashflowThisMonth > 0 ? 100 : (cashflowThisMonth < 0 ? -100 : 0)) : ((cashflowThisMonth - cashflowLastMonth) / Math.abs(cashflowLastMonth)) * 100
+
     // Calculate overdue (Jatuh Tempo)
     const overdueDebts = activeDebts.filter((d: any) => new Date(d.dueDate) < new Date() || d.status === 'Jatuh Tempo')
     const overdueCount = overdueDebts.length
@@ -31,6 +61,9 @@ export function DebtsPage() {
       netCashflow: totalReceivableAmount - totalDebtAmount,
       overdueCount,
       overdueAmount,
+      trendPiutang,
+      trendUtang,
+      trendCashflow,
     }
   }, [debts])
 
@@ -52,6 +85,9 @@ export function DebtsPage() {
             jatuhTempoCount={summary.overdueCount}
             jatuhTempoAmount={summary.overdueAmount}
             arusKasBersih={summary.netCashflow}
+            trendPiutang={summary.trendPiutang}
+            trendUtang={summary.trendUtang}
+            trendCashflow={summary.trendCashflow}
           />
         </div>
 
@@ -60,16 +96,16 @@ export function DebtsPage() {
           
           {/* Top Widgets Row */}
           <div className="d-flex flex-wrap gap-3 flex-grow-1" style={{ flexBasis: '60%' }}>
-            <div className="d-flex flex-column flex-grow-1" style={{ flexBasis: '55%', minWidth: '300px' }}>
+            <div className="flex-grow-1" style={{ flexBasis: '55%', minWidth: '300px' }}>
               <DebtTrendChart debts={debts} />
             </div>
-            <div className="d-flex flex-column flex-grow-1" style={{ flexBasis: '40%', minWidth: '250px' }}>
+            <div className="flex-grow-1" style={{ flexBasis: '40%', minWidth: '250px' }}>
               <DebtHealthScore debts={debts} />
             </div>
           </div>
 
           {/* Sidebar Widget (Aligned with top row) */}
-          <div className="d-flex flex-column flex-grow-1" style={{ flexBasis: '30%', minWidth: '300px' }}>
+          <div className="flex-grow-1" style={{ flexBasis: '30%', minWidth: '300px' }}>
             <DebtRemindersWidget debts={debts} />
           </div>
 

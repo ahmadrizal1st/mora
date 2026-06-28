@@ -465,8 +465,8 @@ export function DashboardContent() {
                   />
                 </div>
 
-                <div className="mt-4">
-                  {statistics.series.slice(0, 6).map((s: any, i: number) => {
+                <div className="mt-4 custom-scrollbar overflow-y-auto pe-1" style={{ maxHeight: '200px' }}>
+                  {statistics.series.map((s: any, i: number) => {
                     const totalVal = activeTab === 'expense' ? (txSummary?.total_expense || 0) : (txSummary?.total_income || 0)
                     const pct = totalVal > 0 ? Math.round((s.data[0] / totalVal) * 100) : 0
                     

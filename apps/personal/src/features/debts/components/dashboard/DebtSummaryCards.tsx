@@ -8,6 +8,9 @@ interface DebtSummaryCardsProps {
   jatuhTempoCount: number
   jatuhTempoAmount: number
   arusKasBersih: number
+  trendPiutang?: number
+  trendUtang?: number
+  trendCashflow?: number
 }
 
 export function DebtSummaryCards({
@@ -16,6 +19,9 @@ export function DebtSummaryCards({
   jatuhTempoCount,
   jatuhTempoAmount,
   arusKasBersih,
+  trendPiutang = 0,
+  trendUtang = 0,
+  trendCashflow = 0,
 }: DebtSummaryCardsProps) {
   const isSurplus = arusKasBersih >= 0
 
@@ -45,8 +51,8 @@ export function DebtSummaryCards({
             <div className="h1 mb-1 fw-bold lh-1 text-nowrap text-success" style={{ letterSpacing: '-0.5px' }}>
               {formatCurrency(totalPiutang)}
             </div>
-            <div className="text-muted small" style={{ fontSize: '11px' }}>
-              +12,4% bulan ini
+            <div className={`small ${trendPiutang >= 0 ? 'text-success' : 'text-danger'}`} style={{ fontSize: '11px' }}>
+              {trendPiutang > 0 ? '+' : ''}{trendPiutang.toFixed(1).replace('.', ',')}% bulan ini
             </div>
           </div>
         </div>
@@ -70,8 +76,8 @@ export function DebtSummaryCards({
             <div className="h1 mb-1 fw-bold lh-1 text-nowrap text-danger" style={{ letterSpacing: '-0.5px' }}>
               {formatCurrency(totalUtang)}
             </div>
-            <div className="text-muted small" style={{ fontSize: '11px' }}>
-              +8,7% bulan ini
+            <div className={`small ${trendUtang <= 0 ? 'text-success' : 'text-danger'}`} style={{ fontSize: '11px' }}>
+              {trendUtang > 0 ? '+' : ''}{trendUtang.toFixed(1).replace('.', ',')}% bulan ini
             </div>
           </div>
         </div>
@@ -120,8 +126,8 @@ export function DebtSummaryCards({
             <div className={clsx('h1 mb-1 fw-bold lh-1 text-nowrap', isSurplus ? 'text-success' : 'text-danger')} style={{ letterSpacing: '-0.5px' }}>
               {isSurplus ? '+' : '-'}{formatCurrency(Math.abs(arusKasBersih))}
             </div>
-            <div className="text-muted small" style={{ fontSize: '11px' }}>
-              +15,3% bulan ini
+            <div className={`small ${trendCashflow >= 0 ? 'text-success' : 'text-danger'}`} style={{ fontSize: '11px' }}>
+              {trendCashflow > 0 ? '+' : ''}{trendCashflow.toFixed(1).replace('.', ',')}% bulan ini
             </div>
           </div>
         </div>
