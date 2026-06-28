@@ -7,9 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CreditRepository
 {
-    /**
-     * List all accounts that have credit info.
-     */
+    
     public static function list(User $user, int $perPage = 15, ?string $type = null): LengthAwarePaginator
     {
         $query = $user->accounts()

@@ -10,9 +10,7 @@ use Illuminate\Http\Request;
 
 class ProviderController extends Controller
 {
-    /**
-     * Display a listing of providers (global + user-specific).
-     */
+    
     public function index(Request $request): JsonResponse
     {
         $providers = Provider::where('is_global', true)
@@ -23,9 +21,7 @@ class ProviderController extends Controller
         return response()->json(['data' => ProviderData::collect($providers)]);
     }
 
-    /**
-     * Store a newly created custom provider in storage.
-     */
+    
     public function store(StoreProviderRequest $request): JsonResponse
     {
         $provider = Provider::create([

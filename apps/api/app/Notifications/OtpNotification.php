@@ -17,19 +17,13 @@ class OtpNotification extends Notification implements ShouldQueue
         protected string $type
     ) {}
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
+    
     public function via(object $notifiable): array
     {
         return ['mail'];
     }
 
-    /**
-     * Build the mail representation.
-     */
+    
     public function toMail(object $notifiable): MailMessage
     {
         $subject = match ($this->type) {

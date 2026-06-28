@@ -9,9 +9,7 @@ use Illuminate\Http\Request;
 
 class CreditController extends Controller
 {
-    /**
-     * List all credit accounts for the user.
-     */
+    
     public function index(Request $request): JsonResponse
     {
         $perPage = $request->input('per_page', 15);
@@ -23,9 +21,7 @@ class CreditController extends Controller
         ]);
     }
 
-    /**
-     * Upsert credit info for a specific account.
-     */
+    
     public function store(StoreCreditRequest $request, string $accountId): JsonResponse
     {
         $credit = CreditService::upsert(
@@ -40,9 +36,7 @@ class CreditController extends Controller
         ]);
     }
 
-    /**
-     * Remove credit profile from an account.
-     */
+    
     public function destroy(Request $request, string $accountId): JsonResponse
     {
         CreditService::destroy($request->user(), $accountId);

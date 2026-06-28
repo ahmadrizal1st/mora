@@ -29,4 +29,20 @@ class DebtRepository
         return self::queryForUser($user)
             ->findOrFail($id);
     }
+
+    public static function store(User $user, array $data): Debt
+    {
+        return $user->debts()->create($data);
+    }
+
+    public static function update(Debt $debt, array $data): Debt
+    {
+        $debt->update($data);
+        return $debt->fresh();
+    }
+
+    public static function destroy(Debt $debt): void
+    {
+        $debt->delete();
+    }
 }

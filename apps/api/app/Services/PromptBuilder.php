@@ -9,15 +9,15 @@ class PromptBuilder
 {
     public function build(string $rawText, string $schemaJson, string $docType): string
     {
-        // 1. Deteksi Mode (SINGLE vs MULTIPLE)
-        // Kita gunakan deteksi yang lebih luas untuk menangani kesalahan OCR
+        
+        
         $receiptKeywords = '/(?:Total|TOTAL|Grand Total|SUM|Bayar|Amount Due|Netto|Invoice|Struk|Bill|Tagihan|Nominal|Rp\.|IDR|@| x )/i';
         $isReceipt = preg_match($receiptKeywords, $rawText);
         
-        // Cek apakah ada pola harga (misal: 10.000 atau 100,00) yang biasanya ada di struk
+        
         $hasPricePattern = preg_match('/\b\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?\b/', $rawText);
 
-        $mode = 'MULTIPLE'; // Default untuk Bank Statement
+        $mode = 'MULTIPLE'; 
         if ($isReceipt && $hasPricePattern) {
             $mode = 'SINGLE';
         }

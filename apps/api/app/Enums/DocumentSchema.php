@@ -11,11 +11,7 @@ enum DocumentSchema: string
     case AUDIO_NOTE = 'audio_note';
     case AUTO = 'auto';
 
-    /**
-     * Get the expected data structure for the LLM extraction.
-     *
-     * @return array<string, mixed>
-     */
+    
     public function schema(): array
     {
         return match ($this) {

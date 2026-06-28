@@ -9,26 +9,20 @@ use Illuminate\Database\Eloquent\Collection;
 
 class LookupRepository
 {
-    /**
-     * Get all currencies.
-     */
+    
     public static function activeCurrencies(): Collection
     {
         return Currency::orderBy('code')
             ->get();
     }
 
-    /**
-     * Get all statuses.
-     */
+    
     public static function allStatuses(): Collection
     {
         return Status::all();
     }
 
-    /**
-     * Get all recurring types.
-     */
+    
     public static function allRecurringTypes(): Collection
     {
         return RecurringType::all();

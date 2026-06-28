@@ -15,7 +15,7 @@ class AssetService
 
     public static function store(User $user, array $data): Asset
     {
-        return $user->assets()->create($data);
+        return AssetRepository::store($user, $data);
     }
 
     public static function show(User $user, string $id): Asset
@@ -26,13 +26,12 @@ class AssetService
     public static function update(User $user, string $id, array $data): Asset
     {
         $asset = AssetRepository::findForUser($user, $id);
-        $asset->update($data);
-        return $asset->fresh();
+        return AssetRepository::update($asset, $data);
     }
 
     public static function destroy(User $user, string $id): void
     {
         $asset = AssetRepository::findForUser($user, $id);
-        $asset->delete();
+        AssetRepository::destroy($asset);
     }
 }

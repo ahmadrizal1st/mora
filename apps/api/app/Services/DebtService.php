@@ -15,7 +15,7 @@ class DebtService
 
     public static function store(User $user, array $data): Debt
     {
-        return $user->debts()->create($data);
+        return DebtRepository::store($user, $data);
     }
 
     public static function show(User $user, string $id): Debt
@@ -26,13 +26,12 @@ class DebtService
     public static function update(User $user, string $id, array $data): Debt
     {
         $debt = DebtRepository::findForUser($user, $id);
-        $debt->update($data);
-        return $debt->fresh();
+        return DebtRepository::update($debt, $data);
     }
 
     public static function destroy(User $user, string $id): void
     {
         $debt = DebtRepository::findForUser($user, $id);
-        $debt->delete();
+        DebtRepository::destroy($debt);
     }
 }

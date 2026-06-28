@@ -25,17 +25,13 @@ class Provider extends Model
         'is_global' => 'boolean',
     ];
 
-    /**
-     * Get the user that owns the provider (for custom providers).
-     */
+    
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the accounts associated with this provider.
-     */
+    
     public function accounts(): HasMany
     {
         return $this->hasMany(Account::class);

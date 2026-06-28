@@ -18,9 +18,7 @@ class Account extends Model
         'is_archived' => 'boolean',
     ];
 
-    /**
-     * Account type constants.
-     */
+    
     public const TYPE_CASH = 'cash';
     public const TYPE_BANK = 'bank';
     public const TYPE_EWALLET = 'e-wallet';

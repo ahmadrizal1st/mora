@@ -11,11 +11,7 @@ use Illuminate\Http\Request;
 
 class TagController extends Controller
 {
-    /**
-     * List all tags for the authenticated user.
-     *
-     * GET /api/tags
-     */
+    
     public function index(Request $request): JsonResponse
     {
         $tags = TagService::list($request->user());
@@ -25,11 +21,7 @@ class TagController extends Controller
         ]);
     }
 
-    /**
-     * Create a new tag.
-     *
-     * POST /api/tags
-     */
+    
     public function store(StoreTagRequest $request): JsonResponse
     {
         $tag = TagService::store($request->user(), $request->validated());
@@ -40,11 +32,7 @@ class TagController extends Controller
         ], 201);
     }
 
-    /**
-     * Update a tag.
-     *
-     * PUT /api/tags/{id}
-     */
+    
     public function update(StoreTagRequest $request, int $id): JsonResponse
     {
         $tag = TagService::update($request->user(), $id, $request->validated());
@@ -55,11 +43,7 @@ class TagController extends Controller
         ]);
     }
 
-    /**
-     * Delete a tag.
-     *
-     * DELETE /api/tags/{id}
-     */
+    
     public function destroy(Request $request, int $id): JsonResponse
     {
         TagService::destroy($request->user(), $id);

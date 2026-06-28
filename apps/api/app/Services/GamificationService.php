@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class GamificationService
 {
-    /**
-     * Get user gamification statistics
-     */
+    
     public function getStats(string $userId): array
     {
         $profile = GamificationProfile::firstOrCreate(
@@ -20,7 +18,7 @@ class GamificationService
             ['xp' => 0, 'coins' => 0, 'gemfin' => 0, 'level' => 1]
         );
 
-        // Get login streak or general streak
+        
         $streak = Streak::firstOrCreate(
             ['user_id' => $userId, 'type' => 'login'],
             ['current_count' => 0, 'longest_count' => 0]
@@ -29,10 +27,10 @@ class GamificationService
         $totalBadges = DB::table('user_badges')->where('user_id', $userId)->count();
         $totalAchievements = Quest::where('type', 'achievement')->count();
 
-        // Determine Rank based on XP
+        
         $rank = $this->determineRank($profile->xp);
 
-        // Determine Pet Status based on Streak
+        
         $petStatus = $streak->current_count >= 3 ? 'Happy & Energized' : 'Needs attention';
         
         return [
@@ -51,15 +49,13 @@ class GamificationService
         ];
     }
 
-    /**
-     * Get achievements for a user
-     */
+    
     public function getAchievements(string $userId): array
     {
-        // Get all achievement quests
+        
         $quests = Quest::where('type', 'achievement')->get();
         
-        // Get user progress
+        
         $userQuests = UserQuest::where('user_id', $userId)
             ->whereIn('quest_id', $quests->pluck('id'))
             ->get()
@@ -77,10 +73,10 @@ class GamificationService
             if ($isCompleted) {
                 $status = 'completed';
             } elseif ($progressCount > 0) {
-                $status = 'unlocked'; // Unlocked means started making progress
+                $status = 'unlocked'; 
             }
 
-            // Mock rarity logic for UI based on reward
+            
             $rarity = 'Common';
             $color = 'orange';
             if ($quest->xp_reward >= 500) { $rarity = 'Legendary'; $color = 'red'; }
@@ -90,7 +86,7 @@ class GamificationService
             $result[] = [
                 'id' => $quest->id,
                 'title' => $quest->title,
-                'description' => "Complete the {$quest->title} objective.", // In real app, add description to table
+                'description' => "Complete the {$quest->title} objective.", 
                 'progress' => min(100, $quest->target_count > 0 ? round(($progressCount / $quest->target_count) * 100) : 0),
                 'target_label' => $quest->target_count . ' ' . $quest->action_type,
                 'current_label' => $progressCount . ' ' . $quest->action_type,
@@ -105,9 +101,7 @@ class GamificationService
         return $result;
     }
 
-    /**
-     * Get leaderboard (Top 10 users by XP)
-     */
+    
     public function getLeaderboard(string $currentUserId): array
     {
         $profiles = GamificationProfile::with('user:id,name,avatar')
@@ -133,22 +127,20 @@ class GamificationService
             ];
         }
 
-        // If current user not in top 10, we could append them at the bottom.
-        // For MVP, we skip this complexity.
+        
+        
 
         return $result;
     }
 
-    /**
-     * Claim achievement reward
-     */
+    
     public function claimAchievement(string $userId, string $questId): array
     {
         return DB::transaction(function () use ($userId, $questId) {
             $quest = Quest::findOrFail($questId);
             
-            // For MVP UI simulation, if they claim it, we force complete it if not already completed
-            // In real app, we check if target is met first
+            
+            
             $userQuest = UserQuest::firstOrCreate(
                 ['user_id' => $userId, 'quest_id' => $questId],
                 ['progress_count' => $quest->target_count, 'is_completed' => false]
@@ -160,11 +152,11 @@ class GamificationService
 
             $userQuest->is_completed = true;
             $userQuest->completed_at = now();
-            // Ensure progress is full
+            
             $userQuest->progress_count = $quest->target_count;
             $userQuest->save();
 
-            // Add XP
+            
             $profile = GamificationProfile::firstOrCreate(
                 ['user_id' => $userId],
                 ['xp' => 0, 'level' => 1]
@@ -181,7 +173,7 @@ class GamificationService
         });
     }
 
-    // --- Helper Methods ---
+    
 
     private function determineRank(int $xp): string
     {

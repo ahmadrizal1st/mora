@@ -11,11 +11,7 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
 
-    /**
-     * Authenticate user and issue access token.
-     *
-     * POST /api/auth/login
-     */
+    
     public function login(LoginRequest $request): JsonResponse
     {
         $result = AuthService::login($request->validated());
@@ -28,11 +24,7 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Logout user and revoke all tokens.
-     *
-     * POST /api/auth/logout
-     */
+    
     public function logout(Request $request): JsonResponse
     {
         AuthService::logout($request->user());
@@ -42,11 +34,7 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Refresh access token.
-     *
-     * POST /api/auth/refresh
-     */
+    
     public function refresh(Request $request): JsonResponse
     {
         $token = AuthService::refreshToken($request->user());

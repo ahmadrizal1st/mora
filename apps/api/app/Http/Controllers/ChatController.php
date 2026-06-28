@@ -15,9 +15,7 @@ class ChatController extends Controller
         $this->chatService = $chatService;
     }
 
-    /**
-     * Get all chat sessions
-     */
+    
     public function sessions(Request $request): JsonResponse
     {
         $sessions = $this->chatService->getSessions($request->user()->id);
@@ -28,9 +26,7 @@ class ChatController extends Controller
         ]);
     }
 
-    /**
-     * Create a new session
-     */
+    
     public function createSession(Request $request): JsonResponse
     {
         $request->validate([
@@ -46,9 +42,7 @@ class ChatController extends Controller
         ], 201);
     }
 
-    /**
-     * Delete sessions
-     */
+    
     public function deleteSessions(Request $request): JsonResponse
     {
         $request->validate([
@@ -64,9 +58,7 @@ class ChatController extends Controller
         ]);
     }
 
-    /**
-     * Get messages for a session
-     */
+    
     public function messages(Request $request, string $sessionId): JsonResponse
     {
         $messages = $this->chatService->getMessages($request->user()->id, $sessionId);
@@ -77,9 +69,7 @@ class ChatController extends Controller
         ]);
     }
 
-    /**
-     * Send a message
-     */
+    
     public function send(Request $request): JsonResponse
     {
         $request->validate([

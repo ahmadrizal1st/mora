@@ -9,11 +9,7 @@ use Illuminate\Http\Request;
  
 class GoogleAuthController extends Controller
 {
-    /**
-     * Authenticate user with Google ID Token.
-     *
-     * POST /api/auth/google
-     */
+    
     public function googleLogin(Request $request): JsonResponse
     {
         $request->validate([

@@ -12,9 +12,7 @@ class StoreTransactionRequest extends FormRequest
         return true;
     }
 
-    /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
+    
     public function rules(): array
     {
         $types = implode(',', [
@@ -46,9 +44,7 @@ class StoreTransactionRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
+    
     public function messages(): array
     {
         return [

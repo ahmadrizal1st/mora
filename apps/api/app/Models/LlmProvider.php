@@ -31,7 +31,7 @@ class LlmProvider extends Model
     public function getAuthTypeAttribute()
     {
         return match (strtolower($this->name)) {
-            'gemini' => 'query_param', // append ?key=API_KEY
+            'gemini' => 'query_param', 
             default => 'bearer',
         };
     }
@@ -72,7 +72,7 @@ class LlmProvider extends Model
             ];
         }
 
-        // Groq / OpenAI standard
+        
         return [
             'model' => '{model}',
             'response_format' => ['type' => 'json_object'],

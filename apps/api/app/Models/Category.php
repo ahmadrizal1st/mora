@@ -34,9 +34,7 @@ class Category extends Model
         return $this->hasMany(Transaction::class);
     }
 
-    /**
-     * Scope to filter by transaction type.
-     */
+    
     public function scopeByType(Builder $query, string $type): Builder
     {
         return $query->where('type', $type);

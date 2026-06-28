@@ -29,14 +29,14 @@ class TransactionData extends Data
         public ?string $input_method,
         public ?array $dynamic_fields,
         
-        // Relations
+        
         public CurrencyData|Optional $currency,
         public AccountData|Optional $account,
         public AccountData|Optional $to_account,
         public CategoryData|Optional $category,
         public BudgetItemData|Optional $budget_item,
         
-        /** @var DataCollection<TagData>|Optional */
+        
         public DataCollection|Optional $tags,
     ) {}
 

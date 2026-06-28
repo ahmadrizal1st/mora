@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionRepository
 {
-    /**
-     * Get a base query builder for transactions for a specific user.
-     */
+    
     public static function queryForUser(User $user): \Spatie\QueryBuilder\QueryBuilder
     {
         return \Spatie\QueryBuilder\QueryBuilder::for(Transaction::class)
@@ -46,18 +44,54 @@ class TransactionRepository
             ->with(['account', 'toAccount', 'category', 'budgetItem', 'status', 'currency', 'recurringType', 'tags']);
     }
 
-    /**
-     * List transactions for a user with filters and pagination.
-     */
+    
     public static function list(User $user, array $filters = []): LengthAwarePaginator
     {
         $perPage = min($filters['per_page'] ?? 15, 100);
         return self::queryForUser($user)->paginate($perPage);
     }
 
-    /**
-     * Get summary totals for a period.
-     */
+    public static function findForUser(User $user, string $id): Transaction
+    {
+        return self::queryForUser($user)->findOrFail($id);
+    }
+
+    public static function store(array $data): Transaction
+    {
+        return Transaction::create($data)->load([
+            'account',
+            'toAccount',
+            'category',
+            'budgetItem',
+            'status',
+            'currency',
+            'recurringType',
+            'tags',
+        ]);
+    }
+
+    public static function update(Transaction $transaction, array $data): Transaction
+    {
+        $transaction->update($data);
+        return $transaction->fresh()->load([
+            'account',
+            'toAccount',
+            'category',
+            'budgetItem',
+            'status',
+            'currency',
+            'recurringType',
+            'tags',
+        ]);
+    }
+
+    public static function destroy(Transaction $transaction): void
+    {
+        $transaction->tags()->detach();
+        $transaction->delete();
+    }
+
+    
     public static function getSummaryTotals(User $user, array $filters): array
     {
         $accountId = $filters['account_id'] ?? null;
@@ -110,9 +144,7 @@ class TransactionRepository
         return [$income, $expense, $count];
     }
 
-    /**
-     * Fetch historical rows for charting.
-     */
+    
     public static function fetchHistoryRows(User $user, string $pgFormat, array $filters): Collection
     {
         $accountId = $filters['account_id'] ?? null;
@@ -158,9 +190,7 @@ class TransactionRepository
         return collect(DB::select($sql, $params));
     }
 
-    /**
-     * Get aggregated account history data for multiple accounts.
-     */
+    
     public static function getAccountsHistoryData(User $user, string $pgFormat, string $startStr, string $endStr): array
     {
         $tIncome = Transaction::TYPE_INCOME;
@@ -174,9 +204,7 @@ class TransactionRepository
         return [$txOut, $txIn];
     }
 
-    /**
-     * Get initial balances for all accounts before a certain date.
-     */
+    
     public static function getInitialBalances(User $user, string $startStr): array
     {
         $initialBalances = [];
@@ -200,9 +228,7 @@ class TransactionRepository
         return $initialBalances;
     }
 
-    /**
-     * Get the earliest transaction date for a user.
-     */
+    
     public static function getEarliestTransactionDate(User $user, ?string $accountId = null): ?string
     {
         $query = $user->transactions();
@@ -217,9 +243,7 @@ class TransactionRepository
         return $query->min('tx_date');
     }
 
-    /**
-     * Get expense statistics grouped by category.
-     */
+    
     public static function getCategoryStatistics(User $user): Collection
     {
         return $user->transactions()

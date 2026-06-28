@@ -89,16 +89,16 @@ class LLMMapper
         $debugFile = storage_path('logs/llm_raw_last_response.json');
         file_put_contents($debugFile, $text);
 
-        // 1. Pastikan Encoding UTF-8
+        
         $clean = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
         $clean = trim($clean);
 
-        // 2. Unescape jika teks dibungkus kutipan (ciri khas beberapa model Llama)
+        
         if (str_starts_with($clean, '"') && str_ends_with($clean, '"')) {
             $clean = json_decode($clean) ?: stripslashes(substr($clean, 1, -1));
         }
 
-        // 3. Ekstrak JSON dari Markdown atau Teks Biasa
+        
         if (preg_match('/```(?:json)?\s*(.*?)\s*```/is', $clean, $matches)) {
             $clean = trim($matches[1]);
         } else {
@@ -114,37 +114,37 @@ class LLMMapper
             }
         }
 
-        // 4. Bersihkan karakter kontrol dan backslash liar yang merusak JSON
+        
         $clean = preg_replace('/[\x00-\x1F\x7F]/', '', $clean);
-        // Jika masih ada escaped quotes tapi di luar blok kutipan, bersihkan
+        
         if (!json_decode($clean)) {
             $clean = str_replace(['\"', '\n', '\r'], ['"', "\n", "\r"], $clean);
         }
 
-        // 5. Decode JSON
+        
         $data = json_decode($clean, true);
 
-        // 6. Fallback: Auto-Close Truncated JSON & Remove Comments
+        
         if (json_last_error() !== JSON_ERROR_NONE) {
-            // Hapus komentar dulu
+            
             $cleanFallback = preg_replace('#(?<!:)\/\/\s.*$#m', '', $clean);
             $data = json_decode($cleanFallback, true);
 
-            // Jika masih gagal, coba auto-close bracket yang hilang akibat terpotong (truncated)
+            
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $closings = ['}', ']}', '}]}', ']}]}'];
                 foreach ($closings as $closing) {
                     $testData = json_decode($cleanFallback . $closing, true);
                     if (json_last_error() === JSON_ERROR_NONE) {
                         $data = $testData;
-                        $clean = $cleanFallback . $closing; // update for logging
+                        $clean = $cleanFallback . $closing; 
                         break;
                     }
                 }
             }
         }
 
-        // 7. Final Validation
+        
         if (json_last_error() !== JSON_ERROR_NONE) {
             $errorMsg = json_last_error_msg();
             Log::error("JSON Parse Error: {$errorMsg}. Raw snippet: " . substr($clean, 0, 100));

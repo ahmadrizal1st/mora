@@ -9,11 +9,7 @@ use Illuminate\Http\JsonResponse;
 
 class OtpController extends Controller
 {
-    /**
-     * Resend OTP code.
-     *
-     * POST /api/auth/resend-otp
-     */
+    
     public function resend(ResendOtpRequest $request): JsonResponse
     {
         $validated = $request->validated();
@@ -23,7 +19,7 @@ class OtpController extends Controller
             $validated['type']
         );
 
-        // Always return success to prevent user enumeration
+        
         return response()->json([
             'message' => 'OTP dikirim ulang.',
         ]);

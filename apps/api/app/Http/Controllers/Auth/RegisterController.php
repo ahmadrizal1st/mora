@@ -10,11 +10,7 @@ use Illuminate\Http\JsonResponse;
 
 class RegisterController extends Controller
 {
-    /**
-     * Register a new user account.
-     *
-     * POST /api/auth/register
-     */
+    
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = AuthService::register($request->validated());
@@ -28,11 +24,7 @@ class RegisterController extends Controller
         ], 201);
     }
 
-    /**
-     * Verify OTP to complete registration.
-     *
-     * POST /api/auth/verify-otp
-     */
+    
     public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
         $result = AuthService::verifyRegistrationOtp(

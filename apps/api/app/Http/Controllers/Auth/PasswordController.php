@@ -12,26 +12,18 @@ use Illuminate\Http\Request;
 
 class PasswordController extends Controller
 {
-    /**
-     * Send OTP for password reset.
-     *
-     * POST /api/auth/forgot-password
-     */
+    
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
         AuthService::forgotPassword($request->validated('email'));
 
-        // Always return success to prevent user enumeration
+        
         return response()->json([
             'message' => 'OTP reset dikirim.',
         ]);
     }
 
-    /**
-     * Reset password using OTP.
-     *
-     * POST /api/auth/reset-password
-     */
+    
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
         $validated = $request->validated();
@@ -47,11 +39,7 @@ class PasswordController extends Controller
         ]);
     }
 
-    /**
-     * Change password for authenticated user.
-     *
-     * PATCH /api/auth/me/password
-     */
+    
     public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
         $validated = $request->validated();

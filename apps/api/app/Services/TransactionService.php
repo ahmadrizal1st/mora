@@ -69,14 +69,14 @@ class TransactionService
                 $user->accounts()->findOrFail($data['to_account_id']);
             }
 
-            $transaction = Transaction::create($txData);
+            $transaction = TransactionRepository::store($txData);
 
             if (!empty($data['tag_ids'])) {
                 $validTagIds = $user->tags()->whereIn('id', $data['tag_ids'])->pluck('id');
                 $transaction->tags()->sync($validTagIds);
             }
 
-            return $transaction->load([
+            return $transaction->fresh()->load([
                 'account',
                 'toAccount',
                 'category',
@@ -91,15 +91,13 @@ class TransactionService
 
     public static function show(User $user, string $id): Transaction
     {
-        return $user->transactions()
-            ->with(['account', 'toAccount', 'category', 'budgetItem', 'status', 'currency', 'recurringType', 'tags'])
-            ->findOrFail($id);
+        return TransactionRepository::findForUser($user, $id);
     }
 
     public static function update(User $user, string $id, array $data): Transaction
     {
         return DB::transaction(function () use ($user, $id, $data) {
-            $transaction = $user->transactions()->findOrFail($id);
+            $transaction = TransactionRepository::findForUser($user, $id);
 
             if (!empty($data['account_id'])) {
                 $user->accounts()->findOrFail($data['account_id']);
@@ -108,7 +106,7 @@ class TransactionService
                 $user->accounts()->findOrFail($data['to_account_id']);
             }
 
-            $transaction->update($data);
+            $transaction = TransactionRepository::update($transaction, $data);
 
             if (array_key_exists('tag_ids', $data)) {
                 $validTagIds = $user->tags()->whereIn('id', $data['tag_ids'] ?? [])->pluck('id');
@@ -131,10 +129,8 @@ class TransactionService
     public static function destroy(User $user, string $id): void
     {
         DB::transaction(function () use ($user, $id) {
-            $transaction = $user->transactions()->findOrFail($id);
-
-            $transaction->tags()->detach();
-            $transaction->delete();
+            $transaction = TransactionRepository::findForUser($user, $id);
+            TransactionRepository::destroy($transaction);
         });
     }
 
@@ -291,7 +287,7 @@ class TransactionService
             $startDate = $endDate->copy()->subDays(29)->startOfDay();
         } else {
             $startDate = Carbon::parse($filters['date_from'])->startOfDay();
-            $endDate   = Carbon::parse($filters['date_to'])->endOfDay();
+            $endDate = Carbon::parse($filters['date_to'])->endOfDay();
         }
 
         match ($groupBy) {

@@ -13,7 +13,7 @@ class Streak extends Model
 
     protected $fillable = [
         'user_id',
-        'type', // login/transaction/budget/investment/saving
+        'type', 
         'current_count',
         'longest_count',
         'last_activity_date',

@@ -17,20 +17,14 @@ use Laravel\Sanctum\HasApiTokens;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
+    
     use HasApiTokens, HasFactory, Notifiable, HasUuids;
 
-    /**
-     * Role constants.
-     */
+    
     public const ROLE_OWNER = 'owner';
     public const ROLE_EMPLOYEE = 'employee';
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    
     protected function casts(): array
     {
         return [
@@ -39,17 +33,13 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Check if the user has verified their email.
-     */
+    
     public function hasVerifiedEmail(): bool
     {
         return $this->email_verified_at !== null;
     }
 
-    /**
-     * Mark the user's email as verified.
-     */
+    
     public function markEmailAsVerified(): bool
     {
         return $this->forceFill([

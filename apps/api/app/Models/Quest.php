@@ -13,7 +13,7 @@ class Quest extends Model
 
     protected $fillable = [
         'title',
-        'type', // daily/weekly/achievement
+        'type', 
         'action_type',
         'target_count',
         'xp_reward',

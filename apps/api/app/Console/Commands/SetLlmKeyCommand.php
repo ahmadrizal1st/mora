@@ -11,9 +11,7 @@ use App\Models\LlmProvider;
 #[Description('Set the API key for an LLM provider')]
 class SetLlmKeyCommand extends Command
 {
-    /**
-     * Execute the console command.
-     */
+    
     public function handle()
     {
         $providerName = $this->argument('provider');
@@ -38,7 +36,7 @@ class SetLlmKeyCommand extends Command
             ]);
             $this->info("Updated API key for existing provider: {$providerName}");
         } else {
-            // Need a full payload for new providers, so warn the user.
+            
             $this->error("Provider {$providerName} not found. Please insert it manually with full payload_template first.");
             return Command::FAILURE;
         }

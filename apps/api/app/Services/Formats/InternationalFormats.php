@@ -2,14 +2,6 @@
 
 namespace App\Services\Formats;
 
-/**
- * Format Library — International Financial Institutions
- *
- * HOW TO ADD A NEW INSTITUTION:
- * 1. Add detection regex to PATTERNS
- * 2. Add format definition to FORMATS (same key)
- * 3. Note the language and amount format carefully
- */
 class InternationalFormats
 {
     public const PATTERNS = [
@@ -22,9 +14,9 @@ class InternationalFormats
 
     public const FORMATS = [
 
-        // ─────────────────────────────────────────────
-        // WISE (TransferWise)
-        // ─────────────────────────────────────────────
+        
+        
+        
         'wise' => [
             'name'             => 'Wise (TransferWise)',
             'category'         => 'international',
@@ -51,9 +43,9 @@ class InternationalFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // PAYPAL
-        // ─────────────────────────────────────────────
+        
+        
+        
         'paypal' => [
             'name'             => 'PayPal',
             'category'         => 'international',
@@ -76,9 +68,9 @@ class InternationalFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // STRIPE
-        // ─────────────────────────────────────────────
+        
+        
+        
         'stripe' => [
             'name'             => 'Stripe',
             'category'         => 'international',
@@ -97,9 +89,9 @@ class InternationalFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // REVOLUT
-        // ─────────────────────────────────────────────
+        
+        
+        
         'revolut' => [
             'name'             => 'Revolut',
             'category'         => 'international',

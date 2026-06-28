@@ -29,4 +29,20 @@ class AssetRepository
         return self::queryForUser($user)
             ->findOrFail($id);
     }
+
+    public static function store(User $user, array $data): Asset
+    {
+        return $user->assets()->create($data);
+    }
+
+    public static function update(Asset $asset, array $data): Asset
+    {
+        $asset->update($data);
+        return $asset->fresh();
+    }
+
+    public static function destroy(Asset $asset): void
+    {
+        $asset->delete();
+    }
 }

@@ -2,14 +2,6 @@
 
 namespace App\Services\Formats;
 
-/**
- * Format Library — Indonesian & International E-Wallets
- *
- * HOW TO ADD A NEW E-WALLET:
- * 1. Add detection regex to PATTERNS
- * 2. Add format definition to FORMATS (same key)
- * 3. Test with a real export/screenshot document
- */
 class EwalletFormats
 {
     public const PATTERNS = [
@@ -25,9 +17,9 @@ class EwalletFormats
 
     public const FORMATS = [
 
-        // ─────────────────────────────────────────────
-        // GOPAY
-        // ─────────────────────────────────────────────
+        
+        
+        
         'gopay' => [
             'name'             => 'GoPay',
             'category'         => 'ewallet',
@@ -54,9 +46,9 @@ class EwalletFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // OVO
-        // ─────────────────────────────────────────────
+        
+        
+        
         'ovo' => [
             'name'             => 'OVO',
             'category'         => 'ewallet',
@@ -79,9 +71,9 @@ class EwalletFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // DANA
-        // ─────────────────────────────────────────────
+        
+        
+        
         'dana' => [
             'name'             => 'DANA',
             'category'         => 'ewallet',
@@ -108,9 +100,9 @@ class EwalletFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // SHOPEEPAY
-        // ─────────────────────────────────────────────
+        
+        
+        
         'shopeepay' => [
             'name'             => 'ShopeePay',
             'category'         => 'ewallet',
@@ -133,9 +125,9 @@ class EwalletFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // LINKAJA
-        // ─────────────────────────────────────────────
+        
+        
+        
         'linkaja' => [
             'name'             => 'LinkAja',
             'category'         => 'ewallet',
@@ -149,9 +141,9 @@ class EwalletFormats
             'few_shot'         => [],
         ],
 
-        // ─────────────────────────────────────────────
-        // FLIP
-        // ─────────────────────────────────────────────
+        
+        
+        
         'flip' => [
             'name'             => 'Flip',
             'category'         => 'ewallet',

@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class CategoryRepository
 {
-    /**
-     * List categories with optional type filter and user filter.
-     */
+    
     public static function list(?string $type = null, ?User $user = null): Collection
     {
         $query = Category::query()->orderBy('name');

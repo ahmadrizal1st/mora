@@ -18,7 +18,7 @@ class BudgetItemData extends Data
         public ?string $color,
         public ?string $icon,
 
-        /** @var DataCollection<CategoryData>|Optional */
+        
         public DataCollection|Optional $categories,
     ) {}
 

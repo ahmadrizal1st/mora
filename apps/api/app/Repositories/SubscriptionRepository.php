@@ -30,4 +30,20 @@ class SubscriptionRepository
         return self::queryForUser($user)
             ->findOrFail($id);
     }
+
+    public static function store(User $user, array $data): Subscription
+    {
+        return $user->subscriptions()->create($data)->load(['currency', 'account']);
+    }
+
+    public static function update(Subscription $subscription, array $data): Subscription
+    {
+        $subscription->update($data);
+        return $subscription->fresh()->load(['currency', 'account']);
+    }
+
+    public static function destroy(Subscription $subscription): void
+    {
+        $subscription->delete();
+    }
 }

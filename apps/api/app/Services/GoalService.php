@@ -15,7 +15,7 @@ class GoalService
 
     public static function store(User $user, array $data): Goal
     {
-        return $user->goals()->create($data)->load(['currency', 'linkedAccount']);
+        return GoalRepository::store($user, $data);
     }
 
     public static function show(User $user, string $id): Goal
@@ -26,13 +26,12 @@ class GoalService
     public static function update(User $user, string $id, array $data): Goal
     {
         $goal = GoalRepository::findForUser($user, $id);
-        $goal->update($data);
-        return $goal->fresh()->load(['currency', 'linkedAccount']);
+        return GoalRepository::update($goal, $data);
     }
 
     public static function destroy(User $user, string $id): void
     {
         $goal = GoalRepository::findForUser($user, $id);
-        $goal->delete();
+        GoalRepository::destroy($goal);
     }
 }

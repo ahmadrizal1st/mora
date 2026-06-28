@@ -79,6 +79,22 @@ class AccountRepository
         return $balances;
     }
 
+    public static function store(User $user, array $data): Account
+    {
+        return $user->accounts()->create($data)->load(['currency', 'provider']);
+    }
+
+    public static function update(Account $account, array $data): Account
+    {
+        $account->update($data);
+        return $account->fresh()->load(['currency', 'provider']);
+    }
+
+    public static function destroy(Account $account): void
+    {
+        $account->delete();
+    }
+
     public static function getAnalyticsQuery(User $user, ?string $accountId, int $month, int $year)
     {
         $query = $user->transactions()

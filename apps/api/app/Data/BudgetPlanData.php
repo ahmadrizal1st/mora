@@ -19,7 +19,7 @@ class BudgetPlanData extends Data
         public bool $is_active,
         public bool $rollover_enabled,
 
-        /** @var DataCollection<BudgetItemData>|Optional */
+        
         public DataCollection|Optional $items,
     ) {}
 

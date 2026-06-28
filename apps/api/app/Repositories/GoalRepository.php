@@ -30,4 +30,20 @@ class GoalRepository
         return self::queryForUser($user)
             ->findOrFail($id);
     }
+
+    public static function store(User $user, array $data): Goal
+    {
+        return $user->goals()->create($data)->load(['currency', 'linkedAccount']);
+    }
+
+    public static function update(Goal $goal, array $data): Goal
+    {
+        $goal->update($data);
+        return $goal->fresh()->load(['currency', 'linkedAccount']);
+    }
+
+    public static function destroy(Goal $goal): void
+    {
+        $goal->delete();
+    }
 }

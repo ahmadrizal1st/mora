@@ -19,33 +19,25 @@ class ChatService
         $this->messageRepo = $messageRepo;
     }
 
-    /**
-     * Get all sessions for a user.
-     */
+    
     public function getSessions(string $userId): Collection
     {
         return $this->sessionRepo->getByUser($userId);
     }
 
-    /**
-     * Create a new session.
-     */
+    
     public function createSession(string $userId, string $title = 'New Conversation')
     {
         return $this->sessionRepo->create($userId, $title);
     }
 
-    /**
-     * Delete sessions.
-     */
+    
     public function deleteSessions(string $userId, array $sessionIds): int
     {
         return $this->sessionRepo->deleteMany($sessionIds, $userId);
     }
 
-    /**
-     * Get messages for a session.
-     */
+    
     public function getMessages(string $userId, string $sessionId): Collection
     {
         $session = $this->sessionRepo->findForUser($sessionId, $userId);
@@ -56,18 +48,16 @@ class ChatService
         return $this->messageRepo->getBySession($sessionId);
     }
 
-    /**
-     * Send a message and get AI response.
-     */
+    
     public function sendMessage(string $userId, string $sessionId, string $content, ?string $parentId = null)
     {
-        // Verify ownership
+        
         $session = $this->sessionRepo->findForUser($sessionId, $userId);
         if (!$session) {
             abort(404, 'Session not found');
         }
 
-        // Update session title if it's the first message
+        
         if ($session->title === 'New Conversation') {
             $newTitle = substr($content, 0, 30) . (strlen($content) > 30 ? '...' : '');
             $this->sessionRepo->updateTitle($sessionId, $newTitle);
@@ -75,10 +65,10 @@ class ChatService
             $this->sessionRepo->touch($sessionId);
         }
 
-        // Save User Message
+        
         $userMessage = $this->messageRepo->create($sessionId, 'user', $content, null, $parentId);
 
-        // Fetch recent conversation history for context (e.g., last 10 messages from this branch)
+        
         $history = $this->messageRepo->getThreadContext($sessionId, $userMessage->id, 10);
         
         $messages = [];
@@ -94,14 +84,14 @@ class ChatService
             }
         }
 
-        // 1. Cek User Level (Apakah user ini punya API Key sendiri yang aktif?)
+        
         $aiConfig = \Illuminate\Support\Facades\DB::table('llm_providers')
             ->where('user_id', $userId)
             ->where('is_active', true)
             ->orderBy('priority', 'desc')
             ->first();
 
-        // 2. Cek System Level (Apakah ada API Key global dari Admin?)
+        
         if (!$aiConfig) {
             $aiConfig = \Illuminate\Support\Facades\DB::table('llm_providers')
                 ->whereNull('user_id')
@@ -111,11 +101,11 @@ class ChatService
                 ->first();
         }
 
-        // 3. Fallback ke konfigurasi file (.env) jika DB kosong
+        
         $providerName = $aiConfig ? $aiConfig->name : config('ai.default', 'groq');
         $modelName = $aiConfig ? $aiConfig->default_model : config('ai.models.chat', 'llama-3.1-8b-instant');
 
-        // 4. Timpa konfigurasi Prism (di memori) jika menggunakan data dari Database
+        
         if ($aiConfig) {
             config(["prism.providers.{$providerName}.api_key" => $aiConfig->api_key]);
             if (!empty($aiConfig->base_url)) {
@@ -133,7 +123,7 @@ class ChatService
             default => Provider::Groq,
         };
 
-        // Generate AI Response using Prism dynamically
+        
         $response = Prism::text()
             ->using($providerEnum, $modelName)
             ->withMessages($messages)
@@ -141,7 +131,7 @@ class ChatService
 
         $aiContent = $response->text;
 
-        // Save AI Message
+        
         $aiMessage = $this->messageRepo->create($sessionId, 'ai', $aiContent, [
             'model' => $modelName,
             'provider' => $providerName,

@@ -2,14 +2,6 @@
 
 namespace App\Services\Formats;
 
-/**
- * Format Library — Indonesian Banks
- *
- * HOW TO ADD A NEW BANK:
- * 1. Add detection regex to PATTERNS
- * 2. Add format definition to FORMATS (same key)
- * 3. Test with a real sample document
- */
 class BankFormats
 {
     public const PATTERNS = [
@@ -29,9 +21,9 @@ class BankFormats
 
     public const FORMATS = [
 
-        // ─────────────────────────────────────────────
-        // BANK BCA
-        // ─────────────────────────────────────────────
+        
+        
+        
         'bca' => [
             'name'             => 'Bank BCA',
             'category'         => 'bank',
@@ -66,9 +58,9 @@ class BankFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // BANK MANDIRI
-        // ─────────────────────────────────────────────
+        
+        
+        
         'mandiri' => [
             'name'             => 'Bank Mandiri',
             'category'         => 'bank',
@@ -95,9 +87,9 @@ class BankFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // BANK BNI
-        // ─────────────────────────────────────────────
+        
+        
+        
         'bni' => [
             'name'             => 'Bank BNI',
             'category'         => 'bank',
@@ -120,9 +112,9 @@ class BankFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // BANK BRI
-        // ─────────────────────────────────────────────
+        
+        
+        
         'bri' => [
             'name'             => 'Bank BRI',
             'category'         => 'bank',
@@ -145,9 +137,9 @@ class BankFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // BANK CIMB NIAGA
-        // ─────────────────────────────────────────────
+        
+        
+        
         'cimb' => [
             'name'             => 'CIMB Niaga',
             'category'         => 'bank',
@@ -161,9 +153,9 @@ class BankFormats
             'few_shot'         => [],
         ],
 
-        // ─────────────────────────────────────────────
-        // BANK JAGO
-        // ─────────────────────────────────────────────
+        
+        
+        
         'jago' => [
             'name'             => 'Bank Jago',
             'category'         => 'bank',
@@ -177,9 +169,9 @@ class BankFormats
             'few_shot'         => [],
         ],
 
-        // ─────────────────────────────────────────────
-        // JENIUS (BTPN)
-        // ─────────────────────────────────────────────
+        
+        
+        
         'jenius' => [
             'name'             => 'Jenius (BTPN)',
             'category'         => 'bank',
@@ -202,9 +194,9 @@ class BankFormats
             ],
         ],
 
-        // ─────────────────────────────────────────────
-        // BANK SYARIAH INDONESIA (BSI)
-        // ─────────────────────────────────────────────
+        
+        
+        
         'bsi' => [
             'name'             => 'Bank Syariah Indonesia (BSI)',
             'category'         => 'bank',
@@ -218,9 +210,9 @@ class BankFormats
             'few_shot'         => [],
         ],
 
-        // ─────────────────────────────────────────────
-        // SEABANK
-        // ─────────────────────────────────────────────
+        
+        
+        
         'seabank' => [
             'name'             => 'SeaBank',
             'category'         => 'bank',

@@ -14,12 +14,7 @@ use Google_Client;
 class AuthService
 {
 
-    /**
-     * Register a new user account.
-     *
-     * Creates the user without verifying email, generates OTP,
-     * and sends verification email.
-     */
+    
     public static function register(array $data): User
     {
         $user = User::create([
@@ -34,11 +29,7 @@ class AuthService
         return $user;
     }
 
-    /**
-     * Verify OTP and activate user account.
-     *
-     * @return array{user: User, access_token: string}
-     */
+    
     public static function verifyRegistrationOtp(string $email, string $otp): array
     {
         $verified = OtpService::verify($email, $otp, OtpCode::TYPE_REGISTER);
@@ -60,11 +51,7 @@ class AuthService
         ];
     }
 
-    /**
-     * Authenticate user with email and password.
-     *
-     * @return array{user: User, access_token: string}
-     */
+    
     public static function login(array $credentials): array
     {
         if (! Auth::attempt($credentials)) {
@@ -73,7 +60,7 @@ class AuthService
             ]);
         }
 
-        /** @var User $user */
+        
         $user = Auth::user();
 
         if (! $user->hasVerifiedEmail()) {
@@ -84,7 +71,7 @@ class AuthService
             ]);
         }
 
-        // Issue a new access token
+        
         $token = $user->createToken('access_token')->plainTextToken;
 
         return [
@@ -93,34 +80,26 @@ class AuthService
         ];
     }
 
-    /**
-     * Logout user by revoking current token.
-     */
+    
     public static function logout(User $user): void
     {
         $user->currentAccessToken()->delete();
     }
 
-    /**
-     * Refresh the user's access token.
-     *
-     * Revokes the current token and issues a new one.
-     */
+    
     public static function refreshToken(User $user): string
     {
-        // Revoke current token
+        
         $user->currentAccessToken()->delete();
 
-        // Issue new token
+        
         return $user->createToken('access_token')->plainTextToken;
     }
 
-    /**
-     * Initiate forgot password flow by sending OTP.
-     */
+    
     public static function forgotPassword(string $email): void
     {
-        // Don't reveal whether user exists — always return success
+        
         $user = User::where('email', $email)->first();
 
         if ($user) {
@@ -128,9 +107,7 @@ class AuthService
         }
     }
 
-    /**
-     * Reset password using OTP verification.
-     */
+    
     public static function resetPassword(string $email, string $otp, string $newPassword): void
     {
         $verified = OtpService::verify($email, $otp, OtpCode::TYPE_RESET_PASSWORD);
@@ -144,13 +121,11 @@ class AuthService
         $user = User::where('email', $email)->firstOrFail();
         $user->update(['password' => $newPassword]);
 
-        // Revoke all existing tokens for security
+        
         $user->tokens()->delete();
     }
 
-    /**
-     * Change password for authenticated user.
-     */
+    
     public static function changePassword(User $user, string $currentPassword, string $newPassword): void
     {
         if (! Hash::check($currentPassword, $user->password)) {
@@ -161,15 +136,11 @@ class AuthService
 
         $user->update(['password' => $newPassword]);
 
-        // Revoke all tokens except current
+        
         $user->tokens()->where('id', '!=', $user->currentAccessToken()->id)->delete();
     }
 
-    /**
-     * Login or register user using Google ID Token.
-     *
-     * @return array{user: User, access_token: string}
-     */
+    
     public static function loginWithGoogle(string $idToken): array
     {
         $client = new Google_Client(['client_id' => config('services.google.client_id')]);
@@ -201,11 +172,11 @@ class AuthService
             ]);
             $user->markEmailAsVerified();
         } else {
-            // Update google_id if it was null
+            
             if (! $user->google_id) {
                 $user->update(['google_id' => $googleId]);
             }
-            // Update avatar if provided
+            
             if ($avatar && $user->avatar !== $avatar) {
                 $user->update(['avatar' => $avatar]);
             }
@@ -219,9 +190,7 @@ class AuthService
         ];
     }
 
-    /**
-     * Send OTP to the given email.
-     */
+    
     public static function sendOtp(string $email, string $type): void
     {
         $code = OtpService::generate($email, $type);

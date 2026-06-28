@@ -15,9 +15,7 @@ class GamificationController extends Controller
         $this->gamificationService = $gamificationService;
     }
 
-    /**
-     * Get user gamification stats
-     */
+    
     public function stats(Request $request): JsonResponse
     {
         $stats = $this->gamificationService->getStats($request->user()->id);
@@ -28,9 +26,7 @@ class GamificationController extends Controller
         ]);
     }
 
-    /**
-     * Get user achievements
-     */
+    
     public function achievements(Request $request): JsonResponse
     {
         $achievements = $this->gamificationService->getAchievements($request->user()->id);
@@ -41,9 +37,7 @@ class GamificationController extends Controller
         ]);
     }
 
-    /**
-     * Get weekly leaderboard
-     */
+    
     public function leaderboard(Request $request): JsonResponse
     {
         $leaderboard = $this->gamificationService->getLeaderboard($request->user()->id);
@@ -54,9 +48,7 @@ class GamificationController extends Controller
         ]);
     }
 
-    /**
-     * Claim reward for a completed achievement
-     */
+    
     public function claim(Request $request, $id): JsonResponse
     {
         try {

@@ -19,16 +19,12 @@ class Transaction extends Model
 {
     use HasUuids;
 
-    /**
-     * Transaction type constants.
-     */
+    
     public const TYPE_INCOME = 'income';
     public const TYPE_EXPENSE = 'expense';
     public const TYPE_TRANSFER = 'transfer';
 
-    /**
-     * Input method constants.
-     */
+    
     public const METHOD_MANUAL = 'manual';
     public const METHOD_VOICE = 'voice';
     public const METHOD_RECEIPT = 'receipt';

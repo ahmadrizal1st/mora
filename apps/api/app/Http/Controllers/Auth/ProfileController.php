@@ -9,11 +9,7 @@ use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
-    /**
-     * Get the authenticated user's profile.
-     *
-     * GET /api/auth/me
-     */
+    
     public function show(Request $request): JsonResponse
     {
         return response()->json([
@@ -21,11 +17,7 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the authenticated user's profile.
-     *
-     * PATCH /api/auth/me
-     */
+    
     public function update(UpdateProfileRequest $request): JsonResponse
     {
         $user = $request->user();
