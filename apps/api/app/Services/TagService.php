@@ -6,6 +6,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Repositories\TagRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TagService
 {
@@ -26,7 +27,7 @@ class TagService
     {
         $tag = TagRepository::findById($user, $id);
         if (!$tag) {
-            throw new \Exception('Tag tidak ditemukan');
+            throw (new ModelNotFoundException())->setModel(Tag::class);
         }
         return TagRepository::update($tag, $data);
     }
@@ -36,7 +37,7 @@ class TagService
     {
         $tag = TagRepository::findById($user, $id);
         if (!$tag) {
-            throw new \Exception('Tag tidak ditemukan');
+            throw (new ModelNotFoundException())->setModel(Tag::class);
         }
         TagRepository::destroy($tag);
     }

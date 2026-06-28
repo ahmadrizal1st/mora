@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 #[Fillable(['user_id', 'name', 'currency_id', 'provider_id', 'color', 'logo', 'account_type', 'is_archived'])]
 class Account extends Model
 {
-    use HasUuids;
+    use HasFactory, HasUuids;
 
     protected $casts = [
         'is_archived' => 'boolean',

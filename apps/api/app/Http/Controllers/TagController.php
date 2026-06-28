@@ -33,7 +33,7 @@ class TagController extends Controller
     }
 
     
-    public function update(StoreTagRequest $request, int $id): JsonResponse
+    public function update(StoreTagRequest $request, string $id): JsonResponse
     {
         $tag = TagService::update($request->user(), $id, $request->validated());
 
@@ -44,7 +44,7 @@ class TagController extends Controller
     }
 
     
-    public function destroy(Request $request, int $id): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
         TagService::destroy($request->user(), $id);
 

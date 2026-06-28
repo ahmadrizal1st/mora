@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 #[Fillable(['user_id', 'parent_id', 'name', 'type', 'icon', 'color'])]
 class Category extends Model
 {
-    use HasUuids;
+    use HasFactory, HasUuids;
 
     public function user(): BelongsTo
     {
