@@ -44,17 +44,17 @@ export function BudgetOverviewCard({
   }
 
   return (
-    <div className="card shadow-sm border-0 h-100 w-100" style={{ borderRadius: '16px' }}>
-      <div className="card-body p-4 d-flex flex-column justify-content-center gap-4">
-        <div className="d-flex align-items-center mb-0">
-          <div style={{ width: '150px', flexShrink: 0, marginLeft: '-15px' }}>
+    <div className="card shadow-sm border-0 h-100 w-100" style={{ borderRadius: '24px' }}>
+      <div className="card-body p-4 d-flex flex-column justify-content-between gap-4">
+        <div className="d-flex flex-column align-items-center text-center mb-0">
+          <div style={{ width: '140px', flexShrink: 0, marginTop: '-15px' }}>
             <Chart
               chartId="budgetOverviewRadialMain"
               chartData={radialChartData as any}
               height={10}
             />
           </div>
-          <div className="flex-fill ps-2">
+          <div className="flex-fill mt-2">
             <div
               className="text-secondary small fw-bold text-uppercase mb-1"
               style={{ fontSize: '10px' }}

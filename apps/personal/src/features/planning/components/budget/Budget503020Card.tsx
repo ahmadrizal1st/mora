@@ -25,7 +25,7 @@ export function Budget503020Card() {
 
   const totalSpent = spentNeeds + spentWants + spentSavings
 
-  const size = 220
+  const size = 170
   const center = size / 2
 
   const rings = [

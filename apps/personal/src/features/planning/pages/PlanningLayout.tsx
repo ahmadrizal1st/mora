@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Outlet } from '@tanstack/react-router'
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { PlanningSegmentedNav } from '../components/shared/PlanningSegmentedNav'
-import { PlanningMetricCard } from '../components/shared/PlanningMetricCard'
+import { BudgetSummaryCards } from '../components/budget/BudgetSummaryCards'
 import { Icon, MonthPicker, Modal, ModalHeader, Button } from '@/shared/components/ui'
 
 import type { Goal, GoalsData, SubscriptionsData } from '../types'
@@ -295,154 +295,8 @@ export function PlanningLayout() {
         </div>
       }
     >
-      <div className="row g-3 mb-4 d-none d-md-flex">
-        <div className="col-3">
-          <PlanningMetricCard
-            title="Total Budget"
-            value={formatCurrency(totalBudget)}
-            subtext={formatMonthYear(currentDate)}
-            icon="wallet"
-            valueColor="primary"
-          />
-        </div>
-        <div className="col-3">
-          <PlanningMetricCard
-            title="Terpakai"
-            value={formatCurrency(spent)}
-            subtext={`${Math.round((spent / totalBudget) * 100)}% digunakan`}
-            icon="trending-down"
-            valueColor="danger"
-          />
-        </div>
-        <div className="col-3">
-          <PlanningMetricCard
-            title="Sisa Anggaran"
-            value={formatCurrency(remaining)}
-            subtext="Tersedia"
-            icon="cash"
-            valueColor="success"
-          />
-        </div>
-        <div className="col-3">
-          <PlanningMetricCard
-            title="Harian (Safe)"
-            value={formatCurrency(safeToSpendPerDay)}
-            subtext="Estimasi harian"
-            icon="shield-check"
-            valueColor="warning"
-          />
-        </div>
-      </div>
-
-      <div
-        className="card border-0 shadow-sm mb-4 overflow-hidden d-block d-md-none"
-        style={{ borderRadius: '16px' }}
-      >
-        <div className="row g-0">
-          <div className="col-6 border-end border-bottom p-3 position-relative">
-            <div className="d-flex align-items-center gap-2 mb-2">
-              <div
-                className="avatar avatar-sm bg-primary-lt text-primary"
-                style={{ borderRadius: '8px', width: '28px', height: '28px' }}
-              >
-                <Icon icon="wallet" size="sm" />
-              </div>
-              <div
-                className="text-muted fw-bold text-truncate"
-                style={{ fontSize: '10px', letterSpacing: '0.05em' }}
-              >
-                TOTAL BUDGET
-              </div>
-            </div>
-            <div
-              className="fs-4 fw-bold text-body mb-1 text-truncate"
-              style={{ letterSpacing: '-0.5px' }}
-            >
-              {formatCurrency(totalBudget)}
-            </div>
-            <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
-              {formatMonthYear(currentDate)}
-            </div>
-          </div>
-
-          <div className="col-6 border-bottom p-3 position-relative">
-            <div className="d-flex align-items-center gap-2 mb-2">
-              <div
-                className="avatar avatar-sm bg-danger-lt text-danger"
-                style={{ borderRadius: '8px', width: '28px', height: '28px' }}
-              >
-                <Icon icon="trending-down" size="sm" />
-              </div>
-              <div
-                className="text-muted fw-bold text-truncate"
-                style={{ fontSize: '10px', letterSpacing: '0.05em' }}
-              >
-                TERPAKAI
-              </div>
-            </div>
-            <div
-              className="fs-4 fw-bold text-danger mb-1 text-truncate"
-              style={{ letterSpacing: '-0.5px' }}
-            >
-              {formatCurrency(spent)}
-            </div>
-            <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
-              {Math.round((spent / totalBudget) * 100)}% digunakan
-            </div>
-          </div>
-
-          <div className="col-6 border-end p-3 position-relative">
-            <div className="d-flex align-items-center gap-2 mb-2">
-              <div
-                className="avatar avatar-sm bg-success-lt text-success"
-                style={{ borderRadius: '8px', width: '28px', height: '28px' }}
-              >
-                <Icon icon="cash" size="sm" />
-              </div>
-              <div
-                className="text-muted fw-bold text-truncate"
-                style={{ fontSize: '10px', letterSpacing: '0.05em' }}
-              >
-                SISA ANGGARAN
-              </div>
-            </div>
-            <div
-              className="fs-4 fw-bold text-success mb-1 text-truncate"
-              style={{ letterSpacing: '-0.5px' }}
-            >
-              {formatCurrency(remaining)}
-            </div>
-            <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
-              Tersedia
-            </div>
-          </div>
-
-          <div className="col-6 p-3 position-relative">
-            <div className="d-flex align-items-center gap-2 mb-2">
-              <div
-                className="avatar avatar-sm bg-warning-lt text-warning"
-                style={{ borderRadius: '8px', width: '28px', height: '28px' }}
-              >
-                <Icon icon="shield-check" size="sm" />
-              </div>
-              <div
-                className="text-muted fw-bold text-truncate"
-                style={{ fontSize: '10px', letterSpacing: '0.05em' }}
-              >
-                HARIAN (SAFE)
-              </div>
-            </div>
-            <div
-              className="fs-4 fw-bold text-warning mb-1 text-truncate"
-              style={{ letterSpacing: '-0.5px' }}
-            >
-              {formatCurrency(safeToSpendPerDay)}
-            </div>
-            <div className="text-muted small text-truncate" style={{ fontSize: '11px' }}>
-              Estimasi harian
-            </div>
-          </div>
-        </div>
+      <div className="row row-cards g-3 mb-4">
+        <BudgetSummaryCards totalBudget={totalBudget} spent={spent} safeToSpendPerDay={safeToSpendPerDay} />
       </div>
 
       <div className="mb-4 d-flex justify-content-center">

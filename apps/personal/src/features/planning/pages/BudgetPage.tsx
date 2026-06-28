@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react'
 import { useBudgets } from '../hooks/usePlanning'
 import { BudgetOverviewCard } from '../components/budget/BudgetOverviewCard'
 import { BudgetCategoryItem } from '../components/budget/BudgetCategoryItem'
-import { BudgetTrendChartCard } from '../components/budget/BudgetTrendChartCard'
 import { BudgetDetailedTable } from '../components/budget/BudgetDetailedTable'
-import { SavingsHealthCard } from '../components/shared/SavingsHealthCard'
 import { BudgetBurnRateCard } from '../components/budget/BudgetBurnRateCard'
 import { BudgetInsights } from '../components/budget/BudgetInsights'
 import { Budget503020Card } from '../components/budget/Budget503020Card'
@@ -38,17 +36,6 @@ export function BudgetPage() {
         transition: 'all 0.4s ease-out',
       }}
     >
-      <div className="col-lg-8 d-none d-lg-block">
-        <div className="h-100">
-          <BudgetTrendChartCard />
-        </div>
-      </div>
-      <div className="col-lg-4">
-        <div className="h-100">
-          <SavingsHealthCard />
-        </div>
-      </div>
-
       <div className="col-lg-4 d-lg-flex">
         <BudgetBurnRateCard spent={spent} totalBudget={totalBudget} />
       </div>

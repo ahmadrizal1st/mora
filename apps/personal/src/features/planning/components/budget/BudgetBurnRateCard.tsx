@@ -20,9 +20,9 @@ export function BudgetBurnRateCard({ spent, totalBudget }: BudgetBurnRateCardPro
   return (
     <div
       className="card shadow-sm border-0 h-100 w-100"
-      style={{ borderRadius: '16px', background: 'var(--tblr-bg-surface)' }}
+      style={{ borderRadius: '24px' }}
     >
-      <div className="card-body p-4 d-flex flex-column justify-content-center gap-3">
+      <div className="card-body p-4 d-flex flex-column justify-content-between gap-3">
         <div>
           <div className="d-flex align-items-center justify-content-between mb-3">
             <div className="d-flex align-items-center gap-2">
