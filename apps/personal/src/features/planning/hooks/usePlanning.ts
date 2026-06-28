@@ -21,3 +21,17 @@ export const useBudgets = () => {
     queryFn: planningService.getBudgets,
   })
 }
+
+export const useBudgetInsights = () => {
+  return useQuery({
+    queryKey: ['budgets-insights'],
+    queryFn: planningService.getBudgetInsights,
+  })
+}
+
+export const useBudgetHistory = (months: number = 6) => {
+  return useQuery({
+    queryKey: ['budgets-history', months],
+    queryFn: () => planningService.getBudgetHistory(months),
+  })
+}

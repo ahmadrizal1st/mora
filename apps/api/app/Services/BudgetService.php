@@ -131,6 +131,7 @@ class BudgetService
             foreach ($sourcePlan->items as $item) {
                 $itemData = [
                     'name' => $item->name,
+                    'type' => $item->type,
                     'percentage' => $item->percentage,
                     'amount_limit' => $item->amount_limit,
                     'color' => $item->color,
@@ -182,6 +183,7 @@ class BudgetService
                 'spent' => $spent,
                 'limit' => (float) $limit,
                 'percentage_used' => $limit > 0 ? round(($spent / $limit) * 100, 2) : 0,
+                'type' => $item->type,
                 'color' => $item->color,
                 'icon' => $item->icon,
             ];
@@ -197,5 +199,166 @@ class BudgetService
             'income_baseline' => (float) $plan->income_baseline,
             'items' => $results,
         ];
+    }
+
+    public static function getInsights(User $user, ?string $planId = null): array
+    {
+        $util = self::getUtilization($user, $planId);
+        
+        $topCategory = null;
+        $terhemat = null;
+        $overbudget = null;
+
+        if ($util && !empty($util['items'])) {
+            $items = collect($util['items']);
+            
+            $topItem = $items->sortByDesc('spent')->first();
+            if ($topItem && $topItem['spent'] > 0) {
+                $topCategory = [
+                    'value' => $topItem['name'],
+                    'subvalue' => 'Rp ' . number_format($topItem['spent'], 0, ',', '.'),
+                    'icon' => $topItem['icon'] ?? 'shopping-cart',
+                    'solidColor' => $topItem['color'] ?? '#d95c00',
+                    'trend' => 'Max spent',
+                    'trendUp' => true
+                ];
+            }
+
+            $terhematItem = $items->filter(fn($i) => $i['percentage_used'] > 0 && $i['percentage_used'] <= 100)
+                                  ->sortBy('percentage_used')->first();
+            if ($terhematItem) {
+                $terhemat = [
+                    'value' => $terhematItem['name'],
+                    'subvalue' => $terhematItem['percentage_used'] . '% Limit',
+                    'icon' => $terhematItem['icon'] ?? 'device-tv',
+                    'solidColor' => $terhematItem['color'] ?? '#0f9d58',
+                    'trend' => 'Good',
+                    'trendUp' => false
+                ];
+            }
+
+            $overbudgetItem = $items->filter(fn($i) => $i['percentage_used'] > 100)
+                                    ->sortByDesc('percentage_used')->first();
+            if ($overbudgetItem) {
+                $overbudget = [
+                    'value' => $overbudgetItem['name'],
+                    'subvalue' => '+Rp ' . number_format($overbudgetItem['spent'] - $overbudgetItem['limit'], 0, ',', '.'),
+                    'icon' => $overbudgetItem['icon'] ?? 'car',
+                    'solidColor' => $overbudgetItem['color'] ?? '#e02424',
+                    'trend' => 'Over',
+                    'trendUp' => true
+                ];
+            }
+        }
+
+        $savings = \App\Models\Goal::where('user_id', $user->id)->sum('current_amount');
+        $target = \App\Models\Goal::where('user_id', $user->id)->sum('target_amount');
+        $savingsGoal = [
+            'value' => 'Total Tersimpan',
+            'subvalue' => 'Rp ' . number_format($savings, 0, ',', '.'),
+            'icon' => 'target',
+            'solidColor' => '#10b981',
+            'trend' => $target > 0 ? round(($savings / $target) * 100) . '%' : '0%',
+            'trendUp' => false
+        ];
+
+        $paidSub = \App\Models\Subscription::where('user_id', $user->id)->where('status', 'paid')->sum('amount');
+        $smartSaving = [
+            'value' => 'Subscription Paid',
+            'subvalue' => 'Rp ' . number_format($paidSub, 0, ',', '.'),
+            'icon' => 'refresh',
+            'solidColor' => '#3b82f6',
+            'trend' => 'Monthly',
+            'trendUp' => false
+        ];
+
+        // 3 New Insights
+        $totalPlanIncome = $util ? $util['income_baseline'] : 0;
+        $totalSpent = $util ? collect($util['items'])->sum('spent') : 0;
+        $remainingBudget = max(0, $totalPlanIncome - $totalSpent);
+        $sisaSaldo = [
+            'value' => 'Sisa Anggaran',
+            'subvalue' => 'Rp ' . number_format($remainingBudget, 0, ',', '.'),
+            'icon' => 'wallet',
+            'solidColor' => '#206bc4',
+            'trend' => $totalPlanIncome > 0 ? round(($remainingBudget / $totalPlanIncome) * 100) . '% Sisa' : '0%',
+            'trendUp' => false
+        ];
+
+        $today = now();
+        $startOfMonth = $today->copy()->startOfMonth()->toDateString();
+        $endOfMonth = $today->copy()->endOfMonth()->toDateString();
+        
+        return [
+            'top_category' => $topCategory,
+            'terhemat' => $terhemat,
+            'overbudget' => $overbudget,
+            'savings_goal' => $savingsGoal,
+            'smart_saving' => $smartSaving,
+            'sisa_saldo' => $sisaSaldo,
+        ];
+    }
+
+    public static function getHistory(User $user, int $months = 6): array
+    {
+        $history = [];
+        $today = now();
+
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $date = $today->copy()->subMonths($i);
+            $monthStr = $date->format('M Y');
+            $startOfMonth = $date->copy()->startOfMonth()->toDateString();
+            $endOfMonth = $date->copy()->endOfMonth()->toDateString();
+
+            $plan = \App\Models\BudgetPlan::where('user_id', $user->id)
+                ->where('start_date', '<=', $endOfMonth)
+                ->where('end_date', '>=', $startOfMonth)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $planned = $plan ? $plan->income_baseline : 0;
+
+            $actual = DB::table('transactions')
+                ->join('budget_items', 'transactions.budget_item_id', '=', 'budget_items.id')
+                ->join('budget_plans', 'budget_items.budget_plan_id', '=', 'budget_plans.id')
+                ->where('budget_plans.user_id', $user->id)
+                ->whereBetween('tx_date', [$startOfMonth, $endOfMonth])
+                ->sum('transactions.amount');
+
+            $needs = DB::table('transactions')
+                ->join('budget_items', 'transactions.budget_item_id', '=', 'budget_items.id')
+                ->join('budget_plans', 'budget_items.budget_plan_id', '=', 'budget_plans.id')
+                ->where('budget_plans.user_id', $user->id)
+                ->where('budget_items.type', 'needs')
+                ->whereBetween('tx_date', [$startOfMonth, $endOfMonth])
+                ->sum('transactions.amount');
+
+            $wants = DB::table('transactions')
+                ->join('budget_items', 'transactions.budget_item_id', '=', 'budget_items.id')
+                ->join('budget_plans', 'budget_items.budget_plan_id', '=', 'budget_plans.id')
+                ->where('budget_plans.user_id', $user->id)
+                ->where('budget_items.type', 'wants')
+                ->whereBetween('tx_date', [$startOfMonth, $endOfMonth])
+                ->sum('transactions.amount');
+
+            $savings = DB::table('transactions')
+                ->join('budget_items', 'transactions.budget_item_id', '=', 'budget_items.id')
+                ->join('budget_plans', 'budget_items.budget_plan_id', '=', 'budget_plans.id')
+                ->where('budget_plans.user_id', $user->id)
+                ->where('budget_items.type', 'savings')
+                ->whereBetween('tx_date', [$startOfMonth, $endOfMonth])
+                ->sum('transactions.amount');
+
+            $history[] = [
+                'month' => $monthStr,
+                'planned' => (float)$planned,
+                'actual' => (float)$actual,
+                'needs' => (float)$needs,
+                'wants' => (float)$wants,
+                'savings' => (float)$savings,
+            ];
+        }
+
+        return $history;
     }
 }

@@ -127,8 +127,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('providers', [ProviderController::class, 'store']);
 
     // Budgeting
-    Route::apiResource('budgets', BudgetController::class);
     Route::get('budgets-utilization', [BudgetController::class, 'utilization']);
+    Route::get('budgets/insights', [BudgetController::class, 'insights']);
+    Route::get('budgets/history', [BudgetController::class, 'history']);
+    Route::post('budgets/{id}/duplicate', [BudgetController::class, 'duplicate']);
+    Route::apiResource('budgets', BudgetController::class);
     Route::post('budgets/{id}/duplicate', [BudgetController::class, 'duplicate']);
 
     // Notifications

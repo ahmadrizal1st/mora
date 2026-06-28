@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class OtpCode extends Model
 {
-    
+    use HasUuids;
+
     public const TYPE_REGISTER = 'register';
     public const TYPE_RESET_PASSWORD = 'reset_password';
 
-    
     protected $fillable = [
         'email',
         'code',
@@ -21,7 +22,6 @@ class OtpCode extends Model
         'verified_at',
     ];
 
-    
     protected function casts(): array
     {
         return [

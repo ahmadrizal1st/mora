@@ -83,6 +83,7 @@ class BudgetRepository
     {
         $item = $plan->items()->create([
             'name' => $itemData['name'],
+            'type' => $itemData['type'] ?? null,
             'percentage' => $itemData['percentage'] ?? 0,
             'amount_limit' => $itemData['amount_limit'] ?? 0,
             'color' => $itemData['color'] ?? null,

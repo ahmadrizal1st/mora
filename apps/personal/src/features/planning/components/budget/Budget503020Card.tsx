@@ -25,14 +25,14 @@ export function Budget503020Card() {
 
   const totalSpent = spentNeeds + spentWants + spentSavings
 
-  const size = 220
+  const size = 180
   const center = size / 2
 
   const rings = [
     {
       id: 'needs',
       name: 'Kebutuhan',
-      radius: 82,
+      radius: 72,
       strokeWidth: 12,
       color: '#ff6b00',
       bgColor: 'var(--tblr-bg-surface-secondary, #f1f5f9)',
@@ -41,7 +41,7 @@ export function Budget503020Card() {
     {
       id: 'wants',
       name: 'Keinginan',
-      radius: 64,
+      radius: 56,
       strokeWidth: 12,
       color: '#066fd1',
       bgColor: 'var(--tblr-bg-surface-secondary, #f1f5f9)',
@@ -50,7 +50,7 @@ export function Budget503020Card() {
     {
       id: 'savings',
       name: 'Tabungan',
-      radius: 46,
+      radius: 40,
       strokeWidth: 12,
       color: '#2fb344',
       bgColor: 'var(--tblr-bg-surface-secondary, #f1f5f9)',
@@ -73,15 +73,15 @@ export function Budget503020Card() {
 
   return (
     <div className="card shadow-sm border-0 h-100 w-100" style={{ borderRadius: '24px' }}>
-      <div className="card-body p-4 d-flex flex-column align-items-center justify-content-between">
+      <div className="card-body p-3 d-flex flex-column align-items-center justify-content-center">
         <div className="w-100 mb-1 text-start">
-          <h3 className="card-title fw-bold text-body m-0" style={{ fontSize: '1.1rem' }}>
+          <h3 className="card-title fw-bold text-body m-0" style={{ fontSize: '1.05rem' }}>
             Budget 50/30/20
           </h3>
         </div>
 
-        <div className="position-relative my-1 d-flex align-items-center justify-content-center w-100">
-          <svg className="concentric-chart-svg" viewBox={`0 0 ${size} ${size}`}>
+        <div className="position-relative my-2 d-flex align-items-center justify-content-center w-100">
+          <svg className="concentric-chart-svg" viewBox={`0 0 ${size} ${size}`} style={{ maxWidth: '160px' }}>
             <defs>
               <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
                 <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodOpacity="0.12" />
@@ -143,7 +143,7 @@ export function Budget503020Card() {
           </svg>
         </div>
 
-        <div className="text-center w-100 mt-1 mb-2">
+        <div className="text-center w-100 mb-3">
           <div
             className="text-secondary small fw-bold text-uppercase mb-0"
             style={{ fontSize: '9px', letterSpacing: '0.8px' }}
@@ -152,25 +152,25 @@ export function Budget503020Card() {
           </div>
           <h2
             className="fw-bold text-body mb-0"
-            style={{ fontSize: '1.6rem', letterSpacing: '-0.5px' }}
+            style={{ fontSize: '1.4rem', letterSpacing: '-0.5px' }}
           >
             {formatCurrency(totalSpent)}
           </h2>
         </div>
 
-        <div className="w-100 d-flex flex-column gap-2">
-          <div className="d-flex flex-column">
+        <div className="w-100 d-flex flex-column mt-auto">
+          <div className="d-flex flex-column mb-2">
             <div className="d-flex align-items-center justify-content-between mb-1">
               <div className="d-flex align-items-center gap-2">
                 <div
                   style={{
-                    width: '12px',
-                    height: '12px',
+                    width: '8px',
+                    height: '8px',
                     borderRadius: '50%',
                     backgroundColor: '#ff6b00',
                   }}
                 />
-                <span className="fw-bold text-body" style={{ fontSize: '13px' }}>
+                <span className="fw-semibold text-body" style={{ fontSize: '11px' }}>
                   Kebutuhan
                 </span>
               </div>
@@ -179,18 +179,18 @@ export function Budget503020Card() {
                 style={{
                   backgroundColor: '#fff0e6',
                   color: '#ff6b00',
-                  borderRadius: '12px',
-                  padding: '3px 8px',
-                  fontSize: '11px',
+                  borderRadius: '10px',
+                  padding: '2px 4px',
+                  fontSize: '9px',
                 }}
               >
                 {pctNeeds.toFixed(1)}%
               </span>
             </div>
-            <div className="d-flex align-items-center justify-content-between gap-3">
+            <div className="d-flex align-items-center justify-content-between gap-2">
               <div
                 className="flex-fill bg-light rounded-pill"
-                style={{ height: '5px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
+                style={{ height: '3px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
               >
                 <div
                   className="rounded-pill"
@@ -202,24 +202,24 @@ export function Budget503020Card() {
                   }}
                 />
               </div>
-              <span className="text-muted small text-nowrap" style={{ fontSize: '10px' }}>
+              <span className="text-muted text-nowrap" style={{ fontSize: '8px' }}>
                 50% target
               </span>
             </div>
           </div>
 
-          <div className="d-flex flex-column">
+          <div className="d-flex flex-column mb-2">
             <div className="d-flex align-items-center justify-content-between mb-1">
               <div className="d-flex align-items-center gap-2">
                 <div
                   style={{
-                    width: '12px',
-                    height: '12px',
+                    width: '8px',
+                    height: '8px',
                     borderRadius: '50%',
                     backgroundColor: '#066fd1',
                   }}
                 />
-                <span className="fw-bold text-body" style={{ fontSize: '13px' }}>
+                <span className="fw-semibold text-body" style={{ fontSize: '11px' }}>
                   Keinginan
                 </span>
               </div>
@@ -228,18 +228,18 @@ export function Budget503020Card() {
                 style={{
                   backgroundColor: '#e6f0ff',
                   color: '#066fd1',
-                  borderRadius: '12px',
-                  padding: '3px 8px',
-                  fontSize: '11px',
+                  borderRadius: '10px',
+                  padding: '2px 4px',
+                  fontSize: '9px',
                 }}
               >
                 {pctWants.toFixed(1)}%
               </span>
             </div>
-            <div className="d-flex align-items-center justify-content-between gap-3">
+            <div className="d-flex align-items-center justify-content-between gap-2">
               <div
                 className="flex-fill bg-light rounded-pill"
-                style={{ height: '5px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
+                style={{ height: '3px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
               >
                 <div
                   className="rounded-pill"
@@ -251,7 +251,7 @@ export function Budget503020Card() {
                   }}
                 />
               </div>
-              <span className="text-muted small text-nowrap" style={{ fontSize: '10px' }}>
+              <span className="text-muted text-nowrap" style={{ fontSize: '8px' }}>
                 30% target
               </span>
             </div>
@@ -262,13 +262,13 @@ export function Budget503020Card() {
               <div className="d-flex align-items-center gap-2">
                 <div
                   style={{
-                    width: '12px',
-                    height: '12px',
+                    width: '8px',
+                    height: '8px',
                     borderRadius: '50%',
                     backgroundColor: '#2fb344',
                   }}
                 />
-                <span className="fw-bold text-body" style={{ fontSize: '13px' }}>
+                <span className="fw-semibold text-body" style={{ fontSize: '11px' }}>
                   Tabungan
                 </span>
               </div>
@@ -277,18 +277,18 @@ export function Budget503020Card() {
                 style={{
                   backgroundColor: '#eaf8eb',
                   color: '#2fb344',
-                  borderRadius: '12px',
-                  padding: '3px 8px',
-                  fontSize: '11px',
+                  borderRadius: '10px',
+                  padding: '2px 4px',
+                  fontSize: '9px',
                 }}
               >
                 {pctSavings.toFixed(1)}%
               </span>
             </div>
-            <div className="d-flex align-items-center justify-content-between gap-3">
+            <div className="d-flex align-items-center justify-content-between gap-2">
               <div
                 className="flex-fill bg-light rounded-pill"
-                style={{ height: '5px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
+                style={{ height: '3px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
               >
                 <div
                   className="rounded-pill"
@@ -300,7 +300,7 @@ export function Budget503020Card() {
                   }}
                 />
               </div>
-              <span className="text-muted small text-nowrap" style={{ fontSize: '10px' }}>
+              <span className="text-muted text-nowrap" style={{ fontSize: '8px' }}>
                 20% target
               </span>
             </div>

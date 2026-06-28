@@ -54,4 +54,17 @@ class BudgetController extends Controller
             'data' => BudgetPlanData::from($plan)
         ]);
     }
+
+    public function insights(Request $request): JsonResponse
+    {
+        $insights = BudgetService::getInsights($request->user(), $request->query('plan_id'));
+        return response()->json(['data' => $insights]);
+    }
+
+    public function history(Request $request): JsonResponse
+    {
+        $months = (int) $request->query('months', 6);
+        $history = BudgetService::getHistory($request->user(), $months);
+        return response()->json(['data' => $history]);
+    }
 }

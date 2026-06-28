@@ -1,5 +1,6 @@
 import { formatCurrency } from '@/shared/utils/currencyUtils'
 import { clsx } from 'clsx'
+import { Icon } from '@/shared/components/ui/Icon'
 
 interface BudgetCategoryItemProps {
   category: {
@@ -21,40 +22,32 @@ export function BudgetCategoryItem({ category }: BudgetCategoryItemProps) {
       className="card shadow-none border bg-body-tertiary h-100 transition-all"
       style={{ borderRadius: '12px' }}
     >
-      <div className="card-body p-3">
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <div className="d-flex align-items-center gap-3">
+      <div className="card-body p-2 px-3">
+        <div className="d-flex align-items-center justify-content-between mb-2">
+          <div className="d-flex align-items-center gap-2">
             <div
               className={clsx(
                 'd-flex align-items-center justify-content-center',
                 `bg-${category.color}-lt text-${category.color}`
               )}
-              style={{ width: '40px', height: '40px', borderRadius: '14px', flexShrink: 0 }}
+              style={{ width: '28px', height: '28px', borderRadius: '8px', flexShrink: 0 }}
             >
-              <Icon icon={category.icon as any} size="md" />
+              <Icon icon={category.icon as any} size="sm" style={{ transform: 'scale(0.8)' }} />
             </div>
             <div>
-              <span className="fw-bold small text-body d-block lh-1 mb-1">{category.name}</span>
-              <span className="text-secondary" style={{ fontSize: '10px' }}>
-                Budget {formatCurrency(category.limit)}
-              </span>
+              <span className="fw-semibold text-body d-block lh-1" style={{ fontSize: '0.8rem' }}>{category.name}</span>
             </div>
           </div>
           <div className="text-end">
-            <span
-              className={clsx(
-                'fw-bold small d-block lh-1 mb-1',
-                isOver ? 'text-danger' : 'text-primary'
-              )}
-            >
-              {percentage}%
+            <span className="text-secondary" style={{ fontSize: '0.7rem' }}>
+              Budget: {formatCurrency(category.limit)}
             </span>
           </div>
         </div>
 
         <div
           className="progress progress-xs mb-2"
-          style={{ height: '6px', background: 'var(--tblr-border-color)' }}
+          style={{ height: '4px', background: 'var(--tblr-border-color)' }}
         >
           <div
             className={clsx(
@@ -65,29 +58,26 @@ export function BudgetCategoryItem({ category }: BudgetCategoryItemProps) {
           ></div>
         </div>
 
-        <div className="d-flex justify-content-between align-items-center mt-1">
+        <div className="d-flex justify-content-between align-items-center">
           <div>
-            <span className="text-body fw-bold d-block lh-1" style={{ fontSize: '13px' }}>
+            <span className="text-body fw-bold d-block lh-1" style={{ fontSize: '0.85rem' }}>
               {formatCurrency(category.spent)}
             </span>
-            <span className="text-muted" style={{ fontSize: '9px' }}>
-              Realisasi Bulan Ini
+            <span className={clsx("small d-block", isOver ? "text-danger" : "text-primary")} style={{ fontSize: '0.7rem', fontWeight: 600 }}>
+              {percentage}%
             </span>
           </div>
           <div className="text-end">
             <span
               className={clsx(
-                'small px-2 py-0 rounded-pill d-block mb-1',
+                'px-2 py-0 rounded-pill d-block',
                 isOver ? 'bg-danger-lt text-danger' : 'bg-success-lt text-success'
               )}
-              style={{ fontSize: '10px', fontWeight: 600 }}
+              style={{ fontSize: '0.7rem', fontWeight: 600 }}
             >
               {isOver
                 ? `Over ${formatCurrency(category.spent - category.limit)}`
                 : `Sisa ${formatCurrency(category.limit - category.spent)}`}
-            </span>
-            <span className="text-muted" style={{ fontSize: '9px' }}>
-              {isOver ? 'Tinjau Anggaran' : 'Kondisi Aman'}
             </span>
           </div>
         </div>

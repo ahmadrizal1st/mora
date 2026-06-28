@@ -92,6 +92,7 @@ export const planningService = {
       limit: item.limit,
       spent: item.spent,
       percentage_used: item.percentage_used,
+      type: item.type,
       icon: item.icon || 'box',
       color: item.color || '#000000',
     }))
@@ -102,5 +103,15 @@ export const planningService = {
       safeToSpendPerDay,
       categories
     }
+  },
+
+  async getBudgetInsights(): Promise<any> {
+    const response = await api.get('/budgets/insights')
+    return response.data.data
+  },
+
+  async getBudgetHistory(months: number = 6): Promise<any[]> {
+    const response = await api.get(`/budgets/history?months=${months}`)
+    return response.data.data
   }
 }

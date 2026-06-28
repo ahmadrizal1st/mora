@@ -151,43 +151,56 @@ class TransactionRepository
         $dateFrom  = $filters['date_from']  ?? null;
         $dateTo    = $filters['date_to']    ?? null;
 
-        $params = [$pgFormat, $user->id];
-        $dateWhere = '';
-        
-        if ($dateFrom) {
-            $dateWhere .= ' AND tx_date >= ?';
-            $params[] = $dateFrom;
-        }
-        if ($dateTo) {
-            $dateWhere .= ' AND tx_date <= ?';
-            $params[] = $dateTo;
-        }
-
         $tIncome = Transaction::TYPE_INCOME;
         $tExpense = Transaction::TYPE_EXPENSE;
         $tTransfer = Transaction::TYPE_TRANSFER;
 
-        if ($accountId) {
-            $outSql = "SELECT to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND account_id=? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') {$dateWhere} GROUP BY label";
-            $inSql  = "SELECT to_char(tx_date, ?) AS label, SUM(amount) AS income, 0 AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND to_account_id=? AND type='{$tTransfer}' {$dateWhere} GROUP BY label";
-            
-            $sql = "SELECT label, SUM(income) AS income, SUM(expense) AS expense, SUM(count) AS count FROM (({$outSql}) UNION ALL ({$inSql})) AS combined GROUP BY label ORDER BY label ASC";
-            
-            $finalParams = array_merge(
-                [$pgFormat, $user->id, $accountId],
-                $dateFrom ? [$dateFrom] : [],
-                $dateTo ? [$dateTo] : [],
-                [$pgFormat, $user->id, $accountId],
-                $dateFrom ? [$dateFrom] : [],
-                $dateTo ? [$dateTo] : []
-            );
+        $labelColumn = self::getFormattedDateColumn('tx_date', $pgFormat);
 
-            return collect(DB::select($sql, $finalParams));
+        if ($accountId) {
+            $outQuery = $user->transactions()
+                ->selectRaw("{$labelColumn} as label, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount ELSE 0 END) AS expense, COUNT(*) AS count")
+                ->where('account_id', $accountId)
+                ->whereIn('type', [$tIncome, $tExpense, $tTransfer]);
+
+            $inQuery = $user->transactions()
+                ->selectRaw("{$labelColumn} as label, SUM(amount) AS income, 0 AS expense, COUNT(*) AS count")
+                ->where('to_account_id', $accountId)
+                ->where('type', $tTransfer);
+
+            if ($dateFrom) {
+                $outQuery->where('tx_date', '>=', $dateFrom);
+                $inQuery->where('tx_date', '>=', $dateFrom);
+            }
+            if ($dateTo) {
+                $outQuery->where('tx_date', '<=', $dateTo);
+                $inQuery->where('tx_date', '<=', $dateTo);
+            }
+
+            $outQuery->groupBy('label');
+            $inQuery->groupBy('label');
+
+            $unionQuery = $outQuery->unionAll($inQuery);
+
+            return DB::query()->fromSub($unionQuery, 'combined')
+                ->selectRaw('label, SUM(income) AS income, SUM(expense) AS expense, SUM(count) AS count')
+                ->groupBy('label')
+                ->orderBy('label', 'ASC')
+                ->get();
         }
 
-        $sql = "SELECT to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS income, SUM(CASE WHEN type='{$tExpense}' THEN amount ELSE 0 END) AS expense, COUNT(*) AS count FROM transactions WHERE user_id=? AND type IN ('{$tIncome}','{$tExpense}') {$dateWhere} GROUP BY label ORDER BY label ASC";
-        
-        return collect(DB::select($sql, $params));
+        $query = $user->transactions()
+            ->selectRaw("{$labelColumn} as label, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS income, SUM(CASE WHEN type='{$tExpense}' THEN amount ELSE 0 END) AS expense, COUNT(*) AS count")
+            ->whereIn('type', [$tIncome, $tExpense]);
+
+        if ($dateFrom) {
+            $query->where('tx_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $query->where('tx_date', '<=', $dateTo);
+        }
+
+        return $query->groupBy('label')->orderBy('label', 'ASC')->get();
     }
 
     
@@ -197,11 +210,67 @@ class TransactionRepository
         $tExpense = Transaction::TYPE_EXPENSE;
         $tTransfer = Transaction::TYPE_TRANSFER;
 
-        $txOut = DB::select("SELECT account_id, to_char(tx_date, ?) AS label, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount ELSE 0 END) AS expense FROM transactions WHERE user_id=? AND tx_date>=? AND tx_date<=? AND type IN ('{$tIncome}','{$tExpense}','{$tTransfer}') GROUP BY account_id, label ORDER BY account_id, label", [$pgFormat, $user->id, $startStr, $endStr]);
-        
-        $txIn = DB::select("SELECT to_account_id AS account_id, to_char(tx_date, ?) AS label, SUM(amount) AS income, 0 AS expense FROM transactions WHERE user_id=? AND tx_date>=? AND tx_date<=? AND type='{$tTransfer}' AND to_account_id IS NOT NULL GROUP BY to_account_id, label ORDER BY to_account_id, label", [$pgFormat, $user->id, $startStr, $endStr]);
+        $labelColumn = self::getFormattedDateColumn('tx_date', $pgFormat);
+
+        $txOut = $user->transactions()
+            ->selectRaw("account_id, {$labelColumn} as label, SUM(CASE WHEN type='{$tIncome}' THEN amount ELSE 0 END) AS income, SUM(CASE WHEN type IN ('{$tExpense}','{$tTransfer}') THEN amount ELSE 0 END) AS expense")
+            ->whereBetween('tx_date', [$startStr, $endStr])
+            ->whereIn('type', [$tIncome, $tExpense, $tTransfer])
+            ->groupBy('account_id', 'label')
+            ->orderBy('account_id')
+            ->orderBy('label')
+            ->get();
+
+        $txIn = $user->transactions()
+            ->selectRaw("to_account_id as account_id, {$labelColumn} as label, SUM(amount) AS income, 0 AS expense")
+            ->whereBetween('tx_date', [$startStr, $endStr])
+            ->where('type', $tTransfer)
+            ->whereNotNull('to_account_id')
+            ->groupBy('to_account_id', 'label')
+            ->orderBy('to_account_id')
+            ->orderBy('label')
+            ->get();
 
         return [$txOut, $txIn];
+    }
+
+    private static function getFormattedDateColumn(string $column, string $pgFormat): string
+    {
+        $driver = DB::getDriverName();
+
+        if ($driver === 'pgsql') {
+            return "to_char({$column}, '{$pgFormat}')";
+        } elseif ($driver === 'sqlite') {
+            return self::sqliteDateFormat($column, $pgFormat);
+        } elseif ($driver === 'mysql') {
+            return self::mysqlDateFormat($column, $pgFormat);
+        }
+
+        return $column;
+    }
+
+    private static function sqliteDateFormat(string $column, string $pgFormat): string
+    {
+        if ($pgFormat === 'YYYY-MM') {
+            return "strftime('%Y-%m', {$column})";
+        } elseif ($pgFormat === 'YYYY-MM-DD') {
+            return "strftime('%Y-%m-%d', {$column})";
+        } elseif ($pgFormat === 'YYYY') {
+            return "strftime('%Y', {$column})";
+        }
+        return "strftime('%Y-%m-%d', {$column})";
+    }
+
+    private static function mysqlDateFormat(string $column, string $pgFormat): string
+    {
+        if ($pgFormat === 'YYYY-MM') {
+            return "DATE_FORMAT({$column}, '%Y-%m')";
+        } elseif ($pgFormat === 'YYYY-MM-DD') {
+            return "DATE_FORMAT({$column}, '%Y-%m-%d')";
+        } elseif ($pgFormat === 'YYYY') {
+            return "DATE_FORMAT({$column}, '%Y')";
+        }
+        return "DATE_FORMAT({$column}, '%Y-%m-%d')";
     }
 
     

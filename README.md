@@ -96,6 +96,13 @@ DB_PASSWORD=your_password
 # Queue — WAJIB database agar LLM job berjalan
 QUEUE_CONNECTION=database
 
+# Mail (OTP) — Wajib untuk registrasi dan reset password
+# Default: log (development, OTP disimpan di log)
+# Untuk production, gunakan SendGrid atau Mailgun (lihat .env.example)
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
 # LLM Keys (salah satu wajib diisi)
 GEMINI_API_KEY=your_gemini_api_key
 GROQ_API_KEY=your_groq_api_key
@@ -112,6 +119,16 @@ GOOGLE_REDIRECT_URL="${FRONTEND_URL}/auth/google/callback"
 # Security
 API_KEY=vistamora_secure_secret_key_2026
 ```
+
+### Catatan Tentang OTP (One-Time Password)
+- OTP dikirimkan via email untuk verifikasi registrasi dan reset password
+- Di development (`MAIL_MAILER=log`), OTP dapat dilihat di `storage/logs/laravel.log`
+- Untuk membersihkan OTP yang sudah kedaluwarsa secara otomatis, command `otp:cleanup` dijadwalkan berjalan setiap jam (config di `routes/console.php`)
+- Untuk menjalankan command secara manual:
+  ```bash
+  cd apps/api
+  php artisan otp:cleanup
+  ```
 
 ### Menjalankan API
 
@@ -399,8 +416,15 @@ cd apps/api && composer run dev
 
 | Method | Endpoint | Keterangan |
 |--------|----------|------------|
+| POST | `/api/auth/register` | Registrasi user |
+| POST | `/api/auth/verify-otp` | Verifikasi OTP registrasi |
 | POST | `/api/auth/login` | Login user |
-| POST | `/api/auth/register` | Registrasi |
+| POST | `/api/auth/forgot-password` | Request OTP reset password |
+| POST | `/api/auth/reset-password` | Reset password dengan OTP |
+| POST | `/api/auth/resend-otp` | Kirim ulang OTP |
+| POST | `/api/auth/logout` | Logout user |
+| POST | `/api/auth/refresh` | Refresh token |
+| GET | `/api/auth/me` | Dapatkan data user yang login |
 | GET | `/api/transactions` | List transaksi |
 | POST | `/api/documents/upload` | Upload file (AI) |
 | POST | `/api/documents/text` | Input teks langsung (bypass AI) |
