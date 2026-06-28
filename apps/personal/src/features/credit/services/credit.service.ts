@@ -12,4 +12,14 @@ export const creditService = {
     // Fallback if not wrapped
     return response.data.data || []
   },
+
+  async saveCredit(accountId: string, data: any): Promise<any> {
+    const response = await api.post(`/accounts/${accountId}/credit`, data)
+    return response.data
+  },
+
+  async deleteCredit(accountId: string): Promise<any> {
+    const response = await api.delete(`/accounts/${accountId}/credit`)
+    return response.data
+  },
 }

@@ -6,7 +6,7 @@ import { useCreditLayoutContext } from '../context/CreditLayoutContext'
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
 
 export function CreditKTAPage() {
-  const { openFormForType } = useCreditLayoutContext()
+  const { openFormForType, openForm } = useCreditLayoutContext()
   const { data: loans = [], isLoading } = useCredits('kta')
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -139,16 +139,26 @@ export function CreditKTAPage() {
         <div className="w-100" style={{ flex: '1 1 32%', minWidth: 0 }}>
           <div className="card modern-card h-100 overflow-hidden">
             <div className="card-body p-3 d-flex flex-column">
-              <div className="d-flex align-items-center gap-2 mb-3">
-                <span
-                  className="avatar avatar-md text-white rounded-4 border-0 bg-primary"
-                >
-                  <Icon icon="building-bank" size={24} />
-                </span>
-                <div>
-                  <h3 className="fw-bold mb-0 text-dark">{loan.name}</h3>
-                  <div className="text-secondary small fw-medium">KTA — {loan.provider?.name || 'Bank'}</div>
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <div className="d-flex align-items-center gap-2">
+                  <span
+                    className="avatar avatar-md text-white rounded-4 border-0 bg-primary"
+                  >
+                    <Icon icon="building-bank" size={24} />
+                  </span>
+                  <div>
+                    <h3 className="fw-bold mb-0 text-dark">{loan.name}</h3>
+                    <div className="text-secondary small fw-medium">KTA — {loan.provider?.name || 'Bank'}</div>
+                  </div>
                 </div>
+                <button
+                  className="btn btn-icon btn-light bg-surface border shadow-none"
+                  style={{ borderRadius: '8px', width: '32px', height: '32px' }}
+                  onClick={() => openForm(loan)}
+                  title="Edit Profil"
+                >
+                  <Icon icon="pencil" size={14} className="text-secondary" />
+                </button>
               </div>
 
               <div className="modern-glass-panel p-3 mb-3">

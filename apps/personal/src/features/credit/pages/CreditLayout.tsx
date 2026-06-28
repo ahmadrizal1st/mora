@@ -14,8 +14,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { CreditHeroBanner } from '../components/CreditHeroBanner'
 import type { Account } from '@/features/transaction/types/transaction.types'
+import { creditService } from '../services/credit.service'
 
-import { CreditAlertsDropdown } from '../components/CreditAlertsDropdown'
 import { Outlet } from '@tanstack/react-router'
 import { CreditSegmentedNav } from '../components/shared/CreditSegmentedNav'
 import { CreditLayoutContext } from '../context/CreditLayoutContext'
@@ -42,56 +42,25 @@ export default function CreditLayout() {
 
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      await new Promise((resolve) => setTimeout(resolve, 800))
-
       if (!selectedAccount) throw new Error('Account not selected')
 
-      const stored = localStorage.getItem('visatamora_credits')
-      let credits: Account[] = []
-      if (stored) {
-        try {
-          credits = JSON.parse(stored)
-        } catch (e) {}
+      const mappedData = {
+        type:
+          data.credit_type === 'kta'
+            ? 'personal'
+            : data.credit_type === 'kpr'
+              ? 'mortgage'
+              : data.credit_type,
+        provider_name: selectedAccount.provider?.name || selectedAccount.name || 'Bank',
+        principal_amount: Number(data.limit),
+        interest_rate: Number(data.interest_rate),
+        tenor_months: Math.max(1, Number(data.tenor_months) || 12),
+        start_date: data.due_date || new Date().toISOString().split('T')[0],
+        billing_cycle: 'monthly',
       }
 
-      const existingIndex = credits.findIndex((c) => c.id === selectedAccount.id)
-
-      const updatedCredit = {
-        credit_type: data.credit_type,
-        limit: data.limit,
-        total_amount: data.total_amount,
-        installment_amount: data.installment_amount,
-        interest_rate: data.interest_rate,
-        tenor_months: data.tenor_months,
-        billing_cycle_day: data.billing_cycle_day,
-        minimum_payment: data.minimum_payment,
-        due_date: data.due_date,
-        notes: data.notes,
-      }
-
-      if (existingIndex >= 0) {
-        credits[existingIndex] = {
-          ...credits[existingIndex],
-          balance: -data.total_amount,
-          credit: updatedCredit,
-        }
-      } else {
-        const newAcc: Account = {
-          id: selectedAccount.id,
-          name: selectedAccount.name,
-          account_type:
-            data.credit_type === 'kta' || data.credit_type === 'kpr' ? 'loan' : 'credit',
-          balance: -data.total_amount,
-          currency: selectedAccount.currency || 'IDR',
-          provider: selectedAccount.provider || { name: 'Bank' },
-          color: selectedAccount.color || '#206bc4',
-          credit: updatedCredit,
-        }
-        credits.push(newAcc)
-      }
-
-      localStorage.setItem('visatamora_credits', JSON.stringify(credits))
-      return { success: true, data }
+      const res = await creditService.saveCredit(selectedAccount.id, mappedData)
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['credits'] })
@@ -102,28 +71,23 @@ export default function CreditLayout() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      const stored = localStorage.getItem('visatamora_credits')
-      if (stored) {
-        try {
-          let credits: Account[] = JSON.parse(stored)
-          credits = credits.filter((c) => c.id !== id)
-          localStorage.setItem('visatamora_credits', JSON.stringify(credits))
-        } catch (e) {}
-      }
-      return { success: true }
+      const res = await creditService.deleteCredit(id)
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['credits'] })
     },
   })
-
   const openForm = (account: Account) => {
     setSelectedAccount(account)
     if (account.credit) {
       setFormData({
-        credit_type: account.credit.credit_type || 'credit_card',
+        credit_type:
+          account.credit.credit_type === 'personal'
+            ? 'kta'
+            : account.credit.credit_type === 'mortgage'
+              ? 'kpr'
+              : account.credit.credit_type || 'credit_card',
         limit: account.credit.limit,
         total_amount: account.credit.total_amount,
         installment_amount: account.credit.installment_amount,
@@ -177,13 +141,12 @@ export default function CreditLayout() {
   return (
     <BaseLayout 
       pageTitle="Manajemen Kredit & Pinjaman"
-      pageActions={<CreditAlertsDropdown />}
     >
       <div className="container-xl pt-3 pb-5">
         <div className="d-flex flex-column gap-3">
           <CreditHeroBanner />
           <CreditSegmentedNav />
-          <CreditLayoutContext.Provider value={{ openFormForType }}>
+          <CreditLayoutContext.Provider value={{ openFormForType, openForm }}>
             <Outlet />
           </CreditLayoutContext.Provider>
         </div>

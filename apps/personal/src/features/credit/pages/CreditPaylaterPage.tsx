@@ -6,7 +6,7 @@ import { useCreditLayoutContext } from '../context/CreditLayoutContext'
 const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
 
 export function CreditPaylaterPage() {
-  const { openFormForType } = useCreditLayoutContext()
+  const { openFormForType, openForm } = useCreditLayoutContext()
   const { data: providers = [], isLoading } = useCredits('paylater')
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -134,17 +134,27 @@ export function CreditPaylaterPage() {
         <div className="w-100" style={{ flex: '1 1 32%', minWidth: 0 }}>
           <div className="card modern-card h-100 overflow-hidden">
             <div className="card-body p-3 d-flex flex-column">
-              <div className="d-flex align-items-center gap-2 mb-3">
-                <span
-                  className="avatar avatar-md text-white rounded-4 border-0"
-                  style={{ backgroundColor: prov.color || 'var(--tblr-primary)' }}
-                >
-                  <Icon icon="credit-card" size={24} />
-                </span>
-                <div>
-                  <h3 className="fw-bold mb-0 text-dark">{prov.name}</h3>
-                  <div className="text-secondary small fw-medium">Paylater Service</div>
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <div className="d-flex align-items-center gap-2">
+                  <span
+                    className="avatar avatar-md text-white rounded-4 border-0"
+                    style={{ backgroundColor: prov.color || 'var(--tblr-primary)' }}
+                  >
+                    <Icon icon="credit-card" size={24} />
+                  </span>
+                  <div>
+                    <h3 className="fw-bold mb-0 text-dark">{prov.name}</h3>
+                    <div className="text-secondary small fw-medium">Paylater Service</div>
+                  </div>
                 </div>
+                <button
+                  className="btn btn-icon btn-light bg-surface border shadow-none"
+                  style={{ borderRadius: '8px', width: '32px', height: '32px' }}
+                  onClick={() => openForm(prov)}
+                  title="Edit Profil"
+                >
+                  <Icon icon="pencil" size={14} className="text-secondary" />
+                </button>
               </div>
 
               <div className="modern-glass-panel p-3 mb-3">

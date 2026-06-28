@@ -26,7 +26,7 @@ class CreditController extends Controller
     /**
      * Upsert credit info for a specific account.
      */
-    public function store(StoreCreditRequest $request, int $accountId): JsonResponse
+    public function store(StoreCreditRequest $request, string $accountId): JsonResponse
     {
         $credit = CreditService::upsert(
             $request->user(),
@@ -43,7 +43,7 @@ class CreditController extends Controller
     /**
      * Remove credit profile from an account.
      */
-    public function destroy(Request $request, int $accountId): JsonResponse
+    public function destroy(Request $request, string $accountId): JsonResponse
     {
         CreditService::destroy($request->user(), $accountId);
 
