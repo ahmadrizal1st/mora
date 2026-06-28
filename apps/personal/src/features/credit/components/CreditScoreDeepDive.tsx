@@ -89,8 +89,8 @@ export function CreditScoreDeepDive() {
 
   return (
     <div className="d-flex flex-column gap-3">
-      <div className="row g-3">
-        <div className="col-12 col-md-3">
+      <div className="d-flex flex-column flex-md-row gap-3">
+        <div className="w-100" style={{ flex: '1 1 25%' }}>
           <div className="card border-0 shadow-sm h-100">
             <div className="card-header">
               <h3 className="card-title">SLIK / BI Checking</h3>
@@ -172,7 +172,7 @@ export function CreditScoreDeepDive() {
           </div>
         </div>
 
-        <div className="col-12 col-md-5">
+        <div className="w-100" style={{ flex: '3 1 75%' }}>
           <div className="card border-0 shadow-sm h-100">
             <div className="card-header">
               <h3 className="card-title">Faktor Penilaian Skor</h3>
@@ -277,7 +277,7 @@ export function CreditScoreDeepDive() {
         </div>
       </div>
 
-      <div className="row g-3">
+      <div className="d-flex flex-column flex-md-row gap-3">
         {[
           {
             icon: 'calendar-check',
@@ -298,7 +298,7 @@ export function CreditScoreDeepDive() {
             desc: 'Usia kredit panjang meningkatkan rata-rata skor.',
           },
         ].map((tip, i) => (
-          <div key={i} className="col-12 col-md-4">
+          <div key={i} className="flex-fill" style={{ minWidth: 0 }}>
             <div className="card border-0 shadow-sm h-100">
               <div className="card-body d-flex gap-3 align-items-start">
                 <span

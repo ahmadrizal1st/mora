@@ -3,17 +3,17 @@ import { Link, useLocation } from '@tanstack/react-router'
 export function CreditSegmentedNav() {
   const location = useLocation()
   const tabs = [
-    { id: 'overview', label: 'Overview', to: '/credit/overview' },
+    { id: 'overview', label: 'Ringkasan', to: '/credit/overview' },
     {
       id: 'credit-card',
-      label: 'Credit Card',
+      label: 'Kartu Kredit',
       badge: '2',
       badgeColor: 'azure',
       to: '/credit/credit-card',
     },
-    { id: 'kta', label: 'KTA / Pinjaman', badge: '1', badgeColor: 'primary', to: '/credit/kta' },
-    { id: 'kpr', label: 'KPR / Mortgage', badge: '1', badgeColor: 'warning', to: '/credit/kpr' },
-    { id: 'paylater', label: 'Paylater', badge: '3', badgeColor: 'green', to: '/credit/paylater' },
+    { id: 'kta', label: 'Pinjaman Tunai (KTA)', badge: '1', badgeColor: 'primary', to: '/credit/kta' },
+    { id: 'kpr', label: 'Cicilan Rumah (KPR)', badge: '1', badgeColor: 'warning', to: '/credit/kpr' },
+    { id: 'paylater', label: 'Layanan Paylater', badge: '3', badgeColor: 'green', to: '/credit/paylater' },
   ] as const
 
   return (

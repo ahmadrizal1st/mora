@@ -145,8 +145,8 @@ export const CreditCard: React.FC<CreditCardProps> = ({ account, onEdit, onDelet
           </div>
         </div>
 
-        <div className="row g-2">
-          <div className="col-6">
+        <div className="d-flex justify-content-between gap-2">
+          <div className="w-100">
             <div
               style={{
                 color: secondaryTextColor,
@@ -161,7 +161,7 @@ export const CreditCard: React.FC<CreditCardProps> = ({ account, onEdit, onDelet
               {formatCurrency(credit?.limit || 0)}
             </div>
           </div>
-          <div className="col-6 text-end">
+          <div className="w-100 text-end">
             {credit?.due_date && (
               <>
                 <div

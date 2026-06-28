@@ -3,8 +3,6 @@ import { useCreditSummary } from '../hooks/useCreditSummary'
 import { SummaryMetricCard } from '@/features/accounts/components/SummaryMetricCard'
 
 const shortFmt = (n: number) => {
-  if (n >= 1_000_000_000) return 'Rp ' + (n / 1_000_000_000).toFixed(1) + ' M'
-  if (n >= 1_000_000) return 'Rp ' + (n / 1_000_000).toFixed(0) + ' jt'
   return 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
 }
 
@@ -24,9 +22,9 @@ export function CreditHeroBanner() {
   if (isLoading) {
     return (
       <div className="mb-4">
-        <div className="row g-2 g-lg-3">
+        <div className="d-flex gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="col-6 col-lg-3">
+            <div key={i} className="w-100">
               <div className="card border-0 shadow-sm h-100 placeholder-glow">
                 <div className="card-body p-3 p-lg-4">
                   <div className="placeholder col-6 mb-3"></div>
@@ -44,7 +42,7 @@ export function CreditHeroBanner() {
   const dueDate = nextDue as Date | null
   const formattedDate =
     dueDate instanceof Date
-      ? dueDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+      ? dueDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
       : '-'
   const daysRemaining =
     dueDate instanceof Date
@@ -56,30 +54,30 @@ export function CreditHeroBanner() {
   return (
     <>
       <div className="mb-4 d-none d-md-block">
-        <div className="row g-2 g-lg-3">
-          <div className="col-6 col-lg-3">
+        <div className="d-flex gap-3">
+          <div className="w-100">
             <SummaryMetricCard
-              title="Total Limit"
+              title="Batas Pinjaman (Plafon)"
               value={shortFmt(totalLimit)}
-              subtext={`${activeCount} jalur kredit aktif`}
+              subtext={`Total dari ${activeCount} pinjaman`}
               icon="credit-card"
               valueColor="primary"
             />
           </div>
 
-          <div className="col-6 col-lg-3">
+          <div className="w-100">
             <SummaryMetricCard
-              title="Outstanding"
+              title="Hutang Berjalan"
               value={shortFmt(totalOutstanding)}
-              subtext={`${utilizationPct.toFixed(0)}% Utilisasi`}
+              subtext={`${utilizationPct.toFixed(0)}% batas terpakai`}
               icon="chart-pie"
               valueColor="danger"
             />
           </div>
 
-          <div className="col-6 col-lg-3">
+          <div className="w-100">
             <SummaryMetricCard
-              title="Jatuh Tempo"
+              title="Tagihan Terdekat"
               value={formattedDate}
               subtext={dueDate instanceof Date ? `Sisa ${daysRemaining} hari - ${shortFmt(nextDueAmount)}` : 'Tidak ada tagihan'}
               icon="calendar-event"
@@ -87,11 +85,11 @@ export function CreditHeroBanner() {
             />
           </div>
 
-          <div className="col-6 col-lg-3">
+          <div className="w-100">
             <SummaryMetricCard
-              title="Credit Score"
+              title="Skor Kredit (Kepercayaan)"
               value={creditScore.toString()}
-              subtext="SLIK/OJK"
+              subtext="Berdasarkan SLIK/OJK"
               icon="shield-check"
               valueColor="success"
             />

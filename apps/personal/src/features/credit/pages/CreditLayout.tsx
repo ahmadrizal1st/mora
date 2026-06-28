@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CreditHeroBanner } from '../components/CreditHeroBanner'
 import type { Account } from '@/features/transaction/types/transaction.types'
 
+import { CreditAlertsDropdown } from '../components/CreditAlertsDropdown'
 import { Outlet } from '@tanstack/react-router'
 import { CreditSegmentedNav } from '../components/shared/CreditSegmentedNav'
 import { CreditLayoutContext } from '../context/CreditLayoutContext'
@@ -174,7 +175,10 @@ export default function CreditLayout() {
   }))
 
   return (
-    <BaseLayout pageTitle="Manajemen Kredit & Pinjaman">
+    <BaseLayout 
+      pageTitle="Manajemen Kredit & Pinjaman"
+      pageActions={<CreditAlertsDropdown />}
+    >
       <div className="container-xl pt-3 pb-5">
         <CreditHeroBanner />
 
