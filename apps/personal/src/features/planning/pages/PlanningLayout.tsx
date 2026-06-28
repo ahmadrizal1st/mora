@@ -276,31 +276,33 @@ export function PlanningLayout() {
         </div>
       }
     >
-      <div className="row row-cards g-3 mb-4">
-        <BudgetSummaryCards 
-          totalBudget={totalBudget} 
-          spent={spent} 
-          safeToSpendPerDay={safeToSpendPerDay} 
-          currentDate={currentDate}
-        />
-      </div>
+      <div className="d-flex flex-column gap-4">
+        <div className="d-flex flex-wrap gap-3">
+          <BudgetSummaryCards 
+            totalBudget={totalBudget} 
+            spent={spent} 
+            safeToSpendPerDay={safeToSpendPerDay} 
+            currentDate={currentDate}
+          />
+        </div>
 
-      <div className="mb-4 d-flex justify-content-center">
-        <PlanningSegmentedNav />
-      </div>
+        <div className="d-flex justify-content-center">
+          <PlanningSegmentedNav />
+        </div>
 
-      <div className="tab-content transition-all animate-in fade-in duration-500">
-        <PlanningContext.Provider
-          value={{
-            goalsData,
-            subsData,
-            handleOpenAddGoal,
-            handleEditGoal,
-            setIsSubModalOpen,
-          }}
-        >
-          <Outlet />
-        </PlanningContext.Provider>
+        <div className="tab-content transition-all animate-in fade-in duration-500">
+          <PlanningContext.Provider
+            value={{
+              goalsData,
+              subsData,
+              handleOpenAddGoal,
+              handleEditGoal,
+              setIsSubModalOpen,
+            }}
+          >
+            <Outlet />
+          </PlanningContext.Provider>
+        </div>
       </div>
 
       <Modal show={isGoalModalOpen} onClose={() => setIsGoalModalOpen(false)} size="lg">

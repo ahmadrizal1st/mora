@@ -19,34 +19,31 @@ export function BudgetCategoryItem({ category }: BudgetCategoryItemProps) {
 
   return (
     <div
-      className="card shadow-none border bg-body-tertiary h-100 transition-all"
-      style={{ borderRadius: '12px' }}
+      className="card shadow-none h-100 transition-all"
+      style={{ borderRadius: '12px', backgroundColor: '#f4f6fa', border: '1px solid #e6e9ef' }}
     >
-      <div className="card-body p-2 px-3">
-        <div className="d-flex align-items-center justify-content-between mb-2">
+      <div className="card-body p-3 d-flex flex-column gap-2">
+        <div className="d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center gap-2">
             <div
-              className={clsx(
-                'd-flex align-items-center justify-content-center',
-                `bg-${category.color}-lt text-${category.color}`
-              )}
-              style={{ width: '28px', height: '28px', borderRadius: '8px', flexShrink: 0 }}
+              className="d-flex align-items-center justify-content-center text-secondary"
+              style={{ width: '24px', height: '24px', flexShrink: 0 }}
             >
-              <Icon icon={category.icon as any} size="sm" style={{ transform: 'scale(0.8)' }} />
+              <Icon icon={category.icon as any} size="sm" />
             </div>
             <div>
               <span className="fw-semibold text-body d-block lh-1" style={{ fontSize: '0.8rem' }}>{category.name}</span>
             </div>
           </div>
           <div className="text-end">
-            <span className="text-secondary" style={{ fontSize: '0.7rem' }}>
+            <span className="text-secondary lh-1" style={{ fontSize: '0.7rem' }}>
               Budget: {formatCurrency(category.limit)}
             </span>
           </div>
         </div>
 
         <div
-          className="progress progress-xs mb-2"
+          className="progress progress-xs"
           style={{ height: '4px', background: 'var(--tblr-border-color)' }}
         >
           <div
@@ -59,18 +56,18 @@ export function BudgetCategoryItem({ category }: BudgetCategoryItemProps) {
         </div>
 
         <div className="d-flex justify-content-between align-items-center">
-          <div>
+          <div className="d-flex flex-column gap-1">
             <span className="text-body fw-bold d-block lh-1" style={{ fontSize: '0.85rem' }}>
               {formatCurrency(category.spent)}
             </span>
-            <span className={clsx("small d-block", isOver ? "text-danger" : "text-primary")} style={{ fontSize: '0.7rem', fontWeight: 600 }}>
+            <span className={clsx("small d-block lh-1", isOver ? "text-danger" : "text-primary")} style={{ fontSize: '0.7rem', fontWeight: 600 }}>
               {percentage}%
             </span>
           </div>
           <div className="text-end">
             <span
               className={clsx(
-                'px-2 py-0 rounded-pill d-block',
+                'px-2 py-1 rounded-pill d-block lh-1',
                 isOver ? 'bg-danger-lt text-danger' : 'bg-success-lt text-success'
               )}
               style={{ fontSize: '0.7rem', fontWeight: 600 }}
