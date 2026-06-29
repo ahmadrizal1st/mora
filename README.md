@@ -1,4 +1,4 @@
-# Visatamora — Monorepo Setup Guide
+# Visatamora  Monorepo Setup Guide
 
 Monorepo ini terdiri dari **4 aplikasi** yang saling terhubung. Semua service harus berjalan agar sistem berfungsi penuh.
 
@@ -93,10 +93,10 @@ DB_DATABASE=vistamora
 DB_USERNAME=postgres
 DB_PASSWORD=your_password
 
-# Queue — WAJIB database agar LLM job berjalan
+# Queue  WAJIB database agar LLM job berjalan
 QUEUE_CONNECTION=database
 
-# Mail (OTP) — Wajib untuk registrasi dan reset password
+# Mail (OTP)  Wajib untuk registrasi dan reset password
 # Default: log (development, OTP disimpan di log)
 # Untuk production, gunakan SendGrid atau Mailgun (lihat .env.example)
 MAIL_MAILER=log
@@ -132,7 +132,7 @@ API_KEY=vistamora_secure_secret_key_2026
 
 ### Menjalankan API
 
-**Cara 1 — Satu perintah (recommended, jalankan semua sekaligus):**
+**Cara 1  Satu perintah (recommended, jalankan semua sekaligus):**
 
 ```bash
 cd apps/api
@@ -141,19 +141,19 @@ composer run dev
 
 > Perintah ini menjalankan secara bersamaan: Laravel server, Queue worker, Log viewer (Pail), dan Vite.
 
-**Cara 2 — Manual (pisah terminal):**
+**Cara 2  Manual (pisah terminal):**
 
 ```bash
-# Terminal A — Laravel server
+# Terminal A  Laravel server
 cd apps/api
 php artisan serve
 # Berjalan di: http://127.0.0.1:8000
 
-# Terminal B — Queue Worker (WAJIB untuk LLM job)
+# Terminal B  Queue Worker (WAJIB untuk LLM job)
 cd apps/api
 php artisan queue:work --tries=3
 
-# Terminal C — (Opsional) Log viewer real-time
+# Terminal C  (Opsional) Log viewer real-time
 cd apps/api
 php artisan pail
 ```
@@ -180,7 +180,7 @@ source venv/bin/activate  # macOS/Linux
 
 # 3. Install dependencies Python
 pip install -r requirements.txt
-# ⚠️ Proses ini lama — surya-ai & faster-whisper perlu download model ML
+# ⚠️ Proses ini lama  surya-ai & faster-whisper perlu download model ML
 
 # 4. Salin dan konfigurasi env
 cp .env.template .env
@@ -217,7 +217,7 @@ uvicorn main:app --host 0.0.0.0 --port 8001 --workers 4
 Service berjalan di: `http://localhost:8001`
 Dokumentasi API: `http://localhost:8001/docs`
 
-### Alternatif — Jalankan dengan Docker
+### Alternatif  Jalankan dengan Docker
 
 ```bash
 cd apps/ai
@@ -294,14 +294,14 @@ Setelah Caddy dan aplikasi lain berjalan, Anda bisa mengakses project di:
 
 Buka **4 terminal** secara bersamaan:
 
-**Terminal 1 — Laravel API Server**
+**Terminal 1  Laravel API Server**
 ```bash
 cd apps/api
 php artisan serve
 # Berjalan di: http://127.0.0.1:8000
 ```
 
-**Terminal 2 — Queue Worker ⚠️ WAJIB**
+**Terminal 2  Queue Worker ⚠️ WAJIB**
 ```bash
 cd apps/api
 php artisan queue:work --tries=3
@@ -311,7 +311,7 @@ php artisan queue:restart
 # Tanpa ini, hasil tracker TIDAK akan tersimpan ke database
 ```
 
-**Terminal 3 — AI FastAPI ML Service** 
+**Terminal 3  AI FastAPI ML Service** 
 ```bash
 cd apps/ai
 source venv/bin/activate
@@ -321,14 +321,14 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8001
 # Tracker Text TIDAK memerlukan service ini
 ```
 
-**Terminal 4 — Frontend React**
+**Terminal 4  Frontend React**
 ```bash
 cd apps/personal
 pnpm dev
 # Berjalan di: http://localhost:5173
 ```
 
-**Terminal 5 — Caddy (Reverse Proxy)**
+**Terminal 5  Caddy (Reverse Proxy)**
 ```bash
 caddy run
 # Mengarahkan domain *.localhost ke port di atas
@@ -341,7 +341,7 @@ caddy run
 > 💡 **Shortcut:** Untuk Terminal 1 + 2 sekaligus, gunakan `composer run dev` di `apps/api`. Perintah ini menjalankan Laravel server, queue worker, dan log viewer dalam satu proses menggunakan `concurrently`.
 
 ```bash
-# Alternatif — Terminal 1 & 2 digabung
+# Alternatif  Terminal 1 & 2 digabung
 cd apps/api && composer run dev
 ```
 
@@ -364,7 +364,7 @@ cd apps/api && composer run dev
 │  POST /api/documents/text    ──→ [processText()]                    │
 └──────────────┬───────────────────────────────┬──────────────────────┘
                │                               │
-     (Image/File/Audio)               (Text — bypass AI)
+     (Image/File/Audio)               (Text  bypass AI)
                │                               │
                ▼                               │
 ┌──────────────────────────┐                   │

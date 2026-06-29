@@ -8,8 +8,6 @@ import { TransactionListCard } from '@/features/accounts/components/TransactionL
 import { UpcomingBillsCard } from '@/features/accounts/components/UpcomingBillsCard'
 import { MobileGridMenu } from './MobileGridMenu'
 
-import peopleData from '../../data/people.json'
-import { type Person } from '@/shared/types/common.types'
 import { useAccountSummary } from '@/features/transaction/hooks/useAccounts'
 import {
   useTransactionSummary,
@@ -23,7 +21,15 @@ export function DashboardContent() {
   const { user } = useAuth()
   const { data: accountData, isLoading: isLoadingAccount } = useAccountSummary()
   const { data: txSummary, isLoading: isLoadingTxSummary } = useTransactionSummary()
-  const { data: txHistory, isLoading: isLoadingTxHistory } = useTransactionHistory({ group_by: 'month' })
+  const last7Days = new Date()
+  last7Days.setDate(last7Days.getDate() - 6)
+  const today = new Date()
+  
+  const { data: txHistory, isLoading: isLoadingTxHistory } = useTransactionHistory({ 
+    group_by: 'day',
+    date_from: last7Days.toISOString().split('T')[0],
+    date_to: today.toISOString().split('T')[0]
+  })
   const { data: txStats, isLoading: isLoadingTxStats } = useTransactionStatistics()
   const { data: recentTx, isLoading: isLoadingRecent } = useTransactions({ per_page: 10, sort_by: 'tx_date', sort_dir: 'desc' } as any)
   const { data: goals, isLoading: isLoadingGoals } = useGoals()
@@ -306,12 +312,12 @@ export function DashboardContent() {
                   className="text-secondary small d-flex align-items-center gap-1 text-decoration-none"
                   data-bs-toggle="dropdown"
                 >
-                  <span className="text-decoration-underline-hover">This Year</span>
+                  <span className="text-decoration-underline-hover">Last 7 Days</span>
                   <Icon icon="chevron-down" size="xs" />
                 </a>
                 <div className="dropdown-menu dropdown-menu-end">
-                  <button className="dropdown-item">This Year</button>
-                  <button className="dropdown-item">Last Year</button>
+                  <button className="dropdown-item">Last 7 Days</button>
+                  <button className="dropdown-item">Last 30 Days</button>
                 </div>
               </div>
             </div>
