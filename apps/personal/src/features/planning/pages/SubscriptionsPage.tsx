@@ -1,11 +1,9 @@
 import React, { useState, useMemo, useContext } from 'react'
 import { UpcomingBillsCard } from '../components/subscriptions/UpcomingBillsCard'
 import { SubscriptionItem } from '../components/subscriptions/SubscriptionItem'
-import { SubscriptionDistributionChart } from '../components/subscriptions/SubscriptionDistributionChart'
 import { SubscriptionCalendar } from '../components/subscriptions/SubscriptionCalendar'
 import { SubscriptionTrendChart } from '../components/subscriptions/SubscriptionTrendChart'
 import { TrialTrackerCard } from '../components/subscriptions/TrialTrackerCard'
-import { SubscriptionSmartInsight } from '../components/subscriptions/SubscriptionSmartInsight'
 import { AddSubscriptionCard } from '../components/subscriptions/AddSubscriptionCard'
 import { SubscriptionMetricStrip } from '../components/subscriptions/SubscriptionMetricStrip'
 import { SubscriptionCategoryBreakdown } from '../components/subscriptions/SubscriptionCategoryBreakdown'
@@ -21,7 +19,7 @@ const getSubCategory = (subName: string): string => {
     name.includes('disney') ||
     name.includes('hbo')
   )
-    return 'Streaming'
+    return 'Hiburan'
   if (
     name.includes('indihome') ||
     name.includes('internet') ||
@@ -43,15 +41,15 @@ const getSubCategory = (subName: string): string => {
 }
 
 export function SubscriptionsPage() {
-  const { subsData, setIsSubModalOpen } = useContext(PlanningContext)
+  const { subsData, handleOpenAddSub, handleEditSub } = useContext(PlanningContext) || {}
   const data = subsData || {
     totalMonthly: 0,
     paidThisMonth: 0,
     subscriptions: []
   }
   const { totalMonthly, paidThisMonth, subscriptions } = data
-  const [selectedCategory, setSelectedCategory] = useState('Semua')
-  const [searchQuery, setSearchQuery] = useState('')
+  const filteredSubscriptions = subscriptions
+
   const [mounted, setMounted] = useState(false)
 
   React.useEffect(() => {
@@ -59,112 +57,61 @@ export function SubscriptionsPage() {
     return () => clearTimeout(timer)
   }, [])
 
-  const filteredSubscriptions = useMemo(() => {
-    return subscriptions.filter((sub: any) => {
-      const matchesCategory =
-        selectedCategory === 'Semua' || getSubCategory(sub.name) === selectedCategory
-      const matchesSearch = sub.name.toLowerCase().includes(searchQuery.toLowerCase())
-      return matchesCategory && matchesSearch
-    })
-  }, [subscriptions, selectedCategory, searchQuery])
-
   return (
     <div
+      className="d-flex flex-column gap-3"
       style={{
         opacity: mounted ? 1 : 0,
         transform: mounted ? 'translateY(0)' : 'translateY(10px)',
         transition: 'all 0.4s ease-out',
       }}
     >
-      <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
-        <div className="input-icon" style={{ minWidth: '320px' }}>
-          <span className="input-icon-addon">
-            <Icon icon="search" size="sm" className="text-secondary" />
-          </span>
-          <input
-            type="text"
-            className="form-control border-0 shadow-sm"
-            placeholder="Cari layanan langganan..."
-            style={{ borderRadius: '14px', height: '46px', fontSize: '14px' }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      <SubscriptionMetricStrip
+        subscriptions={subscriptions}
+        totalMonthly={totalMonthly}
+        paidThisMonth={paidThisMonth}
+      />
+
+      <div className="d-flex flex-wrap gap-3">
+        <div style={{ flex: '1 1 300px', minWidth: '280px' }}>
+          <UpcomingBillsCard totalMonthly={totalMonthly} paidThisMonth={paidThisMonth} />
         </div>
-        <div className="d-flex align-items-center gap-2 overflow-auto no-scrollbar pb-1">
-          {['Semua', 'Streaming', 'Kerja', 'Edukasi', 'Lainnya'].map((cat) => {
-            const isActive = selectedCategory === cat
-            return (
-              <button
-                key={cat}
-                className={`btn btn-sm rounded-pill fw-bold px-4 ${isActive ? 'btn-primary text-white shadow-sm' : 'btn-ghost-secondary border-0'}`}
-                style={{
-                  height: '38px',
-                  backgroundColor: isActive ? 'var(--tblr-primary)' : 'transparent',
-                  borderColor: isActive ? 'var(--tblr-primary)' : 'transparent',
-                  color: isActive ? '#fff' : 'inherit',
-                }}
-                onClick={() => setSelectedCategory(cat)}
-              >
-                {cat}
-              </button>
-            )
-          })}
+        <div className="d-none d-lg-flex flex-column" style={{ flex: '2 1 500px', minWidth: '400px' }}>
+          <SubscriptionTrendChart />
         </div>
       </div>
 
-      <div className="row row-cards g-3">
-        <SubscriptionMetricStrip />
+      <div className="d-none d-lg-block">
+        <SubscriptionCategoryBreakdown subscriptions={subscriptions} />
+      </div>
 
-        <div className="col-lg-4">
-          <UpcomingBillsCard totalMonthly={totalMonthly} paidThisMonth={paidThisMonth} />
-        </div>
-        <div className="col-lg-4 d-none d-lg-block">
-          <SubscriptionTrendChart />
-        </div>
-        <div className="col-lg-4 d-none d-lg-block">
-          <SubscriptionDistributionChart />
-        </div>
-
-        <div className="col-12 d-none d-lg-block">
-          <SubscriptionCategoryBreakdown />
-        </div>
-
-        <div className="col-lg-8 d-none d-lg-block">
+      <div className="d-flex flex-wrap gap-3">
+        <div className="d-none d-lg-block" style={{ flex: '2 1 500px', minWidth: '400px' }}>
           <SubscriptionCalendar />
         </div>
-
-        <div className="col-lg-4">
-          <div className="d-flex flex-column gap-3 h-100">
-            <TrialTrackerCard />
-            <SubscriptionSmartInsight />
-          </div>
+        <div style={{ flex: '1 1 280px', minWidth: '260px' }}>
+          <TrialTrackerCard />
         </div>
+      </div>
 
-        <div className="col-lg-12">
-          <div className="card shadow-sm border-0" style={{ borderRadius: '16px' }}>
-            <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0 d-flex align-items-center justify-content-between">
-              <h3 className="card-title fw-bold m-0 d-flex align-items-center gap-2">
-                <Icon icon="credit-card" size="sm" className="text-primary" />
-                Daftar Langganan Aktif
-              </h3>
-              <span
-                className="badge bg-primary-lt text-primary border-0 px-3 py-2 rounded-pill fw-bold"
-                style={{ fontSize: '10px' }}
-              >
-                {filteredSubscriptions.length} Layanan
-              </span>
-            </div>
-            <div className="card-body p-4">
-              <div className="row g-3">
-                {filteredSubscriptions.map((sub: any) => (
-                  <div key={sub.id} className="col-12 col-md-6 col-lg-4">
-                    <SubscriptionItem subscription={{ ...sub, color: 'var(--tblr-primary)' }} />
-                  </div>
-                ))}
-                <div className="col-12 col-md-6 col-lg-4">
-                  <AddSubscriptionCard onClick={() => setIsSubModalOpen(true)} />
-                </div>
+      <div className="card shadow-none border" style={{ borderRadius: '12px' }}>
+        <div className="card-header border-0 bg-transparent pt-3 px-3 pb-0">
+          <h3 className="card-title fw-bold m-0" style={{ fontSize: '14px' }}>
+            Daftar Langganan Aktif
+          </h3>
+        </div>
+        <div className="card-body p-3">
+          <div className="d-flex flex-wrap gap-3">
+            {filteredSubscriptions.map((sub: any) => (
+              <div key={sub.id} style={{ flex: '1 1 280px', minWidth: '260px', maxWidth: '100%' }}>
+                <SubscriptionItem
+                  subscription={{ ...sub, color: 'var(--tblr-primary)' }}
+                  onClick={() => handleEditSub?.(sub)}
+                />
               </div>
+            ))}
+            <div style={{ flex: '1 1 280px', minWidth: '260px', maxWidth: '100%' }}>
+              <AddSubscriptionCard onClick={handleOpenAddSub} />
             </div>
           </div>
         </div>

@@ -1,105 +1,133 @@
+import React, { useContext } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
+import { PlanningContext } from '../../pages/PlanningLayout'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 
 export function TrialTrackerCard() {
-  const trials = [
-    {
-      id: 1,
-      name: 'YouTube Premium',
-      daysLeft: 2,
-      price: 'Rp 59.000',
-      logo: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png',
-    },
-    {
-      id: 2,
-      name: 'Canva Pro',
-      daysLeft: 5,
-      price: 'Rp 95.000',
-      logo: 'https://cdn-icons-png.flaticon.com/512/5968/5968906.png',
-    },
-  ]
+  const { subsData } = useContext(PlanningContext) || {}
+  const subscriptions = subsData?.subscriptions || []
+
+  const trials = subscriptions
+    .filter((sub: any) => sub.name.toLowerCase().includes('trial'))
+    .map((sub: any) => {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const dueDate = new Date(sub.dueDate)
+      dueDate.setHours(0, 0, 0, 0)
+      const diffTime = dueDate.getTime() - today.getTime()
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+      const getLogo = (name: string) => {
+        const n = name.toLowerCase()
+        if (n.includes('netflix')) return 'https://cdn-icons-png.flaticon.com/512/732/732228.png'
+        if (n.includes('spotify')) return 'https://cdn-icons-png.flaticon.com/512/5968/5968906.png'
+        if (n.includes('youtube')) return 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png'
+        if (n.includes('canva')) return 'https://cdn-icons-png.flaticon.com/512/5968/5968906.png'
+        return ''
+      }
+
+      return {
+        id: sub.id,
+        name: sub.name,
+        daysLeft: diffDays > 0 ? diffDays : 0,
+        price: formatCurrency(sub.amount),
+        logo: getLogo(sub.name),
+        rawIcon: sub.icon || 'credit-card',
+      }
+    })
 
   return (
-    <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0">
-        <h3 className="card-title fw-bold m-0 d-flex align-items-center gap-2">
-          <Icon icon="hourglass-low" size="sm" className="text-primary" />
+    <div className="card shadow-none border h-100" style={{ borderRadius: '12px' }}>
+      <div className="card-header border-0 bg-transparent pt-3 px-3 pb-0">
+        <h3 className="card-title fw-bold m-0" style={{ fontSize: '14px' }}>
           Trial Tracker
           <span
-            className="badge bg-primary-lt text-primary border-0 ms-auto rounded-pill px-2 py-1"
-            style={{ fontSize: '10px' }}
+            className="badge bg-primary-lt text-primary border-0 ms-auto rounded-pill px-2 py-0.5"
+            style={{ fontSize: '9px' }}
           >
             {trials.length} Aktif
           </span>
         </h3>
       </div>
-      <div className="card-body p-4 d-flex flex-column h-100">
-        <div className="vstack gap-3 flex-grow-1">
-          {trials.map((trial) => (
-            <div
-              key={trial.id}
-              className="p-3 bg-body-tertiary rounded-3 transition-all border border-transparent hover-border-primary-lt"
-            >
-              <div className="d-flex align-items-start gap-3">
-                <div
-                  className="bg-surface p-2 rounded-3 shadow-sm d-flex align-items-center justify-content-center"
-                  style={{ width: '42px', height: '42px', overflow: 'hidden' }}
-                >
-                  <img
-                    src={trial.logo}
-                    alt=""
-                    style={{ width: '26px', height: '26px', objectFit: 'contain' }}
-                    onError={(e) => {
-                      ;(e.target as HTMLImageElement).style.display = 'none'
-                    }}
-                  />
-                </div>
-                <div className="flex-grow-1">
-                  <div className="d-flex justify-content-between align-items-start">
-                    <div>
-                      <div className="fw-bold text-body" style={{ fontSize: '13px' }}>
-                        {trial.name}
-                      </div>
-                      <div className="text-secondary" style={{ fontSize: '11px' }}>
-                        Billed {trial.price}
-                      </div>
-                    </div>
-                    <div className="text-end">
-                      <div
-                        className={`fw-bold ${trial.daysLeft <= 2 ? 'text-danger' : 'text-primary'}`}
-                        style={{ fontSize: '12px' }}
-                      >
-                        {trial.daysLeft} Hari lagi
-                      </div>
-                      <div className="text-secondary" style={{ fontSize: '10px' }}>
-                        Sisa Waktu
-                      </div>
-                    </div>
+      <div className="card-body p-3 d-flex flex-column h-100">
+        <div className="vstack gap-2 flex-grow-1">
+          {trials.length === 0 ? (
+            <div className="text-center py-4 my-auto text-secondary">
+              <Icon icon="circle-check" size="md" className="text-success mb-2" />
+              <div className="small fw-bold">Semua Aman!</div>
+              <div className="small text-muted" style={{ fontSize: '10px' }}>Tidak ada trial aktif saat ini</div>
+            </div>
+          ) : (
+            trials.map((trial) => (
+              <div
+                key={trial.id}
+                className="p-2 bg-body-tertiary rounded-3 border border-transparent"
+              >
+                <div className="d-flex align-items-start gap-3">
+                  <div
+                    className="bg-surface p-1 rounded-2 border d-flex align-items-center justify-content-center flex-shrink-0"
+                    style={{ width: '32px', height: '32px', overflow: 'hidden' }}
+                  >
+                    {trial.logo ? (
+                      <img
+                        src={trial.logo}
+                        alt=""
+                        style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+                        onError={(e) => {
+                          ;(e.target as HTMLImageElement).style.display = 'none'
+                        }}
+                      />
+                    ) : (
+                      <Icon icon={trial.rawIcon as any} size="xs" className="text-primary" />
+                    )}
                   </div>
-                  <div className="mt-2 d-flex justify-content-end">
-                    <button
-                      className="btn btn-ghost-danger btn-sm rounded-pill fw-bold border-0 px-3"
-                      style={{
-                        fontSize: '9px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        height: '24px',
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      Batalkan Trial
-                    </button>
+                  <div className="flex-grow-1">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div>
+                        <div className="fw-bold text-body" style={{ fontSize: '12px' }}>
+                          {trial.name}
+                        </div>
+                        <div className="text-secondary" style={{ fontSize: '10px' }}>
+                          Billed {trial.price}
+                        </div>
+                      </div>
+                      <div className="text-end">
+                        <div
+                          className={`fw-bold ${trial.daysLeft <= 2 ? 'text-danger' : 'text-primary'}`}
+                          style={{ fontSize: '11px' }}
+                        >
+                          {trial.daysLeft} Hari lagi
+                        </div>
+                        <div className="text-secondary" style={{ fontSize: '9px' }}>
+                          Sisa Waktu
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-1.5 d-flex justify-content-end">
+                      <span
+                        className="cursor-pointer text-danger fw-bold text-hover-dark"
+                        style={{
+                          fontSize: '9px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                          userSelect: 'none',
+                          transition: 'color 0.15s ease'
+                        }}
+                      >
+                        Batalkan Trial
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
-        <div className="mt-2 text-center">
-          <div className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-primary-lt rounded-pill">
+        <div className="mt-2.5 text-center">
+          <div className="d-inline-flex align-items-center gap-1.5 px-2 py-0.5 bg-primary-lt rounded-pill">
             <Icon icon="bell-ringing" size="xs" className="text-primary" />
-            <span className="small text-primary fw-medium" style={{ fontSize: '11px' }}>
+            <span className="text-primary fw-medium" style={{ fontSize: '10px' }}>
               Pengingat aktif 24 jam sebelum jatuh tempo
             </span>
           </div>

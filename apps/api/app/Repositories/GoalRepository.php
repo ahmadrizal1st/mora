@@ -33,6 +33,10 @@ class GoalRepository
 
     public static function store(User $user, array $data): Goal
     {
+        if (empty($data['currency_id'])) {
+            $currency = \App\Models\Currency::where('code', 'IDR')->first() ?? \App\Models\Currency::first();
+            $data['currency_id'] = $currency ? $currency->id : null;
+        }
         return $user->goals()->create($data)->load(['currency', 'linkedAccount']);
     }
 

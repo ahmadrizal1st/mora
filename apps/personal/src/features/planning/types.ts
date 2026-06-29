@@ -4,6 +4,7 @@ export interface Goal {
   target: number
   saved: number
   eta: string
+  rawEta?: string
   monthlyDeposit: number
   icon: string
   color: string

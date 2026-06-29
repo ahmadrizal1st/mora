@@ -3,8 +3,6 @@ import { Link } from '@tanstack/react-router'
 import { GoalsOverviewCard } from '../components/goals/GoalsOverviewCard'
 import { GoalCard } from '../components/goals/GoalCard'
 import { GoalTrajectoryChart } from '../components/goals/GoalTrajectoryChart'
-import { EmergencyFundCard } from '../components/goals/EmergencyFundCard'
-import { SmartInsightCard } from '../components/goals/SmartInsightCard'
 import { Modal, ModalHeader, Icon } from '@/shared/components/ui'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
 import { PlanningContext } from './PlanningLayout'
@@ -57,108 +55,35 @@ export function GoalsPage() {
 
   return (
     <div
-      className="row row-cards g-3"
+      className="d-flex flex-column gap-3"
       style={{
         opacity: mounted ? 1 : 0,
         transform: mounted ? 'translateY(0)' : 'translateY(10px)',
         transition: 'all 0.4s ease-out',
       }}
     >
-      <div className="col-lg-4">
-        <div className="h-100">
+      <div className="d-flex flex-wrap gap-3">
+        <div style={{ flex: '1 1 300px', minWidth: '280px' }}>
           <GoalsOverviewCard
             totalSaved={totalSaved}
             totalTarget={totalTarget}
+            goals={goals}
             onViewDetail={() => setIsDetailOpen(true)}
           />
         </div>
-      </div>
-      <div className="col-lg-5 d-none d-lg-block">
-        <div className="h-100">
-          <GoalTrajectoryChart />
-        </div>
-      </div>
-      <div className="col-lg-3 d-none d-lg-block">
-        <div
-          className="card border-0 h-100 overflow-hidden text-white"
-          style={{ borderRadius: '16px', background: '#f59f00' }}
-        >
-          <div className="card-body p-4 d-flex flex-column h-100 position-relative">
-            <div
-              className="position-absolute"
-              style={{
-                top: '-20px',
-                right: '-35px',
-                opacity: '0.12',
-              }}
-            >
-              <Icon
-                icon="flame"
-                size="2xl"
-                className="text-white"
-                style={{ fontSize: '200px', width: '200px', height: '200px' }}
-              />
-            </div>
-
-            <div
-              className="flex-grow-1 d-flex flex-column justify-content-center text-center position-relative"
-              style={{ zIndex: 1 }}
-            >
-              <div
-                className="p-3 bg-white rounded-circle d-inline-flex mb-3 mx-auto shadow-sm"
-                style={{ color: '#f59f00' }}
-              >
-                <Icon icon="flame" size="md" />
-              </div>
-              <h3 className="fw-bold mb-1 text-white">Savings Streak</h3>
-              <p className="small mb-3 fw-medium text-white opacity-90">
-                Hebat! Anda telah konsisten menabung selama <strong>6 bulan</strong> tanpa terputus.
-              </p>
-
-              <div className="d-flex justify-content-center gap-2 mb-3">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div
-                    key={i}
-                    className="p-1 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                    style={{ width: '24px', height: '24px' }}
-                  >
-                    <Icon icon="check" size="xs" style={{ color: '#f59f00' }} stroke={3} />
-                  </div>
-                ))}
-                <div
-                  className="p-1 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border border-white-subtle opacity-50"
-                  style={{ width: '24px', height: '24px' }}
-                >
-                  <span className="fw-bold" style={{ fontSize: '10px', color: '#f59f00' }}>
-                    +1
-                  </span>
-                </div>
-              </div>
-              <div
-                className="small fw-bold text-white text-uppercase"
-                style={{ fontSize: '10px', letterSpacing: '0.05em', opacity: '0.8' }}
-              >
-                1 month to next milestone
-              </div>
-            </div>
-            <div className="mt-3 pt-3 border-top border-white-subtle text-center">
-              <Link
-                to="/planning"
-                className="btn btn-white btn-sm w-100 rounded-pill fw-bold"
-                style={{ color: '#f59f00' }}
-              >
-                Lihat Pencapaian
-              </Link>
-            </div>
-          </div>
+        <div className="d-none d-lg-flex flex-column" style={{ flex: '2 1 500px', minWidth: '400px' }}>
+          <GoalTrajectoryChart
+            totalSaved={totalSaved}
+            totalTarget={totalTarget}
+            goals={goals}
+          />
         </div>
       </div>
 
-      <div className="col-lg-8">
-        <div className="card border-0 h-100" style={{ borderRadius: '16px' }}>
+      <div className="d-flex flex-wrap gap-3">
+        <div className="card shadow-none border h-100" style={{ borderRadius: '12px', flex: '2 1 500px' }}>
           <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
             <h3 className="card-title fw-bold d-flex align-items-center gap-2 m-0">
-              <Icon icon="star" size="sm" style={{ color: '#f59f00' }} />
               My Dreams & Wishes
               <span
                 className="badge bg-body-tertiary text-secondary border ms-2"
@@ -169,14 +94,17 @@ export function GoalsPage() {
             </h3>
 
             <div className="position-relative">
-              <button
-                className="btn btn-ghost-orange btn-sm rounded-pill fw-bold d-flex align-items-center gap-1 px-3"
-                style={{ height: '32px' }}
-                onClick={() => setFilterOpen(!filterOpen)}
+              <a
+                href="#"
+                className="text-secondary small d-flex align-items-center gap-1 text-decoration-none fw-semibold"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setFilterOpen(!filterOpen)
+                }}
               >
-                <Icon icon="filter" size="xs" />
-                Filter
-              </button>
+                <span className="text-decoration-underline-hover">Filter</span>
+                <Icon icon="chevron-down" size="xs" />
+              </a>
 
               {filterOpen && (
                 <>
@@ -324,26 +252,30 @@ export function GoalsPage() {
 
                 <div className="col-12 col-md-6" onClick={handleOpenAddGoal}>
                   <div
-                    className="card shadow-none cursor-pointer d-flex align-items-center justify-content-center py-5 h-100 transition-all hover-bg-surface hover-border-primary"
+                    className="card shadow-none border cursor-pointer d-flex align-items-center justify-content-center py-5 h-100 transition-all hover-border-primary"
                     style={{
-                      borderRadius: '16px',
-                      border: '2px dashed var(--tblr-border-color)',
-                      background: 'var(--tblr-bg-surface-secondary, rgba(248, 250, 252, 0.4))',
-                      minHeight: '300px',
+                      borderRadius: '12px',
+                      background: '#f8f9fa',
+                      minHeight: '260px',
                       transition: 'all 0.3s ease',
                     }}
                   >
                     <div className="text-center">
                       <div className="mb-3">
-                        <Icon icon="plus" size="md" className="text-orange" stroke={3} />
+                        <div 
+                          className="d-inline-flex align-items-center justify-content-center rounded-circle bg-white shadow-sm"
+                          style={{ width: '48px', height: '48px', border: '1px solid #e9ecef' }}
+                        >
+                          <Icon icon="plus" size="md" className="text-secondary" stroke={2.5} />
+                        </div>
                       </div>
                       <div
-                        className="fw-bold text-secondary text-uppercase"
-                        style={{ fontSize: '11px', letterSpacing: '0.1em' }}
+                        className="fw-bold text-dark text-uppercase"
+                        style={{ fontSize: '12px', letterSpacing: '0.05em' }}
                       >
                         Tambah Impian Baru
                       </div>
-                      <div className="small text-muted mt-1" style={{ fontSize: '10px' }}>
+                      <div className="small text-secondary mt-1" style={{ fontSize: '11px' }}>
                         Wujudkan mimpimu hari ini
                       </div>
                     </div>
@@ -351,95 +283,112 @@ export function GoalsPage() {
                 </div>
               </div>
             </div>
-
-            <div className="mt-4 pt-2 border-top">
-              <SmartInsightCard />
-            </div>
           </div>
         </div>
       </div>
 
-      <div className="col-lg-4">
+        <div style={{ flex: '1 1 280px', minWidth: '260px' }}>
         <div className="d-flex flex-column gap-3 h-100">
           <div
-            className="card border-0 flex-grow-1 d-none d-lg-block"
-            style={{ borderRadius: '16px' }}
+            className="card shadow-none border flex-grow-1 d-none d-lg-flex flex-column overflow-hidden"
+            style={{ borderRadius: '12px' }}
           >
-            <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0">
+            <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0 flex-shrink-0">
               <h4
                 className="card-title fw-bold m-0 d-flex align-items-center gap-2"
                 style={{ letterSpacing: '0.025em' }}
               >
-                <Icon icon="timeline" size="sm" className="text-orange" />
                 Journey Milestones
               </h4>
             </div>
-            <div className="card-body p-4 d-flex flex-column h-100">
-              <div className="position-relative ps-4 border-start border-2 border-orange-lt flex-grow-1">
-                {milestones.map((m: any, i: number) => (
-                  <div key={i} className="mb-4 position-relative">
-                    <div
-                      className={`position-absolute rounded-circle border border-white d-flex align-items-center justify-content-center ${m.type === 'achievement' ? 'bg-success' : 'bg-orange'}`}
-                      style={{
-                        width: '24px',
-                        height: '24px',
-                        left: '-33px',
-                        top: '0',
-                        borderWidth: '3px',
-                      }}
-                    >
-                      <Icon
-                        icon={m.type === 'achievement' ? 'trophy' : 'flag'}
-                        size="xs"
-                        className="text-white"
-                      />
-                    </div>
-                    <div className="d-flex justify-content-between align-items-start">
-                      <div>
-                        <div
-                          className="text-secondary mb-1 fw-bold"
-                          style={{ fontSize: '10px', textTransform: 'uppercase' }}
-                        >
-                          {m.date}
-                        </div>
-                        <div className="fw-bold text-body small leading-tight">{m.label}</div>
-                      </div>
-                      <span
-                        className={`badge ${m.type === 'achievement' ? 'bg-success-lt' : 'bg-primary-lt'} border-0`}
-                        style={{ fontSize: '9px' }}
+            <div className="card-body p-4 d-flex flex-column overflow-hidden" style={{ minHeight: 0 }}>
+              {milestones && milestones.length > 0 ? (
+                <div className="flex-grow-1 overflow-y-auto no-scrollbar" style={{ minHeight: 0 }}>
+                  <div className="position-relative ms-3 ps-4 border-start border-2 border-orange-lt">
+                  {milestones.map((m: any, i: number) => (
+                    <div key={i} className="mb-4 position-relative">
+                      <div
+                        className={`position-absolute rounded-circle border border-white d-flex align-items-center justify-content-center ${m.type === 'achievement' ? 'bg-success' : 'bg-orange'}`}
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          left: '-36px',
+                          top: '0',
+                          borderWidth: '3px',
+                        }}
                       >
-                        {m.type === 'achievement' ? 'Tercapai' : 'Target'}
-                      </span>
+                        <Icon
+                          icon={m.type === 'achievement' ? 'trophy' : 'flag'}
+                          size="xs"
+                          className="text-white"
+                        />
+                      </div>
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div>
+                          <div
+                            className="text-secondary mb-1 fw-bold"
+                            style={{ fontSize: '10px', textTransform: 'uppercase' }}
+                          >
+                            {m.date}
+                          </div>
+                          <div className="fw-bold text-body small leading-tight">{m.label}</div>
+                        </div>
+                        <span
+                          className={`badge ${m.type === 'achievement' ? 'bg-success-lt' : 'bg-primary-lt'} border-0`}
+                          style={{ fontSize: '9px' }}
+                        >
+                          {m.type === 'achievement' ? 'Tercapai' : 'Target'}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                <div className="mb-0 position-relative opacity-50">
-                  <div
-                    className="position-absolute rounded-circle bg-body-tertiary border-dashed border-2"
-                    style={{
-                      width: '20px',
-                      height: '20px',
-                      left: '-31px',
-                      top: '2px',
-                      borderColor: 'var(--tblr-border-color)',
-                    }}
-                  ></div>
-                  <div className="text-secondary small italic">
-                    Impian berikutnya sedang menunggu...
+                  <div className="mb-0 position-relative mt-2">
+                    <div
+                      className="position-absolute rounded-circle bg-white border-dashed border-2"
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        left: '-34px',
+                        top: '2px',
+                        borderColor: '#cbd5e1',
+                      }}
+                    ></div>
+                    <div className="text-secondary small fst-italic opacity-50">
+                      Impian berikutnya sedang menunggu...
+                    </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center px-3 py-4">
+                  <div 
+                    className="rounded-circle d-flex align-items-center justify-content-center mb-3" 
+                    style={{ 
+                      width: '64px', 
+                      height: '64px', 
+                      background: '#f8f9fa',
+                      border: '2px dashed #e2e8f0'
+                    }}
+                  >
+                    <Icon icon="map-2" size="md" className="text-secondary opacity-50" stroke={1.5} />
+                  </div>
+                  <div className="fw-bold text-dark mb-2" style={{ fontSize: '14px' }}>Belum Ada Perjalanan</div>
+                  <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>
+                    Milestone impian Anda akan otomatis tercatat di sini seiring dengan progres tabungan Anda.
+                  </div>
+                </div>
+              )}
 
-              <div className="mt-4 p-3 bg-body-tertiary rounded-3 border-0 text-center">
+              <div className="mt-4 p-3 bg-body-tertiary rounded-3 border-0 text-center flex-shrink-0">
                 <div className="small fw-bold text-body mb-1">Terus Konsisten!</div>
                 <div className="text-secondary" style={{ fontSize: '11px' }}>
                   Setiap langkah kecil membawamu lebih dekat ke impian.
                 </div>
               </div>
+              </div>
             </div>
           </div>
-          <EmergencyFundCard />
         </div>
       </div>
 
@@ -452,14 +401,17 @@ export function GoalsPage() {
             </div>
 
             <div className="position-relative">
-              <button
-                className="btn btn-ghost-orange btn-sm rounded-pill fw-bold d-flex align-items-center gap-1 px-3"
-                style={{ height: '32px' }}
-                onClick={() => setModalFilterOpen(!modalFilterOpen)}
+              <a
+                href="#"
+                className="text-secondary small d-flex align-items-center gap-1 text-decoration-none fw-semibold"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setModalFilterOpen(!modalFilterOpen)
+                }}
               >
-                <Icon icon="filter" size="xs" />
-                Filter
-              </button>
+                <span className="text-decoration-underline-hover">Filter</span>
+                <Icon icon="chevron-down" size="xs" />
+              </a>
 
               {modalFilterOpen && (
                 <>

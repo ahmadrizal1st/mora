@@ -123,7 +123,7 @@ export function Modal({
       onClick={handleBackdropClick}
     >
       <div className={dialogClasses} role="document">
-        <div className="modal-content overflow-hidden shadow-none border rounded-4">{children}</div>
+        <div className="modal-content shadow-none border rounded-4">{children}</div>
       </div>
     </div>
   )

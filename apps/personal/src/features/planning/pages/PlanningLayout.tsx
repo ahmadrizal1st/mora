@@ -3,11 +3,21 @@ import { Outlet } from '@tanstack/react-router'
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { PlanningSegmentedNav } from '../components/shared/PlanningSegmentedNav'
 import { BudgetSummaryCards } from '../components/budget/BudgetSummaryCards'
-import { Icon, MonthPicker, Modal, ModalHeader, Button } from '@/shared/components/ui'
+import { Icon, MonthPicker, Modal, ModalHeader, Button, Datepicker, ErrorAlert, Select } from '@/shared/components/ui'
 
 import type { Goal, GoalsData, SubscriptionsData } from '../types'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
-import { useGoals, useSubscriptions, useBudgets } from '../hooks/usePlanning'
+import { 
+  useGoals, 
+  useSubscriptions, 
+  useBudgets, 
+  useCreateGoal, 
+  useUpdateGoal, 
+  useDeleteGoal,
+  useCreateSubscription,
+  useUpdateSubscription,
+  useDeleteSubscription 
+} from '../hooks/usePlanning'
 
 export const PlanningContext = React.createContext<any>(null)
 
@@ -18,6 +28,8 @@ export function PlanningLayout() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false)
   const [isSubModalOpen, setIsSubModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [goalToDelete, setGoalToDelete] = useState<string | null>(null)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -39,13 +51,28 @@ export function PlanningLayout() {
   const [subName, setSubName] = useState('')
   const [subCost, setSubCost] = useState('')
   const [subDueDate, setSubDueDate] = useState('')
-  const [subCategory, setSubCategory] = useState('Streaming')
+  const [subCategory, setSubCategory] = useState('Hiburan')
   const [subStatus, setSubStatus] = useState('upcoming')
   const [subIcon, setSubIcon] = useState('device-tv')
+
+  const [goalError, setGoalError] = useState<string | null>(null)
+  const [subError, setSubError] = useState<string | null>(null)
+
+  const [editingSub, setEditingSub] = useState<any>(null)
+  const [isDeleteSubModalOpen, setIsDeleteSubModalOpen] = useState(false)
+  const [subToDelete, setSubToDelete] = useState<string | null>(null)
 
   const { data: apiGoalsData } = useGoals()
   const { data: apiSubsData } = useSubscriptions()
   const { data: budgetData } = useBudgets()
+
+  const { mutateAsync: createGoal } = useCreateGoal()
+  const { mutateAsync: updateGoal } = useUpdateGoal()
+  const { mutateAsync: deleteGoal } = useDeleteGoal()
+
+  const { mutateAsync: createSubscription } = useCreateSubscription()
+  const { mutateAsync: updateSubscription } = useUpdateSubscription()
+  const { mutateAsync: deleteSubscription } = useDeleteSubscription()
 
   const [goalsData, setGoalsData] = useState<GoalsData>({ totalSaved: 0, totalTarget: 0, goals: [], milestones: [] })
   const [subsData, setSubsData] = useState<SubscriptionsData>({ totalMonthly: 0, paidThisMonth: 0, subscriptions: [] })
@@ -85,138 +112,146 @@ export function PlanningLayout() {
     setGoalTarget(goal.target.toString())
     setGoalSaved(goal.saved.toString())
     setGoalMonthly(goal.monthlyDeposit ? goal.monthlyDeposit.toString() : '')
-    setGoalEta(goal.eta)
+    setGoalEta(goal.rawEta || '')
     setGoalIcon(goal.icon)
     setIsGoalModalOpen(true)
   }
 
-  const handleAddGoalSubmit = (e: React.FormEvent) => {
+  const handleAddGoalSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (editingGoal) {
-      const updatedGoals = goalsData.goals.map((g: Goal) => {
-        if (g.id === editingGoal.id) {
-          return {
-            ...g,
-            name: goalName,
-            target: parseFloat(goalTarget) || 0,
-            saved: parseFloat(goalSaved) || 0,
-            eta: goalEta,
-            monthlyDeposit: parseFloat(goalMonthly) || 0,
-            icon: goalIcon,
-          }
-        }
-        return g
-      })
-
-      const totalSaved = updatedGoals.reduce((sum: number, g: Goal) => sum + g.saved, 0)
-      const totalTarget = updatedGoals.reduce((sum: number, g: Goal) => sum + g.target, 0)
-
-      const updated = {
-        ...goalsData,
-        totalSaved,
-        totalTarget,
-        goals: updatedGoals,
-      }
-
-      setGoalsData(updated)
-      localStorage.setItem('visatamora_goals', JSON.stringify(updated))
-    } else {
-      const newGoal = {
-        id: `goal-${Date.now()}`,
-        name: goalName,
-        target: parseFloat(goalTarget) || 0,
-        saved: parseFloat(goalSaved) || 0,
-        eta: goalEta || 'Des 2026',
-        monthlyDeposit: parseFloat(goalMonthly) || 0,
-        icon: goalIcon,
-        color: '#ff6b00',
-        imageUrl:
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=cover&w=400&q=80',
-      }
-
-      const updated = {
-        ...goalsData,
-        totalSaved: goalsData.totalSaved + newGoal.saved,
-        totalTarget: goalsData.totalTarget + newGoal.target,
-        goals: [...goalsData.goals, newGoal],
-      }
-
-      setGoalsData(updated)
-      localStorage.setItem('visatamora_goals', JSON.stringify(updated))
+    const payload = {
+      name: goalName,
+      target: parseFloat(goalTarget) || 0,
+      saved: parseFloat(goalSaved) || 0,
+      monthlyDeposit: parseFloat(goalMonthly) || 0,
+      eta: goalEta,
+      icon: goalIcon,
+      color: '#ff6b00',
+      imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=cover&w=400&q=80',
     }
 
-    setIsGoalModalOpen(false)
-    setEditingGoal(null)
-
-    setGoalName('')
-    setGoalTarget('')
-    setGoalSaved('')
-    setGoalMonthly('')
-    setGoalEta('')
-    setGoalIcon('star')
-  }
-
-  const handleDeleteGoal = (goalId: string) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus impian ini?')) {
-      const updatedGoals = goalsData.goals.filter((g: Goal) => g.id !== goalId)
-
-      const totalSaved = updatedGoals.reduce((sum: number, g: Goal) => sum + g.saved, 0)
-      const totalTarget = updatedGoals.reduce((sum: number, g: Goal) => sum + g.target, 0)
-
-      const updated = {
-        ...goalsData,
-        totalSaved,
-        totalTarget,
-        goals: updatedGoals,
+    setGoalError(null)
+    try {
+      if (editingGoal) {
+        await updateGoal({ id: editingGoal.id, data: payload })
+      } else {
+        await createGoal(payload)
       }
 
-      setGoalsData(updated)
-      localStorage.setItem('visatamora_goals', JSON.stringify(updated))
       setIsGoalModalOpen(false)
       setEditingGoal(null)
-
       setGoalName('')
       setGoalTarget('')
       setGoalSaved('')
       setGoalMonthly('')
       setGoalEta('')
       setGoalIcon('star')
+    } catch (error: any) {
+      console.error('Failed to save goal', error)
+      setGoalError(error?.response?.data?.message || 'Gagal menyimpan impian. Silakan coba lagi.')
     }
   }
 
-  const handleAddSubSubmit = (e: React.FormEvent) => {
+  const confirmDeleteGoal = (goalId: string) => {
+    setGoalToDelete(goalId)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleDeleteGoal = async () => {
+    if (goalToDelete) {
+      try {
+        await deleteGoal(goalToDelete)
+        setIsDeleteModalOpen(false)
+        setGoalToDelete(null)
+        setIsGoalModalOpen(false)
+        setEditingGoal(null)
+        setGoalName('')
+        setGoalTarget('')
+        setGoalSaved('')
+        setGoalMonthly('')
+        setGoalEta('')
+        setGoalIcon('star')
+      } catch (error: any) {
+        console.error('Failed to delete goal', error)
+        setGoalError(error?.response?.data?.message || 'Gagal menghapus impian. Silakan coba lagi.')
+        setIsDeleteModalOpen(false)
+      }
+    }
+  }
+
+  const handleOpenAddSub = () => {
+    setEditingSub(null)
+    setSubName('')
+    setSubCost('')
+    setSubDueDate('')
+    setSubCategory('Hiburan')
+    setSubStatus('upcoming')
+    setSubIcon('device-tv')
+    setIsSubModalOpen(true)
+  }
+
+  const handleEditSub = (sub: any) => {
+    setEditingSub(sub)
+    setSubName(sub.name)
+    setSubCost(sub.amount.toString())
+    const cleanDate = sub.dueDate ? sub.dueDate.substring(0, 10) : ''
+    setSubDueDate(cleanDate)
+    setSubStatus(sub.status)
+    setSubIcon(sub.icon || 'device-tv')
+    setIsSubModalOpen(true)
+  }
+
+  const confirmDeleteSub = (subId: string) => {
+    setSubToDelete(subId)
+    setIsDeleteSubModalOpen(true)
+  }
+
+  const handleDeleteSub = async () => {
+    if (subToDelete) {
+      try {
+        await deleteSubscription(subToDelete)
+        setIsDeleteSubModalOpen(false)
+        setSubToDelete(null)
+        setIsSubModalOpen(false)
+      } catch (error: any) {
+        console.error('Failed to delete sub', error)
+        setSubError(error?.response?.data?.message || 'Gagal menghapus langganan. Silakan coba lagi.')
+        setIsDeleteSubModalOpen(false)
+      }
+    }
+  }
+
+  const handleAddSubSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const newSub = {
-      id: `sub-${Date.now()}`,
+    const payload = {
       name: subName,
       amount: parseFloat(subCost) || 0,
-      dueDate: `2026-05-${subDueDate.padStart(2, '0')}`,
+      dueDate: subDueDate, // using the full date from datepicker
       status: subStatus as 'paid' | 'unpaid' | 'upcoming',
       icon: subIcon,
       color: '#5b9ef7',
     }
 
-    const updated = {
-      ...subsData,
-      totalMonthly: subsData.totalMonthly + newSub.amount,
-      paidThisMonth:
-        subStatus === 'paid' ? subsData.paidThisMonth + newSub.amount : subsData.paidThisMonth,
-      subscriptions: [...subsData.subscriptions, newSub],
+    setSubError(null)
+    try {
+      if (editingSub) {
+        await updateSubscription({ id: editingSub.id, data: payload })
+      } else {
+        await createSubscription(payload)
+      }
+      setIsSubModalOpen(false)
+      setSubName('')
+      setSubCost('')
+      setSubDueDate('')
+      setSubCategory('Hiburan')
+      setSubStatus('upcoming')
+      setSubIcon('device-tv')
+    } catch (error: any) {
+      console.error('Failed to save subscription', error)
+      setSubError(error?.response?.data?.message || 'Gagal menyimpan langganan. Silakan coba lagi.')
     }
-
-    setSubsData(updated)
-    localStorage.setItem('visatamora_subscriptions', JSON.stringify(updated))
-
-    setIsSubModalOpen(false)
-
-    setSubName('')
-    setSubCost('')
-    setSubDueDate('')
-    setSubCategory('Streaming')
-    setSubStatus('upcoming')
-    setSubIcon('device-tv')
   }
 
   return (
@@ -224,57 +259,6 @@ export function PlanningLayout() {
       pageTitle="Financial Planning"
       pagePretitle="STRATEGY"
       showBackButton={false}
-      pageActions={
-        <div className="d-flex align-items-center gap-2">
-          <MonthPicker value={currentDate} onChange={setCurrentDate} />
-          <div className="position-relative" ref={dropdownRef}>
-            <button
-              className="btn btn-sm px-3 d-flex align-items-center gap-2 rounded-pill shadow-sm text-white border-0 fw-bold py-2"
-              style={{ backgroundColor: '#ff6b00' }}
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              <Icon icon="plus" size="sm" stroke={2.5} />
-              Tambah Baru
-            </button>
-            {isDropdownOpen && (
-              <div
-                className="card shadow-lg border position-absolute end-0 mt-2 py-1 bg-surface"
-                style={{
-                  zIndex: 1050,
-                  minWidth: '220px',
-                  borderRadius: '10px',
-                  borderColor: 'rgba(0, 0, 0, 0.08)',
-                }}
-              >
-                <button
-                  type="button"
-                  className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-start bg-transparent border-0 w-100 hover-bg-light"
-                  style={{ fontSize: '13px' }}
-                  onClick={() => {
-                    setIsGoalModalOpen(true)
-                    setIsDropdownOpen(false)
-                  }}
-                >
-                  <Icon icon="star" size="sm" className="text-orange" />
-                  Tambah Impian (Goal)
-                </button>
-                <button
-                  type="button"
-                  className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-start bg-transparent border-0 w-100 hover-bg-light"
-                  style={{ fontSize: '13px' }}
-                  onClick={() => {
-                    setIsSubModalOpen(true)
-                    setIsDropdownOpen(false)
-                  }}
-                >
-                  <Icon icon="credit-card" size="sm" className="text-primary" />
-                  Tambah Langganan (Subscription)
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      }
     >
       <div className="d-flex flex-column gap-4">
         <div className="d-flex flex-wrap gap-3">
@@ -297,7 +281,9 @@ export function PlanningLayout() {
               subsData,
               handleOpenAddGoal,
               handleEditGoal,
-              setIsSubModalOpen,
+              handleOpenAddSub,
+              handleEditSub,
+              confirmDeleteSub,
             }}
           >
             <Outlet />
@@ -312,6 +298,11 @@ export function PlanningLayout() {
             onClose={() => setIsGoalModalOpen(false)}
           />
           <div className="modal-body py-4">
+            {goalError && (
+              <div className="mb-3">
+                <ErrorAlert message={goalError} />
+              </div>
+            )}
             <div className="row">
               <div className="col-md-12 mb-3">
                 <label className="form-label fw-bold small text-secondary">Nama Impian</label>
@@ -374,13 +365,11 @@ export function PlanningLayout() {
                 <label className="form-label fw-bold small text-secondary">
                   Target Selesai (ETA)
                 </label>
-                <input
-                  type="text"
-                  className="form-control rounded-3"
-                  placeholder="Contoh: Desember 2026"
+                <Datepicker
+                  layout="icon"
                   value={goalEta}
-                  onChange={(e) => setGoalEta(e.target.value)}
-                  required
+                  onChange={(val) => setGoalEta(val)}
+                  placeholder="Pilih Tanggal"
                 />
               </div>
             </div>
@@ -419,7 +408,7 @@ export function PlanningLayout() {
                   type="button"
                   color="danger"
                   icon="trash"
-                  onClick={() => handleDeleteGoal(editingGoal.id)}
+                  onClick={() => confirmDeleteGoal(editingGoal.id)}
                 >
                   Hapus Impian
                 </Button>
@@ -446,10 +435,15 @@ export function PlanningLayout() {
       <Modal show={isSubModalOpen} onClose={() => setIsSubModalOpen(false)} size="lg">
         <form onSubmit={handleAddSubSubmit}>
           <ModalHeader
-            title="Tambah Layanan Langganan (Subscription)"
+            title={editingSub ? 'Edit Layanan Langganan' : 'Tambah Layanan Langganan (Subscription)'}
             onClose={() => setIsSubModalOpen(false)}
           />
           <div className="modal-body py-4">
+            {subError && (
+              <div className="mb-3">
+                <ErrorAlert message={subError} />
+              </div>
+            )}
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label className="form-label fw-bold small text-secondary">Nama Layanan</label>
@@ -482,45 +476,45 @@ export function PlanningLayout() {
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label className="form-label fw-bold small text-secondary">
-                  Tanggal Tagihan (Setiap Bulan)
+                  Tanggal Tagihan Berikutnya
                 </label>
-                <input
-                  type="number"
-                  className="form-control rounded-3"
-                  placeholder="Contoh: 15"
-                  min="1"
-                  max="31"
+                <Datepicker
+                  layout="icon"
                   value={subDueDate}
-                  onChange={(e) => setSubDueDate(e.target.value)}
-                  required
+                  onChange={(val) => setSubDueDate(val)}
+                  placeholder="Pilih Tanggal"
                 />
               </div>
               <div className="col-md-6 mb-3">
                 <label className="form-label fw-bold small text-secondary">Kategori Layanan</label>
-                <select
-                  className="form-select rounded-3"
+                <Select
                   value={subCategory}
-                  onChange={(e) => setSubCategory(e.target.value)}
-                >
-                  <option value="Streaming">Streaming (Hiburan)</option>
-                  <option value="Kerja">Pekerjaan & Produktivitas</option>
-                  <option value="Edukasi">Edukasi & Belajar</option>
-                  <option value="Lainnya">Lainnya</option>
-                </select>
+                  onChange={(val) => setSubCategory(val)}
+                  options={[
+                    { value: 'Hiburan', label: 'Hiburan' },
+                    { value: 'Kerja', label: 'Pekerjaan & Produktivitas' },
+                    { value: 'Edukasi', label: 'Edukasi & Belajar' },
+                    { value: 'Lainnya', label: 'Lainnya' },
+                  ]}
+                  placeholder="Pilih Kategori"
+                  showSearch={false}
+                />
               </div>
             </div>
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label className="form-label fw-bold small text-secondary">Status Pembayaran</label>
-                <select
-                  className="form-select rounded-3"
+                <Select
                   value={subStatus}
-                  onChange={(e) => setSubStatus(e.target.value)}
-                >
-                  <option value="paid">Lunas (Paid)</option>
-                  <option value="upcoming">Akan Datang (Upcoming)</option>
-                  <option value="unpaid">Terlambat (Unpaid)</option>
-                </select>
+                  onChange={(val) => setSubStatus(val)}
+                  options={[
+                    { value: 'paid', label: 'Lunas (Paid)' },
+                    { value: 'upcoming', label: 'Akan Datang (Upcoming)' },
+                    { value: 'unpaid', label: 'Terlambat (Unpaid)' },
+                  ]}
+                  placeholder="Pilih Status"
+                  showSearch={false}
+                />
               </div>
               <div className="col-md-6 mb-3">
                 <label className="form-label fw-bold small text-secondary">
@@ -553,22 +547,91 @@ export function PlanningLayout() {
                 </div>
               </div>
             </div>
-            <div className="mt-4 d-flex justify-content-end gap-2">
-              <Button
-                element="button"
-                type="button"
-                link
-                className="text-muted"
-                onClick={() => setIsSubModalOpen(false)}
-              >
-                Batal
-              </Button>
-              <Button element="button" type="submit" color="primary" icon="check">
-                Simpan Layanan
-              </Button>
+            <div
+              className={`mt-4 d-flex ${editingSub ? 'justify-content-between' : 'justify-content-end'} align-items-center`}
+            >
+              {editingSub && (
+                <Button
+                  element="button"
+                  type="button"
+                  color="danger"
+                  icon="trash"
+                  onClick={() => confirmDeleteSub(editingSub.id)}
+                >
+                  Hapus
+                </Button>
+              )}
+              <div className="d-flex gap-2">
+                <Button
+                  element="button"
+                  type="button"
+                  link
+                  className="text-muted"
+                  onClick={() => setIsSubModalOpen(false)}
+                >
+                  Batal
+                </Button>
+                <Button element="button" type="submit" color="primary" icon="check">
+                  {editingSub ? 'Simpan Perubahan' : 'Simpan Layanan'}
+                </Button>
+              </div>
             </div>
           </div>
         </form>
+      </Modal>
+
+      <Modal show={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} size="sm">
+        <ModalHeader title="Konfirmasi Hapus" onClose={() => setIsDeleteModalOpen(false)} />
+        <div className="modal-body py-4 text-center">
+          <div className="mb-3">
+            <Icon icon="alert-triangle" size="lg" className="text-danger" />
+          </div>
+          <h4 className="fw-bold mb-2">Hapus Impian?</h4>
+          <p className="text-secondary small mb-4">
+            Apakah Anda yakin ingin menghapus impian ini? Data yang sudah dihapus tidak dapat dikembalikan.
+          </p>
+          <div className="d-flex justify-content-center gap-2">
+            <Button
+              element="button"
+              type="button"
+              link
+              className="text-muted"
+              onClick={() => setIsDeleteModalOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button element="button" type="button" color="danger" onClick={handleDeleteGoal}>
+              Ya, Hapus
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal show={isDeleteSubModalOpen} onClose={() => setIsDeleteSubModalOpen(false)} size="sm">
+        <ModalHeader title="Konfirmasi Hapus" onClose={() => setIsDeleteSubModalOpen(false)} />
+        <div className="modal-body py-4 text-center">
+          <div className="mb-3">
+            <Icon icon="alert-triangle" size="lg" className="text-danger" />
+          </div>
+          <h4 className="fw-bold mb-2">Hapus Langganan?</h4>
+          <p className="text-secondary small mb-4">
+            Apakah Anda yakin ingin menghapus langganan ini? Data yang sudah dihapus tidak dapat dikembalikan.
+          </p>
+          <div className="d-flex justify-content-center gap-2">
+            <Button
+              element="button"
+              type="button"
+              link
+              className="text-muted"
+              onClick={() => setIsDeleteSubModalOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button element="button" type="button" color="danger" onClick={handleDeleteSub}>
+              Ya, Hapus
+            </Button>
+          </div>
+        </div>
       </Modal>
     </BaseLayout>
   )

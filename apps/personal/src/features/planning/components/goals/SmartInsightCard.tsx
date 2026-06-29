@@ -4,38 +4,38 @@ import { Icon } from '@/shared/components/ui/Icon'
 export function SmartInsightCard() {
   return (
     <div
-      className="card shadow-sm border-0 h-100 bg-orange-lt overflow-hidden"
-      style={{ borderRadius: '16px', border: '1px solid rgba(247, 103, 7, 0.15)' }}
+      className="card shadow-none border overflow-hidden transition-all"
+      style={{ borderRadius: '12px', background: '#ffffff' }}
     >
-      <div className="card-body p-4 d-flex flex-column position-relative">
-        <div className="d-flex align-items-center justify-content-between mb-4">
-          <div className="d-flex align-items-center gap-2">
-            <h4 className="fw-bold m-0 text-orange">Smart Insight</h4>
-          </div>
-          <span
-            className="badge bg-orange text-white rounded-pill px-2"
-            style={{ fontSize: '9px' }}
+      <div className="card-body p-4 position-relative">
+        <div className="d-flex align-items-start gap-3 position-relative z-1">
+          <div
+            className="flex-shrink-0 d-flex align-items-center justify-content-center bg-orange text-white"
+            style={{ width: '40px', height: '40px', borderRadius: '10px' }}
           >
-            AI RECOMMENDATION
-          </span>
-        </div>
+            <Icon icon="bulb" size="sm" stroke={1.5} />
+          </div>
 
-        <div className="flex-grow-1">
-          <p className="text-body mb-4 fw-medium leading-relaxed" style={{ fontSize: '13px' }}>
-            Jika Anda menambah setoran <strong className="text-orange">Rp 500rb/bulan</strong>,
-            target <span className="text-orange fw-bold">DP Rumah</span> bisa tercapai{' '}
-            <span className="badge bg-orange-lt text-orange border border-orange-subtle px-2">
-              2 Bulan
-            </span>{' '}
-            lebih cepat dari estimasi saat ini.
-          </p>
-        </div>
+          <div className="flex-grow-1">
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <h4 className="fw-bold m-0 text-dark" style={{ fontSize: '15px' }}>
+                Peluang Akselerasi
+              </h4>
+            </div>
 
-        <div className="mt-auto">
-          <button className="btn btn-orange w-100 rounded-pill shadow-sm fw-bold d-flex align-items-center justify-content-center gap-2">
-            <Icon icon="trending-up" size="xs" />
-            <span>Optimalkan Tabungan</span>
-          </button>
+            <p className="text-secondary mb-3 leading-relaxed" style={{ fontSize: '12px' }}>
+              Dengan tambahan setoran <strong className="text-orange">Rp 500rb/bulan</strong>,
+              target <strong className="text-dark">DP Rumah</strong> Anda bisa terwujud{' '}
+              <span className="badge bg-orange-lt text-orange px-2 py-1 rounded-pill fw-bold border-0 mx-1">
+                2 Bulan
+              </span>{' '}
+              lebih awal.
+            </p>
+
+            <button className="btn btn-sm btn-light rounded-pill px-3 fw-medium text-secondary shadow-none border">
+              Lihat Skenario <Icon icon="arrow-right" size="xs" className="ms-1" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

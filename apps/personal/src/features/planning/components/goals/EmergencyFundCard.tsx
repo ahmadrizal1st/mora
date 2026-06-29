@@ -1,30 +1,55 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { PlanningContext } from '../../pages/PlanningLayout'
 
 export function EmergencyFundCard() {
-  const target = 50000000
-  const current = 15000000
-  const percentage = Math.round((current / target) * 100)
+  const { goalsData } = useContext(PlanningContext)
+  const goals = goalsData?.goals || []
+  
+  const emergencyFund = goals.find((g: any) => g.name.toLowerCase().includes('darurat') || g.name.toLowerCase().includes('emergency'))
+  
+  const target = emergencyFund ? emergencyFund.target : 0
+  const current = emergencyFund ? emergencyFund.saved : 0
+  const percentage = target > 0 ? Math.round((current / target) * 100) : 0
+
+  if (!emergencyFund) {
+    return (
+      <div className="card shadow-none border" style={{ borderRadius: '12px' }}>
+        <div className="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center" style={{ minHeight: '180px' }}>
+          <div
+            className="bg-orange-lt text-orange d-flex align-items-center justify-content-center mb-3"
+            style={{ width: '48px', height: '48px', borderRadius: '12px' }}
+          >
+            <Icon icon="shield-check" size="sm" stroke={1.5} />
+          </div>
+          <h4 className="fw-bold text-dark mb-1" style={{ fontSize: '14px' }}>Dana Darurat</h4>
+          <p className="text-secondary mb-0" style={{ fontSize: '12px' }}>
+            Buat goal dengan nama <strong>"Dana Darurat"</strong> untuk melacak progresnya di sini.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="card border-0" style={{ borderRadius: '16px' }}>
-      <div className="card-body p-4">
+    <div className="card shadow-none border" style={{ borderRadius: '12px' }}>
+      <div className="card-body p-4 d-flex flex-column">
         <div className="d-flex align-items-center justify-content-between mb-4">
           <div className="d-flex align-items-center gap-3">
             <div
-              className="p-2 bg-orange-lt rounded-circle d-flex align-items-center justify-content-center"
-              style={{ width: '40px', height: '40px' }}
+              className="bg-orange text-white d-flex align-items-center justify-content-center"
+              style={{ width: '40px', height: '40px', borderRadius: '10px' }}
             >
-              <Icon icon="shield-check" size="sm" className="text-orange" />
+              <Icon icon="shield-check" size="sm" stroke={1.5} />
             </div>
             <div>
-              <h4 className="fw-bold m-0 fs-3">Dana Darurat</h4>
+              <h4 className="fw-bold m-0 fs-3 text-dark">Dana Darurat</h4>
               <div className="text-secondary small fw-medium">Safety Net</div>
             </div>
           </div>
           <span
-            className="badge bg-orange text-white fw-bold border-0 rounded-pill px-3 py-2"
+            className="badge bg-orange-lt text-orange fw-bold border-0 rounded-pill px-3 py-1"
             style={{ fontSize: '11px' }}
           >
             {percentage}%
@@ -34,30 +59,30 @@ export function EmergencyFundCard() {
         <div className="mb-3 d-flex justify-content-between align-items-end">
           <div>
             <div
-              className="text-secondary small mb-1 fw-bold"
-              style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+              className="text-secondary mb-1 fw-bold"
+              style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
             >
-              TERKUMPUL
+              Terkumpul
             </div>
-            <div className="fw-bold text-body fs-2">{formatCurrency(current)}</div>
+            <div className="fw-bold text-dark fs-2">{formatCurrency(current)}</div>
           </div>
           <div className="text-end">
             <div
-              className="text-secondary small mb-1 fw-bold"
-              style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+              className="text-secondary mb-1 fw-bold"
+              style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
             >
-              TARGET (6 BLN)
+              Target (6 Bln)
             </div>
             <div className="fw-bold text-secondary fs-4">{formatCurrency(target)}</div>
           </div>
         </div>
 
         <div
-          className="progress progress-md mb-4"
+          className="progress mb-4 bg-body-tertiary"
           style={{
-            height: '10px',
-            backgroundColor: 'var(--tblr-border-color)',
+            height: '6px',
             borderRadius: '10px',
+            overflow: 'visible'
           }}
         >
           <div
@@ -65,32 +90,28 @@ export function EmergencyFundCard() {
             style={{
               width: `${percentage}%`,
               borderRadius: '10px',
-              boxShadow: '0 2px 10px rgba(247, 103, 7, 0.2)',
               transition: 'width 1.5s ease-in-out',
             }}
           ></div>
         </div>
 
-        <div className="p-3 bg-body-tertiary rounded-3 border-0 position-relative overflow-hidden">
-          <div className="position-absolute top-0 start-0 w-100 h-100 bg-orange opacity-5"></div>
-
-          <div className="d-flex gap-3 align-items-center position-relative" style={{ zIndex: 1 }}>
-            <div
-              className="p-2 bg-orange text-white rounded-circle d-flex align-items-center justify-content-center shadow-none"
-              style={{ width: '32px', height: '32px' }}
-            >
-              <Icon icon="bulb" size="sm" stroke={2.5} />
-            </div>
-            <p
-              className="small text-secondary mb-0 fw-medium"
-              style={{ fontSize: '11px', lineHeight: '1.6' }}
-            >
-              Dana darurat idealnya mencakup <strong>6 bulan</strong> biaya hidup. Tingkatkan
-              setoran untuk keamanan finansial yang lebih baik.
-            </p>
+        <div className="p-3 bg-body-tertiary border rounded-4 d-flex gap-3 align-items-center mt-2">
+          <div
+            className="flex-shrink-0 bg-white border text-orange rounded-circle d-flex align-items-center justify-content-center"
+            style={{ width: '36px', height: '36px' }}
+          >
+            <Icon icon="bulb" size="sm" stroke={1.5} />
           </div>
+          <p
+            className="text-secondary mb-0 fw-medium"
+            style={{ fontSize: '11px', lineHeight: '1.5' }}
+          >
+            Dana darurat idealnya mencakup <strong className="text-dark">6 bulan</strong> biaya hidup. 
+            Tingkatkan setoran untuk keamanan finansial yang lebih baik.
+          </p>
         </div>
       </div>
     </div>
   )
 }
+

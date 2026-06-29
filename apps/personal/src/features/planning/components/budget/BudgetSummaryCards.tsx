@@ -26,7 +26,7 @@ export function BudgetSummaryCards({ totalBudget, spent, safeToSpendPerDay, curr
                 className="avatar rounded bg-primary text-white d-flex align-items-center justify-content-center" 
                 style={{ width: '32px', height: '32px' }}
               >
-                <Icon icon="wallet" size="sm" />
+                <Icon icon="wallet" size="sm" stroke={1.5} />
               </div>
               <div 
                 className="text-muted fw-bold text-uppercase m-0" 
@@ -56,7 +56,7 @@ export function BudgetSummaryCards({ totalBudget, spent, safeToSpendPerDay, curr
                 className="avatar rounded bg-danger text-white d-flex align-items-center justify-content-center" 
                 style={{ width: '32px', height: '32px' }}
               >
-                <Icon icon="trending-down" size="sm" />
+                <Icon icon="trending-down" size="sm" stroke={1.5} />
               </div>
               <div 
                 className="text-muted fw-bold text-uppercase m-0" 
@@ -86,7 +86,7 @@ export function BudgetSummaryCards({ totalBudget, spent, safeToSpendPerDay, curr
                 className="avatar rounded bg-success text-white d-flex align-items-center justify-content-center" 
                 style={{ width: '32px', height: '32px' }}
               >
-                <Icon icon="cash" size="sm" />
+                <Icon icon="cash" size="sm" stroke={1.5} />
               </div>
               <div 
                 className="text-muted fw-bold text-uppercase m-0" 
@@ -116,7 +116,7 @@ export function BudgetSummaryCards({ totalBudget, spent, safeToSpendPerDay, curr
                 className="avatar rounded bg-orange text-white d-flex align-items-center justify-content-center" 
                 style={{ width: '32px', height: '32px' }}
               >
-                <Icon icon="shield-check" size="sm" />
+                <Icon icon="shield-check" size="sm" stroke={1.5} />
               </div>
               <div 
                 className="text-muted fw-bold text-uppercase m-0" 

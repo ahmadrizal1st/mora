@@ -6,22 +6,16 @@ export function PlanningSegmentedNav() {
     {
       id: 'budget',
       label: 'Monthly Budget',
-      badge: '5',
-      badgeColor: 'azure',
       to: '/planning/budget',
     },
     {
       id: 'goals',
       label: 'Financial Goals',
-      badge: '3',
-      badgeColor: 'warning',
       to: '/planning/goals',
     },
     {
       id: 'subscriptions',
       label: 'Subscriptions',
-      badge: '4',
-      badgeColor: 'green',
       to: '/planning/subscriptions',
     },
   ] as const
@@ -53,14 +47,6 @@ export function PlanningSegmentedNav() {
             >
               <span className="d-none d-md-inline">{tab.label}</span>
               <span className="d-md-none">{tab.label.split(' ')[1] || tab.label}</span>
-              {tab.badge && (
-                <span
-                  className={`badge bg-${tab.badgeColor} text-white border-0 rounded-pill ms-1`}
-                  style={{ fontSize: '10px', padding: '2px 6px' }}
-                >
-                  {tab.badge}
-                </span>
-              )}
             </Link>
           )
         })}

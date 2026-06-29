@@ -69,6 +69,12 @@ export function Datepicker({
     }
   }, [inline, onChange])
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.value = value || ''
+    }
+  }, [value])
+
   const commonProps = {
     ref: inputRef,
     id,

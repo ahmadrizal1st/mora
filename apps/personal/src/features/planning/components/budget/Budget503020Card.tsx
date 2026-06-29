@@ -93,9 +93,6 @@ export function Budget503020Card() {
               const strokeDashoffset = circumference - (currentPct / 100) * circumference
 
               const angle = (currentPct / 100) * 360
-              const rad = ((180 + angle) * Math.PI) / 180
-              const dotX = center + ring.radius * Math.cos(rad)
-              const dotY = center + ring.radius * Math.sin(rad)
 
               return (
                 <g key={ring.id}>
@@ -120,21 +117,22 @@ export function Budget503020Card() {
                     strokeLinecap="round"
                     transform={`rotate(180 ${center} ${center})`}
                     style={{
-                      transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transition: 'stroke-dashoffset 1.0s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
                   />
 
                   <circle
-                    cx={dotX}
-                    cy={dotY}
+                    cx={center - ring.radius}
+                    cy={center}
                     r={7.5}
                     fill={ring.color}
                     stroke="#ffffff"
                     strokeWidth={2.5}
                     filter="url(#shadow)"
                     style={{
-                      transition:
-                        'cx 1.2s cubic-bezier(0.4, 0, 0.2, 1), cy 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transformOrigin: `${center}px ${center}px`,
+                      transform: `rotate(${angle}deg)`,
+                      transition: 'transform 1.0s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
                   />
                 </g>

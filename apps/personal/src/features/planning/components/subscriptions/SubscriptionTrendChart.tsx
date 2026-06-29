@@ -1,79 +1,123 @@
 import { Chart } from '@/shared/components/ui/Chart'
+import React, { useContext } from 'react'
+import { PlanningContext } from '../../pages/PlanningLayout'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 
 export function SubscriptionTrendChart() {
+  const { subsData } = useContext(PlanningContext) || {}
+  const subscriptions = subsData?.subscriptions || []
+  const totalMonthly = subsData?.totalMonthly || 0
+
+  // Ambil top 12 subscription diurutkan berdasarkan amount terbesar (data asli dari DB)
+  const sorted = [...subscriptions]
+    .sort((a: any, b: any) => b.amount - a.amount)
+    .slice(0, 12)
+
+  const dataPoints = sorted.map((s: any) => s.amount)
+  const labels = sorted.map((s: any) =>
+    s.name.length > 10 ? s.name.substring(0, 10) + '…' : s.name
+  )
+
+  const maxAmount = sorted.length > 0 ? sorted[0].amount : 0
+
   const chartData = {
     type: 'bar' as const,
-    height: 16,
+    height: 13,
     series: [
       {
-        name: 'Total Pengeluaran',
-        data: [1100000, 1150000, 1250000, 1250000, 1450000, 1450000],
+        name: 'Biaya Langganan',
+        data: dataPoints,
         color: 'primary',
       },
     ],
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+    categories: labels.length > 0 ? labels : ['Belum ada data'],
     extend: {
       plotOptions: {
         bar: {
           borderRadius: 6,
-          columnWidth: '45%',
+          columnWidth: labels.length <= 4 ? '30%' : '55%',
           distributed: false,
         },
       },
       dataLabels: { enabled: false },
       fill: {
-        type: 'gradient',
-        gradient: {
-          shade: 'light',
-          type: 'vertical',
-          shadeIntensity: 0.25,
-          opacityFrom: 0.85,
-          opacityTo: 0.55,
-          stops: [0, 100],
-        },
+        type: 'solid',
+        opacity: 1,
       },
       tooltip: {
         fixed: { enabled: false },
         x: { show: true },
         y: {
           title: {
-            formatter: () => 'Total: ',
+            formatter: () => 'Biaya: ',
           },
+          formatter: (value: number) => `Rp ${value.toLocaleString('id-ID')}`,
         },
         marker: { show: false },
       },
+      yaxis: {
+        labels: {
+          formatter: (value: number) => {
+            const jt = value / 1000000
+            if (jt >= 0.01) {
+              return `Rp ${jt % 1 === 0 ? jt : jt.toFixed(1)} Jt`
+            }
+            const rb = value / 1000
+            if (rb >= 1) {
+              return `Rp ${rb % 1 === 0 ? rb : rb.toFixed(0)} Rb`
+            }
+            return `Rp ${value}`
+          }
+        }
+      }
     },
   }
 
   return (
-    <div className="card shadow-sm border-0 h-100 overflow-hidden" style={{ borderRadius: '16px' }}>
-      <div className="card-body p-4 d-flex flex-column">
-        <div className="d-flex align-items-center justify-content-between mb-4">
+    <div className="card shadow-none border h-100 overflow-hidden" style={{ borderRadius: '12px' }}>
+      <div className="card-body p-3 d-flex flex-column h-100">
+        <div className="d-flex justify-content-between align-items-start mb-3">
           <div>
-            <h4
-              className="text-secondary small fw-bold text-uppercase mb-1"
-              style={{ fontSize: '10px', letterSpacing: '0.05em' }}
-            >
-              Spending Trend
-            </h4>
-            <div className="d-flex align-items-baseline gap-2">
-              <h3 className="fw-bold m-0 text-primary">Rp 1.45jt</h3>
-              <span className="badge bg-success-lt border-0 small" style={{ fontSize: '10px' }}>
-                +12%
-              </span>
+            <h3 className="card-title fw-bold m-0 text-body" style={{ fontSize: '16px' }}>
+              Distribusi Biaya Langganan
+            </h3>
+            <div className="text-secondary small" style={{ fontSize: '11px' }}>
+              Per layanan — data dari database
             </div>
           </div>
-          <div className="text-end">
-            <div className="text-secondary small fw-medium" style={{ fontSize: '10px' }}>
-              Avg / Mo
-            </div>
-            <div className="fw-bold small text-primary">Rp 1.28jt</div>
+          <div className="text-secondary small" style={{ fontSize: '11px' }}>
+            {subscriptions.length} layanan aktif
           </div>
         </div>
 
-        <div className="flex-grow-1 mt-auto" style={{ margin: '0 -20px -15px -20px' }}>
-          <Chart chartId="subsTrend" chartData={chartData as any} />
+        <div className="d-flex justify-content-between align-items-center mb-2 bg-body-tertiary py-2 px-3 rounded-3">
+          <div>
+            <div className="text-secondary small fw-medium" style={{ fontSize: '9px', letterSpacing: '0.04em' }}>
+              TOTAL BULANAN
+            </div>
+            <div className="d-flex align-items-baseline gap-2">
+              <h3 className="fw-bold m-0 text-primary fs-3">{formatCurrency(totalMonthly)}</h3>
+            </div>
+          </div>
+          <div className="text-end">
+            <div className="text-secondary small fw-medium" style={{ fontSize: '9px', letterSpacing: '0.04em' }}>
+              TERBESAR
+            </div>
+            <div className="fw-bold text-dark fs-4">{formatCurrency(maxAmount)}</div>
+          </div>
         </div>
+
+        {subscriptions.length === 0 ? (
+          <div className="flex-grow-1 d-flex align-items-center justify-content-center text-secondary small">
+            Belum ada data langganan
+          </div>
+        ) : (
+          <div className="flex-grow-1 mt-auto w-100 d-flex align-items-end" style={{ margin: '0 -20px -15px -20px', minHeight: '160px' }}>
+            <div className="w-100">
+              <Chart chartId="subsTrend" chartData={chartData as any} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

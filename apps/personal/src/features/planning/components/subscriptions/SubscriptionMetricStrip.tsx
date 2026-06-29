@@ -1,67 +1,127 @@
 import { Icon } from '@/shared/components/ui/Icon'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 
-export function SubscriptionMetricStrip() {
+const getSubCategory = (subName: string): string => {
+  const name = subName.toLowerCase()
+  if (
+    name.includes('netflix') ||
+    name.includes('spotify') ||
+    name.includes('youtube') ||
+    name.includes('disney') ||
+    name.includes('hbo')
+  )
+    return 'Hiburan'
+  if (
+    name.includes('indihome') ||
+    name.includes('internet') ||
+    name.includes('zoom') ||
+    name.includes('slack') ||
+    name.includes('canva') ||
+    name.includes('figma')
+  )
+    return 'Kerja'
+  if (
+    name.includes('udemy') ||
+    name.includes('coursera') ||
+    name.includes('duolingo') ||
+    name.includes('skillshare') ||
+    name.includes('ruangguru') ||
+    name.includes('zenius')
+  )
+    return 'Edukasi'
+  return 'Lainnya'
+}
+
+interface SubscriptionMetricStripProps {
+  subscriptions?: any[]
+  totalMonthly?: number
+  paidThisMonth?: number
+}
+
+export function SubscriptionMetricStrip({
+  subscriptions = [],
+  totalMonthly = 0,
+  paidThisMonth = 0,
+}: SubscriptionMetricStripProps) {
+  // Calculate unique categories
+  const categories = new Set(subscriptions.map(s => getSubCategory(s.name)))
+  
+  // Find max subscription
+  let maxSub = { name: '-', amount: 0 }
+  subscriptions.forEach(s => {
+    if (s.amount > maxSub.amount) {
+      maxSub = { name: s.name, amount: s.amount }
+    }
+  })
+
   const metrics = [
     {
-      label: 'LAYANAN AKTIF',
-      value: '12',
+      label: 'Layanan Aktif',
+      value: `${subscriptions.length}`,
       icon: 'apps',
-      bgClass: 'bg-blue',
-      detail: 'Dari 3 kategori utama',
+      bgClass: 'bg-primary',
+      textClass: 'text-dark',
+      detail: `Dari ${categories.size} kategori utama`,
     },
     {
-      label: 'SISA TAGIHAN BULAN INI',
-      value: 'Rp 800rb',
+      label: 'Total Tagihan',
+      value: formatCurrency(totalMonthly),
       icon: 'calendar-event',
       bgClass: 'bg-orange',
-      detail: 'Sisa 12 hari pembayaran',
+      textClass: 'text-orange',
+      detail: 'Pengeluaran bulanan rutin',
     },
     {
-      label: 'POTENSI HEMAT',
-      value: 'Rp 100rb',
+      label: 'Sudah Dibayar',
+      value: formatCurrency(paidThisMonth),
       icon: 'trending-down',
-      bgClass: 'bg-green',
-      detail: 'Dapat dioptimalkan',
+      bgClass: 'bg-success',
+      textClass: 'text-success',
+      detail: 'Dibayarkan bulan ini',
     },
     {
-      label: 'TRIAL BERAKHIR',
-      value: '2 Layanan',
+      label: 'Tagihan Terbesar',
+      value: maxSub.amount > 0 ? formatCurrency(maxSub.amount) : '-',
       icon: 'hourglass',
-      bgClass: 'bg-red',
-      detail: 'Segera berakhir pekan ini',
+      bgClass: 'bg-danger',
+      textClass: 'text-danger',
+      detail: maxSub.amount > 0 ? `Layanan: ${maxSub.name}` : 'Belum ada data',
     },
   ]
 
   return (
-    <>
+    <div className="d-flex flex-wrap gap-3">
       {metrics.map((m, i) => (
-        <div key={i} className="col-6 col-lg-3">
-          <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '16px' }}>
-            <div className="card-body p-3 p-lg-4">
-              <div className="d-flex align-items-center gap-2 mb-3">
+        <div key={i} style={{ flex: '1 1 200px', minWidth: '180px' }}>
+          <div className="card shadow-none border h-100" style={{ borderRadius: '12px' }}>
+            <div className="card-body p-3 d-flex flex-column gap-3">
+              <div className="d-flex align-items-center gap-3">
                 <div
-                  className={`avatar avatar-sm ${m.bgClass} text-white`}
-                  style={{ borderRadius: '10px', width: '32px', height: '32px' }}
+                  className={`avatar rounded ${m.bgClass} text-white d-flex align-items-center justify-content-center`}
+                  style={{ width: '32px', height: '32px' }}
                 >
-                  <Icon icon={m.icon as any} size="sm" className="text-white" />
+                  <Icon icon={m.icon as any} size="sm" stroke={1.5} className="text-white" />
                 </div>
                 <div
-                  className="subheader text-muted m-0 fw-bold"
-                  style={{ letterSpacing: '0.05em', fontSize: '9px', lineHeight: '1.2' }}
+                  className="text-muted fw-bold text-uppercase m-0"
+                  style={{ fontSize: '11px', letterSpacing: '0.04em' }}
                 >
                   {m.label}
                 </div>
               </div>
 
-              <div className="h2 fw-bold m-0 mb-1 text-body">{m.value}</div>
-
-              <div className="text-muted small" style={{ fontSize: '11px' }}>
-                {m.detail}
+              <div className="d-flex flex-column gap-1">
+                <div className={`h2 m-0 fw-bold ${m.textClass}`} style={{ letterSpacing: '-0.5px' }}>
+                  {m.value}
+                </div>
+                <div className="text-muted m-0 lh-1" style={{ fontSize: '12px' }}>
+                  {m.detail}
+                </div>
               </div>
             </div>
           </div>
         </div>
       ))}
-    </>
+    </div>
   )
 }

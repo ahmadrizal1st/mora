@@ -4,19 +4,31 @@ import { formatCurrency } from '@/shared/utils/currencyUtils'
 interface GoalsOverviewCardProps {
   totalSaved: number
   totalTarget: number
+  goals?: any[]
   onViewDetail?: () => void
 }
 
 export function GoalsOverviewCard({
   totalSaved,
   totalTarget,
+  goals = [],
   onViewDetail,
 }: GoalsOverviewCardProps) {
   const percentage = totalTarget > 0 ? Math.round((totalSaved / totalTarget) * 100) : 0
+  const totalMonthlyDeposit = goals.reduce((acc, curr) => acc + (curr.monthlyDeposit || 0), 0)
+  
+  const activeGoals = goals.filter(g => g.saved < g.target && g.rawEta)
+  let maxEta = ''
+  if (activeGoals.length > 0) {
+    const maxDate = new Date(Math.max(...activeGoals.map(g => new Date(g.rawEta).getTime())))
+    maxEta = maxDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+  } else {
+    maxEta = 'Tidak ada'
+  }
 
   return (
-    <div className="card border-0 shadow-sm overflow-hidden h-100" style={{ borderRadius: '16px' }}>
-      <div className="card-body p-4 d-flex flex-column h-100 position-relative">
+    <div className="card border-0 shadow-sm overflow-hidden" style={{ borderRadius: '16px' }}>
+      <div className="card-body p-4 d-flex flex-column position-relative">
         <div
           className="position-absolute top-0 end-0 p-4 opacity-5"
           style={{ transform: 'rotate(-15deg) translate(20%, -20%)' }}
@@ -32,41 +44,20 @@ export function GoalsOverviewCard({
             TOTAL DANA DIKUMPULKAN
           </div>
 
-          <div className="d-flex align-items-center gap-2 mb-2 flex-wrap">
-            <span className="fw-bold text-orange" style={{ fontSize: '26px', lineHeight: '1.2' }}>
+          <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
+            <span className="fw-bold text-orange" style={{ fontSize: '28px', lineHeight: '1.2' }}>
               {formatCurrency(totalSaved)}
             </span>
             <span
               className="badge bg-orange-lt text-orange border-0 rounded-pill px-2.5 py-1"
               style={{ fontSize: '11px', fontWeight: '700' }}
             >
-              {percentage}%
+              {percentage}% Terkumpul
             </span>
           </div>
 
-          <p
-            className="text-secondary small m-0 fw-medium italic opacity-75"
-            style={{ fontSize: '12px', lineHeight: '1.4' }}
-          >
-            "Kamu sudah mencapai <strong>{percentage}%</strong> dari seluruh mimpimu. Terus
-            semangat!"
-          </p>
-        </div>
-
-        <div className="position-relative mb-4" style={{ zIndex: 1 }}>
-          <div className="d-flex justify-content-between mb-2 align-items-center">
-            <span
-              className="fw-bold text-secondary"
-              style={{ fontSize: '11px', letterSpacing: '0.05em' }}
-            >
-              KEMAJUAN GLOBAL
-            </span>
-            <span className="fw-bold text-orange" style={{ fontSize: '11px' }}>
-              {percentage}%
-            </span>
-          </div>
           <div
-            className="progress progress-sm"
+            className="progress progress-sm mb-1"
             style={{
               height: '8px',
               borderRadius: '10px',
@@ -85,8 +76,8 @@ export function GoalsOverviewCard({
           </div>
         </div>
 
-        <div className="mt-auto pt-4 border-top">
-          <div className="row g-3">
+        <div className="pt-3 mt-4 border-top">
+          <div className="row g-3 mb-3">
             <div className="col-6">
               <div className="p-3 bg-body-tertiary rounded-3 border-0 transition-all hover-bg-surface">
                 <div
@@ -95,7 +86,7 @@ export function GoalsOverviewCard({
                 >
                   SISA TARGET
                 </div>
-                <div className="fw-bold text-body fs-4">
+                <div className="fw-bold text-body fs-4" style={{ letterSpacing: '-0.5px' }}>
                   {formatCurrency(Math.max(0, totalTarget - totalSaved))}
                 </div>
               </div>
@@ -108,7 +99,33 @@ export function GoalsOverviewCard({
                 >
                   RATA-RATA /BULAN
                 </div>
-                <div className="fw-bold text-success fs-4">+{formatCurrency(6000000)}</div>
+                <div className="fw-bold text-success fs-4" style={{ letterSpacing: '-0.5px' }}>+{formatCurrency(totalMonthlyDeposit)}</div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="p-3 bg-body-tertiary rounded-3 border-0 transition-all hover-bg-surface">
+                <div
+                  className="text-secondary mb-1 fw-bold"
+                  style={{ fontSize: '9px', letterSpacing: '0.05em' }}
+                >
+                  TOTAL KESELURUHAN
+                </div>
+                <div className="fw-bold text-body fs-4" style={{ letterSpacing: '-0.5px' }}>
+                  {formatCurrency(totalTarget)}
+                </div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="p-3 bg-body-tertiary rounded-3 border-0 transition-all hover-bg-surface">
+                <div
+                  className="text-secondary mb-1 fw-bold"
+                  style={{ fontSize: '9px', letterSpacing: '0.05em' }}
+                >
+                  STATUS IMPIAN
+                </div>
+                <div className="fw-bold text-body fs-4" style={{ letterSpacing: '-0.5px' }}>
+                  {activeGoals.length} <span className="fs-5 text-secondary fw-normal">aktif</span>
+                </div>
               </div>
             </div>
             <div className="col-12">
@@ -128,7 +145,7 @@ export function GoalsOverviewCard({
                       ESTIMASI SELESAI
                     </div>
                     <div className="fw-bold text-orange" style={{ fontSize: '13px' }}>
-                      Maret 2027
+                      {maxEta}
                     </div>
                   </div>
                 </div>

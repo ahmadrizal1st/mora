@@ -33,6 +33,14 @@ class SubscriptionRepository
 
     public static function store(User $user, array $data): Subscription
     {
+        if (empty($data['currency_id'])) {
+            $currency = \App\Models\Currency::where('code', 'IDR')->first() ?? \App\Models\Currency::first();
+            $data['currency_id'] = $currency ? $currency->id : null;
+        }
+        if (empty($data['account_id'])) {
+            $account = $user->accounts()->first();
+            $data['account_id'] = $account ? $account->id : null;
+        }
         return $user->subscriptions()->create($data)->load(['currency', 'account']);
     }
 

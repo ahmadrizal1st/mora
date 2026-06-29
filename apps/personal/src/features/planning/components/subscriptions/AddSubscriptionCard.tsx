@@ -8,7 +8,7 @@ interface AddSubscriptionCardProps {
 export function AddSubscriptionCard({ onClick }: AddSubscriptionCardProps) {
   return (
     <div
-      className="card h-100 shadow-none transition-all hover-bg-body-tertiary"
+      className="card h-100 shadow-none"
       style={{
         borderRadius: '12px',
         border: '1.5px dashed var(--tblr-border-color)',
@@ -18,11 +18,9 @@ export function AddSubscriptionCard({ onClick }: AddSubscriptionCardProps) {
       }}
       onClick={onClick}
     >
-      <div className="card-body p-3 d-flex align-items-center justify-content-center text-center">
-        <div>
-          <div className="mb-2">
-            <Icon icon="plus" size="sm" className="text-primary" />
-          </div>
+      <div className="card-body p-3 d-flex align-items-center justify-content-center text-center h-100">
+        <div className="d-flex align-items-center gap-2">
+          <Icon icon="plus" size="sm" className="text-primary" />
           <div
             className="fw-bold text-secondary"
             style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
