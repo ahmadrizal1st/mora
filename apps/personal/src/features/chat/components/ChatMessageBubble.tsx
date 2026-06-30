@@ -49,10 +49,6 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(message.content)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  
-  const [displayedContent, setDisplayedContent] = useState('')
-  const [isTypingAnimation, setIsTypingAnimation] = useState(false)
-  const animationRef = useRef<NodeJS.Timeout | null>(null)
 
   const editMessage = useChatStore((state) => state.editMessage)
   const switchVariant = useChatStore((state) => state.switchVariant)
@@ -81,37 +77,6 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
   }, [isEditing, editValue])
   
   const isUser = message.role === 'user'
-  const isAIMessage = !isUser && !message.isGenerating && message.content
-  
-  // Typing animation for new AI messages
-  useEffect(() => {
-    if (isAIMessage) {
-      setDisplayedContent('')
-      setIsTypingAnimation(true)
-      let index = 0
-      
-      const animate = () => {
-        if (index < message.content.length) {
-          setDisplayedContent(message.content.slice(0, index + 1))
-          index++
-          const speed = Math.random() * 20 + 10 // Random speed between 10-30ms
-          animationRef.current = setTimeout(animate, speed)
-        } else {
-          setIsTypingAnimation(false)
-        }
-      }
-      
-      // Start animation after a tiny delay
-      animationRef.current = setTimeout(animate, 50)
-    } else {
-      setDisplayedContent(message.content)
-      setIsTypingAnimation(false)
-    }
-    
-    return () => {
-      if (animationRef.current) clearTimeout(animationRef.current)
-    }
-  }, [message.id, message.content, isAIMessage])
 
   const renderVariantSwitcher = () => {
     if (!activeSessionId) return null
@@ -157,19 +122,8 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
             className="d-flex align-items-center justify-content-center rounded-2 flex-shrink-0"
             style={{ width: 30, height: 30, background: 'linear-gradient(135deg, #ff7a00, #ffb347)' }}
           >
-            <Icon icon="sparkles" size={13} className="text-white" />
+            <Icon icon="robot-face" size={16} className="text-white" />
           </div>
-          {/* Sparkle icons around avatar */}
-          {isTypingAnimation && (
-            <>
-              <div className="position-absolute" style={{ top: -6, right: -6 }}>
-                <Icon icon="sparkles" size={10} style={{ color: '#ff7a00' }} />
-              </div>
-              <div className="position-absolute" style={{ bottom: -4, left: -4 }}>
-                <Icon icon="sparkle-highlight" size={8} style={{ color: '#ffb347' }} />
-              </div>
-            </>
-          )}
         </div>
       )}
 
@@ -292,14 +246,8 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
                   },
                 }}
               >
-                {displayedContent}
+                {message.content}
               </ReactMarkdown>
-            )}
-            {/* Sparkle indicator at end of message while typing */}
-            {isTypingAnimation && (
-              <span className="ms-1">
-                <Icon icon="sparkle-2" size={12} style={{ color: '#ff7a00' }} />
-              </span>
             )}
 
             {/* AI actions — always visible */}

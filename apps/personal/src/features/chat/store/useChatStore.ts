@@ -159,115 +159,63 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     }
 
-    const tempUserMsgId = `temp-${Date.now()}`
     const activeLeaf = parentId !== undefined ? parentId : get().activeLeafId[currentSessionId!];
     
-    const userMessage: Message = {
-      id: tempUserMsgId,
-      role: 'user',
-      content,
-      parent_id: activeLeaf,
-      timestamp: new Date().toISOString(),
-    }
-
-    // Optimistic UI update
-    set((state) => ({
-      messages: {
-        ...state.messages,
-        [currentSessionId!]: [...(state.messages[currentSessionId!] || []), userMessage],
-      },
-      activeLeafId: {
-        ...state.activeLeafId,
-        [currentSessionId!]: tempUserMsgId,
-      },
-      isTyping: true,
-    }))
-
+    // Get the real AI message from API immediately
     try {
-      // First, add a temporary AI message with isGenerating true
-      const tempAiMsgId = `temp-ai-${Date.now()}`
-      set((state) => {
-        const msgs = state.messages[currentSessionId!] || []
-        const finalUserMsg = {
-          ...userMessage, 
-          id: msgs.find(m => m.id === tempUserMsgId) ? tempUserMsgId : userMessage.id, 
-          parent_id: userMessage.parent_id,
-          timestamp: userMessage.timestamp
-        };
-        const updatedMsgs = msgs.map(m => m.id === tempUserMsgId ? finalUserMsg : m)
-        
-        // Add temporary AI message with isGenerating true
-        const tempAiMessage: Message = {
-          id: tempAiMsgId,
-          role: 'ai',
-          content: '',
-          parent_id: tempUserMsgId,
-          timestamp: new Date().toISOString(),
-          isGenerating: true,
-        }
-
-        return {
-          messages: {
-            ...state.messages,
-            [currentSessionId!]: [...updatedMsgs, tempAiMessage],
-          },
-          activeLeafId: {
-            ...state.activeLeafId,
-            [currentSessionId!]: tempAiMsgId,
-          },
-        }
-      })
-      
-      // Get the real AI message from API
       const data = await chatService.sendMessage(currentSessionId!, content, activeLeaf ?? undefined)
       
-      set((state) => {
-        const msgs = state.messages[currentSessionId!] || []
-        // Replace temp user message with real db message
-        const finalUserMsg = {
-          ...userMessage, 
-          id: data.user_message.id, 
-          parent_id: data.user_message.parent_id,
-          timestamp: data.user_message.timestamp
-        };
-        // Replace temp AI message with real AI message
-        const aiMessage: Message = {
-          id: data.ai_message.id,
-          role: data.ai_message.role,
-          content: data.ai_message.content,
-          parent_id: data.ai_message.parent_id,
-          timestamp: data.ai_message.timestamp,
-        }
+      // Create real messages from API response
+      const finalUserMsg: Message = {
+        id: data.user_message.id,
+        role: data.user_message.role,
+        content: data.user_message.content,
+        parent_id: data.user_message.parent_id,
+        timestamp: data.user_message.timestamp,
+      };
+      
+      const aiMessage: Message = {
+        id: data.ai_message.id,
+        role: data.ai_message.role,
+        content: data.ai_message.content,
+        parent_id: data.ai_message.parent_id,
+        timestamp: data.ai_message.timestamp,
+      }
 
-        const updatedMsgs = msgs.map(m => 
-          m.id === tempUserMsgId ? finalUserMsg : 
-          m.id === tempAiMsgId ? aiMessage : m
-        )
-
-        return {
-          messages: {
-            ...state.messages,
-            [currentSessionId!]: updatedMsgs,
-          },
-          activeLeafId: {
-            ...state.activeLeafId,
-            [currentSessionId!]: aiMessage.id,
-          },
-          isTyping: false,
-        }
-      })
+      set((state) => ({
+        messages: {
+          ...state.messages,
+          [currentSessionId!]: [...(state.messages[currentSessionId!] || []), finalUserMsg, aiMessage],
+        },
+        activeLeafId: {
+          ...state.activeLeafId,
+          [currentSessionId!]: aiMessage.id,
+        },
+        isTyping: false,
+      }))
     } catch (err) {
+      // If API fails, still show user message and error
+      const tempUserMsgId = `temp-${Date.now()}`
+      const userMessage: Message = {
+        id: tempUserMsgId,
+        role: 'user',
+        content,
+        parent_id: activeLeaf,
+        timestamp: new Date().toISOString(),
+      };
+      
       const errorMessage: Message = {
         id: `err-${Date.now()}`,
         role: 'ai',
         content: `Sorry, there was an error processing your request.`,
-        parent_id: userMessage.id,
+        parent_id: tempUserMsgId,
         timestamp: new Date().toISOString(),
       }
+      
       set((state) => ({
         messages: {
           ...state.messages,
-          [currentSessionId!]: [...(state.messages[currentSessionId!] || []), errorMessage],
+          [currentSessionId!]: [...(state.messages[currentSessionId!] || []), userMessage, errorMessage],
         },
         activeLeafId: {
           ...state.activeLeafId,

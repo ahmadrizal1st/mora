@@ -327,7 +327,7 @@ export default function ChatPage() {
                         className="d-flex align-items-center justify-content-center rounded-2 flex-shrink-0"
                         style={{ width: 30, height: 30, background: 'linear-gradient(135deg, #ff7a00, #ffb347)', marginTop: 2 }}
                       >
-                        <Icon icon="sparkles" size={14} className="text-white" />
+                        <Icon icon="robot-face" size={16} className="text-white" />
                       </div>
                       <div className="d-flex align-items-center" style={{ height: 30 }}>
                         <div className="d-flex gap-1 align-items-center">

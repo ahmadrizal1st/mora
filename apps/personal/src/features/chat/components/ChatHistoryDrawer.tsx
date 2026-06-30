@@ -160,7 +160,7 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
                   className="d-flex align-items-center justify-content-center rounded-2"
                   style={{ width: 28, height: 28, background: 'linear-gradient(135deg, #ff7a00, #ffb347)' }}
                 >
-                  <Icon icon="sparkles" size={14} className="text-white" />
+                  <img src="/static/logo-small-white.svg" alt="Mora AI" style={{ width: 16, height: 16 }} />
                 </div>
                 <span className="fw-semibold" style={{ fontSize: 15 }}>Mora AI</span>
               </div>
