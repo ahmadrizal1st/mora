@@ -22,6 +22,7 @@ use App\Http\Controllers\{
     SubscriptionController,
     ChatController,
     DocumentController,
+    PromptTemplateController,
 };
 use Illuminate\Support\Facades\Route;
 
@@ -152,4 +153,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('chat/sessions', [ChatController::class, 'deleteSessions']);
     Route::get('chat/sessions/{sessionId}/messages', [ChatController::class, 'messages']);
     Route::post('chat/send', [ChatController::class, 'send']);
+
+    // Prompt Templates
+    Route::get('prompt-templates', [PromptTemplateController::class, 'index']);
+    Route::post('prompt-templates', [PromptTemplateController::class, 'store']);
+    Route::put('prompt-templates/{id}', [PromptTemplateController::class, 'update']);
+    Route::delete('prompt-templates/{id}', [PromptTemplateController::class, 'destroy']);
+    Route::post('prompt-templates/{id}/use', [PromptTemplateController::class, 'use']);
 });

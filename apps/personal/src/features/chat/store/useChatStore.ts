@@ -67,7 +67,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       set({ sessions: formattedSessions, isLoadingSessions: false, hasFetchedSessions: true })
     } catch (error) {
       console.error('Failed to fetch sessions:', error)
-      set({ isLoadingSessions: false })
+      set({ isLoadingSessions: false, hasFetchedSessions: true })
     }
   },
 
@@ -184,20 +184,53 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }))
 
     try {
+      // First, add a temporary AI message with isGenerating true
+      const tempAiMsgId = `temp-ai-${Date.now()}`
+      set((state) => {
+        const msgs = state.messages[currentSessionId!] || []
+        const finalUserMsg = {
+          ...userMessage, 
+          id: msgs.find(m => m.id === tempUserMsgId) ? tempUserMsgId : userMessage.id, 
+          parent_id: userMessage.parent_id,
+          timestamp: userMessage.timestamp
+        };
+        const updatedMsgs = msgs.map(m => m.id === tempUserMsgId ? finalUserMsg : m)
+        
+        // Add temporary AI message with isGenerating true
+        const tempAiMessage: Message = {
+          id: tempAiMsgId,
+          role: 'ai',
+          content: '',
+          parent_id: tempUserMsgId,
+          timestamp: new Date().toISOString(),
+          isGenerating: true,
+        }
+
+        return {
+          messages: {
+            ...state.messages,
+            [currentSessionId!]: [...updatedMsgs, tempAiMessage],
+          },
+          activeLeafId: {
+            ...state.activeLeafId,
+            [currentSessionId!]: tempAiMsgId,
+          },
+        }
+      })
+      
+      // Get the real AI message from API
       const data = await chatService.sendMessage(currentSessionId!, content, activeLeaf ?? undefined)
       
       set((state) => {
         const msgs = state.messages[currentSessionId!] || []
-        // Replace temp message with real db message
+        // Replace temp user message with real db message
         const finalUserMsg = {
           ...userMessage, 
           id: data.user_message.id, 
           parent_id: data.user_message.parent_id,
           timestamp: data.user_message.timestamp
         };
-        const updatedMsgs = msgs.map(m => m.id === tempUserMsgId ? finalUserMsg : m)
-        
-        // Add AI message
+        // Replace temp AI message with real AI message
         const aiMessage: Message = {
           id: data.ai_message.id,
           role: data.ai_message.role,
@@ -206,10 +239,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
           timestamp: data.ai_message.timestamp,
         }
 
+        const updatedMsgs = msgs.map(m => 
+          m.id === tempUserMsgId ? finalUserMsg : 
+          m.id === tempAiMsgId ? aiMessage : m
+        )
+
         return {
           messages: {
             ...state.messages,
-            [currentSessionId!]: [...updatedMsgs, aiMessage],
+            [currentSessionId!]: updatedMsgs,
           },
           activeLeafId: {
             ...state.activeLeafId,

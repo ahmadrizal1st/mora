@@ -1,5 +1,6 @@
 import { useTheme, type ThemeConfig } from '@/shared/context/ThemeContext'
 import { Icon } from '../ui/Icon'
+import { useLocation } from '@tanstack/react-router'
 
 const COLORS = [
   'blue',
@@ -25,6 +26,8 @@ const RADIUSES = ['0', '0.5', '1', '1.5', '2']
 export function ThemeSettings() {
   const { config, setThemeValue, resetTheme, settingsOpen, openSettings, closeSettings } =
     useTheme()
+  const location = useLocation()
+  const isAiRoute = location.pathname.startsWith('/ai/')
 
   const handleChange = (key: keyof ThemeConfig, value: string) => {
     setThemeValue(key, value)
@@ -32,19 +35,21 @@ export function ThemeSettings() {
 
   return (
     <>
-      <div className="settings d-none d-lg-block">
-        <a
-          href="#"
-          className="btn btn-floating btn-icon btn-primary"
-          onClick={(e) => {
-            e.preventDefault()
-            openSettings()
-          }}
-          aria-label="Theme Settings"
-        >
-          <Icon icon="brush" />
-        </a>
-      </div>
+      {!isAiRoute && (
+        <div className="settings d-none d-lg-block">
+          <a
+            href="#"
+            className="btn btn-floating btn-icon btn-primary"
+            onClick={(e) => {
+              e.preventDefault()
+              openSettings()
+            }}
+            aria-label="Theme Settings"
+          >
+            <Icon icon="brush" />
+          </a>
+        </div>
+      )}
 
       {settingsOpen && <div className="offcanvas-backdrop fade show" onClick={closeSettings} />}
 

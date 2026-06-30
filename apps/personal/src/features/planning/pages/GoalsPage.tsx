@@ -285,107 +285,106 @@ export function GoalsPage() {
             </div>
           </div>
         </div>
-      </div>
 
         <div style={{ flex: '1 1 280px', minWidth: '260px' }}>
-        <div className="d-flex flex-column gap-3 h-100">
-          <div
-            className="card shadow-none border flex-grow-1 d-none d-lg-flex flex-column overflow-hidden"
-            style={{ borderRadius: '12px' }}
-          >
-            <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0 flex-shrink-0">
-              <h4
-                className="card-title fw-bold m-0 d-flex align-items-center gap-2"
-                style={{ letterSpacing: '0.025em' }}
-              >
-                Journey Milestones
-              </h4>
-            </div>
-            <div className="card-body p-4 d-flex flex-column overflow-hidden" style={{ minHeight: 0 }}>
-              {milestones && milestones.length > 0 ? (
-                <div className="flex-grow-1 overflow-y-auto no-scrollbar" style={{ minHeight: 0 }}>
-                  <div className="position-relative ms-3 ps-4 border-start border-2 border-orange-lt">
-                  {milestones.map((m: any, i: number) => (
-                    <div key={i} className="mb-4 position-relative">
-                      <div
-                        className={`position-absolute rounded-circle border border-white d-flex align-items-center justify-content-center ${m.type === 'achievement' ? 'bg-success' : 'bg-orange'}`}
-                        style={{
-                          width: '24px',
-                          height: '24px',
-                          left: '-36px',
-                          top: '0',
-                          borderWidth: '3px',
-                        }}
-                      >
-                        <Icon
-                          icon={m.type === 'achievement' ? 'trophy' : 'flag'}
-                          size="xs"
-                          className="text-white"
-                        />
-                      </div>
-                      <div className="d-flex justify-content-between align-items-start">
-                        <div>
-                          <div
-                            className="text-secondary mb-1 fw-bold"
-                            style={{ fontSize: '10px', textTransform: 'uppercase' }}
-                          >
-                            {m.date}
-                          </div>
-                          <div className="fw-bold text-body small leading-tight">{m.label}</div>
-                        </div>
-                        <span
-                          className={`badge ${m.type === 'achievement' ? 'bg-success-lt' : 'bg-primary-lt'} border-0`}
-                          style={{ fontSize: '9px' }}
-                        >
-                          {m.type === 'achievement' ? 'Tercapai' : 'Target'}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="mb-0 position-relative mt-2">
-                    <div
-                      className="position-absolute rounded-circle bg-white border-dashed border-2"
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        left: '-34px',
-                        top: '2px',
-                        borderColor: '#cbd5e1',
-                      }}
-                    ></div>
-                    <div className="text-secondary small fst-italic opacity-50">
-                      Impian berikutnya sedang menunggu...
-                    </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center px-3 py-4">
-                  <div 
-                    className="rounded-circle d-flex align-items-center justify-content-center mb-3" 
-                    style={{ 
-                      width: '64px', 
-                      height: '64px', 
-                      background: '#f8f9fa',
-                      border: '2px dashed #e2e8f0'
-                    }}
-                  >
-                    <Icon icon="map-2" size="md" className="text-secondary opacity-50" stroke={1.5} />
-                  </div>
-                  <div className="fw-bold text-dark mb-2" style={{ fontSize: '14px' }}>Belum Ada Perjalanan</div>
-                  <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>
-                    Milestone impian Anda akan otomatis tercatat di sini seiring dengan progres tabungan Anda.
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-4 p-3 bg-body-tertiary rounded-3 border-0 text-center flex-shrink-0">
-                <div className="small fw-bold text-body mb-1">Terus Konsisten!</div>
-                <div className="text-secondary" style={{ fontSize: '11px' }}>
-                  Setiap langkah kecil membawamu lebih dekat ke impian.
-                </div>
+          <div className="d-flex flex-column gap-3 h-100">
+            <div
+              className="card shadow-none border flex-grow-1 d-none d-lg-flex flex-column overflow-hidden"
+              style={{ borderRadius: '12px' }}
+            >
+              <div className="card-header border-0 bg-transparent pt-4 px-4 pb-0 flex-shrink-0">
+                <h4
+                  className="card-title fw-bold m-0 d-flex align-items-center gap-2"
+                  style={{ letterSpacing: '0.025em' }}
+                >
+                  Journey Milestones
+                </h4>
               </div>
+              <div className="card-body p-4 d-flex flex-column overflow-hidden" style={{ minHeight: 0 }}>
+                {milestones && milestones.length > 0 ? (
+                  <div className="flex-grow-1 overflow-y-auto no-scrollbar" style={{ minHeight: 0 }}>
+                    <div className="position-relative ms-3 ps-4 border-start border-2 border-orange-lt">
+                      {milestones.map((m: any, i: number) => (
+                        <div key={i} className="mb-4 position-relative">
+                          <div
+                            className={`position-absolute rounded-circle border border-white d-flex align-items-center justify-content-center ${m.type === 'achievement' ? 'bg-success' : 'bg-orange'}`}
+                            style={{
+                              width: '24px',
+                              height: '24px',
+                              left: '-36px',
+                              top: '0',
+                              borderWidth: '3px',
+                            }}
+                          >
+                            <Icon
+                              icon={m.type === 'achievement' ? 'trophy' : 'flag'}
+                              size="xs"
+                              className="text-white"
+                            />
+                          </div>
+                          <div className="d-flex justify-content-between align-items-start">
+                            <div>
+                              <div
+                                className="text-secondary mb-1 fw-bold"
+                                style={{ fontSize: '10px', textTransform: 'uppercase' }}
+                              >
+                                {m.date}
+                              </div>
+                              <div className="fw-bold text-body small leading-tight">{m.label}</div>
+                            </div>
+                            <span
+                              className={`badge ${m.type === 'achievement' ? 'bg-success-lt' : 'bg-primary-lt'} border-0`}
+                              style={{ fontSize: '9px' }}
+                            >
+                              {m.type === 'achievement' ? 'Tercapai' : 'Target'}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="mb-0 position-relative mt-2">
+                        <div
+                          className="position-absolute rounded-circle bg-white border-dashed border-2"
+                          style={{
+                            width: '20px',
+                            height: '20px',
+                            left: '-34px',
+                            top: '2px',
+                            borderColor: '#cbd5e1',
+                          }}
+                        ></div>
+                        <div className="text-secondary small fst-italic opacity-50">
+                          Impian berikutnya sedang menunggu...
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center px-3 py-4">
+                    <div 
+                      className="rounded-circle d-flex align-items-center justify-content-center mb-3" 
+                      style={{ 
+                        width: '64px', 
+                        height: '64px', 
+                        background: '#f8f9fa',
+                        border: '2px dashed #e2e8f0'
+                      }}
+                    >
+                      <Icon icon="map-2" size="md" className="text-secondary opacity-50" stroke={1.5} />
+                    </div>
+                    <div className="fw-bold text-dark mb-2" style={{ fontSize: '14px' }}>Belum Ada Perjalanan</div>
+                    <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>
+                      Milestone impian Anda akan otomatis tercatat di sini seiring dengan progres tabungan Anda.
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-4 p-3 bg-body-tertiary rounded-3 border-0 text-center flex-shrink-0">
+                  <div className="small fw-bold text-body mb-1">Terus Konsisten!</div>
+                  <div className="text-secondary" style={{ fontSize: '11px' }}>
+                    Setiap langkah kecil membawamu lebih dekat ke impian.
+                  </div>
+                </div>
               </div>
             </div>
           </div>

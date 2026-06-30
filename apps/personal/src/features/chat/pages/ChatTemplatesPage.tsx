@@ -1,253 +1,529 @@
-import { useState } from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useState, useMemo, useRef, useEffect } from 'react'
+import { useNavigate } from '@tanstack/react-router'
+import { Icon, Modal, ModalHeader } from '@/shared/components/ui'
 import { useChatStore } from '../store/useChatStore'
-import { Icon } from '@/shared/components/ui/Icon'
-import { Button } from '@/shared/components/ui/Button'
 import { ChatHistoryDrawer } from '../components/ChatHistoryDrawer'
+import {
+  useTemplates,
+  useCreateTemplate,
+  useUpdateTemplate,
+  useDeleteTemplate,
+  useUseTemplate,
+} from '../hooks/useTemplates'
+import type { PromptTemplate, TemplateCategory, CreateTemplatePayload } from '../services/templateService'
+import clsx from 'clsx'
 
-const MOCK_TEMPLATES = [
-  {
-    id: 1,
-    title: 'Analisis Arus Kas Bulanan',
-    description: 'Menganalisis arus kas masuk dan keluar secara bulanan untuk melihat likuiditas bisnis.',
-    icon: 'chart-bar',
-    iconColor: '#20c997', // Green
-    iconBg: '#e6f7ef',
-    tags: [{ label: 'Cash Flow', color: '#20c997', bg: '#e6f7ef' }, { label: 'Analisis', color: '#6c757d', bg: '#f8f9fa' }],
-    usage: '28 kali',
-    updated: '2 hari lalu'
-  },
-  {
-    id: 2,
-    title: 'Ringkasan Laporan Keuangan',
-    description: 'Merangkum laporan keuangan menjadi insight penting dan mudah dipahami.',
-    icon: 'chart-pie',
-    iconColor: '#6f42c1', // Purple
-    iconBg: '#f0f0fe',
-    tags: [{ label: 'Laporan', color: '#6f42c1', bg: '#f0f0fe' }, { label: 'Ringkasan', color: '#6c757d', bg: '#f8f9fa' }],
-    usage: '42 kali',
-    updated: '3 hari lalu'
-  },
-  {
-    id: 3,
-    title: 'Proyeksi Pendapatan',
-    description: 'Membuat proyeksi pendapatan berdasarkan data historis dan asumsi pertumbuhan.',
-    icon: 'target',
-    iconColor: '#ff7a00', // Orange
-    iconBg: '#fff3e6',
-    tags: [{ label: 'Proyeksi', color: '#ff7a00', bg: '#fff3e6' }, { label: 'Perencanaan', color: '#6c757d', bg: '#f8f9fa' }],
-    usage: '19 kali',
-    updated: '5 hari lalu'
-  },
-  {
-    id: 4,
-    title: 'Analisis Investasi Saham',
-    description: 'Menganalisis potensi investasi saham berdasarkan fundamental dan rasio keuangan.',
-    icon: 'shield-check',
-    iconColor: '#20c997', // Green
-    iconBg: '#e6f7ef',
-    tags: [{ label: 'Investasi', color: '#20c997', bg: '#e6f7ef' }, { label: 'Saham', color: '#6c757d', bg: '#f8f9fa' }],
-    usage: '37 kali',
-    updated: '1 minggu lalu'
-  },
-  {
-    id: 5,
-    title: 'Kalkulasi ROI',
-    description: 'Menghitung Return on Investment dari suatu proyek atau investasi.',
-    icon: 'calculator',
-    iconColor: '#0d6efd', // Blue
-    iconBg: '#e7f1ff',
-    tags: [{ label: 'ROI', color: '#0d6efd', bg: '#e7f1ff' }, { label: 'Analisis', color: '#6c757d', bg: '#f8f9fa' }],
-    usage: '22 kali',
-    updated: '1 minggu lalu'
-  },
-  {
-    id: 6,
-    title: 'Budget Marketing Plan',
-    description: 'Membuat rencana dan alokasi budget marketing yang efektif.',
-    icon: 'file-invoice',
-    iconColor: '#e83e8c', // Pink/Red
-    iconBg: '#fce8f1',
-    tags: [{ label: 'Budget', color: '#e83e8c', bg: '#fce8f1' }, { label: 'Marketing', color: '#6c757d', bg: '#f8f9fa' }],
-    usage: '15 kali',
-    updated: '2 minggu lalu'
-  }
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const CATEGORIES: { value: TemplateCategory | 'all'; label: string }[] = [
+  { value: 'all', label: 'Semua' },
+  { value: 'financial-analysis', label: 'Analisis Keuangan' },
+  { value: 'investment', label: 'Investasi' },
+  { value: 'planning', label: 'Perencanaan' },
+  { value: 'report', label: 'Laporan' },
+  { value: 'other', label: 'Lainnya' },
 ]
 
-const TABS = ['Semua', 'Analisis Keuangan', 'Investasi', 'Perencanaan', 'Laporan', 'Lainnya']
+const ICONS = [
+  'chart-bar', 'chart-pie', 'chart-line', 'chart-area',
+  'wallet', 'coins', 'piggy-bank', 'cash',
+  'target', 'shield-check', 'trending-up', 'report',
+  'file-invoice', 'calculator', 'sparkles', 'star',
+]
 
-export function ChatTemplatesPage() {
-  const navigate = useNavigate()
-  const { createNewSession } = useChatStore()
-  const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState('Semua')
+const COLORS = [
+  '#ff7a00', '#20c997', '#6f42c1', '#0d6efd',
+  '#e83e8c', '#fd7e14', '#198754', '#dc3545',
+]
 
-  const handleCreateTemplate = () => {
-    // In a real app, this would open a modal or navigate to a builder
-    window.alert('Fitur pembuat template custom akan segera hadir!')
-  }
+const CATEGORY_LABEL: Record<TemplateCategory, string> = {
+  'financial-analysis': 'Analisis Keuangan',
+  investment: 'Investasi',
+  planning: 'Perencanaan',
+  report: 'Laporan',
+  other: 'Lainnya',
+}
 
-  const handleUseTemplate = (template: typeof MOCK_TEMPLATES[0]) => {
-    createNewSession()
-    // Ideally we would pass the template prompt to the new session here
-    navigate({ to: '/ai/chat/' })
-  }
+const DEFAULT_FORM: CreateTemplatePayload = {
+  title: '',
+  description: '',
+  prompt: '',
+  category: 'financial-analysis',
+  icon: 'sparkles',
+  icon_color: '#ff7a00',
+}
+
+// ─── TemplateFormModal ────────────────────────────────────────────────────────
+
+interface TemplateFormModalProps {
+  initial?: Partial<CreateTemplatePayload>
+  onSave: (payload: CreateTemplatePayload) => void
+  onClose: () => void
+  isLoading: boolean
+  mode: 'create' | 'edit'
+  show: boolean
+}
+
+function TemplateFormModal({ initial, onSave, onClose, isLoading, mode, show }: TemplateFormModalProps) {
+  const [form, setForm] = useState<CreateTemplatePayload>({ ...DEFAULT_FORM, ...initial })
+
+  // Reset form when initial changes or modal opens
+  useEffect(() => {
+    if (show) {
+      setForm({ ...DEFAULT_FORM, ...initial })
+    }
+  }, [initial, show])
+
+  const set = (key: keyof CreateTemplatePayload, value: string) =>
+    setForm((f) => ({ ...f, [key]: value }))
+
+  const valid = form.title.trim() && form.prompt.trim() && form.category
 
   return (
-    <div
-      className="d-flex w-100 bg-light dark:bg-dark text-body dark:text-white"
-      style={{ height: '100dvh', paddingTop: 'env(safe-area-inset-top, 0px)' }}
-    >
-      <ChatHistoryDrawer isOpen={isDrawerOpen} onToggle={() => setIsDrawerOpen(!isDrawerOpen)} />
-
-      <div className="flex-grow-1 d-flex flex-column h-100 position-relative" style={{ minWidth: 0 }}>
-        {/* Header Bar */}
-        <div className="bg-transparent px-3 py-3 d-flex align-items-center gap-3 position-absolute w-100" style={{ zIndex: 10, top: 0, left: 0, right: 0 }}>
-          {!isDrawerOpen && (
-            <Button
-              iconOnly
-              ghost
-              size="md"
-              icon="layout-sidebar"
-              className="p-0 text-secondary d-md-none"
-              onClick={() => setIsDrawerOpen(true)}
-            />
-          )}
-          <div className="flex-grow-1"></div>
-          <Button
-            to="/dashboard"
-            pill
-            ghost
-            size="md"
-            icon="home"
-            text="Home"
-            className="fw-medium text-body bg-white"
+    <Modal show={show} onClose={onClose} size="lg">
+      <ModalHeader title={mode === 'create' ? 'Buat Template Baru' : 'Edit Template'} onClose={onClose} />
+      <div className="modal-body p-4">
+        {/* Title */}
+        <div className="mb-3">
+          <label className="form-label fw-medium" style={{ fontSize: 13 }}>Judul <span className="text-danger">*</span></label>
+          <input
+            className="form-control"
+            style={{ fontSize: 14 }}
+            placeholder="contoh: Analisis Arus Kas Bulanan"
+            value={form.title}
+            onChange={(e) => set('title', e.target.value)}
           />
         </div>
 
-        {/* Main Content */}
-        <div className="flex-grow-1 overflow-auto custom-scrollbar pt-5 mt-4 pb-5">
-          <div className="mx-auto w-100 px-4 py-4" style={{ maxWidth: '1000px' }}>
-            
-            {/* Page Header */}
-            <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
-              <div className="d-flex align-items-start gap-3">
-                <div className="d-flex align-items-center justify-content-center flex-shrink-0 mt-1" style={{ width: '40px', height: '40px' }}>
-                  <Icon icon="wand" size={32} style={{ color: '#ff7a00' }} />
-                </div>
-                <div>
-                  <h2 className="mb-1 fw-bold text-dark dark:text-white" style={{ fontSize: '28px' }}>
-                    Templates
-                  </h2>
-                  <p className="text-muted mb-0" style={{ fontSize: '15px' }}>
-                    Buat, kelola, dan gunakan template prompt untuk kebutuhan finansial Anda.
-                  </p>
-                </div>
-              </div>
+        {/* Description */}
+        <div className="mb-3">
+          <label className="form-label fw-medium" style={{ fontSize: 13 }}>Deskripsi</label>
+          <input
+            className="form-control"
+            style={{ fontSize: 14 }}
+            placeholder="Deskripsi singkat template..."
+            value={form.description ?? ''}
+            onChange={(e) => set('description', e.target.value)}
+          />
+        </div>
+
+        {/* Prompt */}
+        <div className="mb-3">
+          <label className="form-label fw-medium" style={{ fontSize: 13 }}>Prompt <span className="text-danger">*</span></label>
+          <textarea
+            className="form-control"
+            style={{ fontSize: 14, minHeight: 120, resize: 'vertical' }}
+            placeholder="Tulis prompt yang akan dikirim ke AI saat template digunakan..."
+            value={form.prompt}
+            onChange={(e) => set('prompt', e.target.value)}
+          />
+        </div>
+
+        {/* Category */}
+        <div className="mb-3">
+          <label className="form-label fw-medium" style={{ fontSize: 13 }}>Kategori <span className="text-danger">*</span></label>
+          <select
+            className="form-select"
+            style={{ fontSize: 14 }}
+            value={form.category}
+            onChange={(e) => set('category', e.target.value as TemplateCategory)}
+          >
+            {CATEGORIES.filter(c => c.value !== 'all').map(c => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Icon */}
+        <div className="mb-3">
+          <label className="form-label fw-medium" style={{ fontSize: 13 }}>Ikon</label>
+          <div className="d-flex flex-wrap gap-2">
+            {ICONS.map((icon) => (
               <button
-                className="btn btn-sm text-white rounded-pill px-4 py-2 fw-medium shadow-sm transition-colors align-self-md-center"
-                style={{ backgroundColor: '#ff7a00', fontSize: '14px', whiteSpace: 'nowrap' }}
-                onClick={handleCreateTemplate}
+                key={icon}
+                type="button"
+                className={clsx('btn btn-sm rounded-2 p-2', form.icon === icon ? 'btn-primary' : 'btn-ghost')}
+                style={{ width: 38, height: 38 }}
+                onClick={() => set('icon', icon)}
               >
-                <Icon icon="plus" size={16} className="me-2" /> Buat template baru
+                <Icon icon={icon} size={16} />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Icon Color */}
+        <div className="mb-1">
+          <label className="form-label fw-medium" style={{ fontSize: 13 }}>Warna Ikon</label>
+          <div className="d-flex gap-2 flex-wrap">
+            {COLORS.map((color) => (
+              <button
+                key={color}
+                type="button"
+                className="rounded-circle border-0 flex-shrink-0"
+                style={{
+                  width: 28, height: 28, background: color,
+                  outline: form.icon_color === color ? `3px solid ${color}` : 'none',
+                  outlineOffset: 2,
+                }}
+                onClick={() => set('icon_color', color)}
+              />
+            ))}
+            <input
+              type="color"
+              className="form-control form-control-color rounded-3 border"
+              style={{ width: 36, height: 28, padding: '2px 3px', cursor: 'pointer' }}
+              value={form.icon_color}
+              onChange={(e) => set('icon_color', e.target.value)}
+              title="Warna kustom"
+            />
+          </div>
+        </div>
+      </div>
+      <div className="modal-footer">
+        <button className="btn" onClick={onClose}>
+          Batal
+        </button>
+        <button
+          className="btn btn-primary"
+          style={{ background: '#ff7a00', border: 'none' }}
+          disabled={!valid || isLoading}
+          onClick={() => onSave(form)}
+        >
+          {isLoading ? (
+            <span className="spinner-border me-2" style={{ width: 14, height: 14, borderWidth: '0.18em' }} />
+          ) : null}
+          {mode === 'create' ? 'Buat Template' : 'Simpan Perubahan'}
+        </button>
+      </div>
+    </Modal>
+  )
+}
+
+// ─── TemplateCard ─────────────────────────────────────────────────────────────
+
+interface TemplateCardProps {
+  template: PromptTemplate
+  onUse: (t: PromptTemplate) => void
+  onEdit: (t: PromptTemplate) => void
+  onDelete: (t: PromptTemplate) => void
+}
+
+function TemplateCard({ template, onUse, onEdit, onDelete }: TemplateCardProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [menuOpen])
+
+  const iconBg = template.icon_color + '20' // 12% opacity hex
+
+  return (
+    <div
+      className="card h-100"
+      style={{ borderRadius: 12 }}
+    >
+      <div className="card-body p-3 d-flex flex-column gap-3">
+        {/* Header row */}
+        <div className="d-flex align-items-start gap-3">
+          <div
+            className="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+            style={{ width: 44, height: 44, background: iconBg }}
+          >
+            <Icon icon={template.icon} size={22} style={{ color: template.icon_color }} />
+          </div>
+
+          <div className="flex-grow-1 min-w-0">
+            <div className="fw-semibold text-truncate" style={{ fontSize: 14 }}>{template.title}</div>
+            {template.description && (
+              <div className="text-muted mt-1" style={{ fontSize: 12, lineHeight: 1.45 }}>
+                {template.description}
+              </div>
+            )}
+          </div>
+
+          {/* Three-dot menu */}
+          <div className="position-relative flex-shrink-0" ref={menuRef}>
+            <button
+              className="btn btn-ghost btn-sm btn-icon rounded-3 text-muted"
+              style={{ width: 28, height: 28 }}
+              onClick={(e) => { e.stopPropagation(); setMenuOpen((v) => !v) }}
+            >
+              <Icon icon="dots-vertical" size={15} />
+            </button>
+
+            {menuOpen && (
+              <div
+                className="card shadow position-absolute end-0"
+                style={{ top: '100%', zIndex: 100, minWidth: 150, borderRadius: 10, padding: '4px 0', marginTop: 4 }}
+              >
+                <button
+                  className="d-flex align-items-center gap-2 px-3 py-2 border-0 bg-transparent text-start w-100 text-body"
+                  style={{ fontSize: 13 }}
+                  onClick={() => { setMenuOpen(false); onEdit(template) }}
+                >
+                  <Icon icon="pencil" size={14} /> Edit
+                </button>
+                <button
+                  className="d-flex align-items-center gap-2 px-3 py-2 border-0 bg-transparent text-start w-100 text-danger"
+                  style={{ fontSize: 13 }}
+                  onClick={() => { setMenuOpen(false); onDelete(template) }}
+                >
+                  <Icon icon="trash" size={14} /> Hapus
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Category badge + usage */}
+        <div className="d-flex align-items-center justify-content-between">
+          <span
+            className="badge fw-medium"
+            style={{
+              fontSize: 11, borderRadius: 6, padding: '3px 8px',
+              background: template.icon_color + '18',
+              color: template.icon_color,
+            }}
+          >
+            {CATEGORY_LABEL[template.category] ?? template.category}
+          </span>
+          <span className="text-muted d-flex align-items-center gap-1" style={{ fontSize: 11 }}>
+            <Icon icon="chart-bar" size={12} />
+            {template.usage_count}× digunakan
+          </span>
+        </div>
+
+        {/* Use button */}
+        <button
+          className="btn btn-sm w-100 rounded-3 fw-medium"
+          style={{
+            fontSize: 13, border: `1px solid ${template.icon_color}40`,
+            background: template.icon_color + '0d',
+            color: template.icon_color,
+            marginTop: 'auto',
+          }}
+          onClick={() => onUse(template)}
+        >
+          Gunakan Template
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
+export function ChatTemplatesPage() {
+  const navigate = useNavigate()
+  const { createNewSession, fetchSessions } = useChatStore()
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
+  const [activeCategory, setActiveCategory] = useState<TemplateCategory | 'all'>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | null>(null)
+  const [editingTemplate, setEditingTemplate] = useState<PromptTemplate | null>(null)
+
+  // Load chat history on mount
+  useEffect(() => {
+    fetchSessions()
+  }, [fetchSessions])
+
+  useEffect(() => {
+    fetchSessions()
+  }, [fetchSessions])
+
+  const { data: templates = [], isLoading } = useTemplates()
+  const createMutation = useCreateTemplate()
+  const updateMutation = useUpdateTemplate()
+  const deleteMutation = useDeleteTemplate()
+  const useMutation_ = useUseTemplate()
+
+  const filtered = useMemo(() => {
+    let list = templates
+    if (activeCategory !== 'all') list = list.filter(t => t.category === activeCategory)
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      list = list.filter(t =>
+        t.title.toLowerCase().includes(q) ||
+        (t.description ?? '').toLowerCase().includes(q)
+      )
+    }
+    return list
+  }, [templates, activeCategory, searchQuery])
+
+  const handleUse = async (template: PromptTemplate) => {
+    useMutation_.mutate(template.id)
+    createNewSession()
+    navigate({ to: '/ai/chat/' })
+    // Prompt will be sent by the user seeing the chat — we pre-fill via sessionStorage
+    sessionStorage.setItem('mora_template_prompt', template.prompt)
+  }
+
+  const handleSave = async (payload: CreateTemplatePayload) => {
+    if (modalMode === 'create') {
+      await createMutation.mutateAsync(payload)
+    } else if (editingTemplate) {
+      await updateMutation.mutateAsync({ id: editingTemplate.id, payload })
+    }
+    setModalMode(null)
+    setEditingTemplate(null)
+  }
+
+  const handleDelete = (template: PromptTemplate) => {
+    if (confirm(`Hapus template "${template.title}"?`)) {
+      deleteMutation.mutate(template.id)
+    }
+  }
+
+  const isSaving = createMutation.isPending || updateMutation.isPending
+
+  return (
+    <div className="d-flex w-100 chat-page-container" style={{ background: 'var(--tblr-bg-surface)' }}>
+      <ChatHistoryDrawer isOpen={isDrawerOpen} onToggle={() => setIsDrawerOpen(!isDrawerOpen)} />
+
+      {/* Create/Edit Modal */}
+      <TemplateFormModal
+        mode={modalMode || 'create'}
+        initial={editingTemplate ?? undefined}
+        onSave={handleSave}
+        onClose={() => { setModalMode(null); setEditingTemplate(null) }}
+        isLoading={isSaving}
+        show={modalMode !== null}
+      />
+
+      <div className="flex-grow-1 d-flex flex-column h-100 min-w-0">
+        {/* ─── Content ── */}
+        <div className="flex-grow-1 overflow-auto chat-scrollbar-thin">
+          <div className="mx-auto w-100 px-3 px-md-4 py-4" style={{ maxWidth: 900 }}>
+
+            {/* Mobile sidebar toggle */}
+            <div className="d-flex d-md-none align-items-center mb-4">
+              <button
+                className="btn btn-ghost btn-sm btn-icon rounded-3 text-muted"
+                onClick={() => setIsDrawerOpen(true)}
+              >
+                <Icon icon="layout-sidebar" size={18} />
               </button>
             </div>
 
-            {/* Tabs */}
-            <div className="d-flex overflow-x-auto gap-4 border-bottom border-light dark:border-dark mb-4 chat-scrollbar-thin">
-              {TABS.map(tab => (
+            {/* Page header */}
+            <div className="d-flex align-items-center justify-content-between mb-4">
+              <div>
+                <h2 className="fw-bold mb-1" style={{ fontSize: 22 }}>Templates</h2>
+                <p className="text-muted mb-0" style={{ fontSize: 13 }}>
+                  Prompt siap pakai untuk analisis keuangan Anda.
+                </p>
+              </div>
+              <button
+                className="btn btn-sm rounded-3 px-3 d-flex align-items-center gap-1 text-white fw-medium flex-shrink-0"
+                style={{ fontSize: 13, background: '#ff7a00', border: 'none' }}
+                onClick={() => setModalMode('create')}
+              >
+                <Icon icon="plus" size={15} />
+                Template baru
+              </button>
+            </div>
+
+            {/* Category tabs */}
+            <div className="d-flex gap-1 overflow-x-auto chat-scrollbar-thin mb-4 pb-1">
+              {CATEGORIES.map((cat) => (
                 <button
-                  key={tab}
-                  className={`btn btn-link text-decoration-none px-0 pb-3 border-0 rounded-0 position-relative fw-medium ${activeTab === tab ? 'text-dark dark:text-white' : 'text-muted hover-text-dark transition-colors'}`}
-                  style={{ fontSize: '15px' }}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab}
-                  {activeTab === tab && (
-                    <div className="position-absolute bottom-0 start-0 w-100" style={{ height: '3px', backgroundColor: '#ff7a00', borderTopLeftRadius: '3px', borderTopRightRadius: '3px' }}></div>
+                  key={cat.value}
+                  className={clsx(
+                    'btn btn-sm rounded-pill text-nowrap flex-shrink-0',
+                    activeCategory === cat.value
+                      ? 'text-white fw-medium'
+                      : 'text-muted'
                   )}
+                  style={{
+                    fontSize: 13,
+                    padding: '5px 14px',
+                    background: activeCategory === cat.value ? '#ff7a00' : 'transparent',
+                    border: activeCategory === cat.value
+                      ? 'none'
+                      : '1px solid var(--tblr-border-color)',
+                  }}
+                  onClick={() => setActiveCategory(cat.value)}
+                >
+                  {cat.label}
                 </button>
               ))}
             </div>
 
-            {/* Search & Sort */}
-            <div className="d-flex flex-column flex-md-row gap-3 mb-4">
-              <div className="flex-grow-1 bg-white dark:bg-dark-card border border-light dark:border-dark rounded-4 shadow-sm d-flex align-items-center px-3 py-2">
-                <Icon icon="search" size={18} className="text-muted me-2 flex-shrink-0" />
+            {/* Search */}
+            <div className="mb-4">
+              <div className="input-group">
+                <span className="input-group-text bg-transparent border-end-0">
+                  <Icon icon="search" size={16} className="text-muted" />
+                </span>
                 <input
-                  type="text"
-                  className="form-control bg-transparent border-0 shadow-none px-2 py-1 text-body"
+                  className="form-control border-start-0"
                   placeholder="Cari template..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ fontSize: '15px' }}
+                  style={{ fontSize: 14 }}
                 />
-              </div>
-              <div className="bg-white dark:bg-dark-card border border-light dark:border-dark rounded-4 shadow-sm d-flex align-items-center px-3 py-2 cursor-pointer" style={{ minWidth: '160px' }}>
-                <span className="text-body fw-medium flex-grow-1" style={{ fontSize: '14px' }}>Terbaru</span>
-                <Icon icon="chevron-down" size={16} className="text-muted" />
+                {searchQuery && (
+                  <button
+                    className="btn btn-ghost btn-sm btn-icon"
+                    onClick={() => setSearchQuery('')}
+                    type="button"
+                  >
+                    <Icon icon="x" size={16} />
+                  </button>
+                )}
               </div>
             </div>
 
             {/* Grid */}
-            <div className="row g-4 mb-5">
-              {MOCK_TEMPLATES.map((template) => (
-                <div key={template.id} className="col-12 col-lg-6">
-                  <div 
-                    className="bg-white dark:bg-dark-card border border-light dark:border-dark rounded-4 shadow-sm p-4 h-100 d-flex flex-column transition-colors hover-transform-up cursor-pointer"
-                    onClick={() => handleUseTemplate(template)}
-                  >
-                    
-                    <div className="d-flex align-items-start gap-3 mb-3">
-                      <div className="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '48px', height: '48px', backgroundColor: template.iconBg }}>
-                         <Icon icon={template.icon} size={24} style={{ color: template.iconColor }} />
-                      </div>
-                      <div className="flex-grow-1 min-w-0">
-                        <h5 className="fw-bold mb-1 text-dark dark:text-white" style={{ fontSize: '16px' }}>{template.title}</h5>
-                        <p className="text-muted mb-0" style={{ fontSize: '13px', lineHeight: '1.5' }}>{template.description}</p>
-                      </div>
-                      <button className="btn btn-icon btn-sm text-muted bg-transparent border-0 rounded-circle hover-bg-light flex-shrink-0 mt-n1 me-n2" onClick={(e) => e.stopPropagation()}>
-                        <Icon icon="dots-vertical" size={18} />
-                      </button>
-                    </div>
-
-                    <div className="d-flex flex-wrap gap-2 mb-4">
-                      {template.tags.map((tag, idx) => (
-                        <span key={idx} className="badge fw-medium px-2 py-1 rounded-pill" style={{ backgroundColor: tag.bg, color: tag.color, fontSize: '11px' }}>
-                          {tag.label}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="mt-auto pt-3 border-top border-light dark:border-dark d-flex align-items-center justify-content-between text-muted" style={{ fontSize: '12px' }}>
-                      <span className="d-flex align-items-center gap-1"><Icon icon="chart-bar" size={14} /> Digunakan {template.usage}</span>
-                      <span>Diperbarui {template.updated}</span>
-                    </div>
-
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom Banner */}
-            <div className="bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-4 p-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-              <div className="d-flex gap-3 align-items-start">
-                <Icon icon="sparkles" size={24} style={{ color: '#ff7a00' }} className="flex-shrink-0 mt-1" />
-                <div>
-                  <h6 className="fw-bold text-dark mb-1" style={{ fontSize: '16px' }}>Belum menemukan template yang sesuai?</h6>
-                  <p className="text-muted mb-0" style={{ fontSize: '14px' }}>Buat template custom sesuai kebutuhan finansial Anda.</p>
-                </div>
+            {isLoading ? (
+              <div className="d-flex justify-content-center py-5">
+                <div className="spinner-border" style={{ color: '#ff7a00', width: 28, height: 28, borderWidth: '0.18em' }} />
               </div>
-              <button
-                className="btn btn-sm text-white rounded-pill px-4 py-2 fw-medium shadow-sm transition-colors flex-shrink-0 align-self-start align-self-md-center"
-                style={{ backgroundColor: '#ff7a00', fontSize: '14px' }}
-                onClick={handleCreateTemplate}
-              >
-                <Icon icon="plus" size={16} className="me-2" /> Buat template baru
-              </button>
-            </div>
-
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-5">
+                <div
+                  className="d-inline-flex align-items-center justify-content-center rounded-3 mb-3"
+                  style={{ width: 48, height: 48, background: 'var(--tblr-bg-surface-secondary)' }}
+                >
+                  <Icon icon="template" size={22} className="text-muted" />
+                </div>
+                <p className="text-muted mb-1" style={{ fontSize: 14 }}>
+                  {searchQuery
+                    ? `Tidak ada template untuk "${searchQuery}"`
+                    : 'Belum ada template'}
+                </p>
+                {!searchQuery && (
+                  <button
+                    className="btn btn-sm mt-2 px-4 text-white rounded-3"
+                    style={{ background: '#ff7a00', fontSize: 13 }}
+                    onClick={() => setModalMode('create')}
+                  >
+                    Buat template pertama
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="row g-3">
+                {filtered.map((t) => (
+                  <div key={t.id} className="col-12 col-md-6 col-xl-4">
+                    <TemplateCard
+                      template={t}
+                      onUse={handleUse}
+                      onEdit={(t) => { setEditingTemplate(t); setModalMode('edit') }}
+                      onDelete={handleDelete}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
