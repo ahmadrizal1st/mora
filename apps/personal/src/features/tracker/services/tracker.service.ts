@@ -1,21 +1,26 @@
 import api from '@/shared/api/client'
 
 export const TrackerService = {
-  uploadDocument: async (file: File, docType: string = 'expense') => {
+  uploadDocument: async (file: File, extractionType: string = 'expense') => {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('doc_type', docType)
+    formData.append('extraction_type', extractionType)
 
-    const response = await api.post('/documents/upload', formData, {
+    const response = await api.post('/extractions/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
     return response.data
   },
 
-  processText: async (text: string, docType: string = 'expense') => {
-    const response = await api.post('/documents/text', {
+  getExtractionStatus: async (extractionId: number) => {
+    const response = await api.get(`/extractions/${extractionId}`)
+    return response.data
+  },
+
+  processText: async (text: string, extractionType: string = 'expense') => {
+    const response = await api.post('/extractions/text', {
       text,
-      doc_type: docType,
+      extraction_type: extractionType,
     })
     return response.data
   },

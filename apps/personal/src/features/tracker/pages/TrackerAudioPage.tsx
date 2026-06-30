@@ -20,8 +20,8 @@ export default function TrackerAudioPage() {
   const streamRef = useRef<MediaStream | null>(null)
   const navigate = useNavigate()
   const uploadMutation = useMutation({
-    mutationFn: async (data: { file: File; docType: string }) => {
-      return TrackerService.uploadDocument(data.file, data.docType)
+    mutationFn: async (data: { file: File; extractionType: string }) => {
+      return TrackerService.uploadDocument(data.file, data.extractionType)
     }
   })
 
@@ -96,7 +96,7 @@ export default function TrackerAudioPage() {
     })
 
     try {
-      await uploadMutation.mutateAsync({ file: audioFile, docType: 'expense' })
+      await uploadMutation.mutateAsync({ file: audioFile, extractionType: 'expense' })
 
       setTimeout(() => {
         navigate({ to: '/transactions' })

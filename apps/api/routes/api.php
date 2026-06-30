@@ -21,7 +21,7 @@ use App\Http\Controllers\{
     GoalController,
     SubscriptionController,
     ChatController,
-    DocumentController,
+    ExtractionController,
     PromptTemplateController,
 };
 use Illuminate\Support\Facades\Route;
@@ -143,9 +143,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('notifications/{id}/star', [NotificationController::class, 'toggleStar']);
     Route::delete('notifications/{id}', [NotificationController::class, 'destroy']);
 
-    // OCR & Documents
-    Route::post('documents/upload', [DocumentController::class, 'upload']);
-    Route::post('documents/text', [DocumentController::class, 'processText']);
+    // OCR & Extractions
+    Route::post('extractions/upload', [ExtractionController::class, 'upload']);
+    Route::post('extractions/text', [ExtractionController::class, 'processText']);
+    Route::get('extractions/{extraction}', [ExtractionController::class, 'show']);
 
     // Chat
     Route::get('chat/sessions', [ChatController::class, 'sessions']);

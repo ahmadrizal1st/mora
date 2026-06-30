@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\FormatLibrary;
+use App\Services\FormatLibrary;
 use Illuminate\Support\Facades\Log;
 
 class PromptBuilder
@@ -26,7 +26,7 @@ class PromptBuilder
 
         $formatContext = "";
         if ($mode === 'MULTIPLE') {
-            $formatContext = app(FormatLibrary::class)->getContext($docType);
+            $formatContext = app(FormatLibrary::class)->buildFormatContext($rawText);
         }
 
         if ($mode === 'SINGLE') {

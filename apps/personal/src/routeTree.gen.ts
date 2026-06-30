@@ -49,6 +49,7 @@ import { Route as ChatIndexRouteImport } from './routes/chat.index'
 import { Route as TrackerTextRouteImport } from './routes/tracker.text'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
 import { Route as TrackerImageRouteImport } from './routes/tracker.image'
+import { Route as TrackerFileRouteImport } from './routes/tracker.file'
 import { Route as TrackerAudioRouteImport } from './routes/tracker.audio'
 import { Route as ReportsPeriodIdRouteImport } from './routes/reports.$periodId'
 import { Route as PlanningSubscriptionsRouteImport } from './routes/planning.subscriptions'
@@ -268,6 +269,11 @@ const TrackerImageRoute = TrackerImageRouteImport.update({
   path: '/tracker/image',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackerFileRoute = TrackerFileRouteImport.update({
+  id: '/tracker/file',
+  path: '/tracker/file',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackerAudioRoute = TrackerAudioRouteImport.update({
   id: '/tracker/audio',
   path: '/tracker/audio',
@@ -404,6 +410,7 @@ export interface FileRoutesByFullPath {
   '/planning/subscriptions': typeof PlanningSubscriptionsRoute
   '/reports/$periodId': typeof ReportsPeriodIdRoute
   '/tracker/audio': typeof TrackerAudioRoute
+  '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/text': typeof TrackerTextRoute
@@ -458,6 +465,7 @@ export interface FileRoutesByTo {
   '/planning/subscriptions': typeof PlanningSubscriptionsRoute
   '/reports/$periodId': typeof ReportsPeriodIdRoute
   '/tracker/audio': typeof TrackerAudioRoute
+  '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/text': typeof TrackerTextRoute
@@ -519,6 +527,7 @@ export interface FileRoutesById {
   '/planning/subscriptions': typeof PlanningSubscriptionsRoute
   '/reports/$periodId': typeof ReportsPeriodIdRoute
   '/tracker/audio': typeof TrackerAudioRoute
+  '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
   '/tracker/text': typeof TrackerTextRoute
@@ -581,6 +590,7 @@ export interface FileRouteTypes {
     | '/planning/subscriptions'
     | '/reports/$periodId'
     | '/tracker/audio'
+    | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
     | '/tracker/text'
@@ -635,6 +645,7 @@ export interface FileRouteTypes {
     | '/planning/subscriptions'
     | '/reports/$periodId'
     | '/tracker/audio'
+    | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
     | '/tracker/text'
@@ -695,6 +706,7 @@ export interface FileRouteTypes {
     | '/planning/subscriptions'
     | '/reports/$periodId'
     | '/tracker/audio'
+    | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
     | '/tracker/text'
@@ -746,6 +758,7 @@ export interface RootRouteChildren {
   AiTemplatesRoute: typeof AiTemplatesRoute
   ReportsPeriodIdRoute: typeof ReportsPeriodIdRoute
   TrackerAudioRoute: typeof TrackerAudioRoute
+  TrackerFileRoute: typeof TrackerFileRoute
   TrackerImageRoute: typeof TrackerImageRoute
   TrackerInputRoute: typeof TrackerInputRoute
   TrackerTextRoute: typeof TrackerTextRoute
@@ -1037,6 +1050,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackerImageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tracker/file': {
+      id: '/tracker/file'
+      path: '/tracker/file'
+      fullPath: '/tracker/file'
+      preLoaderRoute: typeof TrackerFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tracker/audio': {
       id: '/tracker/audio'
       path: '/tracker/audio'
@@ -1299,6 +1319,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiTemplatesRoute: AiTemplatesRoute,
   ReportsPeriodIdRoute: ReportsPeriodIdRoute,
   TrackerAudioRoute: TrackerAudioRoute,
+  TrackerFileRoute: TrackerFileRoute,
   TrackerImageRoute: TrackerImageRoute,
   TrackerInputRoute: TrackerInputRoute,
   TrackerTextRoute: TrackerTextRoute,

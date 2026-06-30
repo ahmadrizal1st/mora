@@ -111,4 +111,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Subscription::class);
     }
+
+    public function extractions(): HasMany
+    {
+        return $this->hasMany(Extraction::class);
+    }
 }

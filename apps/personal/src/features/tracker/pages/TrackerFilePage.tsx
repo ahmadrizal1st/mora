@@ -7,7 +7,7 @@ import { TrackerService } from '../services/tracker.service'
 
 import { getApiErrorMessage } from '@/shared/utils/errorUtils'
 
-export default function TrackerImagePage() {
+export default function TrackerFilePage() {
   const [files, setFiles] = useState<File[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -36,7 +36,7 @@ export default function TrackerImagePage() {
         navigate({ to: '/notifications' })
       }, 3000)
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Gagal mengunggah gambar. Silakan coba lagi.'))
+      setError(getApiErrorMessage(err, 'Gagal mengunggah dokumen. Silakan coba lagi.'))
     } finally {
       setIsProcessing(false)
     }
@@ -44,21 +44,21 @@ export default function TrackerImagePage() {
 
   return (
     <BaseLayout
-      pageTitle="Scan Receipt"
-      pageDescription="Upload foto struk belanja Anda. AI akan mengekstrak detail transaksi secara otomatis."
+      pageTitle="Upload Document"
+      pageDescription="Unggah dokumen seperti PDF invoice atau rekening bank. AI akan mengekstrak detail transaksi secara otomatis."
     >
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8">
           <div className="card shadow-sm">
             <div className="card-header">
-              <h3 className="card-title">Upload Receipt Image</h3>
+              <h3 className="card-title">Upload Dokumen</h3>
             </div>
             <div className="card-body">
               <Dropzone
                 className="mb-4"
-                text="Klik atau drag gambar ke sini"
-                description="JPG, PNG, WebP — Maks. 5 MB"
-                acceptedFiles="image/jpeg,image/png,image/webp"
+                text="Klik atau drag dokumen ke sini"
+                description="PDF, DOC, DOCX, TXT — Maks. 10 MB"
+                acceptedFiles="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
                 onAddedFile={(f) => setFiles((prev) => [...prev, f])}
                 multiple
                 custom
@@ -66,7 +66,7 @@ export default function TrackerImagePage() {
 
               {files.length > 0 && (
                 <div className="mb-4">
-                  <div className="text-muted small mb-2">{files.length} gambar dipilih:</div>
+                  <div className="text-muted small mb-2">{files.length} dokumen dipilih:</div>
                   <div className="list-group list-group-flush border rounded">
                     {files.map((f, i) => (
                       <div
@@ -74,7 +74,7 @@ export default function TrackerImagePage() {
                         className="list-group-item d-flex justify-content-between align-items-center py-2"
                       >
                         <div className="d-flex align-items-center">
-                          <Icon icon="photo" size={16} className="text-secondary me-2" />
+                          <Icon icon="file-description" size={16} className="text-secondary me-2" />
                           <span className="small text-truncate" style={{ maxWidth: '200px' }}>
                             {f.name}
                           </span>
@@ -114,40 +114,13 @@ export default function TrackerImagePage() {
               <div className="btn-list">
                 <Button
                   text={
-                    isProcessing ? 'Mengekstrak Teks...' : `Scan ${files.length} Gambar`
+                    isProcessing ? 'Mengekstrak Teks...' : `Proses ${files.length} Dokumen`
                   }
                   color="primary"
                   loading={isProcessing}
                   disabled={files.length === 0 || isProcessing}
                   onClick={handleProcess}
                 />
-              </div>
-            </div>
-          </div>
-
-          <div className="row mt-4 g-3">
-            <div className="col-md-4">
-              <div className="card card-sm bg-light border-0">
-                <div className="card-body text-center">
-                  <Icon icon="bulb" className="text-warning mb-2" size={24} />
-                  <div className="fw-medium small">Cahaya Cukup</div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card card-sm bg-light border-0">
-                <div className="card-body text-center">
-                  <Icon icon="focus-2" className="text-info mb-2" size={24} />
-                  <div className="fw-medium small">Teks Terlihat Jelas</div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card card-sm bg-light border-0">
-                <div className="card-body text-center">
-                  <Icon icon="crop" className="text-danger mb-2" size={24} />
-                  <div className="fw-medium small">Tidak Terpotong</div>
-                </div>
               </div>
             </div>
           </div>
