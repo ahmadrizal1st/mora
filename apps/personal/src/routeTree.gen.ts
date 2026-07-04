@@ -47,6 +47,7 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as CreditIndexRouteImport } from './routes/credit.index'
 import { Route as ChatIndexRouteImport } from './routes/chat.index'
 import { Route as TrackerTextRouteImport } from './routes/tracker.text'
+import { Route as TrackerPhotoRouteImport } from './routes/tracker.photo'
 import { Route as TrackerInputRouteImport } from './routes/tracker.input'
 import { Route as TrackerImageRouteImport } from './routes/tracker.image'
 import { Route as TrackerFileRouteImport } from './routes/tracker.file'
@@ -259,6 +260,11 @@ const TrackerTextRoute = TrackerTextRouteImport.update({
   path: '/tracker/text',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackerPhotoRoute = TrackerPhotoRouteImport.update({
+  id: '/tracker/photo',
+  path: '/tracker/photo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackerInputRoute = TrackerInputRouteImport.update({
   id: '/tracker/input',
   path: '/tracker/input',
@@ -413,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
+  '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
   '/chat/': typeof ChatIndexRoute
   '/credit/': typeof CreditIndexRoute
@@ -468,6 +475,7 @@ export interface FileRoutesByTo {
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
+  '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
   '/chat': typeof ChatIndexRoute
   '/credit': typeof CreditIndexRoute
@@ -530,6 +538,7 @@ export interface FileRoutesById {
   '/tracker/file': typeof TrackerFileRoute
   '/tracker/image': typeof TrackerImageRoute
   '/tracker/input': typeof TrackerInputRoute
+  '/tracker/photo': typeof TrackerPhotoRoute
   '/tracker/text': typeof TrackerTextRoute
   '/chat/': typeof ChatIndexRoute
   '/credit/': typeof CreditIndexRoute
@@ -593,6 +602,7 @@ export interface FileRouteTypes {
     | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
+    | '/tracker/photo'
     | '/tracker/text'
     | '/chat/'
     | '/credit/'
@@ -648,6 +658,7 @@ export interface FileRouteTypes {
     | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
+    | '/tracker/photo'
     | '/tracker/text'
     | '/chat'
     | '/credit'
@@ -709,6 +720,7 @@ export interface FileRouteTypes {
     | '/tracker/file'
     | '/tracker/image'
     | '/tracker/input'
+    | '/tracker/photo'
     | '/tracker/text'
     | '/chat/'
     | '/credit/'
@@ -761,6 +773,7 @@ export interface RootRouteChildren {
   TrackerFileRoute: typeof TrackerFileRoute
   TrackerImageRoute: typeof TrackerImageRoute
   TrackerInputRoute: typeof TrackerInputRoute
+  TrackerPhotoRoute: typeof TrackerPhotoRoute
   TrackerTextRoute: typeof TrackerTextRoute
   ReportsIndexRoute: typeof ReportsIndexRoute
   TrackerIndexRoute: typeof TrackerIndexRoute
@@ -1034,6 +1047,13 @@ declare module '@tanstack/react-router' {
       path: '/tracker/text'
       fullPath: '/tracker/text'
       preLoaderRoute: typeof TrackerTextRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tracker/photo': {
+      id: '/tracker/photo'
+      path: '/tracker/photo'
+      fullPath: '/tracker/photo'
+      preLoaderRoute: typeof TrackerPhotoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tracker/input': {
@@ -1322,6 +1342,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrackerFileRoute: TrackerFileRoute,
   TrackerImageRoute: TrackerImageRoute,
   TrackerInputRoute: TrackerInputRoute,
+  TrackerPhotoRoute: TrackerPhotoRoute,
   TrackerTextRoute: TrackerTextRoute,
   ReportsIndexRoute: ReportsIndexRoute,
   TrackerIndexRoute: TrackerIndexRoute,

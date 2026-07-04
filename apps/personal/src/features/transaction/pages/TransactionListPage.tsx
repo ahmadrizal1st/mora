@@ -22,7 +22,7 @@ export const TransactionListPage: FC = () => {
     per_page: 15,
   })
 
-  const { openMethodModal, openForm, setTxToDelete, isMethodModalOpen } =
+  const { openChatbotModal, openForm, setTxToDelete, isMethodModalOpen } =
     useTransactionModalStore()
 
   const [isMobile, setIsMobile] = useState(
@@ -115,7 +115,7 @@ export const TransactionListPage: FC = () => {
     e.currentTarget.setPointerCapture(e.pointerId)
 
     holdTimerRef.current = setTimeout(() => {
-      openMethodModal()
+      openChatbotModal()
       holdTimerRef.current = null
 
       try {
@@ -132,7 +132,7 @@ export const TransactionListPage: FC = () => {
     if (holdTimerRef.current) {
       clearTimeout(holdTimerRef.current)
       holdTimerRef.current = null
-      openMethodModal()
+      openChatbotModal()
 
       if (window.navigator && window.navigator.vibrate) {
         window.navigator.vibrate(20)
@@ -428,7 +428,7 @@ export const TransactionListPage: FC = () => {
       </Modal>
 
       <button
-        className="btn btn-primary rounded-circle position-fixed shadow-lg d-none d-md-flex align-items-center justify-content-center p-0"
+        className="btn btn-primary rounded-4 position-fixed shadow-lg d-none d-md-flex p-0"
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
@@ -436,17 +436,19 @@ export const TransactionListPage: FC = () => {
         style={{
           bottom: 32,
           right: 32,
-          width: 72,
-          height: 72,
+          width: 64,
+          height: 64,
           zIndex: 1020,
           touchAction: 'none',
-          display: isMethodModalOpen ? 'none' : undefined,
+          display: isMethodModalOpen ? 'none' : 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           backgroundColor: '#f76707',
           border: 'none',
         }}
-        aria-label="Tambah Transaksi"
+        aria-label="Buka Chatbot AI"
       >
-        <Icon icon="plus" size={32} stroke={3} />
+        <Icon icon="robot" size={32} stroke={1.5} style={{ margin: 0 }} />
       </button>
     </BaseLayout>
   )

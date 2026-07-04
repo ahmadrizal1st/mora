@@ -327,67 +327,81 @@ export function DashboardContent() {
               <div className="subheader text-muted text-mobile-xs">Total Balance</div>
               <div className="h1 mb-0 h1-mobile">{summary.balance}</div>
             </div>
-            <Chart
-              chartId="cashflow-bars"
-              chartData={{
-                type: 'bar',
-                height: 18,
-                series: cashflow.series.map((s) => ({
-                  ...s,
-                  color: s.name === 'Income' ? 'primary' : 'secondary',
-                })),
-                categories: cashflow.months,
-                legend: true,
-                datalabels: false,
-                stacked: true,
-                xaxis: {
-                  labels: {
-                    show: true,
-                    style: { fontSize: '11px', fontWeight: 500, color: 'var(--tblr-secondary)' },
-                  },
-                  axisBorder: { show: false },
-                  axisTicks: { show: false },
-                  crosshairs: {
-                    show: false,
-                  },
-                },
-                yaxis: {
-                  tickAmount: 4,
-                  labels: {
-                    style: { fontSize: '11px', color: 'var(--tblr-secondary)' },
-                    formatter: (val: number) => {
-                      if (val === undefined || val === null) return '';
-                      const absoluteVal = Math.abs(val)
-                      if (absoluteVal >= 1000000000) return `${(absoluteVal / 1000000000).toFixed(1)}M`
-                      if (absoluteVal >= 1000000) return `${(absoluteVal / 1000000).toFixed(1)}Jt`
-                      if (absoluteVal >= 1000) return `${(absoluteVal / 1000).toFixed(0)}K`
-                      return absoluteVal.toString()
+            {cashflow.series.every((s: any) => s.data.length === 0 || s.data.every((v: number) => v === 0)) ? (
+              <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+                <div className="d-flex justify-content-center text-secondary mb-3">
+                  <Icon icon="chart-bar-off" size={40} stroke={1.5} opacity={0.6} />
+                </div>
+                <div className="fw-bold text-body mb-1">Data Kosong</div>
+                <div className="text-muted small mb-3">Belum ada aktivitas cashflow.</div>
+                <button className="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                  <Icon icon="plus" size={16} stroke={2} />
+                  Catat Transaksi
+                </button>
+              </div>
+            ) : (
+              <Chart
+                chartId="cashflow-bars"
+                chartData={{
+                  type: 'bar',
+                  height: 18,
+                  series: cashflow.series.map((s) => ({
+                    ...s,
+                    color: s.name === 'Income' ? 'primary' : 'secondary',
+                  })),
+                  categories: cashflow.months,
+                  legend: true,
+                  datalabels: false,
+                  stacked: true,
+                  xaxis: {
+                    labels: {
+                      show: true,
+                      style: { fontSize: '11px', fontWeight: 500, color: 'var(--tblr-secondary)' },
+                    },
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    crosshairs: {
+                      show: false,
                     },
                   },
-                },
-                grid: {
-                  borderColor: 'var(--tblr-border-color-light)',
-                  strokeDashArray: 3,
-                  xaxis: { lines: { show: false } },
-                },
-                legendOptions: {
-                  position: 'top',
-                  horizontalAlign: 'right',
-                  fontSize: '12px',
-                  offsetY: -30,
-                  markers: { radius: 4 },
-                },
-                extend: {
-                  tooltip: {
-                    y: {
+                  yaxis: {
+                    tickAmount: 4,
+                    labels: {
+                      style: { fontSize: '11px', color: 'var(--tblr-secondary)' },
                       formatter: (val: number) => {
-                        return 'Rp ' + Math.abs(val).toLocaleString('id-ID')
+                        if (val === undefined || val === null) return '';
+                        const absoluteVal = Math.abs(val)
+                        if (absoluteVal >= 1000000000) return `${(absoluteVal / 1000000000).toFixed(1)}M`
+                        if (absoluteVal >= 1000000) return `${(absoluteVal / 1000000).toFixed(1)}Jt`
+                        if (absoluteVal >= 1000) return `${(absoluteVal / 1000).toFixed(0)}K`
+                        return absoluteVal.toString()
+                      },
+                    },
+                  },
+                  grid: {
+                    borderColor: 'var(--tblr-border-color-light)',
+                    strokeDashArray: 3,
+                    xaxis: { lines: { show: false } },
+                  },
+                  legendOptions: {
+                    position: 'top',
+                    horizontalAlign: 'right',
+                    fontSize: '12px',
+                    offsetY: -30,
+                    markers: { radius: 4 },
+                  },
+                  extend: {
+                    tooltip: {
+                      y: {
+                        formatter: (val: number) => {
+                          return 'Rp ' + Math.abs(val).toLocaleString('id-ID')
+                        }
                       }
                     }
                   }
-                }
-              }}
-            />
+                }}
+              />
+            )}
           </div>
         </div>
 
@@ -453,48 +467,64 @@ export function DashboardContent() {
                   </div>
                 </div>
 
-                <div className="py-2 text-center">
-                  <Chart
-                    chartId="statistic-donut-enhanced"
-                    chartData={{
-                      type: 'donut',
-                      series: statistics.series.map((s: any, idx: number) => ({
-                        ...s,
-                        color: statsColors[idx],
-                      })),
-                      donutLabel: `Total ${activeTab === 'expense' ? 'Expense' : 'Income'}`,
-                      donutValue: activeTab === 'expense' ? summary.expense : summary.income,
-                      legend: false,
-                      height: 14,
-                      hollowSize: '70%',
-                    }}
-                  />
-                </div>
+                {statistics.series.length === 0 || statistics.series.every((s: any) => !s.data || s.data.length === 0 || s.data[0] === 0) ? (
+                  <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+                    <div className="d-flex justify-content-center text-secondary mb-3">
+                      <Icon icon="chart-pie-off" size={40} stroke={1.5} opacity={0.6} />
+                    </div>
+                    <div className="fw-bold text-body mb-1">Data Kosong</div>
+                    <div className="text-muted small mb-3">Belum ada statistik untuk ditampilkan.</div>
+                    <button className="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                      <Icon icon="plus" size={16} stroke={2} />
+                      Catat Transaksi
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="py-2 text-center">
+                      <Chart
+                        chartId="statistic-donut-enhanced"
+                        chartData={{
+                          type: 'donut',
+                          series: statistics.series.map((s: any, idx: number) => ({
+                            ...s,
+                            color: statsColors[idx],
+                          })),
+                          donutLabel: `Total ${activeTab === 'expense' ? 'Expense' : 'Income'}`,
+                          donutValue: activeTab === 'expense' ? summary.expense : summary.income,
+                          legend: false,
+                          height: 14,
+                          hollowSize: '70%',
+                        }}
+                      />
+                    </div>
 
-                <div className="mt-4 custom-scrollbar overflow-y-auto pe-1" style={{ maxHeight: '200px' }}>
-                  {statistics.series.map((s: any, i: number) => {
-                    const totalVal = activeTab === 'expense' ? (txSummary?.total_expense || 0) : (txSummary?.total_income || 0)
-                    const pct = totalVal > 0 ? Math.round((s.data[0] / totalVal) * 100) : 0
-                    
-                    return (
-                      <div key={i} className="d-flex align-items-center last-mb-0 small mb-2">
-                        <div
-                          className="rounded-3 px-2 py-1 me-3 text-center fw-bold shadow-sm"
-                          style={{
-                            width: '45px',
-                            fontSize: '0.65rem',
-                            background: statsColors[i],
-                            color: i === 0 ? 'var(--tblr-primary-fg)' : 'var(--tblr-body-color)',
-                          }}
-                        >
-                          {pct}%
-                        </div>
-                        <span className="fw-medium text-truncate" style={{ maxWidth: '100px' }}>{s.name}</span>
-                        <span className="ms-auto fw-bold text-nowrap">Rp {s.data[0].toLocaleString('id-ID')}</span>
-                      </div>
-                    )
-                  })}
-                </div>
+                    <div className="mt-4 custom-scrollbar overflow-y-auto pe-1" style={{ maxHeight: '200px' }}>
+                      {statistics.series.map((s: any, i: number) => {
+                        const totalVal = activeTab === 'expense' ? (txSummary?.total_expense || 0) : (txSummary?.total_income || 0)
+                        const pct = totalVal > 0 ? Math.round((s.data[0] / totalVal) * 100) : 0
+                        
+                        return (
+                          <div key={i} className="d-flex align-items-center last-mb-0 small mb-2">
+                            <div
+                              className="rounded-3 px-2 py-1 me-3 text-center fw-bold shadow-sm"
+                              style={{
+                                width: '45px',
+                                fontSize: '0.65rem',
+                                background: statsColors[i],
+                                color: i === 0 ? 'var(--tblr-primary-fg)' : 'var(--tblr-body-color)',
+                              }}
+                            >
+                              {pct}%
+                            </div>
+                            <span className="fw-medium text-truncate" style={{ maxWidth: '100px' }}>{s.name}</span>
+                            <span className="ms-auto fw-bold text-nowrap">Rp {s.data[0].toLocaleString('id-ID')}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

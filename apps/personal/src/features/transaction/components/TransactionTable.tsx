@@ -1,6 +1,7 @@
-import { type FC, type MouseEvent, type ReactNode } from 'react'
+import { type FC, type MouseEvent, type ReactNode, useMemo } from 'react'
 import { Icon, Badge, Spinner } from '@/shared/components/ui'
 import type { Transaction } from '../types/transaction.types'
+import { useTransactionModalStore } from '../store/useTransactionModalStore'
 
 interface TransactionTableProps {
   transactions: Transaction[] | undefined
@@ -10,6 +11,7 @@ interface TransactionTableProps {
   getSortIcon: (column: string) => ReactNode
   formatCurrency: (amount: number) => string
   formatDate: (dateString: string, type?: 'date' | 'time') => string
+  openChatbotModal: () => void
 }
 
 export const TransactionTable: FC<TransactionTableProps> = ({
@@ -21,7 +23,8 @@ export const TransactionTable: FC<TransactionTableProps> = ({
   formatCurrency,
   formatDate,
 }) => {
-  const transactionList = transactions ?? []
+  const { openChatbotModal } = useTransactionModalStore()
+  const transactionList = useMemo(() => transactions ?? [], [transactions])
   return (
     <div className="table-responsive border-0">
       <table
@@ -92,14 +95,16 @@ export const TransactionTable: FC<TransactionTableProps> = ({
           ) : transactions?.length === 0 ? (
             <tr>
               <td colSpan={7} className="text-center py-4">
-                <div className="empty">
-                  <div className="empty-icon text-secondary">
-                    <Icon icon="mood-sad" size={32} />
+                <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+                  <div className="d-flex justify-content-center text-secondary mb-3">
+                    <Icon icon="receipt-off" size={40} stroke={1.5} opacity={0.6} />
                   </div>
-                  <p className="empty-title">Tidak ada transaksi ditemukan</p>
-                  <p className="empty-subtitle">
-                    Coba gunakan filter lain atau buat transaksi baru.
-                  </p>
+                  <div className="fw-bold text-body mb-1">Tidak ada transaksi ditemukan</div>
+                  <div className="text-muted small mb-3">Coba gunakan filter lain atau buat transaksi baru.</div>
+                  <button className="btn btn-primary btn-sm d-flex align-items-center gap-2" onClick={openChatbotModal}>
+                    <Icon icon="plus" size={16} stroke={2} />
+                    Catat Transaksi
+                  </button>
                 </div>
               </td>
             </tr>

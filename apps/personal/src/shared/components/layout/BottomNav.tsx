@@ -9,7 +9,7 @@ export function BottomNav() {
   const location = useLocation()
   const currentPath = location.pathname
   const { isAuthenticated } = useAuth()
-  const { openMethodModal } = useTransactionModalStore()
+  const { openChatbotModal } = useTransactionModalStore()
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const isAllowedPath =
@@ -39,7 +39,7 @@ export function BottomNav() {
     e.currentTarget.setPointerCapture(e.pointerId)
 
     holdTimerRef.current = setTimeout(() => {
-      openMethodModal()
+      openChatbotModal()
       holdTimerRef.current = null
 
       try {
@@ -56,7 +56,7 @@ export function BottomNav() {
     if (holdTimerRef.current) {
       clearTimeout(holdTimerRef.current)
       holdTimerRef.current = null
-      openMethodModal()
+      openChatbotModal()
 
       if (window.navigator && window.navigator.vibrate) {
         window.navigator.vibrate(20)

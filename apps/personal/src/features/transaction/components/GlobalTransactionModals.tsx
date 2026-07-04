@@ -5,14 +5,13 @@ import {
   useUpdateTransaction,
   useDeleteTransaction,
 } from '../hooks/useTransactions'
-import { DesktopRadialMenu } from './DesktopRadialMenu'
-import { MobileRadialMenu } from './MobileRadialMenu'
 import { TransactionModals } from './TransactionModals'
+import { ChatbotModal } from '../../tracker/components/ChatbotModal'
 import type { TransactionFormValues } from './TransactionForm'
 import { getApiErrorMessage } from '@/shared/utils/errorUtils'
 
 export const GlobalTransactionModals: FC = () => {
-  const { closeForm, editingTransaction, txToDelete, setTxToDelete } = useTransactionModalStore()
+  const { closeForm, editingTransaction, txToDelete, setTxToDelete, isChatbotModalOpen, closeChatbotModal } = useTransactionModalStore()
 
   const createMutation = useCreateTransaction()
   const updateMutation = useUpdateTransaction()
@@ -43,8 +42,8 @@ export const GlobalTransactionModals: FC = () => {
 
   return (
     <>
-      <DesktopRadialMenu />
-      <MobileRadialMenu />
+
+      <ChatbotModal isOpen={isChatbotModalOpen} onClose={closeChatbotModal} />
 
       <TransactionModals
         isFormOpen={useTransactionModalStore.getState().isFormOpen}

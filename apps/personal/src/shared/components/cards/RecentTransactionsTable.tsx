@@ -45,14 +45,16 @@ export function RecentTransactionsTable({
             {invoices.length === 0 ? (
               <tr>
                 <td colSpan={7} className="text-center py-5">
-                  <div className="empty">
-                    <div className="empty-icon text-secondary">
-                      <Icon icon="mood-sad" size={32} />
+                  <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+                    <div className="d-flex justify-content-center text-secondary mb-3">
+                      <Icon icon="receipt-off" size={40} stroke={1.5} opacity={0.6} />
                     </div>
-                    <p className="empty-title">Tidak ada transaksi ditemukan</p>
-                    <p className="empty-subtitle">
-                      Coba gunakan filter lain atau buat transaksi baru.
-                    </p>
+                    <div className="fw-bold text-body mb-1">Tidak ada transaksi ditemukan</div>
+                    <div className="text-muted small mb-3">Coba gunakan filter lain atau buat transaksi baru.</div>
+                    <button className="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                      <Icon icon="plus" size={16} stroke={2} />
+                      Catat Transaksi
+                    </button>
                   </div>
                 </td>
               </tr>

@@ -1,5 +1,6 @@
 import { useMemo, type FC, type MouseEvent } from 'react'
 import { Icon, Spinner } from '@/shared/components/ui'
+import { useTransactionModalStore } from '../store/useTransactionModalStore'
 import clsx from 'clsx'
 import type { Transaction } from '../types/transaction.types'
 
@@ -23,6 +24,8 @@ export const TransactionList: FC<TransactionListProps> = ({
   isFetchingNextPage,
   lastElementRef,
 }) => {
+  const { openChatbotModal } = useTransactionModalStore()
+
   const groupedByMonth = useMemo(() => {
     if (!transactions) return {}
     const groups: Record<string, Transaction[]> = {}
@@ -50,14 +53,16 @@ export const TransactionList: FC<TransactionListProps> = ({
 
   if (!transactions || transactions.length === 0) {
     return (
-      <div className="empty py-5">
-        <div className="empty-icon text-secondary mb-3">
-          <Icon icon="mood-sad" size={64} stroke={1.5} />
+      <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+        <div className="d-flex justify-content-center text-secondary mb-3">
+          <Icon icon="receipt-off" size={40} stroke={1.5} opacity={0.6} />
         </div>
-        <p className="empty-title h3">Tidak ada transaksi ditemukan</p>
-        <p className="empty-subtitle text-secondary">
-          Coba gunakan filter lain atau buat transaksi baru.
-        </p>
+        <div className="fw-bold text-body mb-1">Tidak ada transaksi ditemukan</div>
+        <div className="text-muted small mb-3">Coba gunakan filter lain atau buat transaksi baru.</div>
+        <button className="btn btn-primary btn-sm d-flex align-items-center gap-2" onClick={openChatbotModal}>
+          <Icon icon="plus" size={16} stroke={2} />
+          Catat Transaksi
+        </button>
       </div>
     )
   }

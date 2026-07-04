@@ -74,6 +74,13 @@ button[role="tab"]:focus-visible {
 }
 
 @media (max-width: 767.98px) {
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  *::-webkit-scrollbar {
+    display: none !important;
+  }
 
   .h1,
   h1,
@@ -251,6 +258,10 @@ button[role="tab"]:focus-visible {
   justify-content: center;
   z-index: 1050;
   padding: 0 1rem;
+}
+
+body.chatbot-open .bottom-navbar {
+  display: none !important;
 }
 
 .bottom-navbar-container {
@@ -692,6 +703,39 @@ button[role="tab"]:focus-visible {
 .form-selectgroup-input:focus+.form-selectgroup-label {
   border-color: var(--tblr-primary) !important;
   box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--tblr-primary) 25%, transparent) !important;
+}
+
+.input-group.input-group-flat:focus-within {
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--tblr-primary) 25%, transparent) !important;
+  border-radius: var(--tblr-border-radius, 0.375rem);
+}
+
+.input-group.input-group-flat:focus-within .form-control {
+  box-shadow: none !important;
+}
+
+.input-group.input-group-flat:focus-within .form-control,
+.input-group.input-group-flat:focus-within .input-group-text {
+  border-color: var(--tblr-primary) !important;
+}
+
+.input-group.input-group-flat:focus-within .form-control:not(:last-child) {
+  border-right-color: transparent !important;
+}
+
+.input-group.input-group-flat:focus-within .input-group-text {
+  background-color: transparent;
+}
+
+.chatbot-input,
+.chatbot-input:focus,
+.chatbot-input:focus-visible,
+.chatbot-input:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
 }
 
 .brand-text-welcome {

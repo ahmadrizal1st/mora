@@ -46,8 +46,8 @@ export function SummaryChartCard({
           <div className="subheader">{title}</div>
           <div className="ms-auto lh-1">{actions}</div>
         </div>
-        <div className="d-flex align-items-baseline mb-3">
-          <div className="h1 me-2">{value}</div>
+        <div className="d-flex align-items-baseline">
+          <div className="h1 mb-0 me-2">{value}</div>
           <div className="me-auto">
             <Trending value={trendValue} />
           </div>
@@ -63,6 +63,7 @@ export function SummaryChartCard({
             color: 'primary',
           }}
           size="sm"
+          className="mt-3"
         />
       </div>
     </div>

@@ -47,6 +47,7 @@ Schema: {$schemaJson}
 
 ## STRICT RULES:
 {$logic}
+- REPLY: ALWAYS provide a friendly conversational response in the 'reply' field. If the user just says "Halo" or asks a question without a transaction, greet them back warmly and explain what you can do (record income/expense). If they provide a transaction, confirm it enthusiastically.
 - DATE: Always YYYY-MM-DD. Use today if unknown: 2026-05-02.
 - NO COMMENTS: Do not include "//" or explanations.
 - AMOUNT: Clean integer (no dots/commas). Example: 334000.

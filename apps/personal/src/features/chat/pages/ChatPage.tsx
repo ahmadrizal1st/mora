@@ -364,12 +364,10 @@ export default function ChatPage() {
                 )}
 
                 <div
-                  className="card mx-auto"
-                  style={{ maxWidth: 720, borderRadius: 14, boxShadow: '0 1px 6px rgba(0,0,0,0.06)' }}
+                  className="mx-auto w-100 bg-white rounded-4 p-2 border border-light-subtle shadow-sm"
+                  style={{ maxWidth: 720 }}
                 >
-                  <div className="card-body p-3">
-                    <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} />
-                  </div>
+                  <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} />
                 </div>
 
                 <p className="text-center text-muted mt-2 mb-0" style={{ fontSize: 11 }}>

@@ -47,7 +47,7 @@ class ExtractionService
         return $extractedText;
     }
 
-    public static function processExtractedText(User $user, string $text, string $extractionType): array
+    public static function processExtractedText(User $user, string $text, string $extractionType, bool $reviewOnly = false): array
     {
         try {
             $schemaJson = json_encode([
@@ -59,7 +59,8 @@ class ExtractionService
                         'merchant' => 'Toko Buku',
                         'notes' => 'Catatan tambahan jika ada'
                     ]
-                ]
+                ],
+                'reply' => 'Sapaan ramah atau konfirmasi terkait transaksi.'
             ]);
 
             $promptBuilder = app(PromptBuilder::class);
@@ -69,13 +70,37 @@ class ExtractionService
             $mappedData = $llmMapper->map($prompt, $user->id);
 
             $transactions = $mappedData['tx'] ?? [];
-            if (empty($transactions)) {
-                throw new Exception('Gagal mengekstrak data transaksi dari teks.');
+            $reply = $mappedData['reply'] ?? null;
+            
+            if (empty($transactions) && empty($reply)) {
+                throw new Exception('Gagal mengekstrak data transaksi atau balasan dari teks.');
             }
 
             $account = $user->accounts()->first();
             if (!$account) {
                 throw new Exception('Anda belum memiliki akun (dompet/bank).');
+            }
+
+            if ($reviewOnly) {
+                $previewTransactions = [];
+                foreach ($transactions as $tx) {
+                    $amount = (float) preg_replace('/[^0-9.]/', '', (string)($tx['amount'] ?? 0));
+                    $previewTransactions[] = [
+                        'account_id' => $account->id,
+                        'type' => $tx['type'] ?? 'expense',
+                        'amount' => $amount,
+                        'tx_date' => $tx['tx_date'] ?? \Carbon\Carbon::now()->toDateString(),
+                        'merchant' => $tx['merchant'] ?? null,
+                        'notes' => $tx['notes'] ?? $text,
+                        'input_method' => 'auto',
+                        'is_preview' => true,
+                    ];
+                }
+                return [
+                    'transactions' => $previewTransactions,
+                    'raw_text' => $text,
+                    'reply' => $reply
+                ];
             }
 
             $createdTransactions = [];
@@ -85,7 +110,7 @@ class ExtractionService
                     'account_id' => $account->id,
                     'type' => $tx['type'] ?? 'expense',
                     'amount' => $amount,
-                    'tx_date' => $tx['tx_date'] ?? Carbon::now()->toDateString(),
+                    'tx_date' => $tx['tx_date'] ?? \Carbon\Carbon::now()->toDateString(),
                     'merchant' => $tx['merchant'] ?? null,
                     'notes' => $tx['notes'] ?? $text,
                     'input_method' => 'auto',
@@ -95,8 +120,10 @@ class ExtractionService
 
             return [
                 'transactions' => $createdTransactions,
-                'raw_text' => $text
+                'raw_text' => $text,
+                'reply' => $reply
             ];
+
 
         } catch (Exception $e) {
             Log::error('Text Processing Exception: ' . $e->getMessage());
@@ -104,7 +131,7 @@ class ExtractionService
         }
     }
 
-    public static function processImageDirectly(UploadedFile $file, User $user, string $extractionType): array
+    public static function processMediaDirectly(array $files, string $text, User $user, string $extractionType, bool $reviewOnly = false): array
     {
         try {
             $apiKey = env('GEMINI_API_KEY');
@@ -143,7 +170,8 @@ class ExtractionService
                         'merchant' => 'Toko Buku',
                         'notes' => 'Catatan tambahan jika ada'
                     ]
-                ]
+                ],
+                'reply' => 'Sapaan ramah atau konfirmasi terkait transaksi.'
             ]);
 
             $prompt = <<<PROMPT
@@ -151,28 +179,39 @@ Role: Financial Extraction Expert. Output: RAW JSON ONLY.
 Schema: {$schemaJson}
 
 ## STRICT RULES:
-- Extract all transactions visible in the image.
+- Extract all transactions visible in the image or mentioned in the audio.
 - DATE: Always YYYY-MM-DD. Use today if unknown: 2026-05-02.
 - NO COMMENTS: Do not include "//" or explanations.
 - AMOUNT: Clean integer (no dots/commas). Example: 334000.
 - JSON: Ensure valid syntax, no trailing commas.
 PROMPT;
 
-            $base64Image = base64_encode(file_get_contents($file->getRealPath()));
-            $mimeType = $file->getMimeType() ?: 'image/jpeg';
+            $parts = [];
+            
+            $finalPrompt = $prompt;
+            if (!empty($text)) {
+                $finalPrompt .= "\n\nPesan Pengguna Tambahan: " . $text;
+            }
+            $parts[] = ['text' => $finalPrompt];
+
+            foreach ($files as $file) {
+                $mimeType = $file->getMimeType() ?: 'application/octet-stream';
+                if (str_contains($file->getClientOriginalName(), 'voice-record') || str_ends_with($file->getClientOriginalName(), '.webm')) {
+                    $mimeType = 'audio/webm';
+                }
+                
+                $parts[] = [
+                    'inline_data' => [
+                        'mime_type' => $mimeType,
+                        'data' => base64_encode(file_get_contents($file->getRealPath()))
+                    ]
+                ];
+            }
 
             $payload = [
                 'contents' => [
                     [
-                        'parts' => [
-                            ['text' => $prompt],
-                            [
-                                'inline_data' => [
-                                    'mime_type' => $mimeType,
-                                    'data' => $base64Image
-                                ]
-                            ]
-                        ]
+                        'parts' => $parts
                     ]
                 ],
                 'generationConfig' => [
@@ -182,7 +221,7 @@ PROMPT;
 
             $response = Http::withHeaders(['Content-Type' => 'application/json'])
                 ->timeout(60)
-                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}", $payload);
+                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", $payload);
 
             if (!$response->successful()) {
                 Log::error('Gemini Vision Error: ' . $response->body());
@@ -192,8 +231,6 @@ PROMPT;
             $resultData = $response->json();
             $extractedText = $resultData['candidates'][0]['content']['parts'][0]['text'] ?? '';
             
-            $llmMapper = app(LLMMapper::class);
-            // We use reflection to call the protected parseJson method or just decode it here
             $data = json_decode($extractedText, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // Try to clean it using basic regex if markdown
@@ -203,13 +240,36 @@ PROMPT;
             }
 
             $transactions = $data['tx'] ?? [];
-            if (empty($transactions)) {
-                throw new Exception('Gagal mengekstrak data transaksi dari gambar.');
+            $reply = $data['reply'] ?? null;
+
+            if (empty($transactions) && empty($reply)) {
+                throw new Exception('Data transaksi atau balasan tidak ditemukan dalam response.');
             }
 
             $account = $user->accounts()->first();
             if (!$account) {
                 throw new Exception('Anda belum memiliki akun (dompet/bank).');
+            }
+
+            if ($reviewOnly) {
+                $previewTransactions = [];
+                foreach ($transactions as $tx) {
+                    $amount = (float) preg_replace('/[^0-9.]/', '', (string)($tx['amount'] ?? 0));
+                    $previewTransactions[] = [
+                        'account_id' => $account->id,
+                        'type' => $tx['type'] ?? 'expense',
+                        'amount' => $amount,
+                        'tx_date' => $tx['tx_date'] ?? Carbon::now()->toDateString(),
+                        'merchant' => $tx['merchant'] ?? null,
+                        'notes' => $tx['notes'] ?? 'Extracted from media',
+                        'input_method' => 'auto',
+                        'is_preview' => true,
+                    ];
+                }
+                return [
+                    'transactions' => $previewTransactions,
+                    'raw_text' => json_encode($transactions, JSON_PRETTY_PRINT)
+                ];
             }
 
             $createdTransactions = [];
@@ -221,7 +281,7 @@ PROMPT;
                     'amount' => $amount,
                     'tx_date' => $tx['tx_date'] ?? Carbon::now()->toDateString(),
                     'merchant' => $tx['merchant'] ?? null,
-                    'notes' => $tx['notes'] ?? 'Extracted from image',
+                    'notes' => $tx['notes'] ?? 'Extracted from media',
                     'input_method' => 'auto',
                 ];
                 $createdTransactions[] = TransactionService::store($user, $dataToSave);

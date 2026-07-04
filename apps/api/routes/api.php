@@ -145,6 +145,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // OCR & Extractions
     Route::post('extractions/upload', [ExtractionController::class, 'upload']);
+    Route::post('extractions/media', [ExtractionController::class, 'uploadDirect']);
     Route::post('extractions/text', [ExtractionController::class, 'processText']);
     Route::get('extractions/{extraction}', [ExtractionController::class, 'show']);
 

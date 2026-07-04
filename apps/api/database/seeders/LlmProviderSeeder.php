@@ -22,7 +22,7 @@ class LlmProviderSeeder extends Seeder
                 'priority' => 1,
                 'base_url' => null,
                 'api_key' => env('GEMINI_API_KEY'),
-                'default_model' => 'gemini-1.5-flash',
+                'default_model' => 'gemini-flash-latest',
             ]
         );
 

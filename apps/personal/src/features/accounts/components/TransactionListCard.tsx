@@ -34,9 +34,9 @@ export function TransactionListCard({ transactions }: TransactionListCardProps) 
                 <Icon icon="receipt-off" size={40} stroke={1.5} opacity={0.6} />
               </div>
               <div className="fw-bold text-body mb-1">Transaksi Kosong</div>
-              <div className="text-muted small">Belum ada transaksi terbaru.</div>
-              <Link to="/" className="btn btn-orange rounded-pill btn-sm mt-3 px-3">
-                <Icon icon="plus" size={16} className="me-1" />
+              <div className="text-muted small mb-3">Belum ada transaksi terbaru.</div>
+              <Link to="/" className="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                <Icon icon="plus" size={16} stroke={2} />
                 Catat Transaksi
               </Link>
             </div>
