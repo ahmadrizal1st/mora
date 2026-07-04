@@ -1415,3 +1415,47 @@ div.shadow-sm:not(.badge):not(.btn):not(.dropdown-menu) {
 .form-switch .form-check-input:checked:focus {
   --tblr-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
 }
+
+/* Print Styles */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  /* Hide sidebar, chatbot button, bottom navbar, and action buttons */
+  .navbar,
+  aside,
+  header,
+  .bottom-navbar,
+  .chatbot-open,
+  #root > div > div > aside,
+  #root > div > div > header,
+  .btn,
+  button,
+  .btn-outline-primary,
+  .badge.rounded-pill[style*="cursor: pointer"],
+  .theme-switcher-row,
+  .chatbot-widget-container,
+  iframe,
+  .navbar-vertical,
+  .btn-print-hidden {
+    display: none !important;
+  }
+  
+  /* Reset container layout and paddings */
+  .container-xl, .container-fluid {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Clean card style for print */
+  .card {
+    border: 1px solid #dee2e6 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+}

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Icon } from '@/shared/components/ui'
+import { Icon } from '@/shared/components/ui/Icon'
 import { useCredits } from '../hooks/useCredits'
 import type { CreditType } from '../types/credit.types'
 
@@ -122,6 +122,21 @@ export function CreditTypeCards() {
   }, [credits])
 
   if (isLoading) return null
+
+  const isAllInvisible = creditTypes.every(ct => !ct.visible)
+  if (isAllInvisible) {
+    return (
+      <div className="card shadow-sm border-0 rounded-4">
+        <div className="card-body p-4">
+          <div className="text-center py-5 d-flex flex-column justify-content-center align-items-center flex-grow-1 w-100">
+            <Icon icon="credit-card-off" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+            <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Rincian Kredit</div>
+            <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Rincian per tipe kredit akan muncul setelah Anda menambahkan profil.</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div>

@@ -8,14 +8,41 @@ interface StoryPlayerProps {
   income: number
   expense: number
   onClose: () => void
+  kategoriJuara?: string
+  pengeluaranTerbesar?: string
+  hariPalingBoros?: string
+  hariTanpaBelanja?: number
+  waktuPalingBoros?: string
+  dompetPalingSering?: string
+  personaTitle?: string
+  personaDesc?: string
+  personaEmoji?: string
+  onClickShare?: () => void
 }
 
 const DURATION_PER_SLIDE = 5000 // 5 seconds
 
-export function StoryPlayer({ label, savingRate, totalTx, income, expense, onClose }: StoryPlayerProps) {
+export function StoryPlayer({ 
+  label, 
+  savingRate, 
+  totalTx, 
+  income, 
+  expense, 
+  onClose,
+  kategoriJuara = 'Makanan & Minuman · 41%',
+  pengeluaranTerbesar = 'Baju & Sepatu · 150.000',
+  hariPalingBoros = '-',
+  hariTanpaBelanja = 0,
+  waktuPalingBoros = 'Sore Hari · 16:00 - 19:00',
+  dompetPeringSering = '-',
+  personaTitle = 'Sultan Hemat',
+  personaDesc = 'Nabung terus, gaya tetap oke. Ini baru sultan.',
+  personaEmoji = '👑',
+  onClickShare
+}: StoryPlayerProps) {
   const [activeSlide, setActiveSlide] = useState(0)
   const [progress, setProgress] = useState(0)
-  const totalSlides = 2
+  const totalSlides = 10
   const progressInterval = useRef<number | null>(null)
 
   // Auto-advance logic
@@ -60,11 +87,34 @@ export function StoryPlayer({ label, savingRate, totalTx, income, expense, onClo
     }
   }
 
-  // Count animations for Slide 2
-  const animSavingRate = useCountUp(activeSlide === 1 ? savingRate : 0, 1500, 0, 300)
-  const animTx = useCountUp(activeSlide === 1 ? totalTx : 0, 1500, 0, 500)
-  const animIncome = useCountUp(activeSlide === 1 ? income : 0, 1500, 0, 700)
-  const animExpense = useCountUp(activeSlide === 1 ? expense : 0, 1500, 0, 900)
+  // Count animations for respective slides
+  const animIncome = useCountUp(activeSlide >= 1 ? income : 0, 1000, 0, 100)
+  const animExpense = useCountUp(activeSlide >= 2 ? expense : 0, 1000, 0, 100)
+  const animSavingRate = useCountUp(activeSlide >= 3 ? savingRate : 0, 1000, 0, 100)
+  const animTx = useCountUp(activeSlide >= 4 ? totalTx : 0, 1000, 0, 100)
+
+  const handleShare = () => {
+    if (onClickShare) {
+      onClickShare()
+      return
+    }
+    const shareUrl = window.location.href
+    if (navigator.share) {
+      navigator.share({
+        title: `Morapi Rewind - ${label}`,
+        text: `Lihat Morapi Rewind saya untuk ${label}!`,
+        url: shareUrl
+      }).catch(err => {
+        console.error(err)
+      })
+    } else {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('Link Morapi Rewind berhasil disalin ke papan klip!')
+      }).catch(err => {
+        console.error(err)
+      })
+    }
+  }
 
   return (
     <div 
@@ -78,7 +128,7 @@ export function StoryPlayer({ label, savingRate, totalTx, income, expense, onClo
     >
       {/* Progress Bars */}
       <div className="d-flex w-100 px-2 pt-2 position-absolute top-0 start-0 z-3" style={{ gap: '4px' }}>
-        {[0, 1].map(index => (
+        {Array.from({ length: totalSlides }).map((_, index) => (
           <div key={index} className="flex-grow-1 rounded-pill overflow-hidden" style={{ height: '3px', backgroundColor: 'rgba(255,255,255,0.3)' }}>
             <div 
               className="h-100 bg-white rounded-pill" 
@@ -91,24 +141,11 @@ export function StoryPlayer({ label, savingRate, totalTx, income, expense, onClo
         ))}
       </div>
 
-      {/* Top Controls */}
-      <div className="d-flex justify-content-between align-items-center w-100 p-3 position-absolute top-0 start-0 z-3 mt-3">
-        <div /> {/* Placeholder for alignment */}
-        <div className="d-flex gap-2">
-          <button className="btn btn-sm btn-icon rounded-circle d-flex align-items-center justify-content-center" style={{ backgroundColor: 'rgba(0,0,0,0.2)', color: 'white', width: '32px', height: '32px', border: 'none' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
-          </button>
-          <button onClick={onClose} className="btn btn-sm btn-icon rounded-circle d-flex align-items-center justify-content-center" style={{ backgroundColor: 'rgba(0,0,0,0.2)', color: 'white', width: '32px', height: '32px', border: 'none' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-          </button>
-        </div>
-      </div>
-
       {/* Tap Navigation Overlays */}
       <div className="position-absolute top-0 start-0 w-25 h-100 z-2" onClick={handleTapLeft} />
       <div className="position-absolute top-0 end-0 w-75 h-100 z-2" onClick={handleTapRight} />
 
-      {/* Slide 1: Splash */}
+      {/* Slide 0: Splash */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
         style={{ opacity: activeSlide === 0 ? 1 : 0, pointerEvents: activeSlide === 0 ? 'auto' : 'none' }}
@@ -116,41 +153,232 @@ export function StoryPlayer({ label, savingRate, totalTx, income, expense, onClo
         <div className="text-center" style={{ transform: activeSlide === 0 ? 'scale(1)' : 'scale(0.9)', transition: 'transform 0.5s ease-out' }}>
           <div className="mb-4" style={{ fontSize: '80px' }}>🎉</div>
           <div className="mb-2" style={{ fontSize: '13px', opacity: 0.8 }}>{label}</div>
-          <h2 className="fw-bold mb-3" style={{ fontSize: '32px' }}>Kilas Balik</h2>
+          <h2 className="fw-bold mb-3" style={{ fontSize: '32px' }}>Morapi Rewind</h2>
           <p style={{ fontSize: '15px', opacity: 0.9 }}>Sebulan penuh kamu sudah catat. Yuk lihat hasilnya.</p>
         </div>
-        
-        <div className="position-absolute bottom-0 mb-4 pb-2 text-center" style={{ fontSize: '11px', opacity: 0.6 }}>
-          Ketuk untuk lanjut<br/>
-          Dibuat dengan PFinTrack v1.14.1 · pfintrack.site
+        <div className="position-absolute bottom-0 mb-4 pb-4 text-center" style={{ fontSize: '11px', opacity: 0.6 }}>
+          Ketuk layar kanan untuk lanjut<br/>
+          Dibuat dengan Morapi AI
         </div>
       </div>
 
-      {/* Slide 2: Persona Card */}
+      {/* Slide 1: Pemasukan (Income) */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
         style={{ opacity: activeSlide === 1 ? 1 : 0, pointerEvents: activeSlide === 1 ? 'auto' : 'none' }}
       >
-        <div className="container-xl d-flex flex-column align-items-center" style={{ maxWidth: '400px', transform: activeSlide === 1 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
+        <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 1 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
+          <div className="text-center mb-5">
+            <div style={{ fontSize: '72px' }} className="mb-3">💰</div>
+            <h3 className="fw-bold mb-2" style={{ fontSize: '24px' }}>Uang Masuk</h3>
+            <p className="opacity-75" style={{ fontSize: '14px' }}>Semua dimulai dari sini. Kerja kerasmu terbayarkan!</p>
+          </div>
+          <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+            <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>TOTAL PEMASUKAN</div>
+            <h1 className="fw-bold text-success font-monospace" style={{ fontSize: '28px' }}>
+              + Rp {animIncome.toLocaleString('id-ID')}
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide 2: Pengeluaran (Expense) */}
+      <div 
+        className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
+        style={{ opacity: activeSlide === 2 ? 1 : 0, pointerEvents: activeSlide === 2 ? 'auto' : 'none' }}
+      >
+        <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 2 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
+          <div className="text-center mb-5">
+            <div style={{ fontSize: '72px' }} className="mb-3">💸</div>
+            <h3 className="fw-bold mb-2" style={{ fontSize: '24px' }}>Uang Keluar</h3>
+            <p className="opacity-75" style={{ fontSize: '14px' }}>Untuk menunjang kebutuhan dan gayamu bulan ini...</p>
+          </div>
+          <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+            <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>TOTAL PENGELUARAN</div>
+            <h1 className="fw-bold text-danger font-monospace" style={{ fontSize: '28px' }}>
+              - Rp {animExpense.toLocaleString('id-ID')}
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide 3: Arus Kas Bersih (Saving Rate) */}
+      <div 
+        className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
+        style={{ opacity: activeSlide === 3 ? 1 : 0, pointerEvents: activeSlide === 3 ? 'auto' : 'none' }}
+      >
+        <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 3 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
+          <div className="text-center mb-4">
+            <div style={{ fontSize: '72px' }} className="mb-3">📈</div>
+            <h3 className="fw-bold mb-2" style={{ fontSize: '24px' }}>Arus Bersih & Saving Rate</h3>
+            <p className="opacity-75" style={{ fontSize: '14px' }}>Seberapa hemat kamu di {label}?</p>
+          </div>
+          <div className="p-4 rounded-4 w-100 text-center shadow mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+            <div className="opacity-75 mb-1" style={{ fontSize: '12px' }}>SISA DANA TERIMPIT</div>
+            <h2 className="fw-bold font-monospace text-white" style={{ fontSize: '24px' }}>
+              Rp {(income - expense).toLocaleString('id-ID')}
+            </h2>
+          </div>
+          <div className="p-3 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+            <div className="opacity-75 mb-1" style={{ fontSize: '12px' }}>SAVING RATE</div>
+            <h2 className="fw-bold text-success font-monospace" style={{ fontSize: '24px' }}>
+              {animSavingRate}%
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide 4: Frekuensi Transaksi (Transaction Count) */}
+      <div 
+        className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
+        style={{ opacity: activeSlide === 4 ? 1 : 0, pointerEvents: activeSlide === 4 ? 'auto' : 'none' }}
+      >
+        <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 4 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
+          <div className="text-center mb-5">
+            <div style={{ fontSize: '72px' }} className="mb-3">✍️</div>
+            <h3 className="fw-bold mb-2" style={{ fontSize: '24px' }}>Rajin Mencatat</h3>
+            <p className="opacity-75" style={{ fontSize: '14px' }}>Setiap transaksi adalah langkah menuju merdeka finansial!</p>
+          </div>
+          <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+            <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>TOTAL TRANSAKSI</div>
+            <h1 className="fw-bold font-monospace text-white" style={{ fontSize: '32px' }}>
+              {animTx} Kali
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide 5: Kategori Terboros (Top Category) */}
+      <div 
+        className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
+        style={{ opacity: activeSlide === 5 ? 1 : 0, pointerEvents: activeSlide === 5 ? 'auto' : 'none' }}
+      >
+        <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 5 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
+          <div className="text-center mb-5">
+            <div style={{ fontSize: '72px' }} className="mb-3">🍕</div>
+            <h3 className="fw-bold mb-2" style={{ fontSize: '24px' }}>Kategori Terboros</h3>
+            <p className="opacity-75" style={{ fontSize: '14px' }}>Kategori yang paling banyak memakan anggaranmu:</p>
+          </div>
+          <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+            <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>KATEGORI JUARA</div>
+            <h2 className="fw-bold text-warning" style={{ fontSize: '22px' }}>
+              {kategoriJuara}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide 6: Pengeluaran Terbesar (Max Expense) */}
+      <div 
+        className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
+        style={{ opacity: activeSlide === 6 ? 1 : 0, pointerEvents: activeSlide === 6 ? 'auto' : 'none' }}
+      >
+        <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 6 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
+          <div className="text-center mb-5">
+            <div style={{ fontSize: '72px' }} className="mb-3">🦖</div>
+            <h3 className="fw-bold mb-2" style={{ fontSize: '24px' }}>Pengeluaran Terbesar</h3>
+            <p className="opacity-75" style={{ fontSize: '14px' }}>Nominal belanja sekali bayar yang paling besar:</p>
+          </div>
+          <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+            <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>SINGLE PURCHASE TERBESAR</div>
+            <h2 className="fw-bold text-danger font-monospace" style={{ fontSize: '20px' }}>
+              {pengeluaranTerbesar}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide 7: Waktu Belanja Teraktif (Peak Spending Hours) */}
+      <div 
+        className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
+        style={{ opacity: activeSlide === 7 ? 1 : 0, pointerEvents: activeSlide === 7 ? 'auto' : 'none' }}
+      >
+        <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 7 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
+          <div className="text-center mb-5">
+            <div style={{ fontSize: '72px' }} className="mb-3">⏰</div>
+            <h3 className="fw-bold mb-2" style={{ fontSize: '24px' }}>Waktu Belanja</h3>
+            <p className="opacity-75" style={{ fontSize: '14px' }}>Jam-jam rawan di mana jempolmu gemar berbelanja:</p>
+          </div>
+          <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+            <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>JAM TERSIBUK DOMPET</div>
+            <h2 className="fw-bold text-info" style={{ fontSize: '22px' }}>
+              {waktuPalingBoros}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide 8: Hari Tanpa Belanja (No-Spend Days) */}
+      <div 
+        className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
+        style={{ opacity: activeSlide === 8 ? 1 : 0, pointerEvents: activeSlide === 8 ? 'auto' : 'none' }}
+      >
+        <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 8 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
+          <div className="text-center mb-5">
+            <div style={{ fontSize: '72px' }} className="mb-3">🌿</div>
+            <h3 className="fw-bold mb-2" style={{ fontSize: '24px' }}>Hari Bebas Belanja</h3>
+            <p className="opacity-75" style={{ fontSize: '14px' }}>Kamu berhasil mengontrol diri dan tidak mengeluarkan uang pada:</p>
+          </div>
+          <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+            <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>TOTAL HARI BEBAS BELANJA</div>
+            <h1 className="fw-bold text-success font-monospace" style={{ fontSize: '36px' }}>
+              {hariTanpaBelanja} Hari
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide 9: Persona Card & Final Share */}
+      <div 
+        className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
+        style={{ 
+          opacity: activeSlide === 9 ? 1 : 0, 
+          pointerEvents: 'none', 
+          zIndex: 3 
+        }}
+      >
+        <div 
+          className="container-xl d-flex flex-column align-items-center" 
+          style={{ 
+            maxWidth: '400px', 
+            transform: activeSlide === 9 ? 'translateY(0)' : 'translateY(20px)', 
+            transition: 'transform 0.5s ease-out',
+            pointerEvents: activeSlide === 9 ? 'auto' : 'none'
+          }}
+        >
           
-          <div className="card rounded-4 border-0 text-white overflow-hidden w-100 mb-4 shadow-lg position-relative z-3" style={{ backgroundColor: '#3f9349' }}>
+          <div className="card rounded-4 text-white overflow-hidden w-100 mb-4 shadow-lg position-relative z-3" style={{ backgroundColor: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(12px)' }}>
             <div className="card-body p-4 d-flex flex-column">
               
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <div className="d-flex align-items-center gap-2 fw-semibold" style={{ fontSize: '14px' }}>
-                  <div className="rounded bg-white bg-opacity-25 d-flex align-items-center justify-content-center" style={{ width: '20px', height: '20px' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" /><path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /><path d="M9 14l2 2l4 -4" /></svg>
-                  </div>
-                  PFinTrack
+                  <div 
+                    style={{ 
+                      width: '18px', 
+                      height: '18px', 
+                      backgroundColor: '#ffffff',
+                      WebkitMaskImage: 'url("/logo/logo-nobg-fill.png")',
+                      maskImage: 'url("/logo/logo-nobg-fill.png")',
+                      WebkitMaskSize: 'contain',
+                      maskSize: 'contain',
+                      WebkitMaskRepeat: 'no-repeat',
+                      maskRepeat: 'no-repeat',
+                      WebkitMaskPosition: 'center',
+                      maskPosition: 'center',
+                    }} 
+                  />
+                  <span style={{ fontFamily: "'Slackey', cursive", letterSpacing: '-0.03rem' }}>morapi</span>
                 </div>
                 <div style={{ fontSize: '11px', opacity: 0.8 }}>{label}</div>
               </div>
 
               <div className="text-center flex-grow-1 d-flex flex-column justify-content-center align-items-center mb-4 pt-2">
-                <div className="mb-3" style={{ fontSize: '56px' }}>👑</div>
+                <div className="mb-3" style={{ fontSize: '56px' }}>{personaEmoji}</div>
                 <div style={{ fontSize: '11px', opacity: 0.9 }} className="mb-1">Persona finansialmu</div>
-                <h3 className="fw-bold mb-2" style={{ fontSize: '22px' }}>Sultan Hemat</h3>
-                <p className="mb-2" style={{ fontSize: '13px', opacity: 0.9 }}>Nabung terus, gaya tetap oke. Ini baru sultan.</p>
+                <h3 className="fw-bold mb-2" style={{ fontSize: '22px' }}>{personaTitle}</h3>
+                <p className="mb-2" style={{ fontSize: '13px', opacity: 0.9 }}>
+                  {personaDesc}
+                </p>
               </div>
 
               <div className="row g-2 mb-2">
@@ -170,7 +398,7 @@ export function StoryPlayer({ label, savingRate, totalTx, income, expense, onClo
 
               <div className="rounded-3 p-3 mb-2" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                 <div className="mb-1" style={{ fontSize: '11px', opacity: 0.9 }}>Kategori juara</div>
-                <div className="fw-bold" style={{ fontSize: '14px' }}>Makanan & Minuman &middot; 41%</div>
+                <div className="fw-bold" style={{ fontSize: '14px' }}>{kategoriJuara}</div>
               </div>
 
               <div className="row g-2 mb-4">
@@ -193,20 +421,19 @@ export function StoryPlayer({ label, savingRate, totalTx, income, expense, onClo
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="1.5" stroke="var(--tblr-primary)" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M14 14l3 0" /><path d="M17 14l0 3" /><path d="M20 14l0 3" /><path d="M14 17l3 0" /><path d="M17 17l0 3" /><path d="M20 17l0 3" /></svg>
                 </div>
                 <span className="badge rounded-pill" style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px', fontWeight: '500' }}>
-                  pfintrack.site
+                  morapi.localhost
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="d-flex justify-content-center gap-3 mb-4 position-relative z-3">
-            <button className="badge rounded-pill text-white border-0" style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '11px', padding: '6px 16px' }}>9:16</button>
-            <button className="badge rounded-pill text-white border-0" style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '11px', padding: '6px 16px' }}>1:1</button>
-          </div>
-
-          <button className="btn bg-white w-100 rounded-3 py-2 mb-3 fw-bold d-flex justify-content-center align-items-center gap-2 shadow position-relative z-3" style={{ color: 'var(--tblr-primary)', fontSize: '14px' }}>
+          <button 
+            onClick={handleShare}
+            className="btn bg-white w-100 rounded-3 py-2 mb-3 fw-bold d-flex justify-content-center align-items-center gap-2 shadow position-relative z-3" 
+            style={{ color: 'var(--tblr-primary)', fontSize: '14px' }}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
-            Bagikan kilas balik
+            Bagikan Morapi Rewind
           </button>
           
           <button 
@@ -219,6 +446,23 @@ export function StoryPlayer({ label, savingRate, totalTx, income, expense, onClo
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
             Putar ulang
+          </button>
+        </div>
+      </div>
+
+      {/* Top Controls (Rendered at the bottom to stay on top of all overlays) */}
+      <div 
+        className="d-flex justify-content-between align-items-center w-100 p-3 position-absolute top-0 start-0 mt-3"
+        style={{ zIndex: 10050 }}
+      >
+        <div />
+        <div className="d-flex gap-2 btn-print-hidden">
+          <button 
+            onClick={onClose} 
+            className="btn btn-sm btn-icon rounded-circle d-flex align-items-center justify-content-center" 
+            style={{ backgroundColor: 'rgba(0,0,0,0.4)', color: 'white', width: '36px', height: '36px', border: 'none' }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
           </button>
         </div>
       </div>

@@ -3,6 +3,9 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { PeriodCard } from '@/features/reports/components/PeriodCard'
 import { useTransactionSummary, useTransactionChartData, useTransactions } from '@/features/transaction/hooks/useTransactions'
+import { Button } from '@/shared/components/ui'
+import { Modal, ModalHeader } from '@/shared/components/ui/Modal'
+import { Datepicker } from '@/shared/components/ui/Datepicker'
 import { Chart } from '@/shared/components/ui/Chart'
 import { CategoryBreakdownCard } from '@/features/reports/components/CategoryBreakdownCard'
 import { DailyHeatmapCard } from '@/features/reports/components/DailyHeatmapCard'
@@ -108,6 +111,7 @@ function CustomPeriodCard({ title, from, to }: { title: string; from: string; to
 }
 
 function TodayDashboard() {
+  const navigate = useNavigate()
   const today = new Date()
   const dateFrom = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`
   const dateTo = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()).padStart(2, '0')}`
@@ -115,7 +119,6 @@ function TodayDashboard() {
 
   const { data: summary, isLoading } = useTransactionSummary({ date_from: dateFrom, date_to: dateTo })
   const [txFilter, setTxFilter] = useState<'all' | 'expense' | 'income'>('expense')
-
   const { data: txData } = useTransactions({ date_from: dateFrom, date_to: dateTo, per_page: 15, sort_by: 'tx_date', sort_dir: 'desc' })
 
   if (isLoading) {
@@ -128,63 +131,173 @@ function TodayDashboard() {
 
   const income = summary?.total_income || 0
   const expense = summary?.total_expense || 0
-  const savingRate = income > 0 ? Math.round(((income - expense) / income) * 100) : 0
-  const avgDaily = expense > 0 ? Math.round(expense / today.getDate()) : 0
+  const savingRate = income > 0 ? ((income - expense) / income) * 100 : 0
+  const healthScore = income === 0 && expense === 0 ? 0 : Math.min(100, Math.max(10, Math.round(50 + (savingRate * 1.2))))
+  
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'var(--tblr-success)'
+    if (score >= 50) return 'var(--tblr-primary)'
+    if (score >= 30) return 'var(--tblr-warning)'
+    return 'var(--tblr-danger)'
+  }
+
+  const getScoreLabel = (score: number) => {
+    if (score >= 80) return 'Sangat Sehat'
+    if (score >= 50) return 'Cukup Baik'
+    if (score >= 30) return 'Perlu Perhatian'
+    if (score > 0) return 'Kritis'
+    return 'Belum Ada Data'
+  }
+
+  const scoreColor = getScoreColor(healthScore)
+  const radius = 36
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (healthScore / 100) * circumference
+  const filteredTxs = (txData?.data || []).filter(t => t.type === txFilter)
+  const totalTransactions = filteredTxs.length
+  const maxTx = filteredTxs.length > 0 ? Math.max(...filteredTxs.map(t => t.amount)) : 0
+  const avgTx = filteredTxs.length > 0 ? Math.round(filteredTxs.reduce((acc, t) => acc + t.amount, 0) / filteredTxs.length) : 0
+
+  const cashFlowRatio = expense > 0 ? (income / expense) : income > 0 ? 10 : 0
+  const getRatioLabel = (ratio: number) => {
+    if (ratio >= 1.5) return 'Surplus Besar'
+    if (ratio >= 1.0) return 'Surplus Seimbang'
+    if (ratio >= 0.8) return 'Defisit Ringan'
+    return 'Defisit Berat'
+  }
+  const getRatioColor = (ratio: number) => {
+    if (ratio >= 1.5) return 'var(--tblr-success)'
+    if (ratio >= 1.0) return 'var(--tblr-primary)'
+    if (ratio >= 0.8) return 'var(--tblr-warning)'
+    return 'var(--tblr-danger)'
+  }
+  const ratioColor = getRatioColor(cashFlowRatio)
 
   return (
-    <div>
-      <div className="text-center mb-4 text-secondary" style={{ fontSize: '13px' }}>
-        {dateStr}
+    <div className="d-flex flex-column gap-4">
+      <div className="text-center mb-1 text-secondary" style={{ fontSize: '13px' }}>
+        Periode: {dateStr}
       </div>
 
-      <div className="row g-3 mb-4">
-        <div className="col-12 col-md-6">
-          <div className="card border-0 rounded-4 shadow-sm h-100">
-            <div className="card-body p-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <span className="fw-bold text-secondary" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>TINGKAT MENABUNG</span>
-                <span className="fw-bold fs-5 text-success">{savingRate}%</span>
-              </div>
-              <div className="progress mb-2" style={{ height: '6px' }}>
-                <div className="progress-bar bg-success" style={{ width: `${Math.min(100, Math.max(0, savingRate))}%` }} />
-              </div>
-              <div className="text-secondary mb-3" style={{ fontSize: '12px' }}>Target ideal: tabung ≥ 20% penghasilan</div>
-              <div className="d-flex justify-content-between" style={{ fontSize: '13px' }}>
-                <span className="text-secondary">Pemasukan {fmt(income)}</span>
-              </div>
-              <div className="d-flex justify-content-between" style={{ fontSize: '13px' }}>
-                <span className="text-secondary">Tersimpan <span className="text-success fw-semibold">+{fmt(income - expense)}</span></span>
+      {/* Morapi Rewind Banner */}
+      <div 
+        className="card border rounded-4 shadow-sm" 
+        style={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', color: '#1e293b', cursor: 'pointer' }}
+        onClick={() => {
+          navigate({ to: `/reports/recap/${dateFrom.substring(0, 7)}` })
+        }}
+      >
+        <div className="card-body py-3 px-4 d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center gap-3">
+            <div className="d-flex justify-content-center align-items-center" style={{ width: '32px', height: '32px' }}>
+              <div 
+                style={{ 
+                  width: '24px', 
+                  height: '24px', 
+                  backgroundColor: 'var(--tblr-primary)',
+                  WebkitMaskImage: 'url("/logo/logo-nobg-fill.png")',
+                  maskImage: 'url("/logo/logo-nobg-fill.png")',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                }} 
+              />
+            </div>
+            <div>
+              <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>Morapi Rewind {new Date(dateFrom).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })} siap dibuka</div>
+              <div className="text-secondary" style={{ fontSize: '12px' }}>Putar sekarang, lihat rangkuman performa bulan ini</div>
+            </div>
+          </div>
+          <div style={{ color: '#64748b' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" fill="none">
+               <path d="M9 6l6 6l-6 6" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 1: Score & Insights */}
+      <div className="row g-3">
+        <div className="col-12 col-md-4">
+          <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '20px', background: 'linear-gradient(145deg, #ffffff, #f8fafc)' }}>
+            <div className="card-body p-4 d-flex flex-column justify-content-center">
+              <div className="d-flex align-items-center gap-3">
+                <div className="position-relative" style={{ width: '60px', height: '60px', flexShrink: 0 }}>
+                  <svg width="60" height="60" viewBox="0 0 90 90" style={{ transform: 'rotate(-90deg)' }}>
+                    <circle cx="45" cy="45" r={radius} stroke="var(--tblr-border-color)" strokeWidth="8" fill="none" />
+                    <circle 
+                      cx="45" cy="45" r={radius} 
+                      stroke={scoreColor} 
+                      strokeWidth="8" 
+                      fill="none" 
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeDashoffset}
+                      strokeLinecap="round"
+                      style={{ transition: 'stroke-dashoffset 1s ease-out' }}
+                    />
+                  </svg>
+                  <div className="position-absolute top-50 start-50 translate-middle text-center">
+                    <div className="fw-bold" style={{ fontSize: '16px', color: scoreColor, lineHeight: 1 }}>{healthScore}</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="fw-bold text-secondary mb-1" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>SKOR FINANSIAL</div>
+                  <h4 className="fw-bold mb-0 text-dark" style={{ fontSize: '15px' }}>{getScoreLabel(healthScore)}</h4>
+                  <div className="text-secondary" style={{ fontSize: '11px' }}>
+                    Saving rate: {savingRate.toFixed(1)}%
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="col-12 col-md-6">
-          <div className="card border-0 rounded-4 shadow-sm h-100">
-            <div className="card-body p-4">
-              <div className="fw-bold text-secondary mb-3" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>RATA-RATA PENGELUARAN HARIAN</div>
-              <div className="d-flex align-items-baseline gap-2 mb-3">
-                <span className="fw-bold fs-3">{fmt(avgDaily)}</span>
-                <span className="text-secondary" style={{ fontSize: '12px' }}>per hari &middot; {today.getDate()} hari berjalan</span>
+
+        <div className="col-12 col-md-4">
+          <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '20px', background: 'linear-gradient(145deg, #ffffff, #f8fafc)' }}>
+            <div className="card-body p-4 d-flex flex-column justify-content-center">
+              <div className="d-flex align-items-center gap-3">
+                <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '42px', height: '42px', backgroundColor: 'rgba(var(--tblr-primary-rgb), 0.1)', color: 'var(--tblr-primary)' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke={ratioColor} fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 18a6 6 0 1 1 12 0" /><path d="M8 10a4 4 0 1 1 8 0" /><path d="M12 12l0 9" /></svg>
+                </div>
+                <div>
+                  <div className="fw-bold text-secondary mb-1" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>RASIO ARUS KAS</div>
+                  <h4 className="fw-bold mb-0 text-dark" style={{ fontSize: '15px' }}>{cashFlowRatio.toFixed(1)}x ({getRatioLabel(cashFlowRatio)})</h4>
+                  <div className="text-secondary" style={{ fontSize: '11px' }}>
+                    Pemasukan vs Pengeluaran
+                  </div>
+                </div>
               </div>
-              <div className="text-danger fw-semibold" style={{ fontSize: '12px' }}>
-                ↑ 10% lebih boros dari bulan lalu
+            </div>
+          </div>
+        </div>
+
+        <div className="col-12 col-md-4">
+          <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '20px', backgroundColor: 'var(--tblr-primary-lt)' }}>
+            <div className="card-body p-4 d-flex flex-column justify-content-center">
+              <div className="d-flex gap-3">
+                <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '36px', height: '36px' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9h.01" /><path d="M11 12h1v4h1" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /></svg>
+                </div>
+                <div>
+                  <div className="fw-bold text-primary mb-1" style={{ fontSize: '12px' }}>Insight Finansial</div>
+                  <p className="mb-0 text-dark opacity-75 leading-tight" style={{ fontSize: '11px' }}>
+                    {savingRate >= 20 
+                      ? "Disiplin menabung Anda sangat baik!" 
+                      : savingRate > 0 
+                      ? "Bagus, tapi usahakan naikkan tabungan Anda." 
+                      : "Awas! Pengeluaran melebihi pemasukan."}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="card border-0 rounded-4 shadow-sm mb-4">
-        <div className="card-body p-0">
-          <div className="px-4 pt-3 pb-2 fw-bold" style={{ fontSize: '14px' }}>Belum Lunas</div>
-          <div className="d-flex justify-content-between px-4 py-3 border-top" style={{ fontSize: '14px' }}>
-            <span className="text-secondary">Piutang</span>
-            <span className="text-success fw-bold">+0</span>
-          </div>
-        </div>
-      </div>
-
-
+      {/* Tab Switcher */}
       <div className="w-100 mb-2">
         <div className="d-flex w-100" style={{ borderBottom: '1px solid #e6e8eb' }} role="tablist">
           {[
@@ -207,7 +320,7 @@ function TodayDashboard() {
                   backgroundColor: 'transparent',
                   color: isActive ? '#1e293b' : '#64748b',
                   fontWeight: isActive ? '800' : '600',
-                  borderBottom: isActive ? '3px solid #ff6b00' : '3px solid transparent',
+                  borderBottom: isActive ? '3px solid var(--tblr-primary)' : '3px solid transparent',
                   marginBottom: '-1px',
                 }}
                 role="tab"
@@ -220,72 +333,100 @@ function TodayDashboard() {
         </div>
       </div>
 
-
-      <div className="row g-3 mb-3">
-        <div className="col-md-6">
+      {/* Row 2: Category Breakdown */}
+      <div className="row g-3">
+        <div className="col-12 col-md-6">
           <CategoryBreakdownCard title="Dompet" dateFrom={dateFrom} dateTo={dateTo} type={txFilter === 'income' ? 'income' : 'expense'} />
         </div>
-        <div className="col-md-6">
+        <div className="col-12 col-md-6">
           <CategoryBreakdownCard title="Kategori" dateFrom={dateFrom} dateTo={dateTo} type={txFilter === 'income' ? 'income' : 'expense'} />
         </div>
       </div>
 
-      <div className="row g-3">
-        <div className="col-12">
-          <DailyHeatmapCard dateFrom={dateFrom} dateTo={dateTo} type={txFilter === 'income' ? 'income' : 'expense'} />
-
-          <div className="card border-0 rounded-4 shadow-sm mt-3">
-        <div className="card-body p-0">
-          <div className="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
-            <span className="fw-bold" style={{ fontSize: '14px' }}>Transaksi Terbaru</span>
-            <Link to={`/reports/${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`} className="text-primary text-decoration-none" style={{ fontSize: '13px' }}>
-              Lihat Semua
-            </Link>
+      {/* Ringkasan Statistik Dinamis */}
+      <div className="card border-0 rounded-4 shadow-sm">
+        <div className="card-body p-4">
+          <h4 className="fw-bold mb-3 text-secondary text-uppercase" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>Statistik {txFilter === 'expense' ? 'Pengeluaran' : 'Pemasukan'}</h4>
+          <div className="row g-3 text-center">
+            <div className="col-4 border-end">
+              <div className="text-secondary mb-1" style={{ fontSize: '11px' }}>Rata-rata / Transaksi</div>
+              <div className="fw-bold text-dark font-monospace" style={{ fontSize: '15px' }}>Rp {fmt(avgTx)}</div>
+            </div>
+            <div className="col-4 border-end">
+              <div className="text-secondary mb-1" style={{ fontSize: '11px' }}>Transaksi Terbesar</div>
+              <div className="fw-bold text-dark font-monospace" style={{ fontSize: '15px' }}>Rp {fmt(maxTx)}</div>
+            </div>
+            <div className="col-4">
+              <div className="text-secondary mb-1" style={{ fontSize: '11px' }}>Frekuensi</div>
+              <div className="fw-bold text-dark font-monospace" style={{ fontSize: '15px' }}>{totalTransactions} kali</div>
+            </div>
           </div>
-          {txData?.data && txData.data.map((tx, i) => {
-            const isExp = tx.type === 'expense'
-            const isInc = tx.type === 'income'
-            const prefix = isExp ? '-' : isInc ? '+' : '↔'
-            const color = isExp ? '#e53e3e' : isInc ? '#38a169' : 'var(--tblr-primary)'
-            const acctColor = tx.account?.color || '#ccc'
-            const d = new Date(tx.tx_date + 'T00:00:00')
-            return (
-              <div
-                key={tx.id}
-                className="d-flex justify-content-between align-items-center px-4 py-3"
-                style={{ borderBottom: i < txData.data.length - 1 ? '1px solid #fafafa' : undefined }}
-              >
-                <div className="flex-grow-1 overflow-hidden me-2">
-                  <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
-                    {tx.merchant || tx.category?.name || (isInc ? 'Pemasukan' : isExp ? 'Pengeluaran' : 'Transfer')}
+        </div>
+      </div>
+
+      {/* Row 3: Daily Calendar */}
+      <div className="w-100">
+        <DailyHeatmapCard dateFrom={dateFrom} dateTo={dateTo} type={txFilter === 'income' ? 'income' : 'expense'} />
+      </div>
+
+      {/* Row 4: Latest Transactions */}
+      <div className="w-100">
+        <div className="card border-0 rounded-4 shadow-sm">
+          <div className="card-body p-0">
+            <div className="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+              <span className="fw-bold" style={{ fontSize: '14px' }}>Transaksi Terbaru</span>
+              <Link to={`/reports/${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`} className="text-primary text-decoration-none" style={{ fontSize: '13px' }}>
+                Lihat Semua
+              </Link>
+            </div>
+            <div>
+              {txData?.data && txData.data.map((tx, i) => {
+                const isExp = tx.type === 'expense'
+                const isInc = tx.type === 'income'
+                const prefix = isExp ? '-' : isInc ? '+' : '↔'
+                const color = isExp ? '#e53e3e' : isInc ? '#38a169' : 'var(--tblr-primary)'
+                const acctColor = tx.account?.color || '#ccc'
+                const d = new Date(tx.tx_date + 'T00:00:00')
+                return (
+                  <div
+                    key={tx.id}
+                    className="d-flex justify-content-between align-items-center px-4 py-3 hover-bg-surface transition-all"
+                    style={{ borderBottom: i < txData.data.length - 1 ? '1px solid #fafafa' : undefined }}
+                  >
+                    <div className="flex-grow-1 overflow-hidden me-2">
+                      <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
+                        {tx.merchant || tx.category?.name || (isInc ? 'Pemasukan' : isExp ? 'Pengeluaran' : 'Transfer')}
+                      </div>
+                      <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
+                        {tx.account?.name && (
+                          <span className="rounded px-1.5 py-0.5 fw-semibold" style={{ background: acctColor + '1a', color: acctColor, fontSize: '9px' }}>
+                            {tx.account.name}
+                          </span>
+                        )}
+                        {tx.category?.name && <span>{tx.category.name}</span>}
+                        <span>&middot; {d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}</span>
+                      </div>
+                    </div>
+                    <div className="fw-bold flex-shrink-0 font-monospace" style={{ color, fontSize: '14px' }}>
+                      {prefix}{fmt(tx.amount)}
+                    </div>
                   </div>
-                  <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
-                    {tx.account?.name && (
-                      <span className="rounded px-1 fw-semibold" style={{ background: acctColor + '22', color: acctColor, fontSize: '10px' }}>
-                        {tx.account.name}
-                      </span>
-                    )}
-                    {tx.category?.name && <span>{tx.category.name}</span>}
-                    <span>&middot; {d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}</span>
-                  </div>
-                </div>
-                <div className="fw-bold flex-shrink-0" style={{ color, fontSize: '14px' }}>
-                  {prefix}{fmt(tx.amount)}
-                </div>
-              </div>
-            )
-          })}
+                )
+              })}
+              {txData?.data && txData.data.length === 0 && (
+                <div className="text-center py-5 text-secondary small">Belum ada transaksi bulan ini.</div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
   )
 }
 
 export function ReportsPage() {
   const navigate = useNavigate()
-  const [mode, setMode] = useState<PeriodMode>('monthly')
+  const [mode, setMode] = useState<PeriodMode>('sekarang')
   const [isAddingCustom, setIsAddingCustom] = useState(false)
 
   // Custom Report Form State
@@ -296,7 +437,8 @@ export function ReportsPage() {
   // Custom Reports List (Mock state for now)
   const [customReports, setCustomReports] = useState<{title: string, from: string, to: string}[]>([])
 
-  const months = useMemo(() => getLastMonths(6), [])
+  const chartMonths = useMemo(() => getLastMonths(6), [])
+  const months = useMemo(() => getLastMonths(10), [])
 
   const handleSaveCustom = () => {
     if (customName && customFrom && customTo) {
@@ -314,113 +456,7 @@ export function ReportsPage() {
     return d.toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })
   }
 
-  // --- ADD CUSTOM REPORT VIEW ---
-  if (isAddingCustom) {
-    return (
-      <BaseLayout>
-        <div className="page-body pb-5">
-          <div className="container-xl" style={{ maxWidth: '800px' }}>
-            <div className="d-flex align-items-center gap-2 mb-4 pt-1 border-bottom pb-3">
-              <button 
-                onClick={() => setIsAddingCustom(false)} 
-                className="btn btn-icon btn-ghost-secondary rounded-circle flex-shrink-0"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M15 6l-6 6l6 6" />
-                </svg>
-              </button>
-              <div className="flex-grow-1 text-center pe-5">
-                <h2 className="page-title m-0 fw-semibold" style={{ fontSize: '16px' }}>
-                  Tambah Laporan
-                </h2>
-              </div>
-            </div>
-
-            {/* Banner */}
-            <div className="w-100 d-flex justify-content-between align-items-center px-3 py-2 mb-3" style={{ backgroundColor: '#5c80d1', color: 'white', fontSize: '13px' }}>
-              <div className="d-flex align-items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275l5.813 1.912l-5.813 1.912a2 2 0 0 0 -1.275 1.275l-1.912 5.813l-1.912 -5.813a2 2 0 0 0 -1.275 -1.275l-5.813 -1.912l5.813 -1.912a2 2 0 0 0 1.275 -1.275l1.912 -5.813z" />
-                </svg>
-                <span>Kamu lagi lihat data contoh.</span>
-              </div>
-              <div className="d-flex align-items-center gap-2">
-                <button className="btn btn-sm text-white rounded-pill px-3 py-1" style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '12px', border: 'none' }}>
-                  Hapus & Mulai
-                </button>
-                <button className="btn btn-sm text-white p-0 d-flex align-items-center justify-content-center rounded-circle" style={{ backgroundColor: 'rgba(255,255,255,0.2)', width: '24px', height: '24px', border: 'none' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-                </button>
-              </div>
-            </div>
-
-            <div className="px-3">
-              <div className="mb-4">
-                <label className="form-label fw-semibold text-secondary" style={{ fontSize: '13px' }}>Nama Laporan</label>
-                <input
-                  type="text"
-                  className="form-control rounded-3 bg-light border-0 py-3 px-3"
-                  placeholder="Masukkan nama laporan"
-                  value={customName}
-                  onChange={e => setCustomName(e.target.value)}
-                  style={{ fontSize: '15px' }}
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="form-label fw-semibold text-secondary" style={{ fontSize: '13px' }}>Tanggal Mulai</label>
-                <div className="position-relative">
-                  <input
-                    type="date"
-                    className="form-control rounded-3 bg-light border-0 py-3 px-3"
-                    value={customFrom}
-                    onChange={e => setCustomFrom(e.target.value)}
-                    style={{ fontSize: '15px', color: customFrom ? '#1a202c' : '#a0aec0' }}
-                  />
-                  {!customFrom && (
-                    <div className="position-absolute end-0 top-50 translate-middle-y pe-3 pointer-events-none">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#a0aec0" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /></svg>
-                    </div>
-                  )}
-                </div>
-                {customFrom && <div className="text-secondary mt-1" style={{ fontSize: '11px' }}>{renderDateLabel(customFrom)}</div>}
-              </div>
-
-              <div className="mb-4">
-                <label className="form-label fw-semibold text-secondary" style={{ fontSize: '13px' }}>Tanggal Selesai</label>
-                <div className="position-relative">
-                  <input
-                    type="date"
-                    className="form-control rounded-3 bg-light border-0 py-3 px-3"
-                    value={customTo}
-                    min={customFrom}
-                    onChange={e => setCustomTo(e.target.value)}
-                    style={{ fontSize: '15px', color: customTo ? '#1a202c' : '#a0aec0' }}
-                  />
-                  {!customTo && (
-                    <div className="position-absolute end-0 top-50 translate-middle-y pe-3 pointer-events-none">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#a0aec0" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /></svg>
-                    </div>
-                  )}
-                </div>
-                {customTo && <div className="text-secondary mt-1" style={{ fontSize: '11px' }}>{renderDateLabel(customTo)}</div>}
-              </div>
-
-              <button
-                className="btn btn-primary w-100 rounded-3 py-3 fw-bold shadow-sm"
-                disabled={!customName || !customFrom || !customTo}
-                onClick={handleSaveCustom}
-              >
-                Simpan
-              </button>
-            </div>
-          </div>
-        </div>
-      </BaseLayout>
-    )
-  }
+  // Modal for adding custom report is rendered at the bottom
 
   return (
     <BaseLayout
@@ -463,126 +499,161 @@ export function ReportsPage() {
                       </button>
                     )
                   })}
-                </div>
+              </div>
             </div>
           </div>
 
-          {mode === 'monthly' && (
-            <div 
-              className="card border-0 rounded-4 mb-4 shadow-sm" 
-              style={{ background: 'var(--tblr-primary)', color: 'white', cursor: 'pointer' }}
-              onClick={() => {
-                if (months[0]) {
-                  navigate({ to: `/reports/recap/${months[0].from.substring(0, 7)}` })
-                }
-              }}
-            >
-              <div className="card-body p-3 d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center gap-3">
-                  <div className="d-flex justify-content-center align-items-center bg-white bg-opacity-25 rounded-circle" style={{ width: '40px', height: '40px' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                      <path d="M7 4v16l13 -8z" fill="currentColor" stroke="none" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="fw-bold" style={{ fontSize: '15px' }}>Kilas Balik {months[0] ? new Date(months[0].from + 'T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) : ''} siap dibuka</div>
-                    <div className="text-white text-opacity-75" style={{ fontSize: '12px' }}>Putar sekarang, cuma butuh 1 menit</div>
-                  </div>
-                </div>
-                <div>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M9 6l6 6l-6 6" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          )}
+          <div className="d-flex justify-content-between align-items-center mb-3 btn-print-hidden">
+            <span className="text-secondary" style={{ fontSize: '13px' }}>
+              Analisis laporan keuangan Anda
+            </span>
+            <Button
+              onClick={() => window.print()}
+              ghost
+              size="sm"
+              icon="printer"
+              text="Ekspor PDF"
+              className="fw-medium text-body px-2"
+            />
+          </div>
 
           {mode === 'monthly' && (
-            <div className="card border-0 rounded-4 mb-4 shadow-sm">
-              <div className="card-body">
-                <div className="fw-bold text-secondary mb-3" style={{ fontSize: '11px', letterSpacing: '1px' }}>
-                  6 BULAN TERAKHIR
-                </div>
-                <Chart
-                  chartId="report-6month-bar"
-                  chartData={{
-                    type: 'bar',
-                    height: 14,
-                    stacked: false,
-                    categories: months.map(m => {
-                      const d = new Date(m.from + 'T00:00:00')
-                      return d.toLocaleDateString('id-ID', { month: 'short' })
-                    }).reverse(),
-                    series: [
-                      {
-                        name: 'Pemasukan',
-                        data: [5000000, 6000000, 4000000, 7000000, 9500000, 13650000],
-                        color: '#38a169',
-                      },
-                      {
-                        name: 'Pengeluaran',
-                        data: [4000000, 4500000, 3000000, 5000000, 2721990, 5931000],
-                        color: '#e53e3e',
-                      },
-                    ],
-                    datalabels: false,
-                    legend: false,
-                    plotOptions: {
-                      bar: {
-                        borderRadius: 4,
-                        columnWidth: '40%',
+            <div className="d-flex flex-column gap-4">
+              {/* Top Section: Kilas Balik & Charts */}
+              <div className="row g-3">
+                <div className="col-12">
+                  <div 
+                    className="card border rounded-4 shadow-sm" 
+                    style={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', color: '#1e293b', cursor: 'pointer' }}
+                    onClick={() => {
+                      if (months[0]) {
+                        navigate({ to: `/reports/recap/${months[0].from.substring(0, 7)}` })
                       }
-                    }
-                  }}
-                />
-              </div>
-            </div>
-          )}
+                    }}
+                  >
+                    <div className="card-body py-3 px-4 d-flex justify-content-between align-items-center">
+                      <div className="d-flex align-items-center gap-3">
+                        <div className="d-flex justify-content-center align-items-center" style={{ width: '32px', height: '32px' }}>
+                          <div 
+                            style={{ 
+                              width: '24px', 
+                              height: '24px', 
+                              backgroundColor: 'var(--tblr-primary)',
+                              WebkitMaskImage: 'url("/logo/logo-nobg-fill.png")',
+                              maskImage: 'url("/logo/logo-nobg-fill.png")',
+                              WebkitMaskSize: 'contain',
+                              maskSize: 'contain',
+                              WebkitMaskRepeat: 'no-repeat',
+                              maskRepeat: 'no-repeat',
+                              WebkitMaskPosition: 'center',
+                              maskPosition: 'center',
+                            }} 
+                          />
+                        </div>
+                        <div>
+                          <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>Morapi Rewind {months[0] ? new Date(months[0].from + 'T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) : ''} siap dibuka</div>
+                          <div className="text-secondary" style={{ fontSize: '12px' }}>Putar sekarang, cuma butuh 1 menit</div>
+                        </div>
+                      </div>
+                      <div style={{ color: '#000000' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" fill="none">
+                          <path d="M9 6l6 6l-6 6" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-          {mode === 'monthly' && (
-            <div className="card border-0 rounded-4 mb-4 shadow-sm">
-              <div className="card-body pb-0">
-                <div className="fw-bold text-secondary mb-3" style={{ fontSize: '11px', letterSpacing: '1px' }}>
-                  TREN KEKAYAAN BERSIH
+                <div className="col-12 col-md-6">
+                  <div className="card border-0 rounded-4 shadow-sm h-100">
+                    <div className="card-body">
+                      <div className="fw-bold text-secondary mb-3" style={{ fontSize: '11px', letterSpacing: '1px' }}>
+                        6 BULAN TERAKHIR
+                      </div>
+                      <Chart
+                        chartId="report-6month-bar"
+                        chartData={{
+                          type: 'bar',
+                          height: 14,
+                          stacked: false,
+                          categories: chartMonths.map(m => {
+                            const d = new Date(m.from + 'T00:00:00')
+                            return d.toLocaleDateString('id-ID', { month: 'short' })
+                          }).reverse(),
+                          series: [
+                            {
+                              name: 'Pemasukan',
+                              data: [5000000, 6000000, 4000000, 7000000, 9500000, 13650000],
+                              color: '#38a169',
+                            },
+                            {
+                              name: 'Pengeluaran',
+                              data: [4000000, 4500000, 3000000, 5000000, 2721990, 5931000],
+                              color: '#e53e3e',
+                            },
+                          ],
+                          datalabels: false,
+                          legend: false,
+                          plotOptions: {
+                            bar: {
+                              borderRadius: 4,
+                              columnWidth: '40%',
+                            }
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <Chart
-                  chartId="report-networth-line"
-                  chartData={{
-                    type: 'area',
-                    height: 12,
-                    categories: ['Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-                    series: [
-                      {
-                        name: 'Kekayaan Bersih',
-                        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6778010, 70197010],
-                        color: 'var(--tblr-primary)',
-                      }
-                    ],
-                    datalabels: false,
-                    legend: false,
-                    stroke: { curve: 'smooth', width: 2 },
-                  }}
-                />
+
+                <div className="col-12 col-md-6">
+                  <div className="card border-0 rounded-4 shadow-sm h-100">
+                    <div className="card-body pb-0">
+                      <div className="fw-bold text-secondary mb-3" style={{ fontSize: '11px', letterSpacing: '1px' }}>
+                        TREN KEKAYAAN BERSIH
+                      </div>
+                      <Chart
+                        chartId="report-networth-line"
+                        chartData={{
+                          type: 'area',
+                          height: 12,
+                          categories: ['Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                          series: [
+                            {
+                              name: 'Kekayaan Bersih',
+                              data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6778010, 70197010],
+                              color: 'var(--tblr-primary)',
+                            }
+                          ],
+                          datalabels: false,
+                          legend: false,
+                          stroke: { curve: 'smooth', width: 2 },
+                        }}
+                      />
+                    </div>
+                    <div className="card-footer bg-white border-0 pt-0 pb-3 d-flex justify-content-between text-secondary" style={{ fontSize: '12px' }}>
+                      <span>Sekarang: 70.197.010</span>
+                      <span className="fw-semibold" style={{ color: '#1a202c' }}>+70.197.010 <span className="text-secondary fw-normal">dari Jul 2025</span></span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="card-footer bg-white border-0 pt-0 pb-3 d-flex justify-content-between text-secondary" style={{ fontSize: '12px' }}>
-                <span>Sekarang: 70.197.010</span>
-                <span className="fw-semibold" style={{ color: '#1a202c' }}>+70.197.010 <span className="text-secondary fw-normal">dari Jul 2025</span></span>
+
+              {/* Bottom Section: Daftar Periode in 2 columns */}
+              <div>
+                <h4 className="fw-bold mb-3 text-secondary" style={{ fontSize: '11px', letterSpacing: '1px' }}>DAFTAR PERIODE</h4>
+                <div className="row g-3">
+                  {months.map(({ from, to }) => (
+                    <div key={from} className="col-12 col-md-6">
+                      <MonthPeriodCard from={from} to={to} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
 
           {mode === 'sekarang' && <TodayDashboard />}
-
-          {mode === 'monthly' && (
-            <div>
-              {months.map(({ from, to }) => (
-                <MonthPeriodCard key={from} from={from} to={to} />
-              ))}
-            </div>
-          )}
 
           {mode === 'custom' && customReports.length === 0 && (
             <div className="d-flex flex-column align-items-center justify-content-center text-secondary" style={{ minHeight: '40vh' }}>
@@ -607,17 +678,67 @@ export function ReportsPage() {
         {/* FAB for Kustom */}
         {mode === 'custom' && (
           <button
-            className="btn btn-primary rounded-circle shadow-lg position-fixed d-flex align-items-center justify-content-center"
-            style={{ width: '56px', height: '56px', bottom: '24px', right: '24px', zIndex: 1000 }}
+            className="btn btn-primary rounded-3 shadow-lg position-fixed d-flex align-items-center justify-content-center"
+            style={{ width: '48px', height: '48px', bottom: '24px', right: '24px', zIndex: 1000 }}
             onClick={() => setIsAddingCustom(true)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
               <path d="M12 5l0 14" />
               <path d="M5 12l14 0" />
             </svg>
           </button>
         )}
+        
+      <Modal show={isAddingCustom} onClose={() => setIsAddingCustom(false)} size="md">
+        <ModalHeader title="Tambah Laporan" onClose={() => setIsAddingCustom(false)} />
+        <div className="modal-body p-4">
+            <div className="mb-3">
+              <label className="form-label">Nama Laporan <span className="text-danger">*</span></label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Masukkan nama laporan"
+                value={customName}
+                onChange={e => setCustomName(e.target.value)}
+              />
+            </div>
+
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Tanggal Mulai <span className="text-danger">*</span></label>
+                <Datepicker
+                  layout="icon"
+                  value={customFrom}
+                  onChange={setCustomFrom}
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Tanggal Selesai <span className="text-danger">*</span></label>
+                <Datepicker
+                  layout="icon"
+                  value={customTo}
+                  onChange={setCustomTo}
+                />
+              </div>
+            </div>
+
+            <div className="d-flex justify-content-end gap-2 mt-4">
+              <Button element="button" type="button" link className="text-muted" onClick={() => setIsAddingCustom(false)}>Batal</Button>
+              <Button 
+                element="button" 
+                type="button" 
+                color="primary" 
+                icon="check" 
+                disabled={!customName || !customFrom || !customTo}
+                onClick={handleSaveCustom}
+              >
+                Simpan
+              </Button>
+            </div>
+        </div>
+      </Modal>
+
     </BaseLayout>
   )
 }

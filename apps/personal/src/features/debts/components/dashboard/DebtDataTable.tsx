@@ -1,6 +1,6 @@
 import { useState, useMemo, forwardRef, useImperativeHandle } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
-import { Modal, ModalHeader, Button, Pagination, Spinner } from '@/shared/components/ui'
+import { Modal, ModalHeader, Button, Pagination, Spinner, Datepicker, Select } from '@/shared/components/ui'
 
 import type { DebtRecord, DebtStatus } from '../../types/debt.types'
 import { useCreateDebt, useUpdateDebt, useDeleteDebt } from '../../hooks/useDebts'
@@ -262,9 +262,11 @@ export const DebtDataTable = forwardRef<DebtDataTableRef, { records?: DebtRecord
             </div>
             <div className="col-md-6 mb-3">
               <label className="form-label">Status</label>
-              <select className="form-select" value={form.status} onChange={(e) => setForm(f => ({ ...f, status: e.target.value as DebtStatus }))}>
-                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <Select
+                options={STATUSES.map((s) => ({ value: s, label: s }))}
+                value={form.status}
+                onChange={(val) => setForm(f => ({ ...f, status: (val as DebtStatus) }))}
+              />
             </div>
           </div>
 
@@ -284,11 +286,10 @@ export const DebtDataTable = forwardRef<DebtDataTableRef, { records?: DebtRecord
             </div>
             <div className="col-md-6 mb-3">
               <label className="form-label">Jatuh Tempo <span className="text-danger">*</span></label>
-              <input
-                type="date"
-                className="form-control"
+              <Datepicker
+                layout="icon"
                 value={form.dueDate}
-                onChange={(e) => setForm(f => ({ ...f, dueDate: e.target.value }))}
+                onChange={(val) => setForm(f => ({ ...f, dueDate: val }))}
               />
             </div>
           </div>

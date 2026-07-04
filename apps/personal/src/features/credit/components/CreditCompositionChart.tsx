@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
+import { Icon } from '@/shared/components/ui/Icon'
 import { useCredits } from '../hooks/useCredits'
 
 const fmt = (val: number) => val.toLocaleString('id-ID')
@@ -32,32 +33,39 @@ function CreditDonutBreakdown({ title, data }: { title: string; data: BreakdownI
           {title}
         </div>
 
-        <div className="d-flex align-items-center gap-3">
-          {/* Donut Chart */}
-          <div style={{ width: '150px', flexShrink: 0 }}>
-            <Chart
-              key={chartId}
-              chartId={chartId}
-              chartData={{
-                type: 'donut',
-                height: 18,
-                series: data.map(d => ({ name: d.name, data: [d.value], color: d.color })),
-                legend: false,
-                datalabels: false,
-                donutLabel: 'Total',
-                donutValue: fmtShort(total),
-                extend: {
-                  stroke: { width: 2, colors: ['#fff'] },
-                }
-              }}
-            />
+        {data.length === 0 ? (
+          <div className="text-center py-5 d-flex flex-column justify-content-center align-items-center flex-grow-1 w-100">
+            <Icon icon="chart-donut-3" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+            <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Komposisi</div>
+            <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan profil kredit Anda.</div>
           </div>
+        ) : (
+          <div className="d-flex align-items-center gap-3">
+            {/* Donut Chart */}
+            <div style={{ width: '150px', flexShrink: 0 }}>
+              <Chart
+                key={chartId}
+                chartId={chartId}
+                chartData={{
+                  type: 'donut',
+                  height: 18,
+                  series: data.map(d => ({ name: d.name, data: [d.value], color: d.color })),
+                  legend: false,
+                  datalabels: false,
+                  donutLabel: 'Total',
+                  donutValue: fmtShort(total),
+                  extend: {
+                    stroke: { width: 2, colors: ['#fff'] },
+                  }
+                }}
+              />
+            </div>
 
-          {/* Legend Items */}
-          <div className="flex-grow-1 d-flex flex-column" style={{ gap: '8px' }}>
-            {data.map((item) => {
-              const pct = total > 0 ? ((item.value / total) * 100) : 0
-              const pctDisplay = pct.toFixed(1)
+            {/* Legend Items */}
+            <div className="flex-grow-1 d-flex flex-column" style={{ gap: '8px' }}>
+              {data.map((item) => {
+                const pct = total > 0 ? ((item.value / total) * 100) : 0
+                const pctDisplay = pct.toFixed(1)
               return (
                 <div key={item.name}>
                   <div className="d-flex align-items-center justify-content-between mb-1">
@@ -101,8 +109,9 @@ function CreditDonutBreakdown({ title, data }: { title: string; data: BreakdownI
                 </div>
               )
             })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )
@@ -141,7 +150,6 @@ export function CreditCompositionChart() {
   }, [credits])
 
   if (isLoading) return null
-  if (hutangData.length === 0 && bebanData.length === 0) return null
 
   return (
     <div className="d-flex flex-column flex-lg-row gap-3">

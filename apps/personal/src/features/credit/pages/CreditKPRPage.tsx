@@ -23,17 +23,17 @@ export function CreditKPRPage() {
 
   if (loans.length === 0) {
     return (
-      <div className="card border-0 shadow-sm py-5 text-center">
-        <div className="card-body">
-          <Icon icon="home-off" size={48} className="mb-3 text-muted opacity-50" />
-          <h3 className="fw-bold">Belum Ada Pinjaman KPR</h3>
-          <p className="text-muted mb-3">
-            Tambahkan profil KPR Anda melalui menu "Tambah Profil" di atas.
-          </p>
-          <Button element="button" color="primary" onClick={() => openFormForType('kpr')}>
-            <Icon icon="plus" size={16} className="me-2" />
-            Tambah KPR / Mortgage
-          </Button>
+      <div className="card border-0 shadow-sm rounded-4">
+        <div className="card-body p-4">
+          <div className="text-center py-5 d-flex flex-column justify-content-center align-items-center flex-grow-1">
+            <Icon icon="home-off" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+            <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Pinjaman KPR</div>
+            <div className="text-secondary mb-3" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan profil KPR Anda melalui menu "Tambah Profil" di atas.</div>
+            <Button size="sm" color="primary" onClick={() => openFormForType('kpr')}>
+              <Icon icon="plus" size={14} className="me-1" />
+              Tambah KPR / Mortgage
+            </Button>
+          </div>
         </div>
       </div>
     )

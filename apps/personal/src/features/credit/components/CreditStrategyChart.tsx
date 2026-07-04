@@ -122,7 +122,7 @@ export function CreditStrategyChart() {
     }
   }, [credits, hiddenSeries])
 
-  if (isLoading || !chartData) return null
+  if (isLoading) return null
 
   const formatter = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' })
   const dateStr = debtFreeDate ? formatter.format(debtFreeDate) : '-'
@@ -132,75 +132,78 @@ export function CreditStrategyChart() {
   return (
     <div className="card border-0 shadow-sm rounded-4 overflow-hidden d-none d-lg-block">
       <div className="row g-0">
-        {/* Left Side: Chart */}
-        <div className="col-12 col-lg-8 col-xl-9 p-4 pe-lg-0 d-flex flex-column">
+        <div className={chartData ? "col-12 col-lg-8 col-xl-9 p-4 pe-lg-0 d-flex flex-column" : "col-12 p-4 d-flex flex-column"}>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h3 className="card-title fw-bold text-dark mb-0" style={{ fontSize: '15px' }}>
               Proyeksi Pelunasan
             </h3>
-            {totalMonths < 120 ? (
+            {totalMonths > 0 && totalMonths < 120 ? (
               <div className="text-end d-lg-none">
                  <div className="text-muted small">Target Lunas</div>
                  <div className="fw-bold text-dark">{dateStr}</div>
               </div>
             ) : null}
           </div>
-          
-          <div className="flex-grow-1 d-flex flex-column justify-content-end" style={{ marginLeft: '-10px', minHeight: '300px' }}>
-            <Chart chartId="credit-strategy-projection" chartData={chartData} />
-          </div>
+
+          {!chartData ? (
+            <div className="text-center py-5 d-flex flex-column justify-content-center align-items-center flex-grow-1 my-3 w-100">
+              <Icon icon="chart-line" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+              <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Proyeksi</div>
+              <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan kredit untuk melihat proyeksi pelunasan.</div>
+            </div>
+          ) : (
+            <div className="flex-grow-1 position-relative" style={{ minHeight: '300px' }}>
+              <Chart
+                key="credit-strategy-chart"
+                chartId="credit-strategy-chart"
+                chartData={chartData} />
+            </div>
+          )}
         </div>
 
-        {/* Right Side: Custom Legends (matches the screenshot) */}
-        <div 
-          className="col-12 col-lg-4 col-xl-3 border-start-lg bg-body-tertiary bg-opacity-50 d-none d-lg-flex flex-column" 
-          style={{ maxHeight: '450px' }}
-        >
-          <div className="p-4 pb-3 border-bottom flex-shrink-0 d-none d-lg-block">
-            <div className="d-flex align-items-center justify-content-between">
-              <div className="text-muted" style={{ fontSize: '12px' }}>Target Lunas</div>
-              <div className="fw-bold text-dark" style={{ fontSize: '13px' }}>
-                {totalMonths < 120 ? dateStr : '> 10 Tahun'}
+        {/* Right Side: Info / Legend */}
+        {chartData && (
+          <div className="col-12 col-lg-4 col-xl-3 bg-light border-start border-light d-flex flex-column p-4">
+            <h4 className="fw-bold text-dark mb-4" style={{ fontSize: '14px' }}>Rincian Strategi</h4>
+            
+            <div className="mb-4">
+              <div className="text-secondary small mb-1">Total Utang & Beban</div>
+              <div className="fw-bold text-dark" style={{ fontSize: '18px' }}>
+                Rp {fmt(totalMonths > 0 ? (legendData.reduce((s, d) => s + d.balance, 0)) : 0)}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <div className="text-secondary small mb-1">Estimasi Bebas Utang</div>
+              <div className="fw-bold text-primary" style={{ fontSize: '18px' }}>
+                {dateStr}
+              </div>
+            </div>
+
+            <div className="flex-grow-1 overflow-y-auto pe-2 scrollbar-hide hide-scrollbar">
+              <div className="d-flex flex-column gap-3">
+                {legendData.map(ld => {
+                  return (
+                    <div key={ld.name} className="d-flex align-items-center gap-2">
+                      <span
+                        className="rounded-circle flex-shrink-0"
+                        style={{ width: '8px', height: '8px', backgroundColor: ld.color }}
+                      />
+                      <div className="flex-grow-1 min-w-0">
+                        <div className="text-truncate fw-medium text-dark" style={{ fontSize: '12px' }}>
+                          {ld.name}
+                        </div>
+                        <div className="text-muted" style={{ fontSize: '11px' }}>
+                          Rp {fmt(ld.balance)} sisa
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
-
-          <div className="p-3 flex-grow-1 overflow-auto" style={{ scrollbarWidth: 'thin' }}>
-            <div className="text-muted small mb-2 d-lg-none">Klik pada legenda untuk menyembunyikan/menampilkan grafik</div>
-            <div className="d-flex flex-column gap-2">
-              {legendData.map((leg, idx) => {
-                const isHidden = hiddenSeries.includes(leg.name)
-                return (
-                  <div 
-                    key={idx} 
-                    className={idx !== legendData.length - 1 ? "border-bottom pb-2 cursor-pointer" : "cursor-pointer"}
-                    onClick={() => {
-                      setHiddenSeries(prev => 
-                        prev.includes(leg.name) 
-                          ? prev.filter(n => n !== leg.name) 
-                          : [...prev, leg.name]
-                      )
-                    }}
-                    style={{ opacity: isHidden ? 0.4 : 1, transition: 'opacity 0.2s' }}
-                  >
-                    <div className="d-flex align-items-center gap-2 mb-0">
-                      <span 
-                        className="rounded-circle" 
-                        style={{ width: '8px', height: '8px', backgroundColor: isHidden ? '#cbd5e1' : leg.color, flexShrink: 0 }} 
-                      />
-                      <span className="text-muted fw-medium text-truncate" style={{ fontSize: '11px' }}>
-                        {leg.name}
-                      </span>
-                    </div>
-                    <div className="fw-bold text-dark mt-1" style={{ fontSize: '14px', paddingLeft: '16px' }}>
-                      {fmt(leg.balance)}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )

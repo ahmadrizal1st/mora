@@ -77,6 +77,18 @@ export function ReportDetailPage() {
     >
       <div className="w-100">
         <div className="container-xl pt-4">
+          <div className="d-flex justify-content-between align-items-center mb-3 btn-print-hidden">
+            <span className="text-secondary" style={{ fontSize: '13px' }}>
+              Rincian laporan periode ini
+            </span>
+            <button 
+              className="btn btn-white btn-sm d-flex align-items-center gap-2 fw-medium text-body px-3"
+              onClick={() => window.print()}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
+              <span>Ekspor PDF</span>
+            </button>
+          </div>
 
           {loadingSummary ? (
             <div className="text-center py-5">

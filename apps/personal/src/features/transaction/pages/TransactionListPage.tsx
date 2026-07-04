@@ -306,6 +306,9 @@ export const TransactionListPage: FC = () => {
                     <Icon icon="table" size={16} />
                   </button>
                 </div>
+                <Button size="sm" color="primary" icon="plus" onClick={openForm}>
+                  Tambah Transaksi
+                </Button>
               </div>
             </div>
           )}
