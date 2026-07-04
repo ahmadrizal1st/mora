@@ -30,15 +30,13 @@ export function GoalsOverviewCard({
   const isEmpty = goals.length === 0 || (totalTarget === 0 && totalSaved === 0)
 
   return (
-    <div className="card border-0 shadow-sm overflow-hidden" style={{ borderRadius: '16px' }}>
-      <div className="card-body p-4 d-flex flex-column">
+    <div className="card border-0 shadow-sm overflow-hidden h-100" style={{ borderRadius: '16px' }}>
+      <div className="card-body p-4 d-flex flex-column flex-grow-1">
         {isEmpty ? (
           <div className="position-relative text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
-            <div className="mb-3">
-              <Icon icon="chart-pie" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
-            </div>
-            <div className="fw-bold text-body mb-1">Belum Ada Progres</div>
-            <div className="text-muted small">Tambahkan impian untuk melihat progres.</div>
+            <Icon icon="chart-pie" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+            <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Progres</div>
+            <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan impian untuk melihat progres.</div>
           </div>
         ) : (
           <>

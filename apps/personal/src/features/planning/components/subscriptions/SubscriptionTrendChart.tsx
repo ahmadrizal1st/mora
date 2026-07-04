@@ -110,11 +110,9 @@ export function SubscriptionTrendChart() {
 
         {subscriptions.length === 0 ? (
           <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center py-4">
-            <div className="mb-3">
-              <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
-            </div>
-            <div className="fw-bold text-body mb-1">Belum Ada Data Langganan</div>
-            <div className="text-muted small mb-3">Tambahkan langganan untuk melihat tren</div>
+            <Icon icon="chart-bar" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+            <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Data Langganan</div>
+            <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan langganan untuk melihat tren</div>
           </div>
         ) : (
           <div className="flex-grow-1 mt-auto w-100 d-flex align-items-end" style={{ margin: '0 -20px -15px -20px', minHeight: '160px' }}>

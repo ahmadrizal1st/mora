@@ -84,11 +84,9 @@ export function GoalTrajectoryChart({
         
         {isEmpty ? (
           <div className="text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
-            <div className="mb-3">
-              <Icon icon="chart-line" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
-            </div>
-            <div className="fw-bold text-body mb-1">Belum Ada Proyeksi</div>
-            <div className="text-muted small">Tambahkan impian untuk melihat proyeksi tabungan.</div>
+            <Icon icon="chart-line" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+            <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Proyeksi</div>
+            <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan impian untuk melihat proyeksi tabungan.</div>
           </div>
         ) : (
           <>

@@ -159,11 +159,7 @@ export function CashFlowChartCard({ range, setRange, groupBy, setGroupBy, balanc
               <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
             </div>
             <div className="fw-bold text-body mb-1">Belum Ada Aktivitas Cash Flow</div>
-            <div className="text-muted small mb-3">Catat transaksi pertama Anda untuk periode ini.</div>
-            <Link to="/tracker/" className="btn btn-primary btn-sm d-flex align-items-center gap-2">
-              <Icon icon="plus" size={16} stroke={2} />
-              Catat Transaksi
-            </Link>
+            <div className="text-muted small">Catat transaksi pertama Anda untuk periode ini.</div>
           </div>
         ) : (
           <Chart chartId="cashflow-acc-bars" chartData={chartData as any} />

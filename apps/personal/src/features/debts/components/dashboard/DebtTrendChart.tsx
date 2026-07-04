@@ -115,13 +115,7 @@ export function DebtTrendChart({ debts = [], onAdd }: { debts?: DebtRecord[], on
               <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
             </div>
             <div className="fw-bold text-body mb-1">Belum Ada Tren</div>
-            <div className="text-muted small mb-3">Tambahkan catatan utang atau piutang.</div>
-            {onAdd && (
-              <button className="btn btn-primary btn-sm d-flex align-items-center gap-2" onClick={onAdd}>
-                <Icon icon="plus" size={16} stroke={2} />
-                Tambah Catatan
-              </button>
-            )}
+            <div className="text-muted small">Tambahkan catatan utang atau piutang.</div>
           </div>
           ) : (
             <div className="flex-grow-1 d-flex flex-column justify-content-end" style={{ marginTop: '-40px' }}>

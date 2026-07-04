@@ -28,11 +28,7 @@ export function AccountStatsCard({ stats }: AccountStatsCardProps) {
               <Icon icon="chart-line" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
             </div>
             <div className="fw-bold text-body mb-1">Belum Ada Statistik</div>
-            <div className="text-muted small mb-3">Catat transaksi untuk melihat statistik.</div>
-            <Link to="/tracker/" className="btn btn-primary btn-sm d-flex align-items-center gap-2">
-              <Icon icon="plus" size={16} stroke={2} />
-              Catat Transaksi
-            </Link>
+            <div className="text-muted small">Catat transaksi untuk melihat statistik.</div>
           </div>
         ) : (
           <div className="row g-3">

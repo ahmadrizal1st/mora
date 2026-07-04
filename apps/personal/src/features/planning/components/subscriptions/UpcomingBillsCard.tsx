@@ -96,11 +96,17 @@ export function UpcomingBillsCard({ totalMonthly, paidThisMonth }: UpcomingBills
             Pembayaran Terdekat
           </div>
           <div className="vstack gap-2">
-            {nextPayments.length === 0 ? (
-              <div className="text-center py-4 my-auto text-secondary">
-                <Icon icon="circle-check" size="md" className="text-success mb-2" />
-                <div className="small fw-bold">Semua Tagihan Lunas!</div>
-                <div className="small text-muted" style={{ fontSize: '10px' }}>Tidak ada tagihan terdekat</div>
+            {subscriptions.length === 0 ? (
+              <div className="text-center py-4 my-auto text-secondary d-flex flex-column align-items-center justify-content-center">
+                <Icon icon="credit-card" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+                <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Tagihan</div>
+                <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan langganan untuk melihat jadwal pembayaran</div>
+              </div>
+            ) : nextPayments.length === 0 ? (
+              <div className="text-center py-4 my-auto text-secondary d-flex flex-column align-items-center justify-content-center">
+                <Icon icon="calendar-x" size={32} stroke={1.5} className="text-secondary mb-3 opacity-50" />
+                <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Tidak Ada Tagihan Mendatang</div>
+                <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Belum ada tagihan dalam waktu dekat.</div>
               </div>
             ) : (
               nextPayments.map((p, i) => (

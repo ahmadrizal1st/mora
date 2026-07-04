@@ -31,11 +31,7 @@ export function UpcomingBillsCard({ bills }: UpcomingBillsCardProps) {
                 <Icon icon="calendar-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
               </div>
               <div className="fw-bold text-body mb-1">Tidak Ada Tagihan</div>
-              <div className="text-muted small mb-3">Anda sudah membayar semuanya!</div>
-              <button className="btn btn-primary btn-sm d-flex align-items-center gap-2">
-                <Icon icon="plus" size={16} stroke={2} />
-                Tambah Tagihan
-              </button>
+              <div className="text-muted small">Anda sudah membayar semuanya!</div>
             </div>
           ) : (
             bills.map((b, i) => (

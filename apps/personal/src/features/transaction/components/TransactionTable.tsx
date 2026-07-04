@@ -100,11 +100,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
                     <Icon icon="receipt-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
                   </div>
                   <div className="fw-bold text-body mb-1">Tidak ada transaksi ditemukan</div>
-                  <div className="text-muted small mb-3">Coba gunakan filter lain atau buat transaksi baru.</div>
-                  <button className="btn btn-primary btn-sm d-flex align-items-center gap-2" onClick={openChatbotModal}>
-                    <Icon icon="plus" size={16} stroke={2} />
-                    Catat Transaksi
-                  </button>
+                  <div className="text-muted small">Coba gunakan filter lain atau buat transaksi baru.</div>
                 </div>
               </td>
             </tr>

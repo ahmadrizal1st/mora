@@ -7,7 +7,7 @@ import { TrialTrackerCard } from '../components/subscriptions/TrialTrackerCard'
 import { AddSubscriptionCard } from '../components/subscriptions/AddSubscriptionCard'
 import { SubscriptionMetricStrip } from '../components/subscriptions/SubscriptionMetricStrip'
 import { SubscriptionCategoryBreakdown } from '../components/subscriptions/SubscriptionCategoryBreakdown'
-import { Icon } from '@/shared/components/ui/Icon'
+import { Icon, Button } from '@/shared/components/ui'
 import { PlanningContext } from './PlanningLayout'
 
 const getSubCategory = (subName: string): string => {
@@ -95,25 +95,40 @@ export function SubscriptionsPage() {
       </div>
 
       <div className="card shadow-none border" style={{ borderRadius: '12px' }}>
-        <div className="card-header border-0 bg-transparent pt-3 px-3 pb-0">
+        <div className="card-header border-0 bg-transparent pt-3 px-3 pb-0 d-flex justify-content-between align-items-center">
           <h3 className="card-title fw-bold m-0" style={{ fontSize: '14px' }}>
             Daftar Langganan Aktif
           </h3>
+          <Button
+            element="button"
+            type="button"
+            color="primary"
+            icon="plus"
+            size="sm"
+            onClick={handleOpenAddSub}
+          >
+            Tambah
+          </Button>
         </div>
         <div className="card-body p-3">
-          <div className="d-flex flex-wrap gap-3">
-            {filteredSubscriptions.map((sub: any) => (
-              <div key={sub.id} style={{ flex: '1 1 280px', minWidth: '260px', maxWidth: '100%' }}>
-                <SubscriptionItem
-                  subscription={{ ...sub, color: 'var(--tblr-primary)' }}
-                  onClick={() => handleEditSub?.(sub)}
-                />
-              </div>
-            ))}
-            <div style={{ flex: '1 1 280px', minWidth: '260px', maxWidth: '100%' }}>
-              <AddSubscriptionCard onClick={handleOpenAddSub} />
+          {filteredSubscriptions.length === 0 ? (
+            <div className="text-center py-5 d-flex flex-column align-items-center justify-content-center">
+              <Icon icon="credit-card" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+              <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Langganan</div>
+              <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan langganan pertama Anda untuk mulai mengelola</div>
             </div>
-          </div>
+          ) : (
+            <div className="d-flex flex-wrap gap-3">
+              {filteredSubscriptions.map((sub: any) => (
+                <div key={sub.id} style={{ flex: '1 1 280px', minWidth: '260px', maxWidth: '100%' }}>
+                  <SubscriptionItem
+                    subscription={{ ...sub, color: 'var(--tblr-primary)' }}
+                    onClick={() => handleEditSub?.(sub)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

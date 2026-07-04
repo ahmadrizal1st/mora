@@ -30,10 +30,6 @@ export function TopMerchantsCard({ merchants = [] }: TopMerchantsCardProps) {
               </div>
               <div className="fw-bold text-body mb-1">Belum Ada Merchant</div>
               <div className="text-muted small">Transaksi Anda akan muncul di sini.</div>
-              <Link to="/tracker/" className="btn btn-primary btn-sm d-flex align-items-center gap-2">
-                <Icon icon="plus" size={16} stroke={2} />
-                Catat Transaksi
-              </Link>
             </div>
           ) : (
             merchants.slice(0, 5).map((m, i) => (

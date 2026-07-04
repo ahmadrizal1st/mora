@@ -41,10 +41,6 @@ export function SpendingCategoryCard({ categories }: SpendingCategoryCardProps) 
             </div>
             <div className="fw-bold text-body mb-1">Belum Ada Pengeluaran</div>
             <div className="text-muted small">Mulai catat pengeluaran Anda.</div>
-            <Link to="/tracker/" className="btn btn-primary btn-sm d-flex align-items-center gap-2">
-              <Icon icon="plus" size={16} stroke={2} />
-              Catat Transaksi
-            </Link>
           </div>
         ) : (
           <>

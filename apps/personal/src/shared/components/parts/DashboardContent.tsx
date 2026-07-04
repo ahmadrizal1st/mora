@@ -194,11 +194,7 @@ export function DashboardContent() {
                       <Icon icon="pig-money" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
                     </div>
                     <div className="fw-bold text-body mb-1">Belum Ada Tabungan</div>
-                    <div className="text-muted small mb-3">Buat impian keuangan Anda jadi nyata!</div>
-                    <button className="btn btn-primary btn-sm d-flex align-items-center gap-2">
-                      <Icon icon="plus" size={16} stroke={2} />
-                      Tambah Target
-                    </button>
+                    <div className="text-muted small">Buat impian keuangan Anda jadi nyata!</div>
                   </div>
                 ) : (
                   savingsPlans.slice(0, 5).map((plan, i) => (
@@ -333,11 +329,7 @@ export function DashboardContent() {
                   <Icon icon="chart-bar-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
                 </div>
                 <div className="fw-bold text-body mb-1">Data Kosong</div>
-                <div className="text-muted small mb-3">Belum ada aktivitas cashflow.</div>
-                <button className="btn btn-primary btn-sm d-flex align-items-center gap-2">
-                  <Icon icon="plus" size={16} stroke={2} />
-                  Catat Transaksi
-                </button>
+                <div className="text-muted small">Belum ada aktivitas cashflow.</div>
               </div>
             ) : (
               <Chart
@@ -473,11 +465,7 @@ export function DashboardContent() {
                       <Icon icon="chart-pie-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
                     </div>
                     <div className="fw-bold text-body mb-1">Data Kosong</div>
-                    <div className="text-muted small mb-3">Belum ada statistik untuk ditampilkan.</div>
-                    <button className="btn btn-primary btn-sm d-flex align-items-center gap-2">
-                      <Icon icon="plus" size={16} stroke={2} />
-                      Catat Transaksi
-                    </button>
+                    <div className="text-muted small">Belum ada statistik untuk ditampilkan.</div>
                   </div>
                 ) : (
                   <>

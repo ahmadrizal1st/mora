@@ -150,11 +150,7 @@ export const DebtDataTable = forwardRef<DebtDataTableRef, { records?: DebtRecord
                   <Icon icon="folder-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
                 </div>
                 <div className="fw-bold text-body mb-1">Belum Ada Data</div>
-                <div className="text-muted small mb-3">Anda belum memiliki catatan utang atau piutang.</div>
-                <button className="btn btn-primary btn-sm d-flex align-items-center gap-2" onClick={openCreate}>
-                  <Icon icon="plus" size={16} stroke={2} />
-                  Tambah Data
-                </button>
+                <div className="text-muted small">Anda belum memiliki catatan utang atau piutang.</div>
               </div>
             ) : (
               paginatedData.map((item, i) => {

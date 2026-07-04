@@ -51,11 +51,17 @@ export function TrialTrackerCard() {
       </div>
       <div className="card-body p-3 d-flex flex-column h-100">
         <div className="vstack gap-2 flex-grow-1">
-          {trials.length === 0 ? (
-            <div className="text-center py-4 my-auto text-secondary">
-              <Icon icon="circle-check" size="md" className="text-success mb-2" />
-              <div className="small fw-bold">Semua Aman!</div>
-              <div className="small text-muted" style={{ fontSize: '10px' }}>Tidak ada trial aktif saat ini</div>
+          {subscriptions.length === 0 ? (
+            <div className="text-center py-4 my-auto text-secondary d-flex flex-column align-items-center justify-content-center">
+              <Icon icon="help" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+              <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Data</div>
+              <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan langganan trial untuk melacak durasinya</div>
+            </div>
+          ) : trials.length === 0 ? (
+            <div className="text-center py-4 my-auto text-secondary d-flex flex-column align-items-center justify-content-center">
+              <Icon icon="box" size={32} stroke={1.5} className="text-secondary mb-3 opacity-50" />
+              <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Tidak Ada Trial Aktif</div>
+              <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Belum ada layanan trial yang sedang berjalan.</div>
             </div>
           ) : (
             trials.map((trial) => (

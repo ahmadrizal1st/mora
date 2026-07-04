@@ -152,18 +152,10 @@ export function SubscriptionCategoryBreakdown({
             </div>
           </div>
         ) : (
-          <div className="text-center py-4 d-flex flex-column align-items-center">
-            <div className="mb-3">
-              <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
-            </div>
-            <div className="fw-bold text-body mb-1">Belum Ada Rincian Pengeluaran</div>
-            <div className="text-muted small mb-3">Tambahkan langganan untuk melihat rincian</div>
-            <div className="d-flex justify-content-center">
-              <Link to="/planning/subscriptions" className="btn btn-primary btn-sm d-flex align-items-center gap-2">
-                <Icon icon="plus" size={16} stroke={2} />
-                Tambah Langganan
-              </Link>
-            </div>
+          <div className="text-center py-5 d-flex flex-column align-items-center justify-content-center">
+            <Icon icon="chart-bar" size={32} stroke={1.5} className="text-secondary opacity-50 mb-3" />
+            <div className="fw-bold text-body mb-1" style={{ fontSize: '14px' }}>Belum Ada Rincian Pengeluaran</div>
+            <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.5' }}>Tambahkan langganan untuk melihat rincian</div>
           </div>
         )}
       </div>
