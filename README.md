@@ -1,4 +1,4 @@
-# Visatamora  Monorepo Setup Guide
+# Morapi  Monorepo Setup Guide
 
 Monorepo ini terdiri dari **4 aplikasi** yang saling terhubung. Semua service harus berjalan agar sistem berfungsi penuh.
 
@@ -38,7 +38,7 @@ psql -U postgres
 ```
 
 ```sql
-CREATE DATABASE vistamora;
+CREATE DATABASE morapi;
 \q
 ```
 
@@ -48,7 +48,7 @@ Konfigurasi database ada di `apps/api/.env`:
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_DATABASE=vistamora
+DB_DATABASE=morapi
 DB_USERNAME=postgres
 DB_PASSWORD=123
 ```
@@ -82,14 +82,14 @@ php artisan db:seed
 
 ```env
 # App
-APP_URL=https://api.mora.localhost
-FRONTEND_URL=https://mora.localhost
+APP_URL=https://api.morapi.localhost
+FRONTEND_URL=https://morapi.localhost
 
 # Database PostgreSQL
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_DATABASE=vistamora
+DB_DATABASE=morapi
 DB_USERNAME=postgres
 DB_PASSWORD=your_password
 
@@ -117,7 +117,7 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 GOOGLE_REDIRECT_URL="${FRONTEND_URL}/auth/google/callback"
 
 # Security
-API_KEY=vistamora_secure_secret_key_2026
+API_KEY=morapi_secure_secret_key_2026
 ```
 
 ### Catatan Tentang OTP (One-Time Password)
@@ -198,7 +198,7 @@ UPLOAD_DIR="./uploads"
 MODEL_CACHE_DIR="./.models"
 
 # Harus sama dengan AI_KEY di apps/api/.env
-API_KEY="vistamora_secure_secret_key_2026"
+API_KEY="morapi_secure_secret_key_2026"
 ```
 
 ### Menjalankan AI Service
@@ -269,12 +269,12 @@ brew install caddy
 
 ### Konfigurasi Domain
 Berdasarkan `Caddyfile`, port yang diarahkan adalah:
-- **mora.localhost** ──→ `127.0.0.1:5173` (Frontend)
-- **api.mora.localhost** ──→ `127.0.0.1:8000` (Laravel API)
-- **ai.mora.localhost** ──→ `127.0.0.1:8001` (AI Service)
+- **morapi.localhost** ──→ `127.0.0.1:5173` (Frontend)
+- **api.morapi.localhost** ──→ `127.0.0.1:8000` (Laravel API)
+- **ai.morapi.localhost** ──→ `127.0.0.1:8001` (AI Service)
 
 ### Menjalankan Caddy
-Buka terminal di **folder root project (`visatamora/`)**:
+Buka terminal di **folder root project (`morapi/`)**:
 ```bash
 caddy start  # Menjalankan di background
 # ATAU
@@ -282,9 +282,9 @@ caddy run    # Menjalankan di foreground (terlihat log)
 ```
 
 Setelah Caddy dan aplikasi lain berjalan, Anda bisa mengakses project di:
-- **Frontend:** [https://mora.localhost](https://mora.localhost)
-- **API:** [https://api.mora.localhost](https://api.mora.localhost)
-- **AI Service:** [https://ai.mora.localhost](https://ai.mora.localhost)
+- **Frontend:** [https://morapi.localhost](https://morapi.localhost)
+- **API:** [https://api.morapi.localhost](https://api.morapi.localhost)
+- **AI Service:** [https://ai.morapi.localhost](https://ai.morapi.localhost)
 
 ---
 
@@ -335,8 +335,8 @@ caddy run
 ```
 
 > ✨ **Akses Aplikasi:** Setelah semua service berjalan, buka browser Anda ke:
-> - 🌐 **[http://mora.localhost](http://mora.localhost)** (Untuk melihat tampilan UI/Frontend)
-> - ⚙️ **[http://api.mora.localhost](http://api.mora.localhost)** (Untuk mengakses API backend)
+> - 🌐 **[http://morapi.localhost](http://morapi.localhost)** (Untuk melihat tampilan UI/Frontend)
+> - ⚙️ **[http://api.morapi.localhost](http://api.morapi.localhost)** (Untuk mengakses API backend)
 
 > 💡 **Shortcut:** Untuk Terminal 1 + 2 sekaligus, gunakan `composer run dev` di `apps/api`. Perintah ini menjalankan Laravel server, queue worker, dan log viewer dalam satu proses menggunakan `concurrently`.
 

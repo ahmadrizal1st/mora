@@ -1,4 +1,4 @@
-# Panduan AI Agent untuk Visatamora (Personal App)
+# Panduan AI Agent untuk Morapi (Personal App)
 
 File ini adalah titik masuk utama bagi asisten AI (seperti Antigravity, Cursor, atau Copilot) saat berinteraksi dengan codebase ini.
 

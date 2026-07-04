@@ -1,4 +1,4 @@
-# 🐳 Visatamora — Docker Setup Guide
+# 🐳 Morapi — Docker Setup Guide
 
 Monorepo ini mendukung deployment menggunakan Docker & Docker Compose untuk memudahkan setup development dan production.
 
@@ -35,8 +35,8 @@ docker-compose up -d --build
 Setelah container berjalan, jalankan perintah setup di dalam container API:
 
 ```bash
-docker exec -it visatamora_api php artisan key:generate
-docker exec -it visatamora_api php artisan migrate --force
+docker exec -it morapi_api php artisan key:generate
+docker exec -it morapi_api php artisan migrate --force
 ```
 
 ---
@@ -75,10 +75,10 @@ docker-compose restart api
 
 ```bash
 # Masuk ke Laravel
-docker exec -it visatamora_api bash
+docker exec -it morapi_api bash
 
 # Masuk ke AI
-docker exec -it visatamora_ai bash
+docker exec -it morapi_ai bash
 ```
 
 ---

@@ -44,7 +44,7 @@ export default function MarketingLayout({ children }: MarketingLayoutProps) {
                   <li className="list-inline-item">
                     Copyright &copy; {new Date().getFullYear()}
                     <Link to="/" className="link-secondary ms-1">
-                      Mora
+                      Morapi
                     </Link>
                     . All rights reserved.
                   </li>

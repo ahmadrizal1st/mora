@@ -10,7 +10,7 @@ export default function SettingsPage() {
 
   const person = {
     full_name: user?.name || 'Andrew Forbist',
-    email: user?.email || 'andrew.forbist@visatamora.com',
+    email: user?.email || 'andrew.forbist@morapi.com',
     photo: user?.avatar || '002m.jpg',
   }
 
@@ -229,7 +229,7 @@ export default function SettingsPage() {
                         <span className="form-check-label">Pembaruan Sistem & Fitur</span>
                       </label>
                       <div className="text-secondary small ms-5">
-                        Informasi mengenai fitur terbaru dari Visatamora.
+                        Informasi mengenai fitur terbaru dari Morapi.
                       </div>
                     </div>
                   </>

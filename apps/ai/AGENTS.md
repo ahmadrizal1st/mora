@@ -1,4 +1,4 @@
-# Panduan AI Agent untuk Visatamora AI (Python/FastAPI)
+# Panduan AI Agent untuk Morapi AI (Python/FastAPI)
 
 File ini adalah titik masuk utama bagi asisten AI saat berinteraksi dengan codebase *service* AI ini.
 Sebelum menulis kode, baca aturan di `.agent/rules/`.

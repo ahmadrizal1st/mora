@@ -54,7 +54,7 @@ export function NavbarLogo({
               lineHeight: 1,
             }}
           >
-            mora
+            morapi
           </span>
         </div>
       )}

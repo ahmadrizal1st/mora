@@ -12,9 +12,9 @@ export default function HelpPage() {
         'Anda dapat pergi ke halaman Pengaturan > Aplikasi Terhubung, lalu klik Hubungkan Bank. Pilih bank Anda dan masukkan detail keamanan Anda. Proses enkripsi bank kami memastikan data Anda selalu aman dan terlindungi.',
     },
     {
-      question: 'Apakah data keuangan saya aman di Visatamora?',
+      question: 'Apakah data keuangan saya aman di Morapi?',
       answer:
-        'Sangat aman. Visatamora menggunakan enkripsi enk-ke-enk tingkat militer (AES-256) serta autentikasi dua faktor (2FA) untuk memastikan data keuangan, transaksi, dan data pribadi Anda tidak dapat diakses oleh pihak luar.',
+        'Sangat aman. Morapi menggunakan enkripsi enk-ke-enk tingkat militer (AES-256) serta autentikasi dua faktor (2FA) untuk memastikan data keuangan, transaksi, dan data pribadi Anda tidak dapat diakses oleh pihak luar.',
     },
     {
       question: 'Bagaimana cara menarik dana investasi dari portofolio?',
@@ -225,7 +225,7 @@ export default function HelpPage() {
                   </div>
                   <div className="col-6">
                     <a
-                      href="mailto:support@visatamora.com"
+                      href="mailto:support@morapi.com"
                       className="btn btn-white w-100 py-2 d-flex align-items-center justify-content-center gap-2"
                     >
                       <Icon icon="mail" /> Kirim Email

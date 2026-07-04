@@ -29,7 +29,7 @@ export function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
     {
       id: '1',
       role: 'bot',
-      content: 'Halo, saya Mora AI. Ada pengeluaran atau pemasukan yang ingin dicatat hari ini?',
+      content: 'Halo, saya Morapi AI. Ada pengeluaran atau pemasukan yang ingin dicatat hari ini?',
     },
   ])
   const [inputText, setInputText] = useState('')
@@ -467,7 +467,7 @@ export function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
         <div className="card-header px-3 pb-3 pt-2 pt-md-3 border-0 d-flex justify-content-between align-items-center bg-white">
           <div className="d-flex align-items-center">
             <h5 className="card-title m-0 fw-semibold" style={{ color: '#4a4a4a' }}>
-              Mora AI
+              Morapi AI
             </h5>
           </div>
           <button type="button" className="btn-close" aria-label="Close" onClick={onClose} />
@@ -481,7 +481,7 @@ export function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
               {msg.role === 'bot' && (
                 <div className="d-flex align-items-center gap-2 mb-1" style={{ color: '#9ca3af' }}>
                   <Icon icon="robot" size={16} />
-                  <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>Mora AI</span>
+                  <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>Morapi AI</span>
                 </div>
               )}
               
@@ -521,7 +521,7 @@ export function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
             <div className="d-flex flex-column align-items-start">
                 <div className="d-flex align-items-center gap-2 mb-1" style={{ color: '#9ca3af' }}>
                   <Icon icon="robot" size={16} />
-                  <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>Mora AI</span>
+                  <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>Morapi AI</span>
                 </div>
                 <div className="px-3 py-2 d-flex gap-1">
                     <div className="typing-dot bg-secondary rounded-circle" style={{width: '6px', height: '6px', animation: 'typing 1s infinite 0.1s'}}></div>

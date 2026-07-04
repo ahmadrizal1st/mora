@@ -160,9 +160,9 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
                   className="d-flex align-items-center justify-content-center rounded-2"
                   style={{ width: 28, height: 28, background: 'linear-gradient(135deg, #ff7a00, #ffb347)' }}
                 >
-                  <img src="/static/logo-small-white.svg" alt="Mora AI" style={{ width: 16, height: 16 }} />
+                  <img src="/static/logo-small-white.svg" alt="Morapi AI" style={{ width: 16, height: 16 }} />
                 </div>
-                <span className="fw-semibold" style={{ fontSize: 15 }}>Mora AI</span>
+                <span className="fw-semibold" style={{ fontSize: 15 }}>Morapi AI</span>
               </div>
               <button
                 className="btn btn-ghost btn-sm btn-icon rounded-3 text-muted"

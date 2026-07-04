@@ -1,11 +1,11 @@
-mora.localhost {
+morapi.localhost {
     reverse_proxy 127.0.0.1:5173
 }
 
-api.mora.localhost {
+api.morapi.localhost {
     reverse_proxy 127.0.0.1:8000
 }
 
-ai.mora.localhost {
+ai.morapi.localhost {
     reverse_proxy 127.0.0.1:8001
 }

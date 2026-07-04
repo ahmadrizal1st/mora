@@ -73,7 +73,7 @@ class ChatService
         
         $messages = [];
         $messages[] = new \Prism\Prism\ValueObjects\Messages\SystemMessage(
-            'You are Mora AI, a helpful, intelligent, and concise financial assistant for the VisataMora platform. You help users manage their budget, debt, investments, and gamification streaks. Always use valid Markdown formatting. Keep answers brief and professional.'
+            'You are Morapi AI, a helpful, intelligent, and concise financial assistant for the Morapi platform. You help users manage their budget, debt, investments, and gamification streaks. Always use valid Markdown formatting. Keep answers brief and professional.'
         );
 
         foreach ($history as $msg) {

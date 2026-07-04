@@ -187,12 +187,12 @@ export default function AchievementsPage() {
                 >
                   <img
                     src={statsData?.pet?.image || "/static/illustrations/streak/pet.gif"}
-                    alt="Mora Mascot"
+                    alt="Morapi Mascot"
                     className="img-fluid"
                     style={{ maxHeight: '100%', objectFit: 'contain' }}
                   />
                 </div>
-                <h4 className="mb-0">{statsData?.pet?.name || "Mora the Spirit"}</h4>
+                <h4 className="mb-0">{statsData?.pet?.name || "Morapi the Spirit"}</h4>
                 <p className="text-muted mb-3" style={{ fontSize: '11px' }}>
                   Level {statsData?.pet?.level || 1} • {statsData?.pet?.status || "Happy & Energized"}
                 </p>
@@ -270,7 +270,7 @@ export default function AchievementsPage() {
                     <Badge color="yellow" className="mb-1" style={{ fontSize: '9px' }}>
                       EXCLUSIVE
                     </Badge>
-                    <h4 className="fw-bold mb-1">Mora Elite Skin</h4>
+                    <h4 className="fw-bold mb-1">Morapi Elite Skin</h4>
                     <p className="small text-white-50">
                       Unlock a premium theme for your dashboard by completing 5 Epic achievements.
                     </p>

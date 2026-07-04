@@ -76,7 +76,7 @@ export const TransactionList: FC<TransactionListProps> = ({
               style={{
                 width: 4,
                 height: 16,
-                backgroundColor: 'var(--mora-primary)',
+                backgroundColor: 'var(--morapi-primary)',
                 borderRadius: 4,
               }}
             />
@@ -123,7 +123,7 @@ export const TransactionList: FC<TransactionListProps> = ({
                     </div>
                     <div
                       className="fw-black"
-                      style={{ fontSize: '1.4rem', color: 'var(--mora-primary)', lineHeight: 1.1 }}
+                      style={{ fontSize: '1.4rem', color: 'var(--morapi-primary)', lineHeight: 1.1 }}
                     >
                       {day < 10 ? `0${day}` : day}
                     </div>
@@ -142,7 +142,7 @@ export const TransactionList: FC<TransactionListProps> = ({
                           className="fw-bold mb-0 text-truncate text-body"
                           style={{ fontSize: '1rem', letterSpacing: '-0.2px' }}
                         >
-                          {tx.merchant || 'Transaksi Mora'}
+                          {tx.merchant || 'Transaksi Morapi'}
                         </h4>
                         <div className="small fw-medium text-secondary opacity-75">
                           {tx.category?.name || 'Umum'}

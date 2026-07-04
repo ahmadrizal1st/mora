@@ -253,7 +253,7 @@ export function Navbar({
                       ghost
                       size="sm"
                       icon="message-chatbot"
-                      text="Mora AI"
+                      text="Morapi AI"
                       className="fw-medium text-body px-2"
                     />
                   </li>

@@ -41,7 +41,7 @@ class GamificationService
             'longest_streak' => $streak->longest_count,
             'current_streak' => $streak->current_count,
             'pet' => [
-                'name' => 'Mora the Spirit',
+                'name' => 'Morapi the Spirit',
                 'level' => $profile->level,
                 'status' => $petStatus,
                 'image' => '/static/illustrations/streak/pet.gif'

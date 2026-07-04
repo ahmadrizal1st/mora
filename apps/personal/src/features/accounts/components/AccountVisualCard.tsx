@@ -154,7 +154,7 @@ export function AccountVisualCard({
           <div className="font-monospace h2 mb-1">**** **** **** {num.slice(-4)}</div>
           <div className="d-flex justify-content-between align-items-end">
             <div className="h3 fw-bold mb-0 font-monospace">{balance}</div>
-            <div className={`text-uppercase small fw-bold ${isDarkText ? 'opacity-75' : 'opacity-75'}`}>MORA PAY</div>
+            <div className={`text-uppercase small fw-bold ${isDarkText ? 'opacity-75' : 'opacity-75'}`}>MORAPI PAY</div>
           </div>
         </div>
       </div>

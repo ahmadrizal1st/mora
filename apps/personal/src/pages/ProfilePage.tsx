@@ -7,7 +7,7 @@ export default function ProfilePage() {
 
   const person = {
     full_name: user?.name || 'Andrew Forbist',
-    email: user?.email || 'andrew.forbist@visatamora.com',
+    email: user?.email || 'andrew.forbist@morapi.com',
     photo: user?.avatar || '002m.jpg',
   }
 

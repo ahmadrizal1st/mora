@@ -1,4 +1,4 @@
-# Panduan AI Agent untuk Visatamora API (Laravel)
+# Panduan AI Agent untuk Morapi API (Laravel)
 
 File ini adalah titik masuk utama bagi asisten AI saat berinteraksi dengan codebase backend API ini.
 Sebelum menulis kode, baca aturan di `.agent/rules/`.

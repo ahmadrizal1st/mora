@@ -62,9 +62,9 @@ export default function ChatPage() {
 
   // Auto-send prompt if navigated from a template
   useEffect(() => {
-    const prompt = sessionStorage.getItem('mora_template_prompt')
+    const prompt = sessionStorage.getItem('morapi_template_prompt')
     if (!prompt) return
-    sessionStorage.removeItem('mora_template_prompt')
+    sessionStorage.removeItem('morapi_template_prompt')
     // Wait for session to be ready before sending
     const timer = setTimeout(() => {
       handleSendMessage(prompt)
@@ -189,7 +189,7 @@ export default function ChatPage() {
                     {greeting}, {firstName}! 👋
                   </h2>
                   <p className="text-muted mb-0" style={{ fontSize: 14 }}>
-                    Tanya apa saja tentang keuanganmu — Mora AI siap membantu.
+                    Tanya apa saja tentang keuanganmu — Morapi AI siap membantu.
                   </p>
                 </div>
 
@@ -300,7 +300,7 @@ export default function ChatPage() {
 
                 {/* Disclaimer */}
                 <p className="text-center text-muted mt-4 mb-0" style={{ fontSize: 11 }}>
-                  Mora AI dapat membuat kesalahan. Verifikasi informasi penting sebelum mengambil keputusan.
+                  Morapi AI dapat membuat kesalahan. Verifikasi informasi penting sebelum mengambil keputusan.
                 </p>
               </div>
             </div>
@@ -371,7 +371,7 @@ export default function ChatPage() {
                 </div>
 
                 <p className="text-center text-muted mt-2 mb-0" style={{ fontSize: 11 }}>
-                  Mora AI dapat membuat kesalahan. Verifikasi informasi penting.
+                  Morapi AI dapat membuat kesalahan. Verifikasi informasi penting.
                 </p>
               </div>
             </>

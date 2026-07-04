@@ -363,7 +363,7 @@ export function ChatTemplatesPage() {
     createNewSession()
     navigate({ to: '/ai/chat/' })
     // Prompt will be sent by the user seeing the chat — we pre-fill via sessionStorage
-    sessionStorage.setItem('mora_template_prompt', template.prompt)
+    sessionStorage.setItem('morapi_template_prompt', template.prompt)
   }
 
   const handleSave = async (payload: CreateTemplatePayload) => {

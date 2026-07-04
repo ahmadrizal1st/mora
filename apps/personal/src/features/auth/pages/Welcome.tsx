@@ -49,7 +49,7 @@ export default function Welcome() {
                 zIndex: 10,
               }}
             >
-              mora
+              morapi
             </div>
           </div>
         </div>
