@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from '@tanstack/react-router'
 import BaseLayout from '@/shared/layouts/BaseLayout'
-import { useTransactionSummary, useTransactions } from '@/features/transaction/hooks/useTransactions'
+import { useReportRecap } from '@/features/transaction/hooks/useTransactions'
 import { StoryPlayer } from '@/features/reports/components/StoryPlayer'
 import { Button } from '@/shared/components/ui'
+import { Icon } from '@/shared/components/ui/Icon'
 
 function parsePeriodId(periodId: string): { dateFrom: string; dateTo: string, label: string } {
   if (/^\d{4}-\d{2}$/.test(periodId)) {
@@ -80,92 +81,49 @@ export function ReportRecapPage() {
   const navigate = useNavigate()
   const { dateFrom, dateTo, label } = parsePeriodId(periodId)
   
-  const { data: summary } = useTransactionSummary({ date_from: dateFrom, date_to: dateTo })
-  const { data: txListResult } = useTransactions({ date_from: dateFrom, date_to: dateTo, per_page: 500 })
+  const { data: recap, isLoading } = useReportRecap({ date_from: dateFrom, date_to: dateTo })
   
-  const income = summary?.total_income || 0
-  const expense = summary?.total_expense || 0
-  const savingRate = income > 0 ? Math.round(((income - expense) / income) * 100) : 0
-  
-  // Calculate dynamic stats
-  const transactions = txListResult?.data || []
-  const expenseTx = transactions.filter(t => t.type === 'expense')
-
-  // Kategori juara
-  const categoryTotals: Record<string, number> = {}
-  let totalExpenseCalculated = 0
-  expenseTx.forEach(t => {
-    const catName = t.category?.name || 'Lainnya'
-    categoryTotals[catName] = (categoryTotals[catName] || 0) + t.amount
-    totalExpenseCalculated += t.amount
-  })
-  const sortedCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])
-  const mainCategoryName = sortedCategories[0]?.[0] || 'Tidak ada'
-  const mainCategoryPct = totalExpenseCalculated > 0 ? Math.round((sortedCategories[0]?.[1] / totalExpenseCalculated) * 100) : 0
-  const kategoriJuaraStr = mainCategoryName !== 'Tidak ada' ? `${mainCategoryName} · ${mainCategoryPct}%` : '-'
-
-  // Pengeluaran terbesar
-  const sortedExpenseTx = [...expenseTx].sort((a, b) => b.amount - a.amount)
-  const maxExpenseTx = sortedExpenseTx[0]
-  const maxExpenseStr = maxExpenseTx 
-    ? `${maxExpenseTx.merchant || maxExpenseTx.category?.name || 'Pengeluaran'} · ${maxExpenseTx.amount.toLocaleString('id-ID')}`
-    : '-'
-
-  // Hari paling boros
-  const dailyExpenseTotals: Record<string, number> = {}
-  expenseTx.forEach(t => {
-    const dateStr = t.tx_date.split('T')[0]
-    dailyExpenseTotals[dateStr] = (dailyExpenseTotals[dateStr] || 0) + t.amount
-  })
-  const sortedDailyExpenses = Object.entries(dailyExpenseTotals).sort((a, b) => b[1] - a[1])
-  const maxExpenseDayStr = sortedDailyExpenses[0]
-    ? `${new Date(sortedDailyExpenses[0][0] + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })} · ${sortedDailyExpenses[0][1].toLocaleString('id-ID')}`
-    : '-'
-
-  // Hari tanpa belanja
-  const parsedYear = parseInt(dateFrom.substring(0, 4))
-  const parsedMonth = parseInt(dateFrom.substring(5, 7))
-  const totalDaysInMonth = new Date(parsedYear, parsedMonth, 0).getDate()
-  const uniqueExpenseDays = new Set(expenseTx.map(t => t.tx_date.split('T')[0])).size
-  const noSpendDays = Math.max(0, totalDaysInMonth - uniqueExpenseDays)
-
-  // Waktu paling boros
-  const hourCounts: Record<string, number> = { Pagi: 0, Siang: 0, Sore: 0, Malam: 0 }
-  expenseTx.forEach(t => {
-    const dateObj = new Date(t.tx_date)
-    const hour = dateObj.getHours()
-    if (hour >= 5 && hour < 11) hourCounts.Pagi++
-    else if (hour >= 11 && hour < 15) hourCounts.Siang++
-    else if (hour >= 15 && hour < 19) hourCounts.Sore++
-    else hourCounts.Malam++
-  })
-  const sortedHours = Object.entries(hourCounts).sort((a, b) => b[1] - a[1])
-  const timeRanges: Record<string, string> = {
-    Pagi: 'Pagi Hari · 05:00 - 11:00',
-    Siang: 'Siang Hari · 11:00 - 15:00',
-    Sore: 'Sore Hari · 15:00 - 19:00',
-    Malam: 'Malam Hari · 19:00 - 05:00'
-  }
-  const mainTimeStr = sortedHours[0]?.[1] > 0 ? timeRanges[sortedHours[0][0]] : 'Sore Hari · 16:00 - 19:00'
-
-  // Dompet paling sering
-  const accountCounts: Record<string, number> = {}
-  transactions.forEach(t => {
-    const accName = t.account?.name
-    if (accName) accountCounts[accName] = (accountCounts[accName] || 0) + 1
-  })
-  const sortedAccounts = Object.entries(accountCounts).sort((a, b) => b[1] - a[1])
-  const mainAccountStr = sortedAccounts[0] ? `${sortedAccounts[0][0]} · ${sortedAccounts[0][1]}×` : '-'
-
-  const currentPeriodId = new Date().toISOString().substring(0, 7)
-  const isCurrentPeriod = periodId === currentPeriodId
-
   const [hideNominal, setHideNominal] = useState(true)
   const [showStory, setShowStory] = useState(false)
   const [activeTheme, setActiveTheme] = useState('auto')
 
+  if (isLoading) {
+    return (
+      <BaseLayout pageTitle="Morapi Rewind" showBackButton={true}>
+        <div className="text-center py-5 my-5">
+          <div className="spinner-border text-primary" />
+        </div>
+      </BaseLayout>
+    )
+  }
+
+  const income = recap?.income || 0
+  const expense = recap?.expense || 0
+  const savingRate = recap?.saving_rate || 0
+  const totalTx = recap?.total_tx || 0
+  
+  const kategoriJuaraStr = recap?.kategori_juara || '-'
+  const maxExpenseStr = recap?.pengeluaran_terbesar || '-'
+  const maxExpenseDayStr = recap?.hari_paling_boros || '-'
+  const noSpendDays = recap?.hari_tanpa_belanja || 0
+  const mainTimeStr = recap?.waktu_paling_boros || 'Sore Hari · 16:00 - 19:00'
+  const mainAccountStr = recap?.dompet_paling_sering || '-'
+  const kepatuhanAnggaranStr = recap?.kepatuhan_anggaran || 'Belum Ada Anggaran'
+  const pinjamanTerbesarKeStr = recap?.pinjaman_terbesar_ke || '-'
+  const perubahanDibandingBulanLaluStr = recap?.perubahan_dibanding_bulan_lalu || '-'
+
+  const maskNominal = (val: string) => {
+    if (!val || val === '-') return '-'
+    const parts = val.split(' · ')
+    if (parts.length < 2) return val
+    return `${parts[0]} · ••••`
+  }
+
+  const currentPeriodId = new Date().toISOString().substring(0, 7)
+  const isCurrentPeriod = periodId === currentPeriodId
+
   const themeStyle = activeTheme !== 'auto' ? { '--tblr-primary': activeTheme } as React.CSSProperties : {}
-  const persona = getPersona(savingRate, txListResult?.total || 0)
+  const persona = getPersona(savingRate, totalTx)
 
   const handleShare = () => {
     const shareUrl = window.location.href
@@ -334,7 +292,7 @@ export function ReportRecapPage() {
                     <div className="col-6">
                       <div className="rounded-4 p-3 h-100" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                         <div className="mb-2" style={{ fontSize: '12px', opacity: 0.9 }}>Transaksi</div>
-                        <div className="fw-bold fs-4">{txListResult?.total || 0}</div>
+                        <div className="fw-bold fs-4">{totalTx}</div>
                       </div>
                     </div>
                   </div>
@@ -418,8 +376,8 @@ export function ReportRecapPage() {
               <div className="card rounded-4 border-0 mb-4 shadow-sm" style={{ backgroundColor: 'var(--tblr-primary-lt)' }}>
                 <div className="card-body p-4">
                   <div className="d-flex gap-3 align-items-start">
-                    <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '36px', height: '36px', fontSize: '16px' }}>
-                      💡
+                    <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '36px', height: '36px' }}>
+                      <Icon icon="bulb" size={20} />
                     </div>
                     <div>
                       <h4 className="fw-bold text-primary mb-2" style={{ fontSize: '14px' }}>Rekomendasi Finansial</h4>
@@ -443,13 +401,13 @@ export function ReportRecapPage() {
                   {[
                     { label: 'Arus bersih', value: hideNominal ? '••••' : `+ ${(income - expense).toLocaleString('id-ID')}` },
                     { label: 'Kategori juara', value: kategoriJuaraStr },
-                    { label: 'Pengeluaran terbesar', value: hideNominal ? (maxExpenseTx ? `${maxExpenseTx.merchant || maxExpenseTx.category?.name || 'Pengeluaran'} · ••••` : '-') : maxExpenseStr },
-                    { label: 'Hari paling boros', value: hideNominal ? (sortedDailyExpenses[0] ? `${new Date(sortedDailyExpenses[0][0] + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' })} · ••••` : '-') : maxExpenseDayStr },
+                    { label: 'Pengeluaran terbesar', value: hideNominal ? maskNominal(maxExpenseStr) : maxExpenseStr },
+                    { label: 'Hari paling boros', value: hideNominal ? maskNominal(maxExpenseDayStr) : maxExpenseDayStr },
                     { label: 'Hari tanpa belanja', value: `${noSpendDays} Hari` },
                     { label: 'Waktu paling boros', value: mainTimeStr },
-                    { label: 'Kepatuhan anggaran', value: '88% · Semua kategori aman' },
+                    { label: 'Kepatuhan anggaran', value: kepatuhanAnggaranStr },
                     { label: 'Dompet paling sering', value: mainAccountStr },
-                    { label: 'Pinjaman terbesar ke', value: hideNominal ? 'Andi · ••••' : 'Andi · 50.000' },
+                    { label: 'Pinjaman terbesar ke', value: hideNominal ? '••••' : pinjamanTerbesarKeStr },
                     { label: 'Perubahan net worth', value: hideNominal ? '••••' : `+ ${(income - expense).toLocaleString('id-ID')}` },
                   ].map((item, idx, arr) => (
                     <div key={idx} className="d-flex justify-content-between px-4 py-3" style={{ borderBottom: idx < arr.length - 1 ? '1px solid #f0f0f0' : undefined, fontSize: '13px' }}>
@@ -466,7 +424,7 @@ export function ReportRecapPage() {
                   <h4 className="fw-bold text-secondary mb-3 text-uppercase" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>Proyeksi Masa Depan</h4>
                   <div className="d-flex justify-content-between mb-2 text-secondary" style={{ fontSize: '13px' }}>
                     <span>Perubahan dibanding bulan lalu</span>
-                    <span className="fw-semibold text-success font-monospace">-12.4% (Lebih Hemat)</span>
+                    <span className="fw-semibold text-success font-monospace">{perubahanDibandingBulanLaluStr}</span>
                   </div>
                   <div className="d-flex justify-content-between mb-2 text-secondary" style={{ fontSize: '13px' }}>
                     <span>Prediksi Pengeluaran Bulan Depan</span>
@@ -477,8 +435,8 @@ export function ReportRecapPage() {
                     <span className="fw-semibold text-success font-monospace">+ Rp {((income - expense) * 12).toLocaleString('id-ID')}</span>
                   </div>
                   <div className="d-flex justify-content-between text-secondary" style={{ fontSize: '13px' }}>
-                    <span>Estimasi Hari Bebas Belanja (Rata-rata)</span>
-                    <span className="fw-semibold text-dark">4-5 Hari</span>
+                    <span>Estimasi Hari Bebas Belanja (Bulan Ini)</span>
+                    <span className="fw-semibold text-dark">{noSpendDays} Hari</span>
                   </div>
                 </div>
               </div>

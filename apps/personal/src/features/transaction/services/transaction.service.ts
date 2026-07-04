@@ -102,4 +102,28 @@ export const transactionService = {
     const response = await api.get<{ data: any }>('/transactions-statistics')
     return response.data.data
   },
+
+  async getRecap(params?: {
+    date_from?: string
+    date_to?: string
+  }): Promise<{
+    income: number
+    expense: number
+    total_tx: number
+    saving_rate: number
+    kategori_juara: string
+    pengeluaran_terbesar: string
+    hari_paling_boros: string
+    hari_tanpa_belanja: number
+    waktu_paling_boros: string
+    dompet_paling_sering: string
+    kepatuhan_anggaran: string
+    pinjaman_terbesar_ke: string
+    perubahan_dibanding_bulan_lalu: string
+  }> {
+    const response = await api.get<{ data: any }>('/reports/recap', {
+      params,
+    })
+    return response.data.data
+  },
 }

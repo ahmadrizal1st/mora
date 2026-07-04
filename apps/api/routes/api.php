@@ -23,6 +23,7 @@ use App\Http\Controllers\{
     ChatController,
     ExtractionController,
     PromptTemplateController,
+    ReportController,
 };
 use Illuminate\Support\Facades\Route;
 
@@ -82,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('transactions-summary', [TransactionController::class, 'summary']);
     Route::get('transactions-history', [TransactionController::class, 'history']);
     Route::get('transactions-statistics', [TransactionController::class, 'statistics']);
+    Route::get('reports/recap', [ReportController::class, 'getRecap']);
 
     // Accounts
     Route::apiResource('accounts', AccountController::class);

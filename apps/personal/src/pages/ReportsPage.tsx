@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { PeriodCard } from '@/features/reports/components/PeriodCard'
-import { useTransactionSummary, useTransactionChartData, useTransactions } from '@/features/transaction/hooks/useTransactions'
+import { useTransactionSummary, useTransactionChartData, useTransactions, useTransactionHistory } from '@/features/transaction/hooks/useTransactions'
+import { useAccounts } from '@/features/transaction/hooks/useAccounts'
 import { Button } from '@/shared/components/ui'
 import { Modal, ModalHeader } from '@/shared/components/ui/Modal'
 import { Datepicker } from '@/shared/components/ui/Datepicker'
@@ -440,6 +441,96 @@ export function ReportsPage() {
   const chartMonths = useMemo(() => getLastMonths(6), [])
   const months = useMemo(() => getLastMonths(10), [])
 
+  // 12 Months for Net Worth
+  const last12Months = useMemo(() => {
+    const result = []
+    const now = new Date()
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+      const year = d.getFullYear()
+      const month = String(d.getMonth() + 1).padStart(2, '0')
+      const label = d.toLocaleDateString('id-ID', { month: 'short' })
+      const key = `${year}-${month}`
+      result.push({ 
+        key, 
+        label, 
+        from: `${year}-${month}-01`, 
+        to: `${year}-${month}-${new Date(year, d.getMonth() + 1, 0).getDate()}` 
+      })
+    }
+    return result
+  }, [])
+
+  const dateFrom12M = last12Months[0].from
+  const dateTo12M = last12Months[11].to
+
+  const { data: accounts12MResponse } = useAccounts({
+    group_by: 'month',
+    date_from: dateFrom12M,
+    date_to: dateTo12M,
+  })
+
+  // 6 Months for Pemasukan vs Pengeluaran
+  const dateFrom6M = chartMonths[chartMonths.length - 1].from
+  const dateTo6M = chartMonths[0].to
+
+  const { data: history6M } = useTransactionHistory({
+    date_from: dateFrom6M,
+    date_to: dateTo6M,
+    group_by: 'month'
+  })
+
+  const monthlyBarData = useMemo(() => {
+    if (!history6M) return { categories: [], incomeData: [], expenseData: [] }
+    
+    const categories = (history6M.income_labels || []).map(label => {
+      const d = new Date(label + '-01T00:00:00')
+      return d.toLocaleDateString('id-ID', { month: 'short' })
+    })
+
+    return {
+      categories,
+      incomeData: history6M.income || [],
+      expenseData: history6M.expense || [],
+    }
+  }, [history6M])
+
+  const netWorthData = useMemo(() => {
+    const categories = last12Months.map(m => m.label)
+    const accounts = accounts12MResponse?.data || []
+
+    const data = last12Months.map(m => {
+      let total = 0
+      accounts.forEach(acc => {
+        if (acc.history?.labels && acc.history?.balance) {
+          const idx = acc.history.labels.indexOf(m.key)
+          if (idx !== -1) {
+            total += acc.history.balance[idx]
+          } else {
+            // fallback to current balance if it's the current month and label is missing
+            const currentMonthKey = new Date().toISOString().substring(0, 7)
+            if (m.key === currentMonthKey) {
+              total += acc.balance || 0
+            }
+          }
+        } else {
+          // If no history is returned (e.g. account has no transactions), use its current balance
+          total += acc.balance || 0
+        }
+      })
+      return total
+    })
+
+    const currentNetWorth = data[data.length - 1] || 0
+    const startNetWorth = data[0] || 0
+    const netWorthChange = currentNetWorth - startNetWorth
+
+    return { categories, data, currentNetWorth, netWorthChange }
+  }, [accounts12MResponse, last12Months])
+
+  const netWorthChangeSign = netWorthData.netWorthChange >= 0 ? '+' : '-'
+  const netWorthChangeText = `${netWorthChangeSign}${fmt(Math.abs(netWorthData.netWorthChange))} dari ${last12Months[0].label} ${last12Months[0].key.split('-')[0]}`
+
   const handleSaveCustom = () => {
     if (customName && customFrom && customTo) {
       setCustomReports(prev => [{ title: customName, from: customFrom, to: customTo }, ...prev])
@@ -576,19 +667,16 @@ export function ReportsPage() {
                           type: 'bar',
                           height: 14,
                           stacked: false,
-                          categories: chartMonths.map(m => {
-                            const d = new Date(m.from + 'T00:00:00')
-                            return d.toLocaleDateString('id-ID', { month: 'short' })
-                          }).reverse(),
+                          categories: monthlyBarData.categories,
                           series: [
                             {
                               name: 'Pemasukan',
-                              data: [5000000, 6000000, 4000000, 7000000, 9500000, 13650000],
+                              data: monthlyBarData.incomeData,
                               color: '#38a169',
                             },
                             {
                               name: 'Pengeluaran',
-                              data: [4000000, 4500000, 3000000, 5000000, 2721990, 5931000],
+                              data: monthlyBarData.expenseData,
                               color: '#e53e3e',
                             },
                           ],
@@ -617,11 +705,11 @@ export function ReportsPage() {
                         chartData={{
                           type: 'area',
                           height: 12,
-                          categories: ['Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                          categories: netWorthData.categories,
                           series: [
                             {
                               name: 'Kekayaan Bersih',
-                              data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6778010, 70197010],
+                              data: netWorthData.data,
                               color: 'var(--tblr-primary)',
                             }
                           ],
@@ -632,8 +720,8 @@ export function ReportsPage() {
                       />
                     </div>
                     <div className="card-footer bg-white border-0 pt-0 pb-3 d-flex justify-content-between text-secondary" style={{ fontSize: '12px' }}>
-                      <span>Sekarang: 70.197.010</span>
-                      <span className="fw-semibold" style={{ color: '#1a202c' }}>+70.197.010 <span className="text-secondary fw-normal">dari Jul 2025</span></span>
+                      <span>Sekarang: {fmt(netWorthData.currentNetWorth)}</span>
+                      <span className="fw-semibold" style={{ color: '#1a202c' }}>{netWorthChangeText}</span>
                     </div>
                   </div>
                 </div>

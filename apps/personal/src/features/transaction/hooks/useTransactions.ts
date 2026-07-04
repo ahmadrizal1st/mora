@@ -110,3 +110,14 @@ export const useDeleteTransaction = () => {
     },
   })
 }
+
+export const useReportRecap = (params?: {
+  date_from?: string
+  date_to?: string
+}) => {
+  return useQuery({
+    queryKey: ['report-recap', params],
+    queryFn: () => transactionService.getRecap(params),
+    enabled: !!params?.date_from && !!params?.date_to,
+  })
+}
