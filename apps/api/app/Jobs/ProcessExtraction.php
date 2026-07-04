@@ -42,14 +42,25 @@ class ProcessExtraction implements ShouldQueue
                 true
             );
 
-            $extractedText = $extractionService->extractText($uploadedFile);
-            $this->extraction->update(['raw_text' => $extractedText]);
+            $mimeType = $uploadedFile->getMimeType();
+            
+            if (str_starts_with($mimeType, 'audio/') || str_starts_with($mimeType, 'video/')) {
+                $extractedText = $extractionService->extractText($uploadedFile, $this->extraction->user);
+                $this->extraction->update(['raw_text' => $extractedText]);
 
-            $result = $extractionService->processExtractedText(
-                $this->extraction->user,
-                $extractedText,
-                $this->extraction->extraction_type
-            );
+                $result = $extractionService->processExtractedText(
+                    $this->extraction->user,
+                    $extractedText,
+                    $this->extraction->extraction_type
+                );
+            } else {
+                $result = $extractionService->processImageDirectly(
+                    $uploadedFile,
+                    $this->extraction->user,
+                    $this->extraction->extraction_type
+                );
+                $this->extraction->update(['raw_text' => $result['raw_text']]);
+            }
 
             $this->extraction->update([
                 'status' => 'completed',

@@ -30,14 +30,14 @@ class ExtractionService
         return $extraction;
     }
 
-    public static function extractText(UploadedFile $file): string
+    public static function extractText(UploadedFile $file, ?User $user = null): string
     {
         $mimeType = $file->getMimeType();
 
         if (str_starts_with($mimeType, 'audio/') || str_starts_with($mimeType, 'video/')) {
-            $extractedText = self::extractAudioWithAssemblyAI($file);
+            $extractedText = self::extractAudioWithGroq($file, $user);
         } else {
-            $extractedText = self::extractImageWithOCRSpace($file);
+            throw new Exception('Image processing should use processImageDirectly instead of extractText.');
         }
 
         if (empty(trim($extractedText))) {
@@ -104,151 +104,193 @@ class ExtractionService
         }
     }
 
-    private static function extractImageWithOCRSpace(UploadedFile $file): string
+    public static function processImageDirectly(UploadedFile $file, User $user, string $extractionType): array
     {
-        $apiKey = env('OCR_SPACE_API_KEY');
-        if (!$apiKey) {
-            Log::error('OCR_SPACE_API_KEY is not set in .env');
-            throw new Exception('OCR Space API Key tidak ditemukan.');
-        }
+        try {
+            $apiKey = env('GEMINI_API_KEY');
 
-        // Tentukan ekstensi file untuk dikirim ke OCR Space
-        $extension = strtolower($file->getClientOriginalExtension()) ?: 'png';
-        $mimeType  = $file->getMimeType() ?: 'image/png';
+            $aiConfig = \Illuminate\Support\Facades\DB::table('llm_providers')
+                ->where('user_id', $user->id)
+                ->where('name', 'gemini')
+                ->where('is_active', true)
+                ->first();
+            
+            if ($aiConfig && !empty($aiConfig->api_key)) {
+                $apiKey = $aiConfig->api_key;
+            }
+            
+            if (!$apiKey) {
+                 $defaultConfig = \Illuminate\Support\Facades\DB::table('llm_providers')
+                    ->whereNull('user_id')
+                    ->where('name', 'gemini')
+                    ->where('is_active', true)
+                    ->first();
+                if ($defaultConfig && !empty($defaultConfig->api_key)) {
+                    $apiKey = $defaultConfig->api_key;
+                }
+            }
 
-        $client = new \GuzzleHttp\Client();
+            if (!$apiKey) {
+                throw new Exception('Gemini API Key tidak ditemukan. Harap tambahkan di pengaturan AI Provider Anda.');
+            }
 
-        $response = $client->post('https://api.ocr.space/parse/image', [
-            'multipart' => [
-                [
-                    'name'     => 'apikey',
-                    'contents' => $apiKey,
-                ],
-                [
-                    'name'     => 'file',
-                    'contents' => fopen($file->getRealPath(), 'r'),
-                    'filename' => $file->getClientOriginalName(),
-                    'headers'  => ['Content-Type' => $mimeType],
-                ],
-                [
-                    'name'     => 'filetype',
-                    'contents' => strtoupper($extension),
-                ],
-                [
-                    'name'     => 'OCREngine',
-                    'contents' => '1',
-                ],
-            ],
-            'timeout' => 120,
-        ]);
-
-        $responseBody = $response->getBody()->getContents();
-        
-        Log::info('OCR Space Raw Response:', ['response' => $responseBody]);
-
-        if ($response->getStatusCode() !== 200) {
-            Log::error('OCR Space HTTP Error', [
-                'status' => $response->getStatusCode(),
-                'body' => $responseBody
+            $schemaJson = json_encode([
+                'tx' => [
+                    [
+                        'type' => 'expense',
+                        'amount' => 50000,
+                        'tx_date' => '2026-06-25',
+                        'merchant' => 'Toko Buku',
+                        'notes' => 'Catatan tambahan jika ada'
+                    ]
+                ]
             ]);
-            throw new Exception('OCR Space Error (HTTP ' . $response->getStatusCode() . '): ' . $responseBody);
+
+            $prompt = <<<PROMPT
+Role: Financial Extraction Expert. Output: RAW JSON ONLY.
+Schema: {$schemaJson}
+
+## STRICT RULES:
+- Extract all transactions visible in the image.
+- DATE: Always YYYY-MM-DD. Use today if unknown: 2026-05-02.
+- NO COMMENTS: Do not include "//" or explanations.
+- AMOUNT: Clean integer (no dots/commas). Example: 334000.
+- JSON: Ensure valid syntax, no trailing commas.
+PROMPT;
+
+            $base64Image = base64_encode(file_get_contents($file->getRealPath()));
+            $mimeType = $file->getMimeType() ?: 'image/jpeg';
+
+            $payload = [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $prompt],
+                            [
+                                'inline_data' => [
+                                    'mime_type' => $mimeType,
+                                    'data' => $base64Image
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'generationConfig' => [
+                    'responseMimeType' => 'application/json'
+                ]
+            ];
+
+            $response = Http::withHeaders(['Content-Type' => 'application/json'])
+                ->timeout(60)
+                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}", $payload);
+
+            if (!$response->successful()) {
+                Log::error('Gemini Vision Error: ' . $response->body());
+                throw new Exception('Gagal memproses gambar dengan Gemini: ' . $response->body());
+            }
+
+            $resultData = $response->json();
+            $extractedText = $resultData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            
+            $llmMapper = app(LLMMapper::class);
+            // We use reflection to call the protected parseJson method or just decode it here
+            $data = json_decode($extractedText, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // Try to clean it using basic regex if markdown
+                if (preg_match('/```(?:json)?\s*(.*?)\s*```/is', $extractedText, $matches)) {
+                    $data = json_decode(trim($matches[1]), true);
+                }
+            }
+
+            $transactions = $data['tx'] ?? [];
+            if (empty($transactions)) {
+                throw new Exception('Gagal mengekstrak data transaksi dari gambar.');
+            }
+
+            $account = $user->accounts()->first();
+            if (!$account) {
+                throw new Exception('Anda belum memiliki akun (dompet/bank).');
+            }
+
+            $createdTransactions = [];
+            foreach ($transactions as $tx) {
+                $amount = (float) preg_replace('/[^0-9.]/', '', (string)($tx['amount'] ?? 0));
+                $dataToSave = [
+                    'account_id' => $account->id,
+                    'type' => $tx['type'] ?? 'expense',
+                    'amount' => $amount,
+                    'tx_date' => $tx['tx_date'] ?? Carbon::now()->toDateString(),
+                    'merchant' => $tx['merchant'] ?? null,
+                    'notes' => $tx['notes'] ?? 'Extracted from image',
+                    'input_method' => 'auto',
+                ];
+                $createdTransactions[] = TransactionService::store($user, $dataToSave);
+            }
+
+            return [
+                'transactions' => $createdTransactions,
+                'raw_text' => json_encode($transactions, JSON_PRETTY_PRINT)
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Image Processing Exception: ' . $e->getMessage());
+            throw $e;
         }
-
-        $result = json_decode($responseBody, true);
-        
-        // Cek apakah OCR Space mengalami error
-        if (isset($result['IsErroredOnProcessing']) && $result['IsErroredOnProcessing'] === true) {
-            $errorMessages = is_array($result['ErrorMessage']) ? implode(', ', $result['ErrorMessage']) : ($result['ErrorMessage'] ?? 'Unknown error');
-            Log::error('OCR Space Processing Error', [
-                'error' => $result['ErrorMessage'],
-                'details' => $result
-            ]);
-            throw new Exception("OCR Space Error: {$errorMessages}");
-        }
-
-        // Cek apakah ada parsed results
-        if (!isset($result['ParsedResults']) || empty($result['ParsedResults'])) {
-            Log::error('OCR Space No Parsed Results', ['result' => $result]);
-            throw new Exception('OCR Space Error: No Parsed Results. Full response: ' . $responseBody);
-        }
-
-        $parsedText = $result['ParsedResults'][0]['ParsedText'] ?? '';
-        
-        if (empty(trim($parsedText))) {
-            Log::warning('OCR Space returned empty text', ['result' => $result]);
-            throw new Exception('OCR Space Error: Tidak ada teks yang dapat diekstrak dari gambar. Coba gambar yang lebih jelas.');
-        }
-
-        Log::info('OCR Space Extracted Text:', ['text' => $parsedText]);
-
-        return $parsedText;
     }
 
-    private static function extractAudioWithAssemblyAI(UploadedFile $file): string
+    private static function extractAudioWithGroq(UploadedFile $file, ?User $user = null): string
     {
-        $apiKey = env('ASSEMBLYAI_API_KEY');
+        $apiKey = env('GROQ_API_KEY');
+
+        if ($user) {
+            $aiConfig = \Illuminate\Support\Facades\DB::table('llm_providers')
+                ->where('user_id', $user->id)
+                ->where('name', 'groq')
+                ->where('is_active', true)
+                ->first();
+            
+            if ($aiConfig && !empty($aiConfig->api_key)) {
+                $apiKey = $aiConfig->api_key;
+            }
+        }
+        
         if (!$apiKey) {
-            throw new Exception('AssemblyAI API Key tidak ditemukan.');
+             $defaultConfig = \Illuminate\Support\Facades\DB::table('llm_providers')
+                ->whereNull('user_id')
+                ->where('name', 'groq')
+                ->where('is_active', true)
+                ->first();
+            if ($defaultConfig && !empty($defaultConfig->api_key)) {
+                $apiKey = $defaultConfig->api_key;
+            }
         }
 
-        // AssemblyAI upload endpoint butuh raw bytes langsung di body (bukan multipart)
-        $mimeType    = $file->getMimeType() ?: 'audio/webm';
-        $fileContent = file_get_contents($file->getRealPath());
+        if (!$apiKey) {
+            throw new Exception('Groq API Key tidak ditemukan. Harap tambahkan di pengaturan AI Provider Anda.');
+        }
 
-        $uploadResponse = Http::withHeaders([
-            'authorization' => $apiKey,
-            'Content-Type'  => $mimeType,
+        $fileResource = fopen($file->getRealPath(), 'r');
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $apiKey,
         ])
-            ->timeout(60)
-            ->withBody($fileContent, $mimeType)
-            ->post('https://api.assemblyai.com/v2/upload');
-
-        if (!$uploadResponse->successful()) {
-            Log::error('AssemblyAI Upload Error: ' . $uploadResponse->body());
-            throw new Exception('Gagal mengunggah audio ke AssemblyAI: ' . $uploadResponse->body());
-        }
-
-        $audioUrl = $uploadResponse->json('upload_url');
-
-        $transcriptResponse = Http::withHeaders([
-            'authorization' => $apiKey,
-            'content-type'  => 'application/json',
-        ])->timeout(30)->post('https://api.assemblyai.com/v2/transcript', [
-            'audio_url'     => $audioUrl,
-            'language_code' => 'id',
+        ->timeout(60)
+        ->attach('file', $fileResource, $file->getClientOriginalName())
+        ->post('https://api.groq.com/openai/v1/audio/transcriptions', [
+            'model' => 'whisper-large-v3',
+            'response_format' => 'json',
+            'language' => 'id'
         ]);
 
-        if (!$transcriptResponse->successful()) {
-            Log::error('AssemblyAI Transcript Request Error: ' . $transcriptResponse->body());
-            throw new Exception('Gagal meminta transkripsi ke AssemblyAI: ' . $transcriptResponse->body());
+        if (is_resource($fileResource)) {
+            fclose($fileResource);
         }
 
-        $transcriptId = $transcriptResponse->json('id');
-
-        $maxAttempts = 120; // Poll for up to 4 minutes (120 * 2 seconds)
-        $attempt     = 0;
-        while ($attempt < $maxAttempts) {
-            sleep(2); // Check every 2 seconds (faster!)
-            $statusResponse = Http::withHeaders(['authorization' => $apiKey])
-                ->get("https://api.assemblyai.com/v2/transcript/{$transcriptId}");
-
-            if (!$statusResponse->successful()) {
-                $attempt++;
-                continue;
-            }
-
-            $status = $statusResponse->json('status');
-            if ($status === 'completed') {
-                return $statusResponse->json('text');
-            } elseif ($status === 'error') {
-                $errorDetail = $statusResponse->json('error') ?? 'Unknown error';
-                Log::error('AssemblyAI Transcript Error: ' . $statusResponse->body());
-                throw new Exception('Gagal mentranskripsi audio: ' . $errorDetail);
-            }
-
-            $attempt++;
+        if (!$response->successful()) {
+            Log::error('Groq Whisper Error: ' . $response->body());
+            throw new Exception('Gagal mentranskripsi audio dengan Groq: ' . $response->body());
         }
 
-        throw new Exception('Transkripsi audio memakan waktu terlalu lama.');
+        return $response->json('text') ?? '';
     }
 }
