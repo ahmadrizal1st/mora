@@ -1,11 +1,10 @@
 import { useState, useMemo } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
-import { Modal, ModalHeader, ModalFooter } from '@/shared/components/ui/Modal'
-import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { Modal} from '@/shared/components/ui/Modal'
 import type { DebtRecord } from '../../types/debt.types'
 import { useUpdateDebt } from '../../hooks/useDebts'
 
-export function DebtRemindersWidget({ debts = [] }: { debts?: DebtRecord[] }) {
+export function DebtRemindersWidget({ debts = [], onAdd }: { debts?: DebtRecord[], onAdd?: () => void }) {
   const [selectedDebt, setSelectedDebt] = useState<DebtRecord | null>(null)
   const updateDebt = useUpdateDebt()
 
@@ -94,11 +93,20 @@ export function DebtRemindersWidget({ debts = [] }: { debts?: DebtRecord[] }) {
           <h4 className="card-title fw-bold m-0" style={{ fontSize: '15px' }}>Pengingat Jatuh Tempo</h4>
           <a href="#" className="text-muted small text-decoration-none" style={{ fontSize: '12px' }}>Lihat semua</a>
         </div>
-        <div className="card-body p-3 pt-0" style={{ overflowY: 'auto', flex: '1 1 auto', minHeight: 0 }}>
+        <div className="card-body p-3 pt-0 d-flex flex-column" style={{ overflowY: 'auto', flex: '1 1 auto', minHeight: 0 }}>
           {isEmpty ? (
-            <div className="text-center text-muted py-4 m-auto">
-              <Icon icon="calendar-check" size={32} className="mb-2 opacity-50" />
-              <div className="small">Tidak ada tagihan jatuh tempo dalam 7 hari ke depan.</div>
+            <div className="text-center py-4 d-flex flex-column justify-content-center align-items-center" style={{ flex: 1, minHeight: '200px' }}>
+              <div className="d-flex justify-content-center text-secondary mb-3">
+                <Icon icon="calendar-check" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
+              </div>
+              <div className="fw-bold text-body mb-1">Tidak Ada Pengingat</div>
+              <div className="text-muted small mb-3">Tambahkan catatan utang atau piutang.</div>
+              {onAdd && (
+                <button className="btn btn-primary btn-sm d-flex align-items-center gap-2" onClick={onAdd}>
+                  <Icon icon="plus" size={16} stroke={2} />
+                  Tambah Catatan
+                </button>
+              )}
             </div>
           ) : (
             <>

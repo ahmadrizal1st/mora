@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Datepicker } from '@/shared/components/ui/Datepicker'
+import { Link } from '@tanstack/react-router'
 
 interface CashFlowChartCardProps {
   range: string
@@ -152,13 +153,17 @@ export function CashFlowChartCard({ range, setRange, groupBy, setGroupBy, balanc
           <div className="h1 mb-0 h1-mobile">{typeof balance === 'number' ? `Rp ${balance.toLocaleString('id-ID')}` : balance}</div>
         </div>
         
-        {data.lbl.length === 0 ? (
+        {(data.lbl.length === 0 || (data.inc.every(v => v === 0) && data.exp.every(v => v === 0))) ? (
           <div className="text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
             <div className="d-flex justify-content-center text-secondary mb-3">
-              <Icon icon="chart-bar-off" size={40} stroke={1.5} opacity={0.6} />
+              <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
             </div>
-            <div className="fw-bold text-body mb-1">Data Cash Flow Kosong</div>
-            <div className="text-muted small">Belum ada aktivitas mutasi untuk periode ini.</div>
+            <div className="fw-bold text-body mb-1">Belum Ada Aktivitas Cash Flow</div>
+            <div className="text-muted small mb-3">Catat transaksi pertama Anda untuk periode ini.</div>
+            <Link to="/tracker/" className="btn btn-primary btn-sm d-flex align-items-center gap-2">
+              <Icon icon="plus" size={16} stroke={2} />
+              Catat Transaksi
+            </Link>
           </div>
         ) : (
           <Chart chartId="cashflow-acc-bars" chartData={chartData as any} />

@@ -4,35 +4,13 @@ import { Icon } from '@/shared/components/ui/Icon'
 import { Datepicker } from '@/shared/components/ui/Datepicker'
 import type { DebtRecord } from '../../types/debt.types'
 
-export function DebtTrendChart({ debts = [] }: { debts?: DebtRecord[] }) {
-  const [range, setRange] = useState('W')
-  const [groupBy, setGroupBy] = useState('day')
+export function DebtTrendChart({ debts = [], onAdd }: { debts?: DebtRecord[], onAdd?: () => void }) {
   
   const [showCustomModal, setShowCustomModal] = useState(false)
   const [customStart, setCustomStart] = useState('')
   const [customEnd, setCustomEnd] = useState('')
-  const [appliedCustomLabel, setAppliedCustomLabel] = useState('')
+  const [, setAppliedCustomLabel] = useState('')
 
-  const rangeLabels: Record<string, string> = {
-    'W': 'This Week',
-    'M': 'This Month',
-    'Y': 'This Year',
-    'Custom': 'Custom Jarak Waktu...'
-  }
-
-  let displayLabel = rangeLabels[range] || 'Select Range'
-  if (range === 'Custom' && appliedCustomLabel) {
-    displayLabel = appliedCustomLabel
-  }
-
-  const handleSetRange = (r: string) => {
-    setRange(r)
-    if (r === 'W') setGroupBy('day')
-    else if (r === 'M') setGroupBy('week')
-    else if (r === 'Y') setGroupBy('month')
-  }
-
-  // Compute trend data dynamically
   const trendData = useMemo(() => {
     if (!debts || debts.length === 0) {
       return { categories: ['Kosong'], piutang: [0], utang: [0] }
@@ -131,9 +109,25 @@ export function DebtTrendChart({ debts = [] }: { debts?: DebtRecord[] }) {
               Rp {currentNetBalance.toLocaleString('id-ID')}
             </div>
           </div>
-          <div className="flex-grow-1 d-flex flex-column justify-content-end" style={{ marginTop: '-40px' }}>
-            <Chart chartId="debtTrendChart" chartData={chartData as any} />
+          {!debts || debts.length === 0 || (trendData.piutang.every(v => v === 0) && trendData.utang.every(v => v === 0)) ? (
+          <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+            <div className="d-flex justify-content-center text-secondary mb-3">
+              <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
+            </div>
+            <div className="fw-bold text-body mb-1">Belum Ada Tren</div>
+            <div className="text-muted small mb-3">Tambahkan catatan utang atau piutang.</div>
+            {onAdd && (
+              <button className="btn btn-primary btn-sm d-flex align-items-center gap-2" onClick={onAdd}>
+                <Icon icon="plus" size={16} stroke={2} />
+                Tambah Catatan
+              </button>
+            )}
           </div>
+          ) : (
+            <div className="flex-grow-1 d-flex flex-column justify-content-end" style={{ marginTop: '-40px' }}>
+              <Chart chartId="debtTrendChart" chartData={chartData as any} />
+            </div>
+          )}
         </div>
       </div>
 

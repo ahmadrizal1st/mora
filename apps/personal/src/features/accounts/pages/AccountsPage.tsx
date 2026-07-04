@@ -145,14 +145,14 @@ export function AccountsPage() {
         {accounts.length === 0 ? (
           <div
             className="card shadow-sm border-0 flex-fill d-flex align-items-center justify-content-center"
-            style={{ minHeight: '160px', background: 'var(--tblr-bg-surface-secondary, #f6f8fb)' }}
+            style={{ minHeight: '200px', background: 'var(--tblr-bg-surface-secondary, #f6f8fb)' }}
           >
             <div className="text-center py-4">
-              <div className="empty-icon text-secondary mb-2">
-                <Icon icon="wallet-off" size={40} stroke={1.5} opacity={0.6} />
+              <div className="d-flex justify-content-center text-secondary mb-3">
+                <Icon icon="wallet-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
               </div>
               <div className="fw-bold text-body mb-1">Belum Ada Akun</div>
-              <div className="text-muted small">Tambahkan akun pertama Anda</div>
+              <div className="text-muted small mb-3">Tambahkan akun pertama Anda</div>
             </div>
           </div>
         ) : (

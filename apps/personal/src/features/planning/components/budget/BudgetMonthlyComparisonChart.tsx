@@ -16,6 +16,8 @@ export function BudgetMonthlyComparisonChart() {
     }
   }, [historyData])
 
+  const isEmpty = !historyData || historyData.length === 0 || (currentData.planned.every(p => p === 0) && currentData.actual.every(a => a === 0))
+
   const chartData: ChartData = {
     type: 'bar',
     height: 18,
@@ -94,7 +96,19 @@ export function BudgetMonthlyComparisonChart() {
         </div>
       </div>
       <div className="card-body p-4 pt-0">
-        <Chart chartId="monthly-budget-comparison" chartData={chartData} />
+        {isLoading ? (
+          <div className="text-center text-secondary py-4">Memuat data...</div>
+        ) : isEmpty ? (
+          <div className="text-center py-4 d-flex flex-column justify-content-center align-items-center">
+            <div className="mb-3">
+              <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
+            </div>
+            <div className="fw-bold text-body mb-1">Belum Ada Data</div>
+            <div className="text-muted small mb-3">Tambahkan budget untuk melihat analisis</div>
+          </div>
+        ) : (
+          <Chart chartId="monthly-budget-comparison" chartData={chartData} />
+        )}
       </div>
     </div>
   )

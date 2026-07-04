@@ -17,6 +17,12 @@ export function Budget503020TrendChart() {
     }
   }, [historyData])
 
+  const isEmpty = !historyData || historyData.length === 0 || (
+    currentData.needs.every(n => n === 0) &&
+    currentData.wants.every(w => w === 0) &&
+    currentData.savings.every(s => s === 0)
+  )
+
   const chartData: ChartData = {
     type: 'bar',
     stacked: true,
@@ -101,7 +107,19 @@ export function Budget503020TrendChart() {
         </div>
       </div>
       <div className="card-body p-4 pt-0">
-        <Chart chartId="budget-503020-trend" chartData={chartData} />
+        {isLoading ? (
+          <div className="text-center text-secondary py-4">Memuat data...</div>
+        ) : isEmpty ? (
+          <div className="text-center py-4 d-flex flex-column justify-content-center align-items-center">
+            <div className="mb-3">
+              <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
+            </div>
+            <div className="fw-bold text-body mb-1">Belum Ada Data</div>
+            <div className="text-muted small mb-3">Tambahkan budget untuk melihat analisis</div>
+          </div>
+        ) : (
+          <Chart chartId="budget-503020-trend" chartData={chartData} />
+        )}
       </div>
     </div>
   )

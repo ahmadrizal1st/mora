@@ -1,5 +1,6 @@
 import { formatCurrency } from '@/shared/utils/currencyUtils'
 import { Icon } from '@/shared/components/ui/Icon'
+import { Link } from '@tanstack/react-router'
 
 const getSubCategory = (subName: string): string => {
   const name = subName.toLowerCase()
@@ -151,9 +152,18 @@ export function SubscriptionCategoryBreakdown({
             </div>
           </div>
         ) : (
-          <div className="text-center py-4 text-secondary">
-            <i className="ti ti-chart-bar fs-1 mb-2 opacity-30"></i>
-            <p className="m-0 small text-muted">Belum ada rincian pengeluaran per kategori</p>
+          <div className="text-center py-4 d-flex flex-column align-items-center">
+            <div className="mb-3">
+              <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
+            </div>
+            <div className="fw-bold text-body mb-1">Belum Ada Rincian Pengeluaran</div>
+            <div className="text-muted small mb-3">Tambahkan langganan untuk melihat rincian</div>
+            <div className="d-flex justify-content-center">
+              <Link to="/planning/subscriptions" className="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                <Icon icon="plus" size={16} stroke={2} />
+                Tambah Langganan
+              </Link>
+            </div>
           </div>
         )}
       </div>

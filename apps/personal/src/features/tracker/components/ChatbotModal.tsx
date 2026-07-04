@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link } from '@tanstack/react-router'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Button } from '@/shared/components/ui/Button'
 import { AutosizeTextarea } from '@/shared/components/ui/AutosizeTextarea'
@@ -8,7 +7,6 @@ import { Datepicker } from '@/shared/components/ui/Datepicker'
 import { useProcessText, useProcessMedia } from '../hooks/useTracker'
 import { useCreateTransaction } from '../../transaction/hooks/useTransactions'
 import { clsx } from 'clsx'
-import { ReviewCard } from './ReviewCard'
 import { useTransactionModalStore } from '../../transaction/store/useTransactionModalStore'
 
 interface ChatbotModalProps {
@@ -502,18 +500,52 @@ export function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
                 {msg.content}
               </div>
 
-              {msg.parsedData && msg.parsedData.map((tx, idx) => (
-                <ReviewCard key={idx} tx={tx} createMutation={createMutation} onSaved={() => {
-                    setMessages((prev) => [...prev, {
-                        id: Date.now().toString(),
-                        role: 'bot',
-                        content: 'Transaksi berhasil disimpan! Menutup chatbot...'
-                    }])
-                    setTimeout(() => {
-                      onClose()
-                    }, 1500)
-                }} />
-              ))}
+              {msg.parsedData && (
+        <div className="d-flex flex-column gap-2">
+          {msg.parsedData.map((tx, idx) => {
+            const uniqueId = `${msg.id}-${idx}`;
+            return (
+              <ReviewCard
+                key={uniqueId}
+                tx={tx}
+                uniqueId={uniqueId}
+                createMutation={createMutation}
+                onSaved={() => {
+                  setMessages((prev) => [...prev, {
+                    id: Date.now().toString(),
+                    role: 'bot',
+                    content: 'Transaksi berhasil disimpan!'
+                  }])
+                }}
+              />
+            );
+          })}
+          {msg.parsedData.length > 1 && (
+            <Button
+              text="Simpan Semua Transaksi"
+              color="primary"
+              className="w-100"
+              onClick={async () => {
+                // Save all transactions
+                for (const tx of msg.parsedData) {
+                  try {
+                    await createMutation.mutateAsync({ ...tx, input_method: 'ai_chat' });
+                  } catch (error) {
+                    console.error('Error saving transaction:', error);
+                  }
+                }
+                setMessages((prev) => [...prev, {
+                  id: Date.now().toString(),
+                  role: 'bot',
+                  content: 'Semua transaksi berhasil disimpan!'
+                }])
+              }}
+              loading={createMutation.isPending}
+              disabled={createMutation.isPending}
+            />
+          )}
+        </div>
+      )}
             </div>
           ))}
           
@@ -744,7 +776,7 @@ export function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
           </div>
         )}
         <div className="text-muted text-center w-100 mt-2" style={{ fontSize: '0.75rem' }}>
-          Visata mungkin melakukan kesalahan. Harap verifikasi info
+          Morapi mungkin melakukan kesalahan. Harap verifikasi info
         </div>
       </div>
       
@@ -762,7 +794,7 @@ export function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
   )
 }
 
-function ReviewCard({ tx, createMutation, onSaved }: { tx: any; createMutation: any; onSaved: () => void }) {
+function ReviewCard({ tx, uniqueId, createMutation, onSaved }: { tx: any; uniqueId: string; createMutation: any; onSaved: () => void }) {
   const [formData, setFormData] = useState({ ...tx })
   const [isSaved, setIsSaved] = useState(false)
 
@@ -778,7 +810,7 @@ function ReviewCard({ tx, createMutation, onSaved }: { tx: any; createMutation: 
 
   if (isSaved) {
     return (
-      <div className="card mt-2 shadow-sm border-success w-100 rounded-4" style={{ maxWidth: '300px' }}>
+      <div className="card mt-2 shadow-sm border-success w-100 rounded-2" style={{ maxWidth: '300px' }}>
         <div className="card-body p-2 text-center text-success">
           <Icon icon="check" className="me-1" /> Tersimpan
         </div>
@@ -787,10 +819,10 @@ function ReviewCard({ tx, createMutation, onSaved }: { tx: any; createMutation: 
   }
 
   return (
-    <div className="card mt-2 shadow-sm w-100 border-light-subtle rounded-4" style={{ maxWidth: '300px' }}>
+    <div className="card mt-2 shadow-sm w-100 border-light-subtle rounded-2" style={{ maxWidth: '300px' }}>
       <div className="card-body p-3">
-        <div className="mb-2 text-start">
-          <label className="text-secondary small fw-medium mb-1 d-block" style={{ fontSize: '0.85rem' }}>Tipe</label>
+        <div className="mb-3">
+          <label className="form-label">Tipe</label>
           <Select
             options={[
               { value: 'expense', label: 'Pengeluaran' },
@@ -798,23 +830,22 @@ function ReviewCard({ tx, createMutation, onSaved }: { tx: any; createMutation: 
             ]}
             value={formData.type}
             onChange={(val) => setFormData({ ...formData, type: val as string })}
-            className="form-control"
           />
         </div>
-        <div className="mb-2 text-start">
-          <label className="text-secondary small fw-medium mb-1 d-block" style={{ fontSize: '0.85rem' }}>Jumlah</label>
+        <div className="mb-3">
+          <label className="form-label">Jumlah</label>
           <div className="input-group">
-            <span className="input-group-text bg-light text-secondary border-end-0">Rp</span>
+            <span className="input-group-text">Rp</span>
             <input
               type="number"
-              className="form-control border-start-0 ps-0"
+              className="form-control"
               value={formData.amount}
               onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
             />
           </div>
         </div>
-        <div className="mb-2 text-start">
-          <label className="text-secondary small fw-medium mb-1 d-block" style={{ fontSize: '0.85rem' }}>Merchant / Catatan</label>
+        <div className="mb-3">
+          <label className="form-label">Merchant / Catatan</label>
           <input
             type="text"
             className="form-control"
@@ -822,19 +853,18 @@ function ReviewCard({ tx, createMutation, onSaved }: { tx: any; createMutation: 
             onChange={(e) => setFormData({ ...formData, merchant: e.target.value, notes: e.target.value })}
           />
         </div>
-        <div className="mb-3 text-start">
-          <label className="text-secondary small fw-medium mb-1 d-block" style={{ fontSize: '0.85rem' }}>Tanggal</label>
+        <div className="mb-3">
+          <label className="form-label">Tanggal</label>
           <Datepicker
             value={formData.tx_date}
             onChange={(val) => setFormData({ ...formData, tx_date: val })}
             layout="icon"
-            className="form-control"
           />
         </div>
         <Button
           text={createMutation.isPending ? 'Menyimpan...' : 'Simpan Transaksi'}
           color="primary"
-          className="w-100 rounded-3"
+          className="w-100"
           onClick={handleSubmit}
           loading={createMutation.isPending}
           disabled={createMutation.isPending}

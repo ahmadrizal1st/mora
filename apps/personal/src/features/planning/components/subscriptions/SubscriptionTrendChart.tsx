@@ -2,6 +2,7 @@ import { Chart } from '@/shared/components/ui/Chart'
 import React, { useContext } from 'react'
 import { PlanningContext } from '../../pages/PlanningLayout'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { Icon } from '@/shared/components/ui/Icon'
 
 export function SubscriptionTrendChart() {
   const { subsData } = useContext(PlanningContext) || {}
@@ -108,8 +109,12 @@ export function SubscriptionTrendChart() {
         </div>
 
         {subscriptions.length === 0 ? (
-          <div className="flex-grow-1 d-flex align-items-center justify-content-center text-secondary small">
-            Belum ada data langganan
+          <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center py-4">
+            <div className="mb-3">
+              <Icon icon="chart-bar" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
+            </div>
+            <div className="fw-bold text-body mb-1">Belum Ada Data Langganan</div>
+            <div className="text-muted small mb-3">Tambahkan langganan untuk melihat tren</div>
           </div>
         ) : (
           <div className="flex-grow-1 mt-auto w-100 d-flex align-items-end" style={{ margin: '0 -20px -15px -20px', minHeight: '160px' }}>

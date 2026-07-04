@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
+import { Icon } from '@/shared/components/ui/Icon'
 import type { DebtRecord } from '../../types/debt.types'
 
-export function DebtHealthScore({ debts = [] }: { debts?: DebtRecord[] }) {
+export function DebtHealthScore({ debts = [], onAdd }: { debts?: DebtRecord[], onAdd?: () => void }) {
   const stats = useMemo(() => {
     let belumLunas = 0
     let jatuhTempo = 0
@@ -71,54 +72,72 @@ export function DebtHealthScore({ debts = [] }: { debts?: DebtRecord[] }) {
           Komposisi
         </h4>
       </div>
-      <div className="card-body p-4 d-flex flex-column justify-content-center align-items-center">
-        {/* Donut Chart */}
-        <div className="mb-0 w-100 d-flex justify-content-center align-items-center" style={{ minHeight: '180px' }}>
-          <Chart chartId="debtCompositionDonut" chartData={chartData as any} />
-        </div>
-
-        {/* Legends with Progress Bars */}
-        <div className="w-100">
-          <div className="d-flex flex-column gap-3">
-            {items.map((item, idx) => (
-              <div key={idx}>
-                <div className="d-flex justify-content-between align-items-center mb-1">
-                  <div className="d-flex align-items-center gap-2">
-                    <span
-                      style={{
-                        width: '8px',
-                        height: '8px',
-                        backgroundColor: item.color,
-                        borderRadius: '2px',
-                      }}
-                    ></span>
-                    <span className="fw-medium text-secondary" style={{ fontSize: '13px' }}>
-                      {item.label}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="fw-bold text-dark me-1" style={{ fontSize: '13px' }}>
-                      {item.amount}
-                    </span>
-                    <span className="text-muted" style={{ fontSize: '11px' }}>
-                      {item.pct}%
-                    </span>
-                  </div>
-                </div>
-                <div className="progress" style={{ height: '5px', backgroundColor: 'var(--tblr-border-color-light, #f1f5f9)' }}>
-                  <div
-                    className="progress-bar"
-                    style={{
-                      width: `${item.pct}%`,
-                      backgroundColor: item.color,
-                      borderRadius: '4px',
-                    }}
-                  ></div>
-                </div>
-              </div>
-            ))}
+      <div className="card-body p-4 d-flex flex-column justify-content-center align-items-center" style={{ flex: 1, minHeight: 0 }}>
+        {!debts || debts.length === 0 ? (
+          <div className="text-center py-4 d-flex flex-column justify-content-center align-items-center" style={{ flex: 1, minHeight: '200px' }}>
+            <div className="d-flex justify-content-center text-secondary mb-3">
+              <Icon icon="chart-pie" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
+            </div>
+            <div className="fw-bold text-body mb-1">Belum Ada Komposisi</div>
+            <div className="text-muted small mb-3">Tambahkan catatan utang atau piutang.</div>
+            {onAdd && (
+              <button className="btn btn-primary btn-sm d-flex align-items-center gap-2" onClick={onAdd}>
+                <Icon icon="plus" size={16} stroke={2} />
+                Tambah Catatan
+              </button>
+            )}
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Donut Chart */}
+            <div className="mb-0 w-100 d-flex justify-content-center align-items-center" style={{ minHeight: '180px' }}>
+              <Chart chartId="debtCompositionDonut" chartData={chartData as any} />
+            </div>
+
+            {/* Legends with Progress Bars */}
+            <div className="w-100">
+              <div className="d-flex flex-column gap-3">
+                {items.map((item, idx) => (
+                  <div key={idx}>
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <div className="d-flex align-items-center gap-2">
+                        <span
+                          style={{
+                            width: '8px',
+                            height: '8px',
+                            backgroundColor: item.color,
+                            borderRadius: '2px',
+                          }}
+                        ></span>
+                        <span className="fw-medium text-secondary" style={{ fontSize: '13px' }}>
+                          {item.label}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="fw-bold text-dark me-1" style={{ fontSize: '13px' }}>
+                          {item.amount}
+                        </span>
+                        <span className="text-muted" style={{ fontSize: '11px' }}>
+                          {item.pct}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="progress" style={{ height: '5px', backgroundColor: 'var(--tblr-border-color-light, #f1f5f9)' }}>
+                      <div
+                        className="progress-bar"
+                        style={{
+                          width: `${item.pct}%`,
+                          backgroundColor: item.color,
+                          borderRadius: '4px',
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

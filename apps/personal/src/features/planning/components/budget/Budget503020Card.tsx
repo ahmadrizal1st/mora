@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useBudgets } from '../../hooks/usePlanning'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { Icon } from '@/shared/components/ui/Icon'
 
 export function Budget503020Card() {
   const { data: budgetData } = useBudgets()
@@ -71,6 +72,8 @@ export function Budget503020Card() {
     return () => clearTimeout(timer)
   }, [pctNeeds, pctWants, pctSavings])
 
+  const isEmpty = totalBudget === 0 && totalSpent === 0
+
   return (
     <div className="card shadow-sm border-0 h-100 w-100" style={{ borderRadius: '24px' }}>
       <div className="card-body p-3 d-flex flex-column align-items-center justify-content-center">
@@ -80,230 +83,242 @@ export function Budget503020Card() {
           </h3>
         </div>
 
-        <div className="position-relative my-2 d-flex align-items-center justify-content-center w-100">
-          <svg className="concentric-chart-svg" viewBox={`0 0 ${size} ${size}`} style={{ maxWidth: '160px' }}>
-            <defs>
-              <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodOpacity="0.12" />
-              </filter>
-            </defs>
-            {rings.map((ring) => {
-              const circumference = 2 * Math.PI * ring.radius
-              const currentPct = animatedPct[ring.id as keyof typeof animatedPct]
-              const strokeDashoffset = circumference - (currentPct / 100) * circumference
+        {isEmpty ? (
+          <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+            <div className="mb-3">
+              <Icon icon="chart-pie" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
+            </div>
+            <div className="fw-bold text-body mb-1">Belum Ada Data</div>
+            <div className="text-muted small mb-3">Tambahkan budget untuk melihat analisis</div>
+          </div>
+        ) : (
+          <>
+            <div className="position-relative my-2 d-flex align-items-center justify-content-center w-100">
+              <svg className="concentric-chart-svg" viewBox={`0 0 ${size} ${size}`} style={{ maxWidth: '160px' }}>
+                <defs>
+                  <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodOpacity="0.12" />
+                  </filter>
+                </defs>
+                {rings.map((ring) => {
+                  const circumference = 2 * Math.PI * ring.radius
+                  const currentPct = animatedPct[ring.id as keyof typeof animatedPct]
+                  const strokeDashoffset = circumference - (currentPct / 100) * circumference
 
-              const angle = (currentPct / 100) * 360
+                  const angle = (currentPct / 100) * 360
 
-              return (
-                <g key={ring.id}>
-                  <circle
-                    cx={center}
-                    cy={center}
-                    r={ring.radius}
-                    stroke={ring.bgColor}
-                    strokeWidth={ring.strokeWidth}
-                    fill="transparent"
-                  />
+                  return (
+                    <g key={ring.id}>
+                      <circle
+                        cx={center}
+                        cy={center}
+                        r={ring.radius}
+                        stroke={ring.bgColor}
+                        strokeWidth={ring.strokeWidth}
+                        fill="transparent"
+                      />
 
-                  <circle
-                    cx={center}
-                    cy={center}
-                    r={ring.radius}
-                    stroke={ring.color}
-                    strokeWidth={ring.strokeWidth}
-                    fill="transparent"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    transform={`rotate(180 ${center} ${center})`}
+                      <circle
+                        cx={center}
+                        cy={center}
+                        r={ring.radius}
+                        stroke={ring.color}
+                        strokeWidth={ring.strokeWidth}
+                        fill="transparent"
+                        strokeDasharray={circumference}
+                        strokeDashoffset={strokeDashoffset}
+                        strokeLinecap="round"
+                        transform={`rotate(180 ${center} ${center})`}
+                        style={{
+                          transition: 'stroke-dashoffset 1.0s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                      />
+
+                      <circle
+                        cx={center - ring.radius}
+                        cy={center}
+                        r={7.5}
+                        fill={ring.color}
+                        stroke="#ffffff"
+                        strokeWidth={2.5}
+                        filter="url(#shadow)"
+                        style={{
+                          transformOrigin: `${center}px ${center}px`,
+                          transform: `rotate(${angle}deg)`,
+                          transition: 'transform 1.0s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                      />
+                    </g>
+                  )
+                })}
+              </svg>
+            </div>
+
+            <div className="text-center w-100 mb-3">
+              <div
+                className="text-secondary small fw-bold text-uppercase mb-0"
+                style={{ fontSize: '9px', letterSpacing: '0.8px' }}
+              >
+                BUDGET BULANAN
+              </div>
+              <h2
+                className="fw-bold text-body mb-0"
+                style={{ fontSize: '1.4rem', letterSpacing: '-0.5px' }}
+              >
+                {formatCurrency(totalSpent)}
+              </h2>
+            </div>
+
+            <div className="w-100 d-flex flex-column mt-auto">
+              <div className="d-flex flex-column mb-2">
+                <div className="d-flex align-items-center justify-content-between mb-1">
+                  <div className="d-flex align-items-center gap-2">
+                    <div
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: '#ff6b00',
+                      }}
+                    />
+                    <span className="fw-semibold text-body" style={{ fontSize: '11px' }}>
+                      Kebutuhan
+                    </span>
+                  </div>
+                  <span
+                    className="badge fw-bold"
                     style={{
-                      transition: 'stroke-dashoffset 1.0s cubic-bezier(0.4, 0, 0.2, 1)',
+                      backgroundColor: '#fff0e6',
+                      color: '#ff6b00',
+                      borderRadius: '10px',
+                      padding: '2px 4px',
+                      fontSize: '9px',
                     }}
-                  />
+                  >
+                    {pctNeeds.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="d-flex align-items-center justify-content-between gap-2">
+                  <div
+                    className="flex-fill bg-light rounded-pill"
+                    style={{ height: '3px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
+                  >
+                    <div
+                      className="rounded-pill"
+                      style={{
+                        height: '100%',
+                        width: `${pctNeeds}%`,
+                        backgroundColor: '#ff6b00',
+                        transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      }}
+                    />
+                  </div>
+                  <span className="text-muted text-nowrap" style={{ fontSize: '8px' }}>
+                    50% target
+                  </span>
+                </div>
+              </div>
 
-                  <circle
-                    cx={center - ring.radius}
-                    cy={center}
-                    r={7.5}
-                    fill={ring.color}
-                    stroke="#ffffff"
-                    strokeWidth={2.5}
-                    filter="url(#shadow)"
+              <div className="d-flex flex-column mb-2">
+                <div className="d-flex align-items-center justify-content-between mb-1">
+                  <div className="d-flex align-items-center gap-2">
+                    <div
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: '#066fd1',
+                      }}
+                    />
+                    <span className="fw-semibold text-body" style={{ fontSize: '11px' }}>
+                      Keinginan
+                    </span>
+                  </div>
+                  <span
+                    className="badge fw-bold"
                     style={{
-                      transformOrigin: `${center}px ${center}px`,
-                      transform: `rotate(${angle}deg)`,
-                      transition: 'transform 1.0s cubic-bezier(0.4, 0, 0.2, 1)',
+                      backgroundColor: '#e6f0ff',
+                      color: '#066fd1',
+                      borderRadius: '10px',
+                      padding: '2px 4px',
+                      fontSize: '9px',
                     }}
-                  />
-                </g>
-              )
-            })}
-          </svg>
-        </div>
+                  >
+                    {pctWants.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="d-flex align-items-center justify-content-between gap-2">
+                  <div
+                    className="flex-fill bg-light rounded-pill"
+                    style={{ height: '3px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
+                  >
+                    <div
+                      className="rounded-pill"
+                      style={{
+                        height: '100%',
+                        width: `${pctWants}%`,
+                        backgroundColor: '#066fd1',
+                        transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      }}
+                    />
+                  </div>
+                  <span className="text-muted text-nowrap" style={{ fontSize: '8px' }}>
+                    30% target
+                  </span>
+                </div>
+              </div>
 
-        <div className="text-center w-100 mb-3">
-          <div
-            className="text-secondary small fw-bold text-uppercase mb-0"
-            style={{ fontSize: '9px', letterSpacing: '0.8px' }}
-          >
-            BUDGET BULANAN
-          </div>
-          <h2
-            className="fw-bold text-body mb-0"
-            style={{ fontSize: '1.4rem', letterSpacing: '-0.5px' }}
-          >
-            {formatCurrency(totalSpent)}
-          </h2>
-        </div>
-
-        <div className="w-100 d-flex flex-column mt-auto">
-          <div className="d-flex flex-column mb-2">
-            <div className="d-flex align-items-center justify-content-between mb-1">
-              <div className="d-flex align-items-center gap-2">
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: '#ff6b00',
-                  }}
-                />
-                <span className="fw-semibold text-body" style={{ fontSize: '11px' }}>
-                  Kebutuhan
-                </span>
+              <div className="d-flex flex-column">
+                <div className="d-flex align-items-center justify-content-between mb-1">
+                  <div className="d-flex align-items-center gap-2">
+                    <div
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: '#2fb344',
+                      }}
+                    />
+                    <span className="fw-semibold text-body" style={{ fontSize: '11px' }}>
+                      Tabungan
+                    </span>
+                  </div>
+                  <span
+                    className="badge fw-bold"
+                    style={{
+                      backgroundColor: '#eaf8eb',
+                      color: '#2fb344',
+                      borderRadius: '10px',
+                      padding: '2px 4px',
+                      fontSize: '9px',
+                    }}
+                  >
+                    {pctSavings.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="d-flex align-items-center justify-content-between gap-2">
+                  <div
+                    className="flex-fill bg-light rounded-pill"
+                    style={{ height: '3px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
+                  >
+                    <div
+                      className="rounded-pill"
+                      style={{
+                        height: '100%',
+                        width: `${pctSavings}%`,
+                        backgroundColor: '#2fb344',
+                        transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      }}
+                    />
+                  </div>
+                  <span className="text-muted text-nowrap" style={{ fontSize: '8px' }}>
+                    20% target
+                  </span>
+                </div>
               </div>
-              <span
-                className="badge fw-bold"
-                style={{
-                  backgroundColor: '#fff0e6',
-                  color: '#ff6b00',
-                  borderRadius: '10px',
-                  padding: '2px 4px',
-                  fontSize: '9px',
-                }}
-              >
-                {pctNeeds.toFixed(1)}%
-              </span>
             </div>
-            <div className="d-flex align-items-center justify-content-between gap-2">
-              <div
-                className="flex-fill bg-light rounded-pill"
-                style={{ height: '3px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
-              >
-                <div
-                  className="rounded-pill"
-                  style={{
-                    height: '100%',
-                    width: `${pctNeeds}%`,
-                    backgroundColor: '#ff6b00',
-                    transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                  }}
-                />
-              </div>
-              <span className="text-muted text-nowrap" style={{ fontSize: '8px' }}>
-                50% target
-              </span>
-            </div>
-          </div>
-
-          <div className="d-flex flex-column mb-2">
-            <div className="d-flex align-items-center justify-content-between mb-1">
-              <div className="d-flex align-items-center gap-2">
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: '#066fd1',
-                  }}
-                />
-                <span className="fw-semibold text-body" style={{ fontSize: '11px' }}>
-                  Keinginan
-                </span>
-              </div>
-              <span
-                className="badge fw-bold"
-                style={{
-                  backgroundColor: '#e6f0ff',
-                  color: '#066fd1',
-                  borderRadius: '10px',
-                  padding: '2px 4px',
-                  fontSize: '9px',
-                }}
-              >
-                {pctWants.toFixed(1)}%
-              </span>
-            </div>
-            <div className="d-flex align-items-center justify-content-between gap-2">
-              <div
-                className="flex-fill bg-light rounded-pill"
-                style={{ height: '3px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
-              >
-                <div
-                  className="rounded-pill"
-                  style={{
-                    height: '100%',
-                    width: `${pctWants}%`,
-                    backgroundColor: '#066fd1',
-                    transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                  }}
-                />
-              </div>
-              <span className="text-muted text-nowrap" style={{ fontSize: '8px' }}>
-                30% target
-              </span>
-            </div>
-          </div>
-
-          <div className="d-flex flex-column">
-            <div className="d-flex align-items-center justify-content-between mb-1">
-              <div className="d-flex align-items-center gap-2">
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: '#2fb344',
-                  }}
-                />
-                <span className="fw-semibold text-body" style={{ fontSize: '11px' }}>
-                  Tabungan
-                </span>
-              </div>
-              <span
-                className="badge fw-bold"
-                style={{
-                  backgroundColor: '#eaf8eb',
-                  color: '#2fb344',
-                  borderRadius: '10px',
-                  padding: '2px 4px',
-                  fontSize: '9px',
-                }}
-              >
-                {pctSavings.toFixed(1)}%
-              </span>
-            </div>
-            <div className="d-flex align-items-center justify-content-between gap-2">
-              <div
-                className="flex-fill bg-light rounded-pill"
-                style={{ height: '3px', backgroundColor: '#e9ecef', overflow: 'hidden' }}
-              >
-                <div
-                  className="rounded-pill"
-                  style={{
-                    height: '100%',
-                    width: `${pctSavings}%`,
-                    backgroundColor: '#2fb344',
-                    transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                  }}
-                />
-              </div>
-              <span className="text-muted text-nowrap" style={{ fontSize: '8px' }}>
-                20% target
-              </span>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   )

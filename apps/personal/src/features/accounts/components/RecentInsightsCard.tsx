@@ -20,7 +20,7 @@ export function RecentInsightsCard({ insights = [] }: RecentInsightsCardProps) {
         {insights.length === 0 ? (
           <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
             <div className="d-flex justify-content-center text-secondary mb-3">
-              <Icon icon="bulb-off" size={40} stroke={1.5} opacity={0.6} />
+              <Icon icon="category-2" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
             </div>
             <div className="text-muted small">Belum ada insight.</div>
           </div>

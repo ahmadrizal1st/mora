@@ -1,9 +1,13 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, forwardRef, useImperativeHandle } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Modal, ModalHeader, Button, Pagination, Spinner } from '@/shared/components/ui'
 
-import type { DebtRecord, DebtStatus, DebtType, PriorityType } from '../../types/debt.types'
+import type { DebtRecord, DebtStatus } from '../../types/debt.types'
 import { useCreateDebt, useUpdateDebt, useDeleteDebt } from '../../hooks/useDebts'
+
+export interface DebtDataTableRef {
+  openCreate: () => void
+}
 
 const PAGE_SIZE = 10
 const STATUSES = ['Belum Lunas', 'Sebagian', 'Menunggu', 'Jatuh Tempo', 'Lunas'] as const
@@ -16,7 +20,7 @@ const EMPTY_FORM: Omit<DebtRecord, 'id' | 'createdAt'> = {
   personName: '', type: 'Utang', status: 'Belum Lunas', dueDate: '', amount: 0, amountPaid: 0, description: '', priority: 'Sedang',
 }
 
-export function DebtDataTable({ records = [], isLoading = false }: { records?: DebtRecord[]; isLoading?: boolean }) {
+export const DebtDataTable = forwardRef<DebtDataTableRef, { records?: DebtRecord[], isLoading?: boolean }>(({ records = [], isLoading = false }, ref) => {
   const [activeTab, setActiveTab] = useState<'Semua' | 'Piutang' | 'Utang' | 'Jatuh Tempo'>('Semua')
   const [page, setPage] = useState(1)
 
@@ -53,6 +57,10 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
   const handleTabChange = (tab: typeof activeTab) => { setActiveTab(tab); setPage(1) }
 
   const openCreate = () => { setForm(EMPTY_FORM); setEditTarget(null); setShowForm(true) }
+
+  useImperativeHandle(ref, () => ({
+    openCreate
+  }))
   const openEdit = (item: DebtRecord) => { 
     setForm({ 
       personName: item.personName, 
@@ -116,10 +124,6 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
             ))}
           </ul>
           <div className="d-flex align-items-center gap-2">
-            <button className="btn btn-light bg-surface btn-sm border d-flex align-items-center gap-2 shadow-none px-3" style={{ borderRadius: '8px' }}>
-              <Icon icon="download" size={16} className="text-secondary" />
-              <span className="d-none d-sm-inline text-secondary fw-medium">Ekspor Laporan</span>
-            </button>
             <button className="btn btn-primary btn-sm d-flex align-items-center gap-2 px-3 shadow-none" onClick={openCreate} style={{ backgroundColor: '#f76707', borderColor: '#f76707', borderRadius: '8px' }}>
               <Icon icon="plus" size={16} />
               <span className="d-none d-sm-inline fw-medium">Tambah Baru</span>
@@ -141,14 +145,15 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
                 <Spinner />
               </div>
             ) : filteredData.length === 0 ? (
-              <div className="text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+              <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
                 <div className="d-flex justify-content-center text-secondary mb-3">
-                  <Icon icon="folder-off" size={40} stroke={1.5} opacity={0.6} />
+                  <Icon icon="folder-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
                 </div>
                 <div className="fw-bold text-body mb-1">Belum Ada Data</div>
                 <div className="text-muted small mb-3">Anda belum memiliki catatan utang atau piutang.</div>
-                <button className="btn btn-primary btn-sm rounded-pill px-3" onClick={openCreate}>
-                  <Icon icon="plus" size={16} className="me-1" /> Tambah Data
+                <button className="btn btn-primary btn-sm d-flex align-items-center gap-2" onClick={openCreate}>
+                  <Icon icon="plus" size={16} stroke={2} />
+                  Tambah Data
                 </button>
               </div>
             ) : (
@@ -347,4 +352,5 @@ export function DebtDataTable({ records = [], isLoading = false }: { records?: D
       </Modal>
     </>
   )
-}
+})
+DebtDataTable.displayName = 'DebtDataTable'

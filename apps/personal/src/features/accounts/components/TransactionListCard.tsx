@@ -31,7 +31,7 @@ export function TransactionListCard({ transactions }: TransactionListCardProps) 
           {transactions.length === 0 ? (
             <div className="text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
               <div className="d-flex justify-content-center text-secondary mb-3">
-                <Icon icon="receipt-off" size={40} stroke={1.5} opacity={0.6} />
+                <Icon icon="receipt-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
               </div>
               <div className="fw-bold text-body mb-1">Transaksi Kosong</div>
               <div className="text-muted small mb-3">Belum ada transaksi terbaru.</div>

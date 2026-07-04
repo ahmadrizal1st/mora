@@ -1,16 +1,22 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { DebtSummaryCards } from '../components/dashboard/DebtSummaryCards'
 import { DebtTrendChart } from '../components/dashboard/DebtTrendChart'
 import { DebtHealthScore } from '../components/dashboard/DebtHealthScore'
-import { DebtDataTable } from '../components/dashboard/DebtDataTable'
+import { DebtDataTable, DebtDataTableRef } from '../components/dashboard/DebtDataTable'
 import { DebtRemindersWidget } from '../components/dashboard/DebtRemindersWidget'
 import { useDebts } from '../hooks/useDebts'
 
 export function DebtsPage() {
+  const debtTableRef = useRef<DebtDataTableRef>(null)
   const { data: debts = [], isLoading } = useDebts()
+
+  const handleAdd = () => {
+    debtTableRef.current?.openCreate()
+  }
+
   const summary = useMemo(() => {
     const activeDebts = debts.filter((d: any) => d.type === 'Utang' && d.status !== 'Lunas')
     const activeReceivables = debts.filter((d: any) => d.type === 'Piutang' && d.status !== 'Lunas')
@@ -97,23 +103,23 @@ export function DebtsPage() {
           {/* Top Widgets Row */}
           <div className="d-flex flex-wrap gap-3 flex-grow-1" style={{ flexBasis: '60%' }}>
             <div className="flex-grow-1" style={{ flexBasis: '55%', minWidth: '300px' }}>
-              <DebtTrendChart debts={debts} />
+              <DebtTrendChart debts={debts} onAdd={handleAdd} />
             </div>
             <div className="flex-grow-1" style={{ flexBasis: '40%', minWidth: '250px' }}>
-              <DebtHealthScore debts={debts} />
+              <DebtHealthScore debts={debts} onAdd={handleAdd} />
             </div>
           </div>
 
           {/* Sidebar Widget (Aligned with top row) */}
           <div className="flex-grow-1" style={{ flexBasis: '30%', minWidth: '300px' }}>
-            <DebtRemindersWidget debts={debts} />
+            <DebtRemindersWidget debts={debts} onAdd={handleAdd} />
           </div>
 
         </div>
 
         {/* Data Table (Full Width) */}
         <div>
-          <DebtDataTable records={debts} isLoading={isLoading} />
+          <DebtDataTable ref={debtTableRef} records={debts} isLoading={isLoading} />
         </div>
 
       </div>
@@ -131,6 +137,7 @@ export function DebtsPage() {
           borderColor: '#ff7000',
         }}
         aria-label="Tambah Baru"
+        onClick={handleAdd}
       >
         <Icon icon="plus" size={32} stroke={3} />
       </button>

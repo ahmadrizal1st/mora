@@ -1,6 +1,6 @@
 # Aturan Arsitektur & Struktur Direktori
 
-Aplikasi `visatamora` mengadopsi pola **Feature-Sliced Design (FSD)** secara adaptif untuk memisahkan domain logika bisnis agar kode mudah dikelola dan diskalakan.
+Aplikasi `morapi` mengadopsi pola **Feature-Sliced Design (FSD)** secara adaptif untuk memisahkan domain logika bisnis agar kode mudah dikelola dan diskalakan.
 
 ## Struktur Direktori Utama (`src/`)
 

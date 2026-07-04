@@ -26,12 +26,12 @@ export function TopMerchantsCard({ merchants = [] }: TopMerchantsCardProps) {
           {merchants.length === 0 ? (
             <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
               <div className="d-flex justify-content-center text-secondary mb-3">
-                <Icon icon="building-store" size={40} stroke={1.5} opacity={0.6} />
+                <Icon icon="building-store" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
               </div>
               <div className="fw-bold text-body mb-1">Belum Ada Merchant</div>
               <div className="text-muted small">Transaksi Anda akan muncul di sini.</div>
-              <Link to="/" className="btn btn-orange rounded-pill btn-sm mt-3 px-3">
-                <Icon icon="plus" size={16} className="me-1" />
+              <Link to="/tracker/" className="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                <Icon icon="plus" size={16} stroke={2} />
                 Catat Transaksi
               </Link>
             </div>

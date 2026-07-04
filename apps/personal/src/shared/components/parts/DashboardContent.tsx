@@ -191,7 +191,7 @@ export function DashboardContent() {
                 {savingsPlans.length === 0 ? (
                   <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
                     <div className="d-flex justify-content-center text-secondary mb-3">
-                      <Icon icon="pig-money" size={40} stroke={1.5} opacity={0.6} />
+                      <Icon icon="pig-money" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
                     </div>
                     <div className="fw-bold text-body mb-1">Belum Ada Tabungan</div>
                     <div className="text-muted small mb-3">Buat impian keuangan Anda jadi nyata!</div>
@@ -330,7 +330,7 @@ export function DashboardContent() {
             {cashflow.series.every((s: any) => s.data.length === 0 || s.data.every((v: number) => v === 0)) ? (
               <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
                 <div className="d-flex justify-content-center text-secondary mb-3">
-                  <Icon icon="chart-bar-off" size={40} stroke={1.5} opacity={0.6} />
+                  <Icon icon="chart-bar-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
                 </div>
                 <div className="fw-bold text-body mb-1">Data Kosong</div>
                 <div className="text-muted small mb-3">Belum ada aktivitas cashflow.</div>
@@ -470,7 +470,7 @@ export function DashboardContent() {
                 {statistics.series.length === 0 || statistics.series.every((s: any) => !s.data || s.data.length === 0 || s.data[0] === 0) ? (
                   <div className="text-center py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '200px' }}>
                     <div className="d-flex justify-content-center text-secondary mb-3">
-                      <Icon icon="chart-pie-off" size={40} stroke={1.5} opacity={0.6} />
+                      <Icon icon="chart-pie-off" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
                     </div>
                     <div className="fw-bold text-body mb-1">Data Kosong</div>
                     <div className="text-muted small mb-3">Belum ada statistik untuk ditampilkan.</div>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
+import { Icon } from '@/shared/components/ui/Icon'
 
 export function GoalTrajectoryChart({ 
   totalSaved = 0, 
@@ -74,25 +75,39 @@ export function GoalTrajectoryChart({
   }
 
   const estDateString = maxEtaDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+  const isEmpty = (goals.length === 0 || (totalTarget === 0 && totalSaved === 0))
 
   return (
     <div className="card shadow-sm border-0 h-100">
       <div className="card-body p-4 d-flex flex-column h-100">
         <h4 className="fw-bold text-secondary small text-uppercase mb-4">Savings Trajectory</h4>
-        <div className="mx-n2 flex-grow-1 d-flex align-items-center">
-          <div className="w-100">
-            <Chart chartId="goalTrajectory" chartData={{ ...chartData, height: 15 } as any} />
+        
+        {isEmpty ? (
+          <div className="text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+            <div className="mb-3">
+              <Icon icon="chart-line" size={40} stroke={1.5} style={{ opacity: 0.6 }} />
+            </div>
+            <div className="fw-bold text-body mb-1">Belum Ada Proyeksi</div>
+            <div className="text-muted small">Tambahkan impian untuk melihat proyeksi tabungan.</div>
           </div>
-        </div>
-        <div className="mt-3 text-center small text-secondary pt-3 border-top">
-          <div className="mb-2">
-            Estimasi selesai: <span className="fw-bold text-body">{activeGoals.length > 0 ? estDateString : 'Tidak ada'}</span>
-          </div>
-          <p className="m-0" style={{ fontSize: '11px', lineHeight: '1.4', opacity: 0.8 }}>
-            Jika Garis <strong>Proyeksi Aktual</strong> berada di atas garis <strong>Target</strong>, 
-            rencana tabungan Anda sudah di jalur yang benar untuk mencapai impian Anda.
-          </p>
-        </div>
+        ) : (
+          <>
+            <div className="mx-n2 flex-grow-1 d-flex align-items-center">
+              <div className="w-100">
+                <Chart chartId="goalTrajectory" chartData={{ ...chartData, height: 15 } as any} />
+              </div>
+            </div>
+            <div className="mt-3 text-center small text-secondary pt-3 border-top">
+              <div className="mb-2">
+                Estimasi selesai: <span className="fw-bold text-body">{activeGoals.length > 0 ? estDateString : 'Tidak ada'}</span>
+              </div>
+              <p className="m-0" style={{ fontSize: '11px', lineHeight: '1.4', opacity: 0.8 }}>
+                Jika Garis <strong>Proyeksi Aktual</strong> berada di atas garis <strong>Target</strong>, 
+                rencana tabungan Anda sudah di jalur yang benar untuk mencapai impian Anda.
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

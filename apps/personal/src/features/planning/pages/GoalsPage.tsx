@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { GoalsOverviewCard } from '../components/goals/GoalsOverviewCard'
 import { GoalCard } from '../components/goals/GoalCard'
 import { GoalTrajectoryChart } from '../components/goals/GoalTrajectoryChart'
-import { Modal, ModalHeader, Icon } from '@/shared/components/ui'
+import { Modal, ModalHeader, Icon, Button } from '@/shared/components/ui'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
 import { PlanningContext } from './PlanningLayout'
 
@@ -93,18 +93,29 @@ export function GoalsPage() {
               </span>
             </h3>
 
-            <div className="position-relative">
-              <a
-                href="#"
-                className="text-secondary small d-flex align-items-center gap-1 text-decoration-none fw-semibold"
-                onClick={(e) => {
-                  e.preventDefault()
-                  setFilterOpen(!filterOpen)
-                }}
+            <div className="d-flex align-items-center gap-2">
+              <Button
+                element="button"
+                type="button"
+                color="primary"
+                icon="plus"
+                size="sm"
+                onClick={handleOpenAddGoal}
               >
-                <span className="text-decoration-underline-hover">Filter</span>
-                <Icon icon="chevron-down" size="xs" />
-              </a>
+                Tambah
+              </Button>
+              <div className="position-relative">
+                <a
+                  href="#"
+                  className="text-secondary small d-flex align-items-center gap-1 text-decoration-none fw-semibold"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setFilterOpen(!filterOpen)
+                  }}
+                >
+                  <span className="text-decoration-underline-hover">Filter</span>
+                  <Icon icon="chevron-down" size="xs" />
+                </a>
 
               {filterOpen && (
                 <>
@@ -207,6 +218,7 @@ export function GoalsPage() {
                   </div>
                 </>
               )}
+              </div>
             </div>
           </div>
           <div className="card-body p-4 pt-2 d-flex flex-column h-100">
@@ -223,23 +235,61 @@ export function GoalsPage() {
                 {filteredGoals.length === 0 ? (
                   <div className="col-12 text-center py-5">
                     <div className="p-4 mx-auto" style={{ maxWidth: '400px' }}>
-                      <div className="p-3 bg-orange-lt text-orange rounded-circle d-inline-flex mb-3">
-                        <Icon icon="search" size="md" />
-                      </div>
-                      <h4 className="fw-bold text-orange mb-2">Tidak Ada Impian Ditemukan</h4>
-                      <p className="text-secondary small mb-3">
-                        Tidak ada target impian yang sesuai dengan filter yang Anda pilih. Coba ubah
-                        filter atau reset pencarian.
-                      </p>
-                      <button
-                        className="btn btn-orange rounded-pill btn-sm px-4 fw-bold"
-                        onClick={() => {
-                          setStatusFilter('all')
-                          setTargetFilter('all')
-                        }}
-                      >
-                        Reset Filter
-                      </button>
+                      {goals.length === 0 ? (
+                        <>
+                          <div className="p-3 bg-orange-lt text-orange rounded-circle d-inline-flex mb-3">
+                            <Icon icon="star" size="md" />
+                          </div>
+                          <h4 className="fw-bold text-body mb-2">Belum Ada Impian</h4>
+                          <p className="text-secondary small mb-3">
+                            Mulai tuliskan impianmu dan rencanakan langkah untuk mencapainya hari ini!
+                          </p>
+                          <Button
+                            element="button"
+                            type="button"
+                            color="primary"
+                            icon="plus"
+                            onClick={handleOpenAddGoal}
+                          >
+                            Tambah Impian
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <div className="p-3 bg-orange-lt text-orange rounded-circle d-inline-flex mb-3">
+                            <Icon icon="search" size="md" />
+                          </div>
+                          <h4 className="fw-bold text-orange mb-2">Tidak Ada Impian Ditemukan</h4>
+                          <p className="text-secondary small mb-3">
+                            Tidak ada target impian yang sesuai dengan filter yang Anda pilih. Coba ubah
+                            filter atau reset pencarian.
+                          </p>
+                          <div className="d-flex justify-content-center gap-2">
+                            <Button
+                              element="button"
+                              type="button"
+                              color="primary"
+                              icon="plus"
+                              onClick={handleOpenAddGoal}
+                              size="sm"
+                            >
+                              Tambah
+                            </Button>
+                            <Button
+                              element="button"
+                              type="button"
+                              color="secondary"
+                              onClick={() => {
+                                setStatusFilter('all')
+                                setTargetFilter('all')
+                              }}
+                              size="sm"
+                            >
+                              Reset Filter
+                            </Button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -519,23 +569,67 @@ export function GoalsPage() {
           {modalFilteredGoals.length === 0 ? (
             <div className="text-center py-5">
               <div className="p-4 mx-auto" style={{ maxWidth: '400px' }}>
-                <div className="p-3 bg-orange-lt text-orange rounded-circle d-inline-flex mb-3">
-                  <Icon icon="search" size="md" />
-                </div>
-                <h4 className="fw-bold text-orange mb-2">Tidak Ada Impian Ditemukan</h4>
-                <p className="text-secondary small mb-3">
-                  Tidak ada target impian yang sesuai dengan filter yang Anda pilih. Coba ubah
-                  filter atau reset pencarian.
-                </p>
-                <button
-                  className="btn btn-orange rounded-pill btn-sm px-4 fw-bold"
-                  onClick={() => {
-                    setModalStatusFilter('all')
-                    setModalTargetFilter('all')
-                  }}
-                >
-                  Reset Filter
-                </button>
+                {goals.length === 0 ? (
+                  <>
+                    <div className="p-3 bg-orange-lt text-orange rounded-circle d-inline-flex mb-3">
+                      <Icon icon="star" size="md" />
+                    </div>
+                    <h4 className="fw-bold text-body mb-2">Belum Ada Impian</h4>
+                    <p className="text-secondary small mb-3">
+                      Mulai tuliskan impianmu dan rencanakan langkah untuk mencapainya hari ini!
+                    </p>
+                    <Button
+                      element="button"
+                      type="button"
+                      color="primary"
+                      icon="plus"
+                      onClick={() => {
+                        setIsDetailOpen(false)
+                        handleOpenAddGoal()
+                      }}
+                    >
+                      Tambah Impian
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-3 bg-orange-lt text-orange rounded-circle d-inline-flex mb-3">
+                      <Icon icon="search" size="md" />
+                    </div>
+                    <h4 className="fw-bold text-orange mb-2">Tidak Ada Impian Ditemukan</h4>
+                    <p className="text-secondary small mb-3">
+                      Tidak ada target impian yang sesuai dengan filter yang Anda pilih. Coba ubah
+                      filter atau reset pencarian.
+                    </p>
+                    <div className="d-flex justify-content-center gap-2">
+                      <Button
+                        element="button"
+                        type="button"
+                        color="primary"
+                        icon="plus"
+                        onClick={() => {
+                          setIsDetailOpen(false)
+                          handleOpenAddGoal()
+                        }}
+                        size="sm"
+                      >
+                        Tambah
+                      </Button>
+                      <Button
+                        element="button"
+                        type="button"
+                        color="secondary"
+                        onClick={() => {
+                          setModalStatusFilter('all')
+                          setModalTargetFilter('all')
+                        }}
+                        size="sm"
+                      >
+                        Reset Filter
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           ) : (

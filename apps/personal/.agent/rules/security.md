@@ -1,6 +1,6 @@
 # Aturan Keamanan (Security)
 
-Aplikasi Personal Visatamora mengelola informasi sensitif (seperti hutang, skor kredit, dan perencanaan keuangan). Keamanan dan privasi adalah prioritas utama.
+Aplikasi Personal Morapi mengelola informasi sensitif (seperti hutang, skor kredit, dan perencanaan keuangan). Keamanan dan privasi adalah prioritas utama.
 
 ## 1. Penanganan Data Sensitif
 - ❌ **No Hardcoding**: Jangan pernah meletakkan API Key, Secret Token, atau Endpoint Backend otentik di dalam *source code* secara *hardcode*. Selalu baca dari file Environment (`.env`).
