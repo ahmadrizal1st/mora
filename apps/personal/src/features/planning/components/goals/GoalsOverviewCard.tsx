@@ -31,14 +31,7 @@ export function GoalsOverviewCard({
 
   return (
     <div className="card border-0 shadow-sm overflow-hidden" style={{ borderRadius: '16px' }}>
-      <div className="card-body p-4 d-flex flex-column position-relative">
-        <div
-          className="position-absolute top-0 end-0 p-4 opacity-5"
-          style={{ transform: 'rotate(-15deg) translate(20%, -20%)' }}
-        >
-          <Icon icon="chart-pie" size={120} />
-        </div>
-
+      <div className="card-body p-4 d-flex flex-column">
         {isEmpty ? (
           <div className="position-relative text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
             <div className="mb-3">
@@ -49,7 +42,7 @@ export function GoalsOverviewCard({
           </div>
         ) : (
           <>
-            <div className="position-relative mb-4" style={{ zIndex: 1 }}>
+            <div className="mb-4">
               <div
                 className="text-secondary fw-bold mb-1"
                 style={{ fontSize: '11px', letterSpacing: '0.05em' }}
