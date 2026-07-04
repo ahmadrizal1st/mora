@@ -10,7 +10,7 @@ import { CardBalanceCard } from '@/shared/components/cards/CardBalanceCard'
 import { RecentActivitiesCard } from '@/shared/components/cards/RecentActivitiesCard'
 import { useAssets } from '@/features/assets/hooks/useAssets'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
-import { Icon } from '@tabler/icons-react'
+import { Icon } from '@/shared/components/ui/Icon'
 
 export default function AssetsPage() {
   const { data: assets, isLoading } = useAssets()

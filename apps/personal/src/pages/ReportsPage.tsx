@@ -260,7 +260,7 @@ function TodayDashboard() {
             <div className="card-body p-4 d-flex flex-column justify-content-center">
               <div className="d-flex align-items-center gap-3">
                 <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '42px', height: '42px', backgroundColor: 'rgba(var(--tblr-primary-rgb), 0.1)', color: 'var(--tblr-primary)' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke={ratioColor} fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 18a6 6 0 1 1 12 0" /><path d="M8 10a4 4 0 1 1 8 0" /><path d="M12 12l0 9" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke={ratioColor} fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 20l10 0" /><path d="M6 6l6 -1l6 1" /><path d="M12 3l0 17" /><path d="M9 12l-3 -6l-3 6a3 3 0 0 0 6 0" /><path d="M21 12l-3 -6l-3 6a3 3 0 0 0 6 0" /></svg>
                 </div>
                 <div>
                   <div className="fw-bold text-secondary mb-1" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>RASIO ARUS KAS</div>

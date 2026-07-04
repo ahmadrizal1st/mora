@@ -121,7 +121,7 @@ export function StoryPlayer({
       className="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column" 
       style={{ 
         zIndex: 9999, 
-        background: 'linear-gradient(135deg, var(--tblr-primary) 0%, color-mix(in srgb, var(--tblr-primary), black 30%) 100%)',
+        backgroundColor: '#000000',
         color: 'white',
         overflow: 'hidden'
       }}
@@ -148,7 +148,12 @@ export function StoryPlayer({
       {/* Slide 0: Splash */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
-        style={{ opacity: activeSlide === 0 ? 1 : 0, pointerEvents: activeSlide === 0 ? 'auto' : 'none' }}
+        style={{ 
+          opacity: activeSlide === 0 ? 1 : 0, 
+          pointerEvents: activeSlide === 0 ? 'auto' : 'none',
+          background: 'linear-gradient(135deg, var(--tblr-primary) 0%, color-mix(in srgb, var(--tblr-primary), black 35%) 100%)',
+          transition: 'opacity 0.6s ease-in-out'
+        }}
       >
         <div className="text-center" style={{ transform: activeSlide === 0 ? 'scale(1)' : 'scale(0.9)', transition: 'transform 0.5s ease-out' }}>
           <div className="mb-4" style={{ fontSize: '80px' }}>🎉</div>
@@ -165,7 +170,12 @@ export function StoryPlayer({
       {/* Slide 1: Pemasukan (Income) */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
-        style={{ opacity: activeSlide === 1 ? 1 : 0, pointerEvents: activeSlide === 1 ? 'auto' : 'none' }}
+        style={{ 
+          opacity: activeSlide === 1 ? 1 : 0, 
+          pointerEvents: activeSlide === 1 ? 'auto' : 'none',
+          background: 'linear-gradient(135deg, #1e40af 0%, #1e3b8a 100%)',
+          transition: 'opacity 0.6s ease-in-out'
+        }}
       >
         <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 1 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
           <div className="text-center mb-5">
@@ -185,7 +195,12 @@ export function StoryPlayer({
       {/* Slide 2: Pengeluaran (Expense) */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
-        style={{ opacity: activeSlide === 2 ? 1 : 0, pointerEvents: activeSlide === 2 ? 'auto' : 'none' }}
+        style={{ 
+          opacity: activeSlide === 2 ? 1 : 0, 
+          pointerEvents: activeSlide === 2 ? 'auto' : 'none',
+          background: 'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)',
+          transition: 'opacity 0.6s ease-in-out'
+        }}
       >
         <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 2 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
           <div className="text-center mb-5">
@@ -205,7 +220,12 @@ export function StoryPlayer({
       {/* Slide 3: Arus Kas Bersih (Saving Rate) */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
-        style={{ opacity: activeSlide === 3 ? 1 : 0, pointerEvents: activeSlide === 3 ? 'auto' : 'none' }}
+        style={{ 
+          opacity: activeSlide === 3 ? 1 : 0, 
+          pointerEvents: activeSlide === 3 ? 'auto' : 'none',
+          background: 'linear-gradient(135deg, #0f766e 0%, #115e59 100%)',
+          transition: 'opacity 0.6s ease-in-out'
+        }}
       >
         <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 3 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
           <div className="text-center mb-4">
@@ -231,7 +251,12 @@ export function StoryPlayer({
       {/* Slide 4: Frekuensi Transaksi (Transaction Count) */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
-        style={{ opacity: activeSlide === 4 ? 1 : 0, pointerEvents: activeSlide === 4 ? 'auto' : 'none' }}
+        style={{ 
+          opacity: activeSlide === 4 ? 1 : 0, 
+          pointerEvents: activeSlide === 4 ? 'auto' : 'none',
+          background: 'linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%)',
+          transition: 'opacity 0.6s ease-in-out'
+        }}
       >
         <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 4 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
           <div className="text-center mb-5">
@@ -251,7 +276,12 @@ export function StoryPlayer({
       {/* Slide 5: Kategori Terboros (Top Category) */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
-        style={{ opacity: activeSlide === 5 ? 1 : 0, pointerEvents: activeSlide === 5 ? 'auto' : 'none' }}
+        style={{ 
+          opacity: activeSlide === 5 ? 1 : 0, 
+          pointerEvents: activeSlide === 5 ? 'auto' : 'none',
+          background: 'linear-gradient(135deg, #c2410c 0%, #7c2d12 100%)',
+          transition: 'opacity 0.6s ease-in-out'
+        }}
       >
         <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 5 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
           <div className="text-center mb-5">
@@ -271,7 +301,12 @@ export function StoryPlayer({
       {/* Slide 6: Pengeluaran Terbesar (Max Expense) */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
-        style={{ opacity: activeSlide === 6 ? 1 : 0, pointerEvents: activeSlide === 6 ? 'auto' : 'none' }}
+        style={{ 
+          opacity: activeSlide === 6 ? 1 : 0, 
+          pointerEvents: activeSlide === 6 ? 'auto' : 'none',
+          background: 'linear-gradient(135deg, #991b1b 0%, #450a0a 100%)',
+          transition: 'opacity 0.6s ease-in-out'
+        }}
       >
         <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 6 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
           <div className="text-center mb-5">
@@ -291,7 +326,12 @@ export function StoryPlayer({
       {/* Slide 7: Waktu Belanja Teraktif (Peak Spending Hours) */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
-        style={{ opacity: activeSlide === 7 ? 1 : 0, pointerEvents: activeSlide === 7 ? 'auto' : 'none' }}
+        style={{ 
+          opacity: activeSlide === 7 ? 1 : 0, 
+          pointerEvents: activeSlide === 7 ? 'auto' : 'none',
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #311042 100%)',
+          transition: 'opacity 0.6s ease-in-out'
+        }}
       >
         <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 7 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
           <div className="text-center mb-5">
@@ -311,7 +351,12 @@ export function StoryPlayer({
       {/* Slide 8: Hari Tanpa Belanja (No-Spend Days) */}
       <div 
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
-        style={{ opacity: activeSlide === 8 ? 1 : 0, pointerEvents: activeSlide === 8 ? 'auto' : 'none' }}
+        style={{ 
+          opacity: activeSlide === 8 ? 1 : 0, 
+          pointerEvents: activeSlide === 8 ? 'auto' : 'none',
+          background: 'linear-gradient(135deg, #047857 0%, #064e3b 100%)',
+          transition: 'opacity 0.6s ease-in-out'
+        }}
       >
         <div className="container-xl d-flex flex-column align-items-center w-100" style={{ maxWidth: '400px', transform: activeSlide === 8 ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.5s ease-out' }}>
           <div className="text-center mb-5">
@@ -333,8 +378,10 @@ export function StoryPlayer({
         className="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 transition-opacity"
         style={{ 
           opacity: activeSlide === 9 ? 1 : 0, 
-          pointerEvents: 'none', 
-          zIndex: 3 
+          pointerEvents: activeSlide === 9 ? 'auto' : 'none', 
+          zIndex: 3,
+          background: 'linear-gradient(135deg, var(--tblr-primary) 0%, color-mix(in srgb, var(--tblr-primary), black 35%) 100%)',
+          transition: 'opacity 0.6s ease-in-out'
         }}
       >
         <div 
