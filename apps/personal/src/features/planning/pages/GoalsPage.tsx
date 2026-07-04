@@ -300,37 +300,7 @@ export function GoalsPage() {
                   ))
                 )}
 
-                <div className="col-12 col-md-6" onClick={handleOpenAddGoal}>
-                  <div
-                    className="card shadow-none border cursor-pointer d-flex align-items-center justify-content-center py-5 h-100 transition-all hover-border-primary"
-                    style={{
-                      borderRadius: '12px',
-                      background: '#f8f9fa',
-                      minHeight: '260px',
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    <div className="text-center">
-                      <div className="mb-3">
-                        <div 
-                          className="d-inline-flex align-items-center justify-content-center rounded-circle bg-white shadow-sm"
-                          style={{ width: '48px', height: '48px', border: '1px solid #e9ecef' }}
-                        >
-                          <Icon icon="plus" size="md" className="text-secondary" stroke={2.5} />
-                        </div>
-                      </div>
-                      <div
-                        className="fw-bold text-dark text-uppercase"
-                        style={{ fontSize: '12px', letterSpacing: '0.05em' }}
-                      >
-                        Tambah Impian Baru
-                      </div>
-                      <div className="small text-secondary mt-1" style={{ fontSize: '11px' }}>
-                        Wujudkan mimpimu hari ini
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
               </div>
             </div>
           </div>
