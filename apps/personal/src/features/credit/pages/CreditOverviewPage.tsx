@@ -6,7 +6,6 @@ import { CreditStrategyChart } from '../components/CreditStrategyChart'
 import { useCreditSummary } from '../hooks/useCreditSummary'
 import { useCredits } from '../hooks/useCredits'
 
-const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
 
 export function CreditOverviewPage() {
   const {

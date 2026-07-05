@@ -6,6 +6,7 @@ import { NavSegmented } from '@/shared/components/ui/NavSegmented'
 import { Chart, type ChartData } from '@/shared/components/ui/Chart'
 import { CardDropdown } from '@/shared/components/ui/CardDropdown'
 import { StatCard } from '@/shared/components/cards/StatCard'
+import { Button } from '@/shared/components/ui/Button'
 
 import cryptoCurrenciesJson from '@/shared/data/crypto-currencies.json'
 import cryptoMarketsJson from '@/shared/data/crypto-markets.json'
@@ -242,9 +243,9 @@ export default function DashboardCrypto() {
                   </div>
 
                   <div className="d-grid">
-                    <button type="button" className="btn btn-primary mb-3">
+                    <Button color="primary" className="mb-3">
                       Process to wallet
-                    </button>
+                    </Button>
                   </div>
 
                   <p className="text-muted mb-0 small">
@@ -259,7 +260,7 @@ export default function DashboardCrypto() {
                 <div className="card-header">
                   <h3 className="card-title">Sell Orders</h3>
                   <div className="card-actions">
-                    <button className="btn btn-sm">View all</button>
+                    <Button size="sm">View all</Button>
                   </div>
                 </div>
                 <div className="table-responsive">
@@ -290,7 +291,7 @@ export default function DashboardCrypto() {
                 <div className="card-header">
                   <h3 className="card-title">Buy Orders</h3>
                   <div className="card-actions">
-                    <button className="btn btn-sm">View all</button>
+                    <Button size="sm">View all</Button>
                   </div>
                 </div>
                 <div className="table-responsive">

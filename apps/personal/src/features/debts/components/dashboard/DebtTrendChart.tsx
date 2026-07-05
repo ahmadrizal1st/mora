@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Datepicker } from '@/shared/components/ui/Datepicker'
+import { Modal, ModalHeader } from '@/shared/components/ui/Modal'
+import { Button } from '@/shared/components/ui/Button'
 import type { DebtRecord } from '../../types/debt.types'
 
 export function DebtTrendChart({ debts = [], onAdd }: { debts?: DebtRecord[], onAdd?: () => void }) {
@@ -125,37 +127,28 @@ export function DebtTrendChart({ debts = [], onAdd }: { debts?: DebtRecord[], on
         </div>
       </div>
 
-      {showCustomModal && (
-        <div className="modal modal-blur fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1055 }} tabIndex={-1}>
-          <div className="modal-dialog modal-dialog-centered modal-sm">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Pilih Jarak Waktu</h5>
-                <button type="button" className="btn-close" onClick={() => setShowCustomModal(false)}></button>
-              </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Tanggal Mulai</label>
-                  <Datepicker value={customStart} onChange={setCustomStart} />
-                </div>
-                <div>
-                  <label className="form-label">Tanggal Akhir</label>
-                  <Datepicker value={customEnd} onChange={setCustomEnd} />
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-link link-secondary" onClick={() => setShowCustomModal(false)}>Batal</button>
-                <button type="button" className="btn btn-primary" onClick={() => {
-                  if (customStart && customEnd) {
-                    setAppliedCustomLabel(`${customStart} s/d ${customEnd}`)
-                    setShowCustomModal(false)
-                  }
-                }}>Terapkan</button>
-              </div>
-            </div>
+      <Modal show={showCustomModal} onClose={() => setShowCustomModal(false)} size="sm" centered>
+        <ModalHeader title="Pilih Jarak Waktu" onClose={() => setShowCustomModal(false)} />
+        <div className="modal-body">
+          <div className="mb-3">
+            <label className="form-label">Tanggal Mulai</label>
+            <Datepicker value={customStart} onChange={setCustomStart} />
+          </div>
+          <div>
+            <label className="form-label">Tanggal Akhir</label>
+            <Datepicker value={customEnd} onChange={setCustomEnd} />
           </div>
         </div>
-      )}
+        <div className="modal-footer">
+          <Button variant="link" color="secondary" onClick={() => setShowCustomModal(false)}>Batal</Button>
+          <Button color="primary" onClick={() => {
+            if (customStart && customEnd) {
+              setAppliedCustomLabel(`${customStart} s/d ${customEnd}`)
+              setShowCustomModal(false)
+            }
+          }}>Terapkan</Button>
+        </div>
+      </Modal>
     </>
   )
 }

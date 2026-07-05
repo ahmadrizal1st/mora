@@ -11,6 +11,8 @@ import { RecentActivitiesCard } from '@/shared/components/cards/RecentActivities
 import { useAssets } from '@/features/assets/hooks/useAssets'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
 import { Icon } from '@/shared/components/ui/Icon'
+import { PageHeader } from '@/shared/components/ui/PageHeader'
+import { Button } from '@/shared/components/ui/Button'
 
 export default function AssetsPage() {
   const { data: assets, isLoading } = useAssets()
@@ -75,9 +77,9 @@ export default function AssetsPage() {
                           <td className="text-secondary">{asset.purchase_date || '-'}</td>
                           <td>
                             <div className="dropdown">
-                              <button className="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown">
+                              <Button className="dropdown-toggle align-text-top" data-bs-toggle="dropdown">
                                 Actions
-                              </button>
+                              </Button>
                               <div className="dropdown-menu dropdown-menu-end">
                                 <a className="dropdown-item" href="#">Edit</a>
                                 <a className="dropdown-item text-danger" href="#">Delete</a>

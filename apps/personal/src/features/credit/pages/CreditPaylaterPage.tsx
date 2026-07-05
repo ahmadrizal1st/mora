@@ -2,8 +2,7 @@ import { useState, useMemo } from 'react'
 import { Icon, Chart, Button } from '@/shared/components/ui'
 import { useCredits } from '../hooks/useCredits'
 import { useCreditLayoutContext } from '../context/CreditLayoutContext'
-
-const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 
 export function CreditPaylaterPage() {
   const { openFormForType, openForm } = useCreditLayoutContext()
@@ -90,9 +89,7 @@ export function CreditPaylaterPage() {
                 <div>
                   <div className="text-muted mb-1 text-10">Saldo terpakai</div>
                   <div className="h3 fw-bold mb-0 text-18">
-                    {new Intl.NumberFormat('id-ID')
-                      .format(p.credit!.total_amount)
-                      .replace('Rp', '')}
+                    {formatCurrency(p.credit!.total_amount).replace('Rp', '').trim()}
                   </div>
                 </div>
 
@@ -162,15 +159,15 @@ export function CreditPaylaterPage() {
                   <div className="col-6">
                     <div className="text-secondary small mb-1 fw-medium">TAGIHAN</div>
                     <div className="fw-black h3 mb-0 text-dark">
-                      {fmt(credit.total_amount || 0).replace('Rp ', '')}
+                      {formatCurrency(credit.total_amount || 0).replace('Rp', '').trim()}
                     </div>
                   </div>
                   <div className="col-6 text-end">
                     <div className="text-secondary small mb-1 fw-medium">MIN. BAYAR</div>
                     <div className="fw-bold text-danger">
-                      {fmt(
+                      {formatCurrency(
                         credit.minimum_payment || Math.round((credit.total_amount || 0) * 0.1)
-                      ).replace('Rp ', '')}
+                      ).replace('Rp', '').trim()}
                     </div>
                   </div>
                   <div className="col-12 m-0 p-0 py-1">
@@ -190,7 +187,7 @@ export function CreditPaylaterPage() {
                   <div className="col-6 text-end">
                     <div className="text-secondary small mb-1 fw-medium">SISA LIMIT</div>
                     <div className="fw-bold text-success">
-                      {fmt(credit.limit - (credit.total_amount || 0)).replace('Rp ', '')}
+                      {formatCurrency(credit.limit - (credit.total_amount || 0)).replace('Rp', '').trim()}
                     </div>
                   </div>
                 </div>
@@ -309,7 +306,7 @@ export function CreditPaylaterPage() {
                         distributed: false,
                       },
                     },
-                    tooltip: { theme: 'dark', y: { formatter: (v: number) => fmt(v) } },
+                    tooltip: { theme: 'dark', y: { formatter: (v: number) => formatCurrency(v) } },
                   },
                 }}
               />
@@ -408,7 +405,7 @@ export function CreditPaylaterPage() {
                       </div>
                       <div className="d-flex align-items-center gap-2">
                         <div className="fw-bold flex-shrink-0" style={{ color: '#e53e3e', fontSize: '13.5px' }}>
-                          - Rp {Math.abs(t.amount).toLocaleString('id-ID')}
+                          - {formatCurrency(Math.abs(t.amount))}
                         </div>
                       </div>
                     </div>

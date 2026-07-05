@@ -2,8 +2,9 @@ import { useMemo } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
 import { useCredits } from '../hooks/useCredits'
 import type { CreditType } from '../types/credit.types'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 
-const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
+const fmt = (n: number) => formatCurrency(n)
 
 export function CreditTypeCards() {
   const { data: credits = [], isLoading } = useCredits()

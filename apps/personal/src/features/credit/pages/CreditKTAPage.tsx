@@ -2,8 +2,7 @@ import { useState, useMemo } from 'react'
 import { Icon, Chart, Button } from '@/shared/components/ui'
 import { useCredits } from '../hooks/useCredits'
 import { useCreditLayoutContext } from '../context/CreditLayoutContext'
-
-const fmt = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 
 export function CreditKTAPage() {
   const { openFormForType, openForm } = useCreditLayoutContext()
@@ -95,9 +94,7 @@ export function CreditKTAPage() {
                 <div>
                   <div className="text-muted mb-1 text-10">Sisa Saldo</div>
                   <div className="h3 fw-bold mb-0 text-18">
-                    {new Intl.NumberFormat('id-ID')
-                      .format(l.credit!.total_amount)
-                      .replace('Rp', '')}
+                    {formatCurrency(l.credit!.total_amount).replace('Rp', '').trim()}
                   </div>
                 </div>
 
@@ -166,7 +163,7 @@ export function CreditKTAPage() {
                   <div className="col-6">
                     <div className="text-secondary small mb-1 fw-medium">ANGSURAN</div>
                     <div className="fw-black h3 mb-0 text-dark">
-                      {fmt(credit.installment_amount).replace('Rp ', '')}
+                      {formatCurrency(credit.installment_amount).replace('Rp', '').trim()}
                     </div>
                   </div>
                   <div className="col-6 text-end">
@@ -183,7 +180,7 @@ export function CreditKTAPage() {
                   <div className="col-6 text-end">
                     <div className="text-secondary small mb-1 fw-medium">SISA SALDO</div>
                     <div className="fw-bold text-success">
-                      {fmt(credit.total_amount).replace('Rp ', '')}
+                      {formatCurrency(credit.total_amount).replace('Rp', '').trim()}
                     </div>
                   </div>
                 </div>
@@ -364,12 +361,12 @@ export function CreditKTAPage() {
                         <span>&middot;</span>
                         <span>Mei 2026</span>
                         <span>&middot;</span>
-                        <span>P: {fmt(credit.installment_amount * 0.75).replace('Rp ', '')} | B: {fmt(credit.installment_amount * 0.25).replace('Rp ', '')}</span>
+                        <span>P: {formatCurrency(credit.installment_amount * 0.75).replace('Rp', '').trim()} | B: {formatCurrency(credit.installment_amount * 0.25).replace('Rp', '').trim()}</span>
                       </div>
                     </div>
                     <div className="d-flex align-items-center gap-2">
                       <div className="fw-bold flex-shrink-0" style={{ color: '#e53e3e', fontSize: '15px' }}>
-                        - Rp {Math.abs(credit.installment_amount).toLocaleString('id-ID')}
+                        - {formatCurrency(Math.abs(credit.installment_amount))}
                       </div>
                     </div>
                   </div>

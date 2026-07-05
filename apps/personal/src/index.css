@@ -1247,3 +1247,50 @@ html, body {
 .page, .page-wrapper {
   min-height: 100dvh !important;
 }
+
+/* Mobile Bottom Sheet Modal */
+@media (max-width: 767.98px) {
+  .modal-bottom-sheet-mobile .modal-dialog {
+    margin: 0 !important;
+    align-items: flex-end !important;
+    min-height: 100% !important;
+    display: flex !important;
+  }
+  
+  .modal-bottom-sheet-mobile .modal-content {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-top-left-radius: 1.5rem !important;
+    border-top-right-radius: 1.5rem !important;
+    padding-bottom: env(safe-area-inset-bottom);
+    width: 100%;
+    animation: slideUpModal 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .modal.fade.modal-bottom-sheet-mobile .modal-dialog {
+    transform: none !important;
+  }
+}
+
+@keyframes slideUpModal {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Fix for background scrolling when modal is open */
+html:has(body.modal-open),
+html:has(body.chatbot-open),
+body.modal-open,
+body.chatbot-open {
+  overflow: hidden !important;
+  height: 100dvh !important;
+}
+body.modal-open .page,
+body.chatbot-open .page {
+  overflow: hidden !important;
+  height: 100dvh !important;
+}

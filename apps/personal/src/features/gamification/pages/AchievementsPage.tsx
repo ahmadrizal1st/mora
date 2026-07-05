@@ -5,6 +5,7 @@ import { Icon } from '@/shared/components/ui/Icon'
 import { Badge } from '@/shared/components/ui/Badge'
 import { Ribbon } from '@/shared/components/ui/Ribbon'
 import { Avatar } from '@/shared/components/ui/Avatar'
+import { Button } from '@/shared/components/ui/Button'
 import { useGamificationStats, useAchievements, useLeaderboard, useClaimAchievement } from '../hooks/useGamification'
 import type { Achievement } from '../types/gamification.types'
 
@@ -27,9 +28,9 @@ const EliteSkinCard = () => (
         </p>
       </div>
       <div>
-        <button className="btn btn-white btn-sm rounded-pill px-4 fw-bold" style={{ fontSize: '11px' }}>
+        <Button color="white" size="sm" pill className="px-4 fw-bold" style={{ fontSize: '11px' }}>
           Learn More
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -105,9 +106,9 @@ export default function AchievementsPage() {
               <div className="d-flex align-items-center justify-content-between w-100">
                 <h3 className="card-title mb-0">Your Achievements</h3>
                 <div className="dropdown">
-                  <button className="btn btn-ghost-secondary btn-sm dropdown-toggle" type="button">
+                  <Button color="ghost-secondary" size="sm" className="dropdown-toggle" data-bs-toggle="dropdown">
                     All Categories
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -181,14 +182,16 @@ export default function AchievementsPage() {
                             <Icon icon="lock" size="sm" />
                           </div>
                         ) : (
-                          <button
-                            className="btn btn-outline-primary rounded-pill px-2 py-0"
+                          <Button
+                            color="outline-primary"
+                            pill
+                            className="px-2 py-0"
                             style={{ fontSize: '10px', height: '24px' }}
                             onClick={() => handleClaim(item.id)}
                             disabled={claimMutation.isPending}
                           >
                             {claimMutation.isPending ? '...' : `Claim`}
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -279,7 +282,7 @@ export default function AchievementsPage() {
                   </div>
                 </div>
                 <div className="card-footer border-0 bg-transparent text-center pb-3">
-                  <button className="btn btn-ghost-primary btn-sm w-100">View Full Rankings</button>
+                  <Button color="ghost-primary" size="sm" block>View Full Rankings</Button>
                 </div>
               </div>
             </div>

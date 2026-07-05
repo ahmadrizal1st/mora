@@ -311,6 +311,7 @@ function TodayDashboard() {
             const isActive = txFilter === tab.key;
             return (
               <button
+                type="button"
                 key={tab.key}
                 onClick={() => setTxFilter(tab.key as 'income' | 'expense')}
                 className="d-flex align-items-center justify-content-center py-3 transition-all text-decoration-none"
@@ -564,6 +565,7 @@ export function ReportsPage() {
                     const isActive = mode === tab.key
                     return (
                       <button
+                        type="button"
                         key={tab.key}
                         onClick={() => setMode(tab.key)}
                         className="d-flex align-items-center justify-content-center py-3 transition-all text-decoration-none"
@@ -754,13 +756,14 @@ export function ReportsPage() {
 
         {/* FAB for Kustom */}
         {mode === 'custom' && (
-          <button
-            className="btn btn-primary rounded-3 shadow-lg position-fixed d-flex align-items-center justify-content-center"
-            style={{ width: '48px', height: '48px', bottom: '24px', right: '24px', zIndex: 1000 }}
+          <Button
+            color="primary"
+            className="rounded-3 shadow-lg position-fixed d-flex align-items-center justify-content-center"
+            style={{ width: '48px', height: '48px', bottom: '24px', right: '24px', zIndex: 1000, padding: 0 }}
             onClick={() => setIsAddingCustom(true)}
           >
             <Icon icon="plus" size={24} stroke={2} />
-          </button>
+          </Button>
         )}
         
       <Modal show={isAddingCustom} onClose={() => setIsAddingCustom(false)} size="md">
@@ -797,14 +800,15 @@ export function ReportsPage() {
             </div>
 
             <div className="d-flex justify-content-end gap-2">
-              <button className="btn btn-light rounded-3" onClick={() => setIsAddingCustom(false)}>Batal</button>
-              <button 
-                className="btn btn-primary rounded-3 d-flex align-items-center gap-1"
+              <Button color="light" className="rounded-3" onClick={() => setIsAddingCustom(false)}>Batal</Button>
+              <Button 
+                color="primary"
+                className="rounded-3 d-flex align-items-center gap-1"
                 onClick={handleSaveCustom}
                 disabled={!customName || !customFrom || !customTo}
               >
                 <Icon icon="device-floppy" size={16} /> Simpan
-              </button>
+              </Button>
             </div>
           </div>
       </Modal>

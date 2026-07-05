@@ -3,7 +3,9 @@ import { Chart } from '@/shared/components/ui/Chart'
 import { Icon } from '@/shared/components/ui/Icon'
 import { useCredits } from '../hooks/useCredits'
 
-const fmt = (val: number) => val.toLocaleString('id-ID')
+import { formatCurrency } from '@/shared/utils/currencyUtils'
+
+const fmt = (val: number) => formatCurrency(val).replace('Rp', '').trim()
 const fmtShort = (val: number): string => {
   if (val >= 1_000_000_000_000) return (val / 1_000_000_000_000).toFixed(1).replace('.', ',') + 'T'
   if (val >= 1_000_000_000) return (val / 1_000_000_000).toFixed(1).replace('.', ',') + 'M'

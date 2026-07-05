@@ -1,5 +1,6 @@
 import { clsx } from 'clsx'
 import type { ReactNode, CSSProperties } from 'react'
+import { useEffect } from 'react'
 
 export interface ModalHeaderProps {
   title?: string
@@ -90,7 +91,18 @@ export function Modal({
 }: ModalProps) {
   const isShown = show || inline
 
-  const modalClasses = clsx('modal', 'modal-blur', 'fade', isShown && 'show', className)
+  useEffect(() => {
+    if (isShown) {
+      document.body.classList.add('modal-open')
+    } else {
+      document.body.classList.remove('modal-open')
+    }
+    return () => {
+      document.body.classList.remove('modal-open')
+    }
+  }, [isShown])
+
+  const modalClasses = clsx('modal', 'modal-blur', 'fade', isShown && 'show', 'modal-bottom-sheet-mobile', className)
 
   const dialogClasses = clsx(
     'modal-dialog',

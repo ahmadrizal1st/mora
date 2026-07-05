@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Icon } from '@/shared/components/ui/Icon'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 import { Chart } from '@/shared/components/ui/Chart'
 import { useCredits } from '../hooks/useCredits'
 
@@ -103,7 +104,7 @@ export function CreditStrategyChart() {
           intersect: false,
           x: { format: 'MMM yyyy' },
           y: {
-            formatter: (val: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(val))
+            formatter: (val: number) => formatCurrency(Math.round(val))
           }
         },
         colors: debts.map(d => d.color)
@@ -127,7 +128,7 @@ export function CreditStrategyChart() {
   const formatter = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' })
   const dateStr = debtFreeDate ? formatter.format(debtFreeDate) : '-'
 
-  const fmt = (val: number) => new Intl.NumberFormat('id-ID').format(val)
+  const fmt = (val: number) => formatCurrency(val).replace('Rp', '').trim()
 
   return (
     <div className="card border-0 shadow-sm rounded-4 overflow-hidden d-none d-lg-block">

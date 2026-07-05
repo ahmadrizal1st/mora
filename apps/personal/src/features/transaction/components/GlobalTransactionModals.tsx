@@ -19,7 +19,7 @@ export const GlobalTransactionModals: FC = () => {
 
   const handleFormSubmit = async (data: TransactionFormValues) => {
     try {
-      if (editingTransaction) {
+      if (editingTransaction?.id) {
         await updateMutation.mutateAsync({ id: editingTransaction.id, data: data as any })
       } else {
         await createMutation.mutateAsync({ ...data, input_method: 'manual' } as any)
