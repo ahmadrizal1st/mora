@@ -1,4 +1,5 @@
 import { Icon } from '@/shared/components/ui/Icon'
+import { getAccountVisualMeta, getContrastYIQ } from '@/shared/utils/accountVisuals'
 
 interface AccountVisualCardProps {
   name: string
@@ -11,7 +12,7 @@ interface AccountVisualCardProps {
   onDelete?: () => void
 }
 
-function getContrastYIQ(hexcolor: string) {
+function getContrastYIQClass(hexcolor: string) {
   if (!hexcolor || !hexcolor.startsWith('#')) return 'text-white'
   let hex = hexcolor.replace('#', '')
   if (hex.length === 3) hex = hex.split('').map((c) => c + c).join('')
@@ -32,21 +33,15 @@ export function AccountVisualCard({
   onEdit,
   onDelete,
 }: AccountVisualCardProps) {
-  const isBank = type.toLowerCase().includes('bank')
-  const isInvest = ['invest', 'bibit', 'ajaib', 'bareksa'].some((k) =>
-    type.toLowerCase().includes(k)
-  )
+  const { isBank, icon: cardIcon, label: cardLabel, logo: resolvedLogo, color: resolvedColor } = getAccountVisualMeta(type, color, logo)
 
-  const cardIcon = isBank ? 'building-bank' : isInvest ? 'trending-up' : 'wallet'
-  const cardLabel = isBank ? 'Debit Card' : isInvest ? 'Investasi' : 'E-Wallet'
-
-  const isHex = color?.startsWith('#')
-  const textColorClass = isHex ? getContrastYIQ(color!) : 'text-white'
+  const isHex = resolvedColor?.startsWith('#')
+  const textColorClass = isHex ? getContrastYIQClass(resolvedColor!) : 'text-white'
   const isDarkText = textColorClass === 'text-dark'
 
-  const bgStyle = color
+  const bgStyle = resolvedColor
     ? {
-        backgroundColor: isHex ? color : `var(--tblr-${color})`,
+        backgroundColor: isHex ? resolvedColor : `var(--tblr-${resolvedColor})`,
         backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.2) 100%)',
       }
     : {
@@ -65,9 +60,9 @@ export function AccountVisualCard({
         position: 'relative',
       }}
     >
-      {logo ? (
+      {resolvedLogo ? (
         <img
-          src={logo}
+          src={resolvedLogo}
           alt=""
           aria-hidden="true"
           style={{

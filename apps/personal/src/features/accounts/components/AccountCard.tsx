@@ -1,16 +1,6 @@
 import { clsx } from 'clsx'
 import { Icon } from '@/shared/components/ui/Icon'
-
-function getContrastYIQ(hexcolor: string) {
-  if (!hexcolor || !hexcolor.startsWith('#')) return 'white'
-  let hex = hexcolor.replace('#', '')
-  if (hex.length === 3) hex = hex.split('').map((c) => c + c).join('')
-  const r = parseInt(hex.substr(0, 2), 16)
-  const g = parseInt(hex.substr(2, 2), 16)
-  const b = parseInt(hex.substr(4, 2), 16)
-  const yiq = (r * 299 + g * 587 + b * 114) / 1000
-  return yiq >= 128 ? 'black' : 'white'
-}
+import { getAccountVisualMeta, getContrastYIQ } from '@/shared/utils/accountVisuals'
 
 interface AccountCardProps {
   isActive?: boolean
@@ -35,22 +25,16 @@ export function AccountCard({
   color,
   onClick,
 }: AccountCardProps) {
-  const isBank = type.toLowerCase().includes('bank')
-  const isInvest = ['invest', 'bibit', 'ajaib', 'bareksa', 'reksa'].some((k) =>
-    type.toLowerCase().includes(k)
-  )
-  const isCash = type.toLowerCase().includes('tunai') || type.toLowerCase().includes('cash')
-
-  const typeIcon = isBank ? 'building-bank' : isInvest ? 'trending-up' : isCash ? 'cash' : 'wallet'
+  const { icon, isBank, isCash, isInvest, logo: resolvedLogo, color: resolvedColor } = getAccountVisualMeta(type, color, logo)
   
-  const isHex = color?.startsWith('#')
-  const textColor = isHex ? getContrastYIQ(color!) : 'white'
+  const isHex = resolvedColor?.startsWith('#')
+  const textColor = isHex ? getContrastYIQ(resolvedColor!) : 'white'
 
   const badgeStyle = { 
     width: '26px', 
     height: '26px', 
     color: textColor,
-    backgroundColor: isHex ? color : undefined,
+    backgroundColor: isHex ? resolvedColor : undefined,
   }
 
   return (
@@ -67,9 +51,9 @@ export function AccountCard({
     >
       <div className="card-body p-3 d-flex flex-column h-100">
         <div className="d-flex align-items-center justify-content-between mb-3">
-          {logo ? (
+          {resolvedLogo ? (
             <img
-              src={logo}
+              src={resolvedLogo}
               alt={type}
               style={{
                 width: '48px',
@@ -82,14 +66,14 @@ export function AccountCard({
             <div
               className={clsx(
                 'd-flex align-items-center justify-content-center shadow-sm',
-                !isHex && color ? `bg-${color}` : !isHex ? 'bg-primary' : ''
+                !isHex && resolvedColor ? `bg-${resolvedColor}` : !isHex ? 'bg-primary' : ''
               )}
               style={{ 
                 borderRadius: '10px', 
                 width: '32px', 
                 height: '32px',
                 color: textColor,
-                backgroundColor: isHex ? color : undefined
+                backgroundColor: isHex ? resolvedColor : undefined
               }}
             >
               <Icon icon={isBank ? 'building-bank' : 'wallet'} size="sm" />
@@ -98,11 +82,11 @@ export function AccountCard({
           <span
             className={clsx(
               'badge d-flex align-items-center justify-content-center rounded-circle p-1 shadow-sm',
-              !isHex && color ? `bg-${color}` : !isHex ? 'bg-primary' : ''
+              !isHex && resolvedColor ? `bg-${resolvedColor}` : !isHex ? 'bg-primary' : ''
             )}
             style={badgeStyle}
           >
-            <Icon icon={typeIcon} size={14} />
+            <Icon icon={icon} size={14} />
           </span>
         </div>
         <div className="fw-bold text-body text-truncate mb-0">{name}</div>

@@ -6,7 +6,6 @@ import { AccountCard } from '../components/AccountCard'
 import { CashFlowChartCard } from '../components/CashFlowChartCard'
 import { TransactionListCard } from '../components/TransactionListCard'
 import { SpendingCategoryCard } from '../components/SpendingCategoryCard'
-import { BudgetOverviewCard } from '../components/BudgetOverviewCard'
 import { AccountVisualCard } from '../components/AccountVisualCard'
 import { RecentInsightsCard } from '../components/RecentInsightsCard'
 import { TopMerchantsCard } from '../components/TopMerchantsCard'
@@ -15,6 +14,8 @@ import { Icon } from '@/shared/components/ui/Icon'
 import { Modal, ModalHeader } from '@/shared/components/ui/Modal'
 import { AddAccountModal } from '../components/AddAccountModal'
 import { useAccounts, useAccountSummary, useAccountAnalytics, useDeleteAccount } from '../../transaction/hooks/useAccounts'
+import { getAccountVisualMeta } from '@/shared/utils/accountVisuals'
+import { formatCurrency } from '@/shared/utils/currencyUtils'
 
 export function AccountsPage() {
   const [isMobile, setIsMobile] = useState(
@@ -70,14 +71,14 @@ export function AccountsPage() {
     const exp = selectedAcc.history?.expense?.reduce((a, b) => a + b, 0) || 0
     const chg = inc - exp
     
-    // Filter summary data for this account if needed, or just use global for now
-    // In a real app we'd fetch account-specific transactions/categories
+    const visualMeta = getAccountVisualMeta(selectedAcc.account_type, selectedAcc.color, selectedAcc.logo)
+    
     const tx = (analyticsData?.recent_transactions || []).map((t: any) => ({
       ico: t.category?.icon || 'box',
       color: t.category?.color || '#000000',
       n: t.merchant || 'Transaksi',
       c: t.category?.name || 'Uncategorized',
-      a: t.type === 'expense' ? `Rp -${Number(t.amount).toLocaleString('id-ID')}` : `Rp +${Number(t.amount).toLocaleString('id-ID')}`,
+      a: t.type === 'expense' ? `-${formatCurrency(t.amount)}` : `+${formatCurrency(t.amount)}`,
       d: dayjs(t.tx_date).format('D MMM, HH:mm'),
       p: t.type === 'income'
     }))
@@ -88,7 +89,7 @@ export function AccountsPage() {
       const amount = Number(c.total)
       return {
         n: c.category?.name || 'Uncategorized',
-        v: `Rp ${amount.toLocaleString('id-ID')}`,
+        v: formatCurrency(amount),
         pct: Math.round((amount / totalExp) * 100),
         color: c.category?.color || 'gray',
         ico: c.category?.icon || 'box'
@@ -105,12 +106,8 @@ export function AccountsPage() {
       exp,
       chg: Math.abs(chg),
       chgPos: chg >= 0,
-      logo: selectedAcc.logo || (selectedAcc.account_type?.toLowerCase().includes('tunai') || selectedAcc.account_type?.toLowerCase().includes('cash')
-        ? 'https://cdn-icons-png.flaticon.com/512/2017/2017461.png'
-        : null),
-      color: (selectedAcc.account_type?.toLowerCase().includes('tunai') || selectedAcc.account_type?.toLowerCase().includes('cash'))
-        ? '#2fb344'
-        : (selectedAcc.color || '#4263eb'),
+      logo: visualMeta.logo,
+      color: visualMeta.color,
       tx,
       cats
     }
@@ -156,28 +153,23 @@ export function AccountsPage() {
             </div>
           </div>
         ) : (
-          accounts.map((acc, idx) => (
-            <AccountCard
-              key={idx}
-              isActive={cur === idx}
-              type={acc.account_type as any}
-              name={acc.name}
-              balance={`Rp ${Number(acc.balance || 0).toLocaleString('id-ID')}`}
-              delta={0}
-              chgPos={true}
-              logo={
-                acc.logo || (acc.account_type?.toLowerCase().includes('tunai') || acc.account_type?.toLowerCase().includes('cash')
-                  ? 'https://cdn-icons-png.flaticon.com/512/2017/2017461.png'
-                  : null)
-              }
-              color={
-                (acc.account_type?.toLowerCase().includes('tunai') || acc.account_type?.toLowerCase().includes('cash'))
-                  ? '#2fb344'
-                  : (acc.color || '#4263eb')
-              }
-              onClick={() => setCur(idx)}
-            />
-          ))
+          accounts.map((acc, idx) => {
+            const visualMeta = getAccountVisualMeta(acc.account_type, acc.color, acc.logo)
+            return (
+              <AccountCard
+                key={idx}
+                isActive={cur === idx}
+                type={acc.account_type as any}
+                name={acc.name}
+                balance={formatCurrency(acc.balance || 0)}
+                delta={0}
+                chgPos={true}
+                logo={visualMeta.logo}
+                color={visualMeta.color}
+                onClick={() => setCur(idx)}
+              />
+            )
+          })
         )}
         <div
           className="card shadow-sm cursor-pointer"
@@ -205,7 +197,7 @@ export function AccountsPage() {
           name={accData.name}
           num={accData.num}
           type={accData.type as any}
-          balance={`Rp ${Number(accData.bal || 0).toLocaleString('id-ID')}`}
+          balance={formatCurrency(accData.bal || 0)}
           logo={accData.logo}
           color={accData.color}
           onEdit={() => { setEditData(accData); setShowAddModal(true); }}
@@ -217,7 +209,7 @@ export function AccountsPage() {
         <div className="col-12 col-md-3">
           <SummaryMetricCard
             title="Saldo Terkini"
-            value={`Rp ${Number(accData.bal || 0).toLocaleString('id-ID')}`}
+            value={formatCurrency(accData.bal || 0)}
             subtext={accData.name}
             icon="wallet"
             valueColor="primary"
@@ -226,7 +218,7 @@ export function AccountsPage() {
         <div className="col-12 col-md-3">
           <SummaryMetricCard
             title="Total Pemasukan"
-            value={`Rp ${Number(analyticsData?.stats?.total_income || 0).toLocaleString('id-ID')}`}
+            value={formatCurrency(analyticsData?.stats?.total_income || 0)}
             subtext="Bulan Ini"
             icon="trending-up"
             valueColor="success"
@@ -235,7 +227,7 @@ export function AccountsPage() {
         <div className="col-12 col-md-3">
           <SummaryMetricCard
             title="Total Pengeluaran"
-            value={`Rp ${Number(analyticsData?.stats?.total_expense || 0).toLocaleString('id-ID')}`}
+            value={formatCurrency(analyticsData?.stats?.total_expense || 0)}
             subtext="Bulan Ini"
             icon="trending-down"
             valueColor="danger"
@@ -244,7 +236,7 @@ export function AccountsPage() {
         <div className="col-12 col-md-3">
           <SummaryMetricCard
             title="Net Mutasi"
-            value={(analyticsData?.stats?.net_balance > 0 ? "+ Rp " : analyticsData?.stats?.net_balance < 0 ? "- Rp " : "Rp ") + `${Math.abs(analyticsData?.stats?.net_balance || 0).toLocaleString('id-ID')}`}
+            value={(analyticsData?.stats?.net_balance > 0 ? "+ " : analyticsData?.stats?.net_balance < 0 ? "- " : "") + formatCurrency(Math.abs(analyticsData?.stats?.net_balance || 0))}
             subtext="Bulan Ini"
             icon="arrows-exchange"
             valueColor={analyticsData?.stats?.net_balance > 0 ? "success" : "danger"}
@@ -259,7 +251,7 @@ export function AccountsPage() {
               name={accData.name}
               num={accData.num}
               type={accData.type as any}
-              balance={`Rp ${Number(accData.bal || 0).toLocaleString('id-ID')}`}
+              balance={formatCurrency(accData.bal || 0)}
               logo={accData.logo}
               color={accData.color}
               onEdit={() => { setEditData(accData); setShowAddModal(true); }}

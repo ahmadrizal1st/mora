@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
 import { Icon } from '@/shared/components/ui/Icon'
 import { Datepicker } from '@/shared/components/ui/Datepicker'
-import { Link } from '@tanstack/react-router'
 
 interface CashFlowChartCardProps {
   range: string

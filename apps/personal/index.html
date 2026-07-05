@@ -10,13 +10,17 @@
         const LS_PREFIX = 'tabler-';
         const DEFAULTS = {
           'theme-primary': 'orange',
-          'theme': 'light'
+          'theme': 'light',
+          'theme-base': 'stone',
+          'theme-font': 'sans-serif',
+          'theme-radius': '2'
         };
         try {
-          const primary = localStorage.getItem(LS_PREFIX + 'theme-primary') || DEFAULTS['theme-primary'];
-          const theme = localStorage.getItem(LS_PREFIX + 'theme') || DEFAULTS['theme'];
-          if (primary) document.documentElement.setAttribute('data-bs-theme-primary', primary);
-          if (theme) document.documentElement.setAttribute('data-bs-theme', theme);
+          Object.keys(DEFAULTS).forEach(key => {
+            const value = localStorage.getItem(LS_PREFIX + key) || DEFAULTS[key];
+            const attribute = 'data-bs-' + key;
+            document.documentElement.setAttribute(attribute, value);
+          });
         } catch (e) {}
       })();
     </script>
