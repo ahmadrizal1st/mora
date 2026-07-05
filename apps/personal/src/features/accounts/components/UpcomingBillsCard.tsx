@@ -54,7 +54,7 @@ export function UpcomingBillsCard({ bills }: UpcomingBillsCardProps) {
                     </div>
                   </div>
                   <div className="text-end">
-                    <div className="fw-bold font-monospace text-body" style={{ fontSize: '0.85rem' }}>
+                    <div className="fw-bold text-body" style={{ fontSize: '0.85rem' }}>
                       {b.amt}
                     </div>
                   </div>

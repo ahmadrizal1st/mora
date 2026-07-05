@@ -354,15 +354,15 @@ function TodayDashboard() {
           <div className="row g-3 text-center">
             <div className="col-4 border-end">
               <div className="text-secondary mb-1" style={{ fontSize: '11px' }}>Rata-rata / Transaksi</div>
-              <div className="fw-bold text-dark font-monospace" style={{ fontSize: '15px' }}>Rp {fmt(avgTx)}</div>
+              <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>Rp {fmt(avgTx)}</div>
             </div>
             <div className="col-4 border-end">
               <div className="text-secondary mb-1" style={{ fontSize: '11px' }}>Transaksi Terbesar</div>
-              <div className="fw-bold text-dark font-monospace" style={{ fontSize: '15px' }}>Rp {fmt(maxTx)}</div>
+              <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>Rp {fmt(maxTx)}</div>
             </div>
             <div className="col-4">
               <div className="text-secondary mb-1" style={{ fontSize: '11px' }}>Frekuensi</div>
-              <div className="fw-bold text-dark font-monospace" style={{ fontSize: '15px' }}>{totalTransactions} kali</div>
+              <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>{totalTransactions} kali</div>
             </div>
           </div>
         </div>
@@ -411,7 +411,7 @@ function TodayDashboard() {
                         <span>&middot; {d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}</span>
                       </div>
                     </div>
-                    <div className="fw-bold flex-shrink-0 font-monospace" style={{ color, fontSize: '14px' }}>
+                    <div className="fw-bold flex-shrink-0" style={{ color, fontSize: '14px' }}>
                       {prefix}{fmt(tx.amount)}
                     </div>
                   </div>

@@ -92,7 +92,7 @@ export function SpendingCategoryCard({ categories }: SpendingCategoryCardProps) 
                       </div>
                       <span className="text-body fw-semibold" style={{ fontSize: '0.75rem', lineHeight: 1 }}>{c.n}</span>
                     </div>
-                    <span className="text-body fw-bold font-monospace" style={{ fontSize: '0.75rem', lineHeight: 1 }}>{c.v}</span>
+                    <span className="text-body fw-bold" style={{ fontSize: '0.75rem', lineHeight: 1 }}>{c.v}</span>
                   </div>
                   <div
                     className="progress"

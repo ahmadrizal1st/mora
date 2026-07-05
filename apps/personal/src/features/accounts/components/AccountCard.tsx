@@ -108,7 +108,7 @@ export function AccountCard({
         <div className="fw-bold text-body text-truncate mb-0">{name}</div>
         <div className="text-secondary small mb-3">{type}</div>
         <div className="mt-auto">
-          <div className="h2 fw-bold mb-1 font-monospace">{balance}</div>
+          <div className="h2 fw-bold mb-1">{balance}</div>
           <div
             className={clsx(
               'small fw-medium d-flex align-items-center gap-1',

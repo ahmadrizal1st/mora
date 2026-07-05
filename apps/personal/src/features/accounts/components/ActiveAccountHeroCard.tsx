@@ -36,7 +36,7 @@ export function ActiveAccountHeroCard({
         </div>
 
         <div className="text-secondary small mb-1">Saldo tersedia</div>
-        <div className="display-6 fw-bold mb-0 font-monospace text-body">{balance}</div>
+        <div className="display-6 fw-bold mb-0 text-body">{balance}</div>
         <div className="text-muted small mb-4">IDR • {num}</div>
 
         <div

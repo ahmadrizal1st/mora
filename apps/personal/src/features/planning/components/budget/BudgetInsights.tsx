@@ -70,7 +70,7 @@ export function BudgetInsights() {
                     </div>
                   </div>
                   <div className="col-auto text-end">
-                    <div className="text-body fw-bold font-monospace" style={{ fontSize: '0.8rem' }}>
+                    <div className="text-body fw-bold" style={{ fontSize: '0.8rem' }}>
                       {insight.subvalue}
                     </div>
                   </div>

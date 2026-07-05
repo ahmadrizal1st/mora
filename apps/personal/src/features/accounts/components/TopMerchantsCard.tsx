@@ -50,7 +50,7 @@ export function TopMerchantsCard({ merchants = [] }: TopMerchantsCardProps) {
                     </div>
                   </div>
                   <div className="col-auto text-end">
-                    <div className="text-body fw-bold font-monospace" style={{ fontSize: '0.8rem' }}>{m.amount}</div>
+                    <div className="text-body fw-bold" style={{ fontSize: '0.8rem' }}>{m.amount}</div>
                   </div>
                 </div>
               </div>

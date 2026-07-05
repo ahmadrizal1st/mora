@@ -29,7 +29,7 @@ export function AccountBalanceTrendCard() {
           <span className="text-success small fw-bold">+18%</span>
         </div>
 
-        <div className="h3 fw-bold mb-1 font-monospace">Rp 24.850.000</div>
+        <div className="h3 fw-bold mb-1">Rp 24.850.000</div>
         <div className="text-secondary small mb-3">30 hari terakhir</div>
 
         <div style={{ height: '60px', margin: '0 -10px -10px -10px' }}>

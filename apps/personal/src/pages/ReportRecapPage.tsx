@@ -424,15 +424,15 @@ export function ReportRecapPage() {
                   <h4 className="fw-bold text-secondary mb-3 text-uppercase" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>Proyeksi Masa Depan</h4>
                   <div className="d-flex justify-content-between mb-2 text-secondary" style={{ fontSize: '13px' }}>
                     <span>Perubahan dibanding bulan lalu</span>
-                    <span className="fw-semibold text-success font-monospace">{perubahanDibandingBulanLaluStr}</span>
+                    <span className="fw-semibold text-success">{perubahanDibandingBulanLaluStr}</span>
                   </div>
                   <div className="d-flex justify-content-between mb-2 text-secondary" style={{ fontSize: '13px' }}>
                     <span>Prediksi Pengeluaran Bulan Depan</span>
-                    <span className="fw-semibold text-dark font-monospace">Rp {(expense * 1.05).toLocaleString('id-ID')}</span>
+                    <span className="fw-semibold text-dark">Rp {(expense * 1.05).toLocaleString('id-ID')}</span>
                   </div>
                   <div className="d-flex justify-content-between mb-2 text-secondary" style={{ fontSize: '13px' }}>
                     <span>Potensi Tabungan 1 Tahun</span>
-                    <span className="fw-semibold text-success font-monospace">+ Rp {((income - expense) * 12).toLocaleString('id-ID')}</span>
+                    <span className="fw-semibold text-success">+ Rp {((income - expense) * 12).toLocaleString('id-ID')}</span>
                   </div>
                   <div className="d-flex justify-content-between text-secondary" style={{ fontSize: '13px' }}>
                     <span>Estimasi Hari Bebas Belanja (Bulan Ini)</span>

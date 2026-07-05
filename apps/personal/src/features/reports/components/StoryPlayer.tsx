@@ -186,7 +186,7 @@ export function StoryPlayer({
           </div>
           <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
             <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>TOTAL PEMASUKAN</div>
-            <h1 className="fw-bold font-monospace" style={{ fontSize: '32px', color: '#38bdf8' }}>
+            <h1 className="fw-bold" style={{ fontSize: '32px', color: '#38bdf8' }}>
               + Rp {animIncome.toLocaleString('id-ID')}
             </h1>
           </div>
@@ -211,7 +211,7 @@ export function StoryPlayer({
           </div>
           <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
             <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>TOTAL PENGELUARAN</div>
-            <h1 className="fw-bold font-monospace" style={{ fontSize: '32px', color: '#f87171' }}>
+            <h1 className="fw-bold" style={{ fontSize: '32px', color: '#f87171' }}>
               - Rp {animExpense.toLocaleString('id-ID')}
             </h1>
           </div>
@@ -236,13 +236,13 @@ export function StoryPlayer({
           </div>
           <div className="p-4 rounded-4 w-100 text-center shadow mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
             <div className="opacity-75 mb-1" style={{ fontSize: '12px' }}>SISA DANA TERIMPIT</div>
-            <h2 className="fw-bold font-monospace text-white" style={{ fontSize: '24px' }}>
+            <h2 className="fw-bold text-white" style={{ fontSize: '24px' }}>
               Rp {(income - expense).toLocaleString('id-ID')}
             </h2>
           </div>
           <div className="p-3 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
             <div className="opacity-75 mb-1" style={{ fontSize: '12px' }}>SAVING RATE</div>
-            <h2 className="fw-bold font-monospace" style={{ fontSize: '28px', color: '#34d399' }}>
+            <h2 className="fw-bold" style={{ fontSize: '28px', color: '#34d399' }}>
               {animSavingRate}%
             </h2>
           </div>
@@ -267,7 +267,7 @@ export function StoryPlayer({
           </div>
           <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
             <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>TOTAL TRANSAKSI</div>
-            <h1 className="fw-bold font-monospace text-white" style={{ fontSize: '32px' }}>
+            <h1 className="fw-bold text-white" style={{ fontSize: '32px' }}>
               {animTx} Kali
             </h1>
           </div>
@@ -317,7 +317,7 @@ export function StoryPlayer({
           </div>
           <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
             <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>SINGLE PURCHASE TERBESAR</div>
-            <h2 className="fw-bold font-monospace" style={{ fontSize: '22px', color: '#f87171' }}>
+            <h2 className="fw-bold" style={{ fontSize: '22px', color: '#f87171' }}>
               {pengeluaranTerbesar}
             </h2>
           </div>
@@ -367,7 +367,7 @@ export function StoryPlayer({
           </div>
           <div className="p-4 rounded-4 w-100 text-center shadow" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
             <div className="opacity-75 mb-2" style={{ fontSize: '12px' }}>TOTAL HARI BEBAS BELANJA</div>
-            <h1 className="fw-bold font-monospace" style={{ fontSize: '42px', color: '#34d399' }}>
+            <h1 className="fw-bold" style={{ fontSize: '42px', color: '#34d399' }}>
               {hariTanpaBelanja} Hari
             </h1>
           </div>

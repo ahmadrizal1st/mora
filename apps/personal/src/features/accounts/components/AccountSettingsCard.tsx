@@ -25,7 +25,7 @@ export function AccountSettingsCard() {
                 <Icon icon="arrows-up-down" size="sm" className="text-primary" />
                 <span className="text-body small fw-medium">Limit Transfer Harian</span>
               </div>
-              <span className="text-body fw-bold font-monospace small">Rp 25.000.000</span>
+              <span className="text-body fw-bold small">Rp 25.000.000</span>
             </div>
           </div>
 

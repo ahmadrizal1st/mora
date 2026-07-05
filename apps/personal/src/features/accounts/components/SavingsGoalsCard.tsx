@@ -34,7 +34,7 @@ export function SavingsGoalsCard({ goals }: SavingsGoalsCardProps) {
                     <span className="text-body fw-bold small">{g.n}</span>
                   </div>
                   <span
-                    className="fw-bold font-monospace"
+                    className="fw-bold"
                     style={{ color: g.col, fontSize: '0.8rem' }}
                   >
                     {pct}%
@@ -50,10 +50,10 @@ export function SavingsGoalsCard({ goals }: SavingsGoalsCardProps) {
                   className="d-flex justify-content-between text-secondary"
                   style={{ fontSize: '0.65rem' }}
                 >
-                  <span className="font-monospace">{(g.c / 1000000).toFixed(1)}jt</span>
-                  <span className="font-monospace text-uppercase">
-                    Target {(g.t / 1000000).toFixed(1)}jt
-                  </span>
+                  <span>{(g.c / 1000000).toFixed(1)}jt</span>
+                    <span className="text-uppercase">
+                      Target {(g.t / 1000000).toFixed(1)}jt
+                    </span>
                 </div>
               </div>
             )

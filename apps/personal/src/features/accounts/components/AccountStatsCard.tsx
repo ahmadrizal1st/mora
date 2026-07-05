@@ -35,13 +35,13 @@ export function AccountStatsCard({ stats }: AccountStatsCardProps) {
             <div className="col-6">
               <div className="p-2 bg-body-tertiary rounded text-center">
                 <div className="text-secondary small mb-1">Rerata Harian</div>
-                <div className="text-body fw-bold font-monospace">{daily_avg}</div>
+                <div className="text-body fw-bold">{daily_avg}</div>
               </div>
             </div>
             <div className="col-6">
               <div className="p-2 bg-body-tertiary rounded text-center">
                 <div className="text-secondary small mb-1">Frekuensi</div>
-                <div className="text-body fw-bold font-monospace">{frequency}</div>
+                <div className="text-body fw-bold">{frequency}</div>
               </div>
             </div>
             <div className="col-12">
