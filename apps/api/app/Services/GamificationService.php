@@ -86,10 +86,10 @@ class GamificationService
             $result[] = [
                 'id' => $quest->id,
                 'title' => $quest->title,
-                'description' => "Complete the {$quest->title} objective.", 
+                'description' => $quest->action_type, 
                 'progress' => min(100, $quest->target_count > 0 ? round(($progressCount / $quest->target_count) * 100) : 0),
-                'target_label' => $quest->target_count . ' ' . $quest->action_type,
-                'current_label' => $progressCount . ' ' . $quest->action_type,
+                'target_label' => (string) $quest->target_count,
+                'current_label' => (string) $progressCount,
                 'status' => $status,
                 'rarity' => $rarity,
                 'icon' => $this->getIconForQuest($quest->title),
@@ -104,7 +104,7 @@ class GamificationService
     
     public function getLeaderboard(string $currentUserId): array
     {
-        $profiles = GamificationProfile::with('user:id,name,avatar')
+        $profiles = GamificationProfile::with('user:id,name')
             ->orderByDesc('xp')
             ->limit(10)
             ->get();

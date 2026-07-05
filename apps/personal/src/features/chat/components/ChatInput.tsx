@@ -99,7 +99,7 @@ export function ChatInput({ onSendMessage, isTyping, onAudioUpload }: ChatInputP
       for (let i = 0; i < history.length; i++) {
         const value = history[i]
         const percent = Math.min(value / 128, 1)
-        let barHeight = Math.max(percent * canvas.height, 4)
+        const barHeight = Math.max(percent * canvas.height, 4)
         const x = startX + i * (barWidth + spacing)
         const y = (canvas.height - barHeight) / 2
         ctx.beginPath()

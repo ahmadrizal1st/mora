@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, Link } from '@tanstack/react-router'
 import { Icon } from '@/shared/components/ui/Icon'
 import { useChatStore } from '../store/useChatStore'
 import { ChatHistoryDrawer } from '../components/ChatHistoryDrawer'
@@ -161,16 +161,27 @@ export function ChatSearchPage() {
       )}
 
       <div className="flex-grow-1 d-flex flex-column h-100 min-w-0">
-        {/* Mobile sidebar toggle (only show when drawer is closed) */}
-        <div className="d-flex d-md-none px-3 pt-3">
-          {!isDrawerOpen && (
-            <button
-              className="btn btn-ghost btn-sm btn-icon rounded-3 text-muted"
-              onClick={() => setIsDrawerOpen(true)}
-            >
-              <Icon icon="layout-sidebar" size={18} />
-            </button>
-          )}
+        {/* Mobile Header */}
+        <div className="d-flex d-md-none px-3 pt-3 justify-content-between align-items-center">
+          <div style={{ width: 32, height: 32 }}>
+            {!isDrawerOpen && (
+              <div
+                className="text-muted d-flex align-items-center justify-content-center"
+                style={{ cursor: 'pointer', width: '100%', height: '100%' }}
+                onClick={() => setIsDrawerOpen(true)}
+              >
+                <Icon icon="layout-sidebar" size={20} />
+              </div>
+            )}
+          </div>
+          <Link
+            to="/dashboard"
+            className="text-muted d-flex align-items-center justify-content-center"
+            style={{ width: 32, height: 32, textDecoration: 'none' }}
+            title="Ke Beranda"
+          >
+            <Icon icon="home" size={20} />
+          </Link>
         </div>
 
         {/* ── Main Content ── */}

@@ -320,7 +320,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     if (siblings.length <= 1) return
 
     const currentIndex = siblings.findIndex(s => s.id === messageId)
-    let nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
+    const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
     
     if (nextIndex < 0 || nextIndex >= siblings.length) return
 

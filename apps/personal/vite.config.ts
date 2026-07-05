@@ -25,6 +25,8 @@ export default defineConfig(({ mode }) => {
       host: true,
       hmr: {
         host: domain,
+        protocol: 'wss',
+        clientPort: 443,
       },
       proxy: {
         '/api': {

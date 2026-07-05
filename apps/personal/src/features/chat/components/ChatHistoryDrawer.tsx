@@ -103,14 +103,14 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
         {/* Collapsed icon strip (desktop only) */}
         {!isOpen && !isMobile && (
           <div className="d-flex flex-column align-items-center py-3 gap-2 h-100">
-            <button
-              className="btn btn-ghost btn-sm btn-icon rounded-3 text-body mb-1"
+            <div
+              className="text-body mb-1 d-flex align-items-center justify-content-center"
               onClick={onToggle}
               title="Buka sidebar"
-              style={{ width: 36, height: 36 }}
+              style={{ width: 36, height: 36, cursor: 'pointer' }}
             >
               <Icon icon="layout-sidebar" size={20} />
-            </button>
+            </div>
             <button
               className="btn btn-ghost btn-sm btn-icon rounded-3 text-body"
               onClick={handleNewSession}
@@ -164,13 +164,14 @@ export function ChatHistoryDrawer({ isOpen, onToggle }: ChatHistoryDrawerProps) 
                 </div>
                 <span className="fw-semibold" style={{ fontSize: 15 }}>Morapi AI</span>
               </div>
-              <button
-                className="btn btn-ghost btn-sm btn-icon rounded-3 text-muted"
+              <div
+                className="text-muted d-flex align-items-center justify-content-center"
                 onClick={onToggle}
                 title={isMobile ? 'Tutup sidebar' : 'Perkecil sidebar'}
+                style={{ width: 32, height: 32, cursor: 'pointer' }}
               >
-                {isMobile ? <Icon icon="x" size={18} /> : <Icon icon="layout-sidebar" size={18} />}
-              </button>
+                {isMobile ? <Icon icon="x" size={20} /> : <Icon icon="layout-sidebar" size={20} />}
+              </div>
             </div>
 
             {/* Action buttons */}

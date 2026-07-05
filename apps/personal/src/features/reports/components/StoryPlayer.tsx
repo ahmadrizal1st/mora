@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useCountUp } from '@/shared/hooks/useCountUp'
+import { Icon } from '@/shared/components/ui/Icon'
 
 interface StoryPlayerProps {
   label: string
@@ -34,7 +35,7 @@ export function StoryPlayer({
   hariPalingBoros = '-',
   hariTanpaBelanja = 0,
   waktuPalingBoros = 'Sore Hari · 16:00 - 19:00',
-  dompetPeringSering = '-',
+  dompetPalingSering = '-',
   personaTitle = 'Sultan Hemat',
   personaDesc = 'Nabung terus, gaya tetap oke. Ini baru sultan.',
   personaEmoji = '👑',
@@ -465,7 +466,7 @@ export function StoryPlayer({
 
               <div className="d-flex justify-content-center align-items-center gap-2">
                 <div className="bg-white rounded p-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="1.5" stroke="var(--tblr-primary)" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M14 14l3 0" /><path d="M17 14l0 3" /><path d="M20 14l0 3" /><path d="M14 17l3 0" /><path d="M17 17l0 3" /><path d="M20 17l0 3" /></svg>
+                  <Icon icon="qrcode" size={20} stroke={1.5} style={{ color: 'var(--tblr-primary)' }} />
                 </div>
                 <span className="badge rounded-pill" style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px', fontWeight: '500' }}>
                   morapi.localhost
@@ -479,7 +480,7 @@ export function StoryPlayer({
             className="btn bg-white w-100 rounded-3 py-2 mb-3 fw-bold d-flex justify-content-center align-items-center gap-2 shadow position-relative z-3" 
             style={{ color: 'var(--tblr-primary)', fontSize: '14px' }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
+            <Icon icon="upload" size={16} stroke={2} />
             Bagikan Morapi Rewind
           </button>
           
@@ -491,7 +492,7 @@ export function StoryPlayer({
               setProgress(0)
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
+            <Icon icon="refresh" size={14} stroke={2} />
             Putar ulang
           </button>
         </div>
@@ -509,7 +510,7 @@ export function StoryPlayer({
             className="btn btn-sm btn-icon rounded-circle d-flex align-items-center justify-content-center" 
             style={{ backgroundColor: 'rgba(0,0,0,0.4)', color: 'white', width: '36px', height: '36px', border: 'none' }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+            <Icon icon="x" size={18} stroke={2.5} />
           </button>
         </div>
       </div>

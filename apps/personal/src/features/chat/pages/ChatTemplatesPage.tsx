@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, Link } from '@tanstack/react-router'
 import { Icon, Modal, ModalHeader } from '@/shared/components/ui'
 import { useChatStore } from '../store/useChatStore'
 import { ChatHistoryDrawer } from '../components/ChatHistoryDrawer'
@@ -403,14 +403,25 @@ export function ChatTemplatesPage() {
         <div className="flex-grow-1 overflow-auto chat-scrollbar-thin">
           <div className="mx-auto w-100 px-3 px-md-4 py-4" style={{ maxWidth: 900 }}>
 
-            {/* Mobile sidebar toggle */}
-            <div className="d-flex d-md-none align-items-center mb-4">
-              <button
-                className="btn btn-ghost btn-sm btn-icon rounded-3 text-muted"
-                onClick={() => setIsDrawerOpen(true)}
+            {/* Mobile Header */}
+            <div className="d-flex d-md-none justify-content-between align-items-center mb-4">
+              <div style={{ width: 32, height: 32 }}>
+                <div
+                  className="text-muted d-flex align-items-center justify-content-center"
+                  style={{ cursor: 'pointer', width: '100%', height: '100%' }}
+                  onClick={() => setIsDrawerOpen(true)}
+                >
+                  <Icon icon="layout-sidebar" size={20} />
+                </div>
+              </div>
+              <Link
+                to="/dashboard"
+                className="text-muted d-flex align-items-center justify-content-center"
+                style={{ width: 32, height: 32, textDecoration: 'none' }}
+                title="Ke Beranda"
               >
-                <Icon icon="layout-sidebar" size={18} />
-              </button>
+                <Icon icon="home" size={20} />
+              </Link>
             </div>
 
             {/* Page header */}

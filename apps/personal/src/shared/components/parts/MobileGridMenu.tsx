@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
 
 function FeatureIcon({ type }: { type: string }) {
@@ -198,7 +198,14 @@ function FeatureIcon({ type }: { type: string }) {
 
 export function MobileGridMenu() {
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [canScroll, setCanScroll] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      setCanScroll(scrollRef.current.scrollWidth > scrollRef.current.clientWidth + 5)
+    }
+  }, [])
 
   const menuItems = [
     { label: 'Dashboard', href: '/dashboard', icon: 'Analytics' },
@@ -275,21 +282,23 @@ export function MobileGridMenu() {
           ))}
         </div>
 
-        <div className="d-flex justify-content-center mt-2">
-          <div
-            className="position-relative bg-secondary-lt rounded-pill overflow-hidden"
-            style={{ width: '28px', height: '3px' }}
-          >
+        {canScroll && (
+          <div className="d-flex justify-content-center mt-2">
             <div
-              className="position-absolute h-100 bg-primary rounded-pill transition-all"
-              style={{
-                width: '10px',
-                left: `${scrollProgress * 18}px`,
-                transition: 'left 0.1s ease-out',
-              }}
-            />
+              className="position-relative bg-secondary-lt rounded-pill overflow-hidden"
+              style={{ width: '28px', height: '3px' }}
+            >
+              <div
+                className="position-absolute h-100 bg-primary rounded-pill transition-all"
+                style={{
+                  width: '10px',
+                  left: `${(Number.isNaN(scrollProgress) ? 0 : scrollProgress) * 18}px`,
+                  transition: 'left 0.1s ease-out',
+                }}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

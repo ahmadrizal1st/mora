@@ -1,4 +1,6 @@
+import { useMemo } from 'react'
 import { Chart } from '@/shared/components/ui/Chart'
+import { useTransactions } from '@/features/transaction/hooks/useTransactions'
 
 interface CategoryBreakdownCardProps {
   title?: string
@@ -7,35 +9,38 @@ interface CategoryBreakdownCardProps {
   type?: 'expense' | 'income'
 }
 
-const ACCOUNT_DATA = {
-  expense: [
-    { name: 'GoPay', value: 1850000, color: '#00AED6' },
-    { name: 'BCA', value: 960000, color: '#0066AE' },
-    { name: 'Cash', value: 320000, color: '#6c757d' },
-  ],
-  income: [
-    { name: 'BCA', value: 5200000, color: '#0066AE' },
-    { name: 'GoPay', value: 800000, color: '#00AED6' },
-  ],
-}
-
-const CATEGORY_DATA = {
-  expense: [
-    { name: 'Makanan & Minuman', value: 1200000, color: '#ef4444' },
-    { name: 'Transportasi', value: 750000, color: '#f59e0b' },
-    { name: 'Tagihan', value: 650000, color: '#3b82f6' },
-    { name: 'Belanja', value: 400000, color: '#8b5cf6' },
-    { name: 'Lainnya', value: 130000, color: '#64748b' },
-  ],
-  income: [
-    { name: 'Gaji', value: 5000000, color: '#22c55e' },
-    { name: 'Freelance', value: 1000000, color: '#3b82f6' },
-  ],
-}
-
-export function CategoryBreakdownCard({ title = 'Kategori', type = 'expense' }: CategoryBreakdownCardProps) {
+export function CategoryBreakdownCard({ title = 'Kategori', type = 'expense', dateFrom, dateTo }: CategoryBreakdownCardProps) {
   const isAccount = title === 'Dompet'
-  const data = isAccount ? ACCOUNT_DATA[type] : CATEGORY_DATA[type]
+  
+  const { data: txData, isLoading } = useTransactions({
+    type,
+    date_from: dateFrom,
+    date_to: dateTo,
+    per_page: 500,
+  })
+
+  const data = useMemo(() => {
+    if (!txData?.data) return []
+    const summary: Record<string, { name: string; value: number; color: string }> = {}
+
+    txData.data.forEach(tx => {
+      const key = isAccount ? tx.account_id : tx.category_id
+      if (!key) return
+      
+      if (!summary[key]) {
+        const item = isAccount ? tx.account : tx.category
+        summary[key] = {
+          name: item?.name || 'Lainnya',
+          value: 0,
+          color: item?.color || '#cbd5e1'
+        }
+      }
+      summary[key].value += tx.amount
+    })
+
+    const sorted = Object.values(summary).sort((a, b) => b.value - a.value)
+    return sorted
+  }, [txData, isAccount])
   const total = data.reduce((sum, d) => sum + d.value, 0)
   const fmt = (val: number) => val.toLocaleString('id-ID')
   const fmtShort = (val: number): string => {
@@ -59,9 +64,19 @@ export function CategoryBreakdownCard({ title = 'Kategori', type = 'expense' }: 
           {title}
         </div>
 
-        <div className="d-flex align-items-center gap-3">
-          {/* Donut Chart */}
-          <div style={{ width: '150px', flexShrink: 0 }}>
+        <div className="d-flex align-items-center gap-3" style={{ minHeight: '150px' }}>
+          {isLoading ? (
+            <div className="w-100 d-flex justify-content-center align-items-center">
+              <div className="spinner-border spinner-border-sm text-secondary" />
+            </div>
+          ) : data.length === 0 ? (
+            <div className="w-100 text-center text-muted" style={{ fontSize: '13px' }}>
+              Belum ada transaksi
+            </div>
+          ) : (
+            <>
+              {/* Donut Chart */}
+              <div style={{ width: '150px', flexShrink: 0 }}>
             <Chart
               key={chartId}
               chartId={chartId}
@@ -81,7 +96,7 @@ export function CategoryBreakdownCard({ title = 'Kategori', type = 'expense' }: 
           </div>
 
           {/* Legend Items */}
-          <div className="flex-grow-1 d-flex flex-column" style={{ gap: '8px' }}>
+          <div className="flex-grow-1 d-flex flex-column pe-1 custom-scrollbar" style={{ gap: '8px', maxHeight: '150px', overflowY: 'auto' }}>
             {data.map((item) => {
               const pct = total > 0 ? ((item.value / total) * 100) : 0
               const pctDisplay = pct.toFixed(1)
@@ -129,6 +144,8 @@ export function CategoryBreakdownCard({ title = 'Kategori', type = 'expense' }: 
               )
             })}
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>

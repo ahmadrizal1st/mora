@@ -288,6 +288,51 @@ Setelah Caddy dan aplikasi lain berjalan, Anda bisa mengakses project di:
 
 ---
 
+## 🌍 6. Akses Publik (Cloudflare Tunnel)
+
+Untuk mengakses aplikasi dari internet (misalnya untuk testing di HP atau akses dari luar) tanpa perlu deploy ke server, Anda bisa menggunakan Cloudflare Tunnel yang diarahkan ke Caddy.
+
+### 1. Konfigurasi `Caddyfile`
+Pastikan `Caddyfile` Anda sudah mendengarkan permintaan HTTP dari domain publik Anda (contoh: `morapi.domain-anda.com`). Caddy akan bertugas sebagai router (Reverse Proxy) yang meneruskan request dari Cloudflare ke port lokal.
+*(Catatan: Konfigurasi default di project ini sudah mencakup `http://morapi.devstudio.click` dan `http://morapi-api.devstudio.click` sebagai referensi).*
+
+### 2. Setup `cloudflared`
+1. Install cloudflared (contoh macOS: `brew install cloudflare/cloudflare/cloudflared`).
+2. Login ke akun Cloudflare: `cloudflared tunnel login`
+3. Buat tunnel baru: `cloudflared tunnel create morapi`
+4. Arahkan domain Anda ke tunnel tersebut:
+   ```bash
+   cloudflared tunnel route dns morapi morapi.domain-anda.com
+   cloudflared tunnel route dns morapi morapi-api.domain-anda.com
+   ```
+
+### 3. Buat Konfigurasi Tunnel
+Buat file `~/.cloudflared/config.yml` (di folder home OS Anda) dan atur `ingress` agar Cloudflare meneruskan trafik ke port `80` (tempat Caddy berjalan):
+```yaml
+tunnel: morapi
+credentials-file: /Users/<user-anda>/.cloudflared/<UUID-TUNNEL>.json
+
+ingress:
+  - hostname: morapi.domain-anda.com
+    service: http://127.0.0.1:80
+    originRequest:
+      httpHostHeader: morapi.domain-anda.com
+  - hostname: morapi-api.domain-anda.com
+    service: http://127.0.0.1:80
+    originRequest:
+      httpHostHeader: morapi-api.domain-anda.com
+  - service: http_status:404
+```
+
+### Menjalankan Tunnel
+Jika API, Frontend, dan Caddy (`caddy run`) sudah berjalan, Anda cukup menjalankan perintah ini di terminal baru:
+```bash
+cloudflared tunnel run morapi
+```
+Aplikasi Anda kini bisa diakses dari internet menggunakan domain publik Anda!
+
+---
+
 ## 🚀 Urutan Menjalankan Semua Service
 
 ### Quick Start (setelah setup pertama kali selesai)

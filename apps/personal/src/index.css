@@ -246,18 +246,18 @@ button[role="tab"]:focus-visible {
 
 .bottom-navbar {
   position: fixed;
-  bottom: 0.75rem; 
-  left: 1rem;
-  right: 1rem;
-  height: 4.25rem;
-  background: var(--tblr-primary); 
-  border-radius: 28px;
-  box-shadow: 0 8px 32px rgba(var(--tblr-primary-rgb), 0.4);
+  bottom: 0; 
+  left: 0;
+  right: 0;
+  height: 4.5rem;
+  background: #ffffff; 
+  box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1050;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 body.chatbot-open .bottom-navbar {
@@ -277,7 +277,7 @@ body.chatbot-open .bottom-navbar {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.7); 
+  color: var(--tblr-muted); 
   text-decoration: none !important;
   transition: all 0.25s ease;
   flex: 1;
@@ -287,7 +287,7 @@ body.chatbot-open .bottom-navbar {
 }
 
 .bottom-navbar-item.active {
-  color: #ffffff !important;
+  color: var(--tblr-primary) !important;
 }
 
 .bottom-navbar-icon-wrapper {
@@ -299,8 +299,8 @@ body.chatbot-open .bottom-navbar {
 }
 
 .bottom-navbar-label {
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   letter-spacing: 0.2px;
   color: inherit;
 }
@@ -311,48 +311,41 @@ body.chatbot-open .bottom-navbar {
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-top: -28px;
+  margin-top: -36px;
   flex: 1;
+  z-index: 10;
+}
+
+.bottom-navbar-action-wrapper .bottom-navbar-label {
+  display: none;
 }
 
 .bottom-navbar-action-btn {
-  width: 58px;
-  height: 58px;
-  background: #ffffff; 
+  width: 56px;
+  height: 56px;
+  background: var(--tblr-primary); 
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--tblr-primary); 
-  box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.15), 
-    0 0 0 5px var(--tblr-primary); 
-  transition: transform 0.2s;
+  color: #ffffff; 
+  box-shadow: 0 0 0 6px #ffffff; 
+  transition: transform 0.2s, box-shadow 0.2s;
   position: relative;
   overflow: hidden;
   border: none !important;
 }
 
-.btn-glass-glow {
-  content: '';
-  position: absolute;
-  top: -40%;
-  left: -40%;
-  width: 180%;
-  height: 180%;
-  background: radial-gradient(circle at 40% 30%, rgba(var(--tblr-primary-rgb), 0.15) 0%, transparent 60%);
-  pointer-events: none;
-}
-
 .bottom-navbar-action-btn:active {
   transform: scale(0.92);
+  box-shadow: 0 0 0 6px #ffffff;
 }
 
 .bottom-navbar-action-btn .icon {
   stroke-width: 2;
   width: 26px;
   height: 26px;
-  stroke: var(--tblr-primary) !important;
+  stroke: #ffffff !important;
 }
 
 .bottom-navbar-action-wrapper .bottom-navbar-label {
@@ -374,7 +367,7 @@ body.chatbot-open .bottom-navbar {
     right: 1rem !important;
     width: auto !important;
     min-width: 0 !important;
-    max-height: calc(100vh - 10rem) !important;
+    max-height: calc(100dvh - 10rem) !important;
     overflow-y: auto !important;
     margin: 0 !important;
     transform: none !important;
@@ -1458,4 +1451,12 @@ div.shadow-sm:not(.badge):not(.btn):not(.dropdown-menu) {
     background-color: #ffffff !important;
     color: #000000 !important;
   }
+}
+
+/* Fix mobile browser viewport cutoff (vh vs dvh) */
+html, body {
+  min-height: 100dvh;
+}
+.page, .page-wrapper {
+  min-height: 100dvh !important;
 }

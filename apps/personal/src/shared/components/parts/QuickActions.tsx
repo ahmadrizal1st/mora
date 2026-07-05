@@ -3,9 +3,9 @@ import { clsx } from 'clsx'
 
 export function QuickActions() {
   const actions = [
-    { label: 'Top Up', icon: 'square-plus' },
-    { label: 'Transfer', icon: 'coin' },
-    { label: 'Request', icon: 'arrow-down-left' },
+    { label: 'Income', icon: 'arrow-down-left' },
+    { label: 'Expense', icon: 'arrow-up-right' },
+    { label: 'Transfer', icon: 'arrows-exchange' },
     { label: 'History', icon: 'clock' },
     { label: 'Assets', icon: 'building-bank', href: '/assets' },
   ]

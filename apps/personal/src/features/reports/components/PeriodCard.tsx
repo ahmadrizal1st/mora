@@ -1,4 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
+import { Icon } from '@/shared/components/ui/Icon'
 
 interface PeriodCardProps {
   dateFrom: string
@@ -87,18 +88,7 @@ export function PeriodCard({
         <span className="fw-semibold text-dark" style={{ fontSize: '14px' }}>
           {fromLabel} - {toLabel}
         </span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18" height="18"
-          viewBox="0 0 24 24"
-          strokeWidth="2"
-          stroke="#aaa"
-          fill="none"
-          className="position-absolute end-0 me-3"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M9 6l6 6l-6 6" />
-        </svg>
+        <Icon icon="chevron-right" size={18} stroke={2} className="position-absolute end-0 me-3" style={{ color: '#aaa' }} />
       </div>
 
       {/* Rows */}

@@ -5,7 +5,7 @@ export const planningService = {
   async getGoals(): Promise<GoalsData> {
     const response = await api.get('/goals')
     
-    let rawData = response.data?.data || []
+    const rawData = response.data?.data || []
     
     const goals: Goal[] = rawData.map((item: any) => {
       let eta = ''

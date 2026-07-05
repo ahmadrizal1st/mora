@@ -214,7 +214,7 @@ export function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
         const value = history[i]
         // value is typically 0-100 for average. Map it to canvas height
         const percent = Math.min(value / 128, 1) // boost a bit
-        let barHeight = Math.max(percent * canvas.height, 4) // min height 4px
+        const barHeight = Math.max(percent * canvas.height, 4) // min height 4px
         
         const x = startX + i * (barWidth + spacing)
         const y = (canvas.height - barHeight) / 2

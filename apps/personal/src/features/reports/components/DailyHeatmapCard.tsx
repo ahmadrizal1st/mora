@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useTransactions } from '@/features/transaction/hooks/useTransactions'
 import { Chart } from '@/shared/components/ui/Chart'
+import { Icon } from '@/shared/components/ui/Icon'
 
 interface DailyHeatmapCardProps {
   dateFrom?: string
@@ -184,7 +185,7 @@ export function DailyHeatmapCard({ dateFrom, dateTo, type = 'expense' }: DailyHe
   )
 
   const renderList = () => {
-    let daysWithData = Object.keys(dailyTotals).map(Number).filter(d => dailyTotals[d] > 0)
+    const daysWithData = Object.keys(dailyTotals).map(Number).filter(d => dailyTotals[d] > 0)
     if (sortOrder === 'desc') daysWithData.reverse()
 
     return (
@@ -254,11 +255,7 @@ export function DailyHeatmapCard({ dateFrom, dateTo, type = 'expense' }: DailyHe
                 style={{ fontSize: '12px', backgroundColor: '#f4f5f7', border: 'none', color: '#4a5568' }}
                 onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M3 9l4 -4l4 4m-4 -4v14" />
-                  <path d="M21 15l-4 4l-4 -4m4 4v-14" />
-                </svg>
+                <Icon icon="arrows-sort" size={14} stroke={2} />
                 {sortOrder === 'desc' ? 'Terbaru' : 'Terlama'}
               </button>
             )}
@@ -266,49 +263,28 @@ export function DailyHeatmapCard({ dateFrom, dateTo, type = 'expense' }: DailyHe
             {/* View Type Segmented Control */}
             <div className="nav nav-pills d-flex p-1 rounded-pill" style={{ gap: '2px', backgroundColor: '#f4f5f7' }}>
               <button
-                className={`nav-link rounded-circle p-1 d-flex align-items-center justify-content-center ${viewType === 'list' ? 'active shadow-sm text-white' : 'text-secondary bg-transparent'}`}
-                style={{ width: '28px', height: '28px', backgroundColor: viewType === 'list' ? 'var(--tblr-primary)' : 'transparent' }}
+                className={`rounded-circle p-0 border-0 d-flex align-items-center justify-content-center ${viewType === 'list' ? 'shadow-sm text-white' : 'text-secondary bg-transparent'}`}
+                style={{ width: '28px', height: '28px', backgroundColor: viewType === 'list' ? 'var(--tblr-primary)' : 'transparent', outline: 'none' }}
                 onClick={() => setViewType('list')}
                 title="Daftar"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M9 6l11 0" />
-                  <path d="M9 12l11 0" />
-                  <path d="M9 18l11 0" />
-                  <path d="M5 6l0 .01" />
-                  <path d="M5 12l0 .01" />
-                  <path d="M5 18l0 .01" />
-                </svg>
+                <Icon icon="list" size={16} stroke={2} />
               </button>
               <button
-                className={`nav-link rounded-circle p-1 d-flex align-items-center justify-content-center ${viewType === 'calendar' ? 'active shadow-sm text-white' : 'text-secondary bg-transparent'}`}
-                style={{ width: '28px', height: '28px', backgroundColor: viewType === 'calendar' ? 'var(--tblr-primary)' : 'transparent' }}
+                className={`rounded-circle p-0 border-0 d-flex align-items-center justify-content-center ${viewType === 'calendar' ? 'shadow-sm text-white' : 'text-secondary bg-transparent'}`}
+                style={{ width: '28px', height: '28px', backgroundColor: viewType === 'calendar' ? 'var(--tblr-primary)' : 'transparent', outline: 'none' }}
                 onClick={() => setViewType('calendar')}
                 title="Kalender"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                  <path d="M16 3v4" />
-                  <path d="M8 3v4" />
-                  <path d="M4 11h16" />
-                  <path d="M11 15h1" />
-                  <path d="M12 15v3" />
-                </svg>
+                <Icon icon="calendar" size={16} stroke={2} />
               </button>
               <button
-                className={`nav-link rounded-circle p-1 d-flex align-items-center justify-content-center ${viewType === 'chart' ? 'active shadow-sm text-white' : 'text-secondary bg-transparent'}`}
-                style={{ width: '28px', height: '28px', backgroundColor: viewType === 'chart' ? 'var(--tblr-primary)' : 'transparent' }}
+                className={`rounded-circle p-0 border-0 d-flex align-items-center justify-content-center ${viewType === 'chart' ? 'shadow-sm text-white' : 'text-secondary bg-transparent'}`}
+                style={{ width: '28px', height: '28px', backgroundColor: viewType === 'chart' ? 'var(--tblr-primary)' : 'transparent', outline: 'none' }}
                 onClick={() => setViewType('chart')}
                 title="Grafik"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M3 21l18 0" />
-                  <path d="M7 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4" />
-                  <path d="M15 21v-8a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v8" />
-                </svg>
+                <Icon icon="chart-bar" size={16} stroke={2} />
               </button>
             </div>
           </div>
