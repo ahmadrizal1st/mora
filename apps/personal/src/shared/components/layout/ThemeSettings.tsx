@@ -17,8 +17,6 @@ const COLORS = [
   'cyan',
 ]
 
-const FONTS = ['sans-serif', 'serif', 'monospace', 'comic']
-
 const BASES = ['slate', 'gray', 'zinc', 'neutral', 'stone']
 
 const RADIUSES = ['0', '0.5', '1', '1.5', '2']
@@ -114,27 +112,7 @@ export function ThemeSettings() {
               </div>
             </div>
 
-            <div className="mb-4">
-              <label className="form-label">Font family</label>
-              <p className="form-hint">Choose the font family that fits your app.</p>
-              {FONTS.map((font) => (
-                <label className="form-check" key={font}>
-                  <div className="form-selectgroup-item">
-                    <input
-                      type="radio"
-                      name="theme-font"
-                      value={font}
-                      className="form-check-input"
-                      checked={config['theme-font'] === font}
-                      onChange={() => handleChange('theme-font', font)}
-                    />
-                    <div className="form-check-label">
-                      {font.charAt(0).toUpperCase() + font.slice(1)}
-                    </div>
-                  </div>
-                </label>
-              ))}
-            </div>
+
 
             <div className="mb-4">
               <label className="form-label">Theme base</label>
