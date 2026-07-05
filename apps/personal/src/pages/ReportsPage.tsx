@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { PeriodCard } from '@/features/reports/components/PeriodCard'
-import { useTransactionSummary, useTransactionChartData, useTransactions, useTransactionHistory } from '@/features/transaction/hooks/useTransactions'
+import { useTransactionSummary, useTransactions, useTransactionHistory } from '@/features/transaction/hooks/useTransactions'
 import { useAccounts } from '@/features/transaction/hooks/useAccounts'
 import { Button } from '@/shared/components/ui'
 import { Modal, ModalHeader } from '@/shared/components/ui/Modal'
@@ -10,6 +10,7 @@ import { Datepicker } from '@/shared/components/ui/Datepicker'
 import { Chart } from '@/shared/components/ui/Chart'
 import { CategoryBreakdownCard } from '@/features/reports/components/CategoryBreakdownCard'
 import { DailyHeatmapCard } from '@/features/reports/components/DailyHeatmapCard'
+import { Icon } from '@/shared/components/ui/Icon'
 
 type PeriodMode = 'sekarang' | 'monthly' | 'custom'
 
@@ -36,18 +37,33 @@ function MonthPeriodCard({ from, to }: { from: string; to: string }) {
   const { data, isLoading } = useTransactionSummary({ date_from: from, date_to: to })
   if (isLoading) {
     return (
-      <div className="card border-0 rounded-4 mb-3 p-4 text-center shadow-sm">
-        <div className="spinner-border spinner-border-sm text-secondary mx-auto" />
+      <div className="col-12 col-md-6">
+        <div className="card border-0 rounded-4 mb-3 p-4 text-center shadow-sm">
+          <div className="spinner-border spinner-border-sm text-secondary mx-auto" />
+        </div>
       </div>
     )
   }
+
+  const hasTransactions = data && (
+    (data.transaction_count !== undefined && data.transaction_count > 0) || 
+    data.total_income > 0 || 
+    data.total_expense > 0
+  )
+
+  if (!hasTransactions) {
+    return null
+  }
+
   return (
-    <PeriodCard
-      dateFrom={from}
-      dateTo={to}
-      income={data?.total_income || 0}
-      expense={data?.total_expense || 0}
-    />
+    <div className="col-12 col-md-6">
+      <PeriodCard
+        dateFrom={from}
+        dateTo={to}
+        income={data?.total_income || 0}
+        expense={data?.total_expense || 0}
+      />
+    </div>
   )
 }
 
@@ -80,18 +96,7 @@ function CustomPeriodCard({ title, from, to }: { title: string; from: string; to
         <span className="fw-semibold text-dark" style={{ fontSize: '14px' }}>
           {title}
         </span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18" height="18"
-          viewBox="0 0 24 24"
-          strokeWidth="2"
-          stroke="#aaa"
-          fill="none"
-          className="position-absolute end-0 me-3"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M9 6l6 6l-6 6" />
-        </svg>
+        <Icon icon="chevron-right" size={18} stroke={2} className="position-absolute end-0 me-3" style={{ color: '#aaa' }} />
       </div>
       <div>
         <div className="d-flex justify-content-between align-items-center px-4" style={{ padding: '10px 24px', borderBottom: '1px solid #fafafa', fontSize: '14px' }}>
@@ -213,9 +218,7 @@ function TodayDashboard() {
             </div>
           </div>
           <div style={{ color: '#64748b' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" fill="none">
-               <path d="M9 6l6 6l-6 6" />
-            </svg>
+            <Icon icon="chevron-right" size={20} stroke={2.5} />
           </div>
         </div>
       </div>
@@ -261,7 +264,7 @@ function TodayDashboard() {
             <div className="card-body p-4 d-flex flex-column justify-content-center">
               <div className="d-flex align-items-center gap-3">
                 <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '42px', height: '42px', backgroundColor: 'rgba(var(--tblr-primary-rgb), 0.1)', color: 'var(--tblr-primary)' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke={ratioColor} fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 20l10 0" /><path d="M6 6l6 -1l6 1" /><path d="M12 3l0 17" /><path d="M9 12l-3 -6l-3 6a3 3 0 0 0 6 0" /><path d="M21 12l-3 -6l-3 6a3 3 0 0 0 6 0" /></svg>
+                  <Icon icon="scale" size={20} stroke={2} style={{ color: ratioColor }} />
                 </div>
                 <div>
                   <div className="fw-bold text-secondary mb-1" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>RASIO ARUS KAS</div>
@@ -280,7 +283,7 @@ function TodayDashboard() {
             <div className="card-body p-4 d-flex flex-column justify-content-center">
               <div className="d-flex gap-3">
                 <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '36px', height: '36px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9h.01" /><path d="M11 12h1v4h1" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /></svg>
+                  <Icon icon="info-circle" size={20} stroke={2} />
                 </div>
                 <div>
                   <div className="fw-bold text-primary mb-1" style={{ fontSize: '12px' }}>Insight Finansial</div>
@@ -541,12 +544,6 @@ export function ReportsPage() {
     }
   }
 
-  const renderDateLabel = (dateStr: string) => {
-    if (!dateStr) return ''
-    const d = new Date(dateStr)
-    return d.toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })
-  }
-
   // Modal for adding custom report is rendered at the bottom
 
   return (
@@ -555,8 +552,8 @@ export function ReportsPage() {
       pagePretitle="INSIGHTS"
       showBackButton={false}
     >
-
-          <div className="w-100 mb-4">
+      <div className="d-flex flex-column gap-4">
+          <div className="w-100">
             <div className="w-100">
               <div className="d-flex w-100" style={{ borderBottom: '1px solid #e6e8eb' }} role="tablist">
                   {([
@@ -594,7 +591,7 @@ export function ReportsPage() {
             </div>
           </div>
 
-          <div className="d-flex justify-content-between align-items-center mb-3 btn-print-hidden">
+          <div className="d-flex justify-content-between align-items-center btn-print-hidden">
             <span className="text-secondary" style={{ fontSize: '13px' }}>
               Analisis laporan keuangan Anda
             </span>
@@ -647,9 +644,7 @@ export function ReportsPage() {
                         </div>
                       </div>
                       <div style={{ color: '#000000' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" fill="none">
-                          <path d="M9 6l6 6l-6 6" />
-                        </svg>
+                        <Icon icon="chevron-right" size={20} stroke={2.5} />
                       </div>
                     </div>
                   </div>
@@ -732,9 +727,7 @@ export function ReportsPage() {
                 <h4 className="fw-bold mb-3 text-secondary" style={{ fontSize: '11px', letterSpacing: '1px' }}>DAFTAR PERIODE</h4>
                 <div className="row g-3">
                   {months.map(({ from, to }) => (
-                    <div key={from} className="col-12 col-md-6">
-                      <MonthPeriodCard from={from} to={to} />
-                    </div>
+                    <MonthPeriodCard key={from} from={from} to={to} />
                   ))}
                 </div>
               </div>
@@ -745,11 +738,7 @@ export function ReportsPage() {
 
           {mode === 'custom' && customReports.length === 0 && (
             <div className="d-flex flex-column align-items-center justify-content-center text-secondary" style={{ minHeight: '40vh' }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none" className="mb-3 opacity-50">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M4 4h16v16H4z" stroke="none" fill="none"/>
-                <path d="M8 8v8" /><path d="M12 12v4" /><path d="M16 10v6" />
-              </svg>
+              <Icon icon="chart-bar" size={48} stroke={1.5} className="mb-3 opacity-50" />
               <div className="fw-bold text-dark mb-1" style={{ fontSize: '16px' }}>Belum ada laporan buatanmu</div>
               <div style={{ fontSize: '13px' }}>Ketuk + buat laporan dengan rentang tanggal sendiri.</div>
             </div>
@@ -770,18 +759,14 @@ export function ReportsPage() {
             style={{ width: '48px', height: '48px', bottom: '24px', right: '24px', zIndex: 1000 }}
             onClick={() => setIsAddingCustom(true)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <path d="M12 5l0 14" />
-              <path d="M5 12l14 0" />
-            </svg>
+            <Icon icon="plus" size={24} stroke={2} />
           </button>
         )}
         
       <Modal show={isAddingCustom} onClose={() => setIsAddingCustom(false)} size="md">
         <ModalHeader title="Tambah Laporan" onClose={() => setIsAddingCustom(false)} />
         <div className="modal-body p-4">
-            <div className="mb-3">
+            <div>
               <label className="form-label">Nama Laporan <span className="text-danger">*</span></label>
               <input
                 type="text"
@@ -811,22 +796,19 @@ export function ReportsPage() {
               </div>
             </div>
 
-            <div className="d-flex justify-content-end gap-2 mt-4">
-              <Button element="button" type="button" link className="text-muted" onClick={() => setIsAddingCustom(false)}>Batal</Button>
-              <Button 
-                element="button" 
-                type="button" 
-                color="primary" 
-                icon="check" 
-                disabled={!customName || !customFrom || !customTo}
+            <div className="d-flex justify-content-end gap-2">
+              <button className="btn btn-light rounded-3" onClick={() => setIsAddingCustom(false)}>Batal</button>
+              <button 
+                className="btn btn-primary rounded-3 d-flex align-items-center gap-1"
                 onClick={handleSaveCustom}
+                disabled={!customName || !customFrom || !customTo}
               >
-                Simpan
-              </Button>
+                <Icon icon="device-floppy" size={16} /> Simpan
+              </button>
             </div>
-        </div>
+          </div>
       </Modal>
-
+    </div>
     </BaseLayout>
   )
 }

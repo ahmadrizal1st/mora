@@ -1,6 +1,5 @@
 import { useMemo, type FC, type MouseEvent } from 'react'
 import { Icon, Spinner } from '@/shared/components/ui'
-import { useTransactionModalStore } from '../store/useTransactionModalStore'
 import clsx from 'clsx'
 import type { Transaction } from '../types/transaction.types'
 
@@ -24,7 +23,6 @@ export const TransactionList: FC<TransactionListProps> = ({
   isFetchingNextPage,
   lastElementRef,
 }) => {
-  const { openChatbotModal } = useTransactionModalStore()
 
   const groupedByMonth = useMemo(() => {
     if (!transactions) return {}

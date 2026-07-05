@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo, useRef, useCallback, type FC, type MouseEvent } from 'react'
 import BaseLayout from '@/shared/layouts/BaseLayout'
-import { Icon, Pagination, DropdownGrouping, Modal, Button } from '@/shared/components/ui'
+import { Icon, Pagination, Modal, Button } from '@/shared/components/ui'
 import {
   useTransactions,
   useTransactionSummary,
-  useDeleteTransaction,
   useTransactionHistory,
   useInfiniteTransactions,
 } from '../hooks/useTransactions'
@@ -22,7 +21,7 @@ export const TransactionListPage: FC = () => {
     per_page: 15,
   })
 
-  const { openChatbotModal, openForm, setTxToDelete, isMethodModalOpen } =
+  const { openChatbotModal, openForm, isMethodModalOpen } =
     useTransactionModalStore()
 
   const [isMobile, setIsMobile] = useState(
@@ -33,6 +32,10 @@ export const TransactionListPage: FC = () => {
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false)
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+
+  const [viewMode, setViewMode] = useState<'table' | 'list'>('list')
+
+  const [groupBy] = useState<'day' | 'week' | 'month' | 'year'>('day')
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,10 +51,6 @@ export const TransactionListPage: FC = () => {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-
-  const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day')
-
-  const [viewMode, setViewMode] = useState<'table' | 'list'>('list')
 
   const { data: response, isLoading: isLoadingTx } = useTransactions(filters)
   const {
@@ -107,8 +106,6 @@ export const TransactionListPage: FC = () => {
     group_by: groupBy,
   })
 
-  const deleteMutation = useDeleteTransaction()
-
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -120,7 +117,9 @@ export const TransactionListPage: FC = () => {
 
       try {
         ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
-      } catch (err) {}
+      } catch {
+        // Do nothing
+      }
 
       if (window.navigator && window.navigator.vibrate) {
         window.navigator.vibrate(50)

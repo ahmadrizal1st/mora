@@ -1,7 +1,6 @@
 import { type FC, type MouseEvent, type ReactNode, useMemo } from 'react'
 import { Icon, Badge, Spinner } from '@/shared/components/ui'
 import type { Transaction } from '../types/transaction.types'
-import { useTransactionModalStore } from '../store/useTransactionModalStore'
 
 interface TransactionTableProps {
   transactions: Transaction[] | undefined
@@ -11,7 +10,6 @@ interface TransactionTableProps {
   getSortIcon: (column: string) => ReactNode
   formatCurrency: (amount: number) => string
   formatDate: (dateString: string, type?: 'date' | 'time') => string
-  openChatbotModal: () => void
 }
 
 export const TransactionTable: FC<TransactionTableProps> = ({
@@ -23,7 +21,6 @@ export const TransactionTable: FC<TransactionTableProps> = ({
   formatCurrency,
   formatDate,
 }) => {
-  const { openChatbotModal } = useTransactionModalStore()
   const transactionList = useMemo(() => transactions ?? [], [transactions])
   return (
     <div className="table-responsive border-0">

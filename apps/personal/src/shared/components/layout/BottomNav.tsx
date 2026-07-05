@@ -12,18 +12,16 @@ export function BottomNav() {
   const { openChatbotModal } = useTransactionModalStore()
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const isAllowedPath =
-    currentPath === '/' ||
-    currentPath.startsWith('/dashboard') ||
-    currentPath.startsWith('/activity') ||
-    currentPath.startsWith('/planning')
+  if (!isAuthenticated) return null
 
-  if (!isAuthenticated || !isAllowedPath) return null
-
+  // Hide BottomNav on chat pages to prevent overlap with chat input
+  if (currentPath.startsWith('/ai')) {
+    return null
+  }
   const navItems = [
     { label: 'Home', icon: 'home', href: '/dashboard' },
     { label: 'Laporan', icon: 'report', href: '/reports' },
-    { label: 'Tracker', icon: 'scan', href: '#', isAction: true },
+    { label: 'Tracker', icon: 'plus', href: '#', isAction: true },
     { label: 'Planning', icon: 'target', href: '/planning' },
     { label: 'Chat', icon: 'message-circle', href: '/ai/chat/' },
   ]
@@ -44,7 +42,9 @@ export function BottomNav() {
 
       try {
         ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
-      } catch (err) {}
+      } catch {
+        // Do nothing
+      }
 
       if (window.navigator && window.navigator.vibrate) {
         window.navigator.vibrate(50)
@@ -79,15 +79,14 @@ export function BottomNav() {
             return (
               <div key={item.label} className="bottom-navbar-action-wrapper">
                 <button
-                  className="bottom-navbar-action-btn border-0 p-0"
+                  className="bottom-navbar-action-btn border-0 p-0 text-white"
                   onPointerDown={handlePointerDown}
                   onPointerUp={handlePointerUp}
                   onPointerLeave={handlePointerUp}
                   onContextMenu={handleContextMenu}
                   style={{ touchAction: 'none' }}
                 >
-                  <div className="btn-glass-glow"></div>
-                  <Icon icon={item.icon} stroke={2} size={26} />
+                  <Icon icon={item.icon} stroke={2} size={26} className="text-white" />
                 </button>
                 <span className="bottom-navbar-label">{item.label}</span>
               </div>

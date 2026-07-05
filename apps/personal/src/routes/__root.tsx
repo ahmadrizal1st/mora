@@ -5,7 +5,6 @@ import {
   useRouteContext,
 } from '@tanstack/react-router'
 import type { ErrorComponentProps } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { QueryProvider } from '@/app/providers/QueryProvider'
 import { ThemeProvider } from '@/app/providers/ThemeProvider'
 import { ThemeSettings } from '@/shared/components/layout/ThemeSettings'
@@ -101,7 +100,7 @@ function RootComponent() {
         <GlobalTransactionModals />
         <BottomNav />
         <ThemeSettings />
-        {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}
+        {/* {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />} */}
       </ThemeProvider>
     </QueryProvider>
   )
