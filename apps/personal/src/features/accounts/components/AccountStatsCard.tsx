@@ -1,5 +1,4 @@
 import { Icon } from '@/shared/components/ui/Icon'
-import { Link } from '@tanstack/react-router'
 
 export interface AccountStats {
   daily_avg: string

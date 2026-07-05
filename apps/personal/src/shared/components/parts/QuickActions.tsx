@@ -1,13 +1,15 @@
 import { Icon } from '../ui/Icon'
 import { clsx } from 'clsx'
+import { useTransactionModalStore } from '@/features/transaction/store/useTransactionModalStore'
+import type { Transaction } from '@/features/transaction/types/transaction.types'
 
 export function QuickActions() {
+  const { openForm } = useTransactionModalStore()
+
   const actions = [
-    { label: 'Income', icon: 'arrow-down-left' },
-    { label: 'Expense', icon: 'arrow-up-right' },
-    { label: 'Transfer', icon: 'arrows-exchange' },
-    { label: 'History', icon: 'clock' },
-    { label: 'Assets', icon: 'building-bank', href: '/assets' },
+    { label: 'Income', icon: 'arrow-down-left', type: 'income' },
+    { label: 'Expense', icon: 'arrow-up-right', type: 'expense' },
+    { label: 'Transfer', icon: 'arrows-exchange', type: 'transfer' },
   ]
 
   return (
@@ -22,10 +24,14 @@ export function QuickActions() {
                 i < actions.length - 1 && 'border-end border-white-50'
               )}
             >
-              <a
-                href={a.href || '#'}
+              <div
+                onClick={() => {
+                  if (a.type) {
+                    openForm({ type: a.type } as unknown as Transaction)
+                  }
+                }}
                 style={{ cursor: 'pointer', textDecoration: 'none' }}
-                className="d-flex flex-column align-items-center text-white"
+                className="d-flex flex-column align-items-center text-white w-100"
               >
                 <div className="mb-0">
                   <Icon icon={a.icon} color="white" size="sm" />
@@ -36,7 +42,7 @@ export function QuickActions() {
                 >
                   {a.label}
                 </div>
-              </a>
+              </div>
             </div>
           ))}
         </div>

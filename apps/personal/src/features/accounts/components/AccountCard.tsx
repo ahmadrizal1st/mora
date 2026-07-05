@@ -25,7 +25,7 @@ export function AccountCard({
   color,
   onClick,
 }: AccountCardProps) {
-  const { icon, isBank, isCash, isInvest, logo: resolvedLogo, color: resolvedColor } = getAccountVisualMeta(type, color, logo)
+  const { icon, isBank, logo: resolvedLogo, color: resolvedColor } = getAccountVisualMeta(type, color, logo)
   
   const isHex = resolvedColor?.startsWith('#')
   const textColor = isHex ? getContrastYIQ(resolvedColor!) : 'white'

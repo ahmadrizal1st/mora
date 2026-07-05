@@ -191,6 +191,43 @@ function FeatureIcon({ type }: { type: string }) {
           <path d="M12 7v5l3 3" stroke={Primary} strokeWidth="2" strokeLinecap="round" />
         </svg>
       )
+    case 'Debt':
+      return (
+        <svg {...iconProps}>
+          <rect x="3" y="6" width="18" height="12" rx="2" stroke={Indigo} strokeWidth="1.5" />
+          <path d="M3 10h18" stroke={Indigo} strokeWidth="1.5" />
+          <path d="M8 14h4" stroke={Primary} strokeWidth="2" />
+        </svg>
+      )
+    case 'Report':
+      return (
+        <svg {...iconProps}>
+          <rect x="4" y="4" width="16" height="16" rx="2" stroke={Indigo} strokeWidth="1.5" />
+          <path d="M8 16v-4m4 4v-8m4 8v-6" stroke={Primary} strokeWidth="1.5" />
+        </svg>
+      )
+    case 'Recap':
+      return (
+        <svg {...iconProps}>
+          <path d="M4 6h16M4 12h16M4 18h8" stroke={Indigo} strokeWidth="1.5" />
+          <circle cx="18" cy="18" r="3" stroke={Primary} strokeWidth="1.5" />
+        </svg>
+      )
+    case 'Settings':
+      return (
+        <svg {...iconProps}>
+          <circle cx="12" cy="12" r="4" stroke={Indigo} strokeWidth="1.5" />
+          <path d="M12 4v2m0 12v2m8-8h-2m-12 0H2m14.24-5.66l-1.41 1.41M5.17 18.83l1.41-1.41m12.02 0l-1.41-1.41M5.17 5.17l1.41 1.41" stroke={Primary} strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      )
+    case 'Budget':
+      return (
+        <svg {...iconProps}>
+          <path d="M19 11v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" stroke={Indigo} strokeWidth="1.5" />
+          <path d="M5 8h14v3H5z" stroke={Indigo} strokeWidth="1.5" />
+          <path d="M12 11v3" stroke={Primary} strokeWidth="2" />
+        </svg>
+      )
     default:
       return null
   }
@@ -208,14 +245,16 @@ export function MobileGridMenu() {
   }, [])
 
   const menuItems = [
-    { label: 'Dashboard', href: '/dashboard', icon: 'Analytics' },
-    { label: 'Assets', href: '/assets', icon: 'Assets' },
-    { label: 'Tracker', href: '/tracker', icon: 'Tracker' },
-    { label: 'Planning', href: '/planning', icon: 'Goals' },
-    { label: 'Credit', href: '/credit', icon: 'Security' },
-    { label: 'Achievements', href: '/achievements', icon: 'Trophy' },
-    { label: 'History', href: '/activity', icon: 'History' },
+    { label: 'Activity', href: '/activity', icon: 'History' },
+    { label: 'Debt', href: '/debts', icon: 'Debt' },
     { label: 'Accounts', href: '/accounts', icon: 'Portfolio' },
+    { label: 'Budget', href: '/planning/budget', icon: 'Budget' },
+    { label: 'Goals', href: '/planning/goals', icon: 'Goals' },
+    { label: 'Subs', href: '/planning/subscriptions', icon: 'Subs' },
+    { label: 'Reports', href: '/reports', icon: 'Report' },
+    { label: 'Recap', href: '/reports/recap', icon: 'Recap' },
+    { label: 'Settings', href: '/settings', icon: 'Settings' },
+    { label: 'Morapi AI', href: '/ai/chat', icon: 'AI Advisor' },
   ]
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {

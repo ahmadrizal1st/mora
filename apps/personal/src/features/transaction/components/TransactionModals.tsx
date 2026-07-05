@@ -32,7 +32,7 @@ export const TransactionModals: React.FC<TransactionModalsProps> = ({
     <>
       <Modal show={isFormOpen} scrollable size="lg">
         <ModalHeader
-          title={editingTransaction ? 'Edit Transaksi' : 'Tambah Transaksi'}
+          title={editingTransaction?.id ? 'Edit Transaksi' : 'Tambah Transaksi'}
           onClose={onFormClose}
         />
         <div className="modal-body p-4">
