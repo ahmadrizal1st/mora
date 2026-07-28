@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+
+case "${1:-}" in
+    run)
+        shift
+        exec "$DIR/script/run.sh" "$@"
+        ;;
+    stop)
+        lsof -ti :8000 -ti :5173 2>/dev/null | xargs kill -9 2>/dev/null || true
+        caddy stop 2>/dev/null || true
+        echo "[OK] Services stopped"
+        ;;
+    *)
+        echo "Usage: morapi <command>"
+        echo ""
+        echo "Commands:"
+        echo "  run [local|docker]   Start development services (default: local)"
+        echo "  stop                 Stop all services"
+        ;;
+esac

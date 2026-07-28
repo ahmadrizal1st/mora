@@ -1,525 +1,137 @@
-# Morapi  Monorepo Setup Guide
+# Morapi Monorepo
 
-Monorepo ini terdiri dari **4 aplikasi** yang saling terhubung. Semua service harus berjalan agar sistem berfungsi penuh.
+Monorepo fintech personal finance management. Terdiri dari **3 aplikasi**:
 
+| App | Tech | Port |
+|-----|------|------|
+| `apps/api` | Laravel 13 (PHP 8.3) — REST API + Queue | `:8000` |
+| `apps/personal` | React 19 + Vite (TypeScript) — Frontend | `:5173` |
+| `apps/ai` | FastAPI (Python) — AI/ML Service (OCR, STT) | `:8001` |
+
+## Quick Start
+
+### Lokal (langsung)
+
+```bash
+./run.sh
 ```
-apps/
-├── api/        → Laravel 13 (REST API + Queue)
-├── personal/   → React + Vite (Frontend)
-├── ai/         → FastAPI (AI & Audio ML Service)
-├── business/   → (coming soon)
-└── logistic/   → (coming soon)
+
+Akses: **https://morapi.localhost** — Login: `user@morapi.com` / `password`
+
+> Butuh `caddy` untuk akses HTTPS via `*.morapi.localhost`. Install: `brew install caddy`
+
+### Docker
+
+```bash
+./run.sh docker
 ```
 
----
+Akses: **http://localhost:5173** (tidak perlu Caddy)
 
-## 📋 Persyaratan Sistem
+> Service AI butuh min **8GB RAM** untuk model ML.
 
-| Tool | Versi Minimum | Dibutuhkan oleh |
-|------|--------------|-----------------|
+## Persyaratan Sistem
+
+| Tool | Versi | Untuk |
+|------|-------|-------|
 | PHP | ^8.3 | Laravel API |
 | Composer | latest | Laravel API |
 | Node.js | ^20 | Frontend |
 | pnpm | latest | Frontend |
-| Python | ^3.10 | AI FastAPI |
-| PostgreSQL | ^14 | Laravel API |
-| Poppler | latest | AI (pdf2image) |
+| PostgreSQL | ^14 | Database |
+| Caddy | latest | Reverse Proxy (opsional) |
 
-> Install Poppler di macOS: `brew install poppler`
+## Konfigurasi `.env`
 
----
+### API (`apps/api/.env`)
 
-## 🗄️ 1. Database (PostgreSQL)
-
-Pastikan PostgreSQL sudah berjalan dan buat database:
-
-```bash
-psql -U postgres
-```
-
-```sql
-CREATE DATABASE morapi;
-\q
-```
-
-Konfigurasi database ada di `apps/api/.env`:
+Edit jika perlu:
 
 ```env
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
 DB_DATABASE=morapi
 DB_USERNAME=postgres
 DB_PASSWORD=123
-```
 
----
-
-## ⚙️ 2. Laravel API (`apps/api`)
-
-### Setup Pertama Kali
-
-```bash
-cd apps/api
-
-# 1. Install dependencies PHP
-composer install
-
-# 2. Salin file env
-cp .env.example .env
-
-# 3. Generate app key
-php artisan key:generate
-
-# 4. Jalankan migrasi database
-php artisan migrate
-
-# 5. (Opsional) Jalankan seeder jika tersedia
-php artisan db:seed
-```
-
-### Konfigurasi `.env` Wajib
-
-```env
-# App
-APP_URL=https://api.morapi.localhost
-FRONTEND_URL=https://morapi.localhost
-
-# Database PostgreSQL
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=morapi
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
-
-# Queue  WAJIB database agar LLM job berjalan
-QUEUE_CONNECTION=database
-
-# Mail (OTP)  Wajib untuk registrasi dan reset password
-# Default: log (development, OTP disimpan di log)
-# Untuk production, gunakan SendGrid atau Mailgun (lihat .env.example)
-MAIL_MAILER=log
-MAIL_FROM_ADDRESS="hello@example.com"
-MAIL_FROM_NAME="${APP_NAME}"
-
-# LLM Keys (salah satu wajib diisi)
-GEMINI_API_KEY=your_gemini_api_key
+# LLM API Keys (salah satu wajib untuk fitur tracker)
 GROQ_API_KEY=your_groq_api_key
+GEMINI_API_KEY=your_gemini_api_key
 
-# AI Service (untuk tracker Image & File)
-AI_URL=http://localhost:8001/api/extract
-AI_KEY=your-secret-api-key
-
-# OAuth Google
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_REDIRECT_URL="${FRONTEND_URL}/auth/google/callback"
-
-# Security
-API_KEY=morapi_secure_secret_key_2026
+# API Key untuk middleware (harus sama dengan frontend)
+API_KEY=morapipipi_secure_api_key_2026
 ```
 
-### Catatan Tentang OTP (One-Time Password)
-- OTP dikirimkan via email untuk verifikasi registrasi dan reset password
-- Di development (`MAIL_MAILER=log`), OTP dapat dilihat di `storage/logs/laravel.log`
-- Untuk membersihkan OTP yang sudah kedaluwarsa secara otomatis, command `otp:cleanup` dijadwalkan berjalan setiap jam (config di `routes/console.php`)
-- Untuk menjalankan command secara manual:
-  ```bash
-  cd apps/api
-  php artisan otp:cleanup
-  ```
-
-### Menjalankan API
-
-**Cara 1  Satu perintah (recommended, jalankan semua sekaligus):**
-
-```bash
-cd apps/api
-composer run dev
-```
-
-> Perintah ini menjalankan secara bersamaan: Laravel server, Queue worker, Log viewer (Pail), dan Vite.
-
-**Cara 2  Manual (pisah terminal):**
-
-```bash
-# Terminal A  Laravel server
-cd apps/api
-php artisan serve
-# Berjalan di: http://127.0.0.1:8000
-
-# Terminal B  Queue Worker (WAJIB untuk LLM job)
-cd apps/api
-php artisan queue:work --tries=3
-
-# Terminal C  (Opsional) Log viewer real-time
-cd apps/api
-php artisan pail
-```
-
-> ⚠️ **Queue worker wajib dijalankan.** Tanpanya, semua proses AI/LLM (tracker image, file, text, audio) tidak akan dieksekusi meskipun data sudah tersimpan.
-
----
-
-## 🤖 3. AI FastAPI Service (`apps/ai`)
-
-Digunakan untuk tracker **Image**, **File**, dan **Audio**. Tracker **Text** tidak memerlukan service ini.
-
-### Setup Pertama Kali
-
-```bash
-cd apps/ai
-
-# 1. Buat virtual environment
-python3 -m venv venv
-
-# 2. Aktifkan venv
-source venv/bin/activate  # macOS/Linux
-# atau: venv\Scripts\activate  (Windows)
-
-# 3. Install dependencies Python
-pip install -r requirements.txt
-# ⚠️ Proses ini lama  surya-ai & faster-whisper perlu download model ML
-
-# 4. Salin dan konfigurasi env
-cp .env.template .env
-```
-
-### Konfigurasi `.env`
+### Frontend (`apps/personal/.env`)
 
 ```env
-APP_NAME="AI Service"
-APP_ENV="development"
-APP_PORT=8001
-APP_HOST="0.0.0.0"
-
-UPLOAD_DIR="./uploads"
-MODEL_CACHE_DIR="./.models"
-
-# Harus sama dengan AI_KEY di apps/api/.env
-API_KEY="morapi_secure_secret_key_2026"
+VITE_API_URL=http://127.0.0.1:8000
+VITE_API_KEY=morapipipi_secure_api_key_2026   # Harus sama dengan API_KEY di api/.env
 ```
 
-### Menjalankan AI Service
+## Manual Setup
 
 ```bash
-cd apps/ai
-source venv/bin/activate
+# API
+cd apps/api
+cp .env.example .env               # lalu edit .env
+composer install
+php artisan key:generate
+php artisan migrate --seed
 
-# Development (dengan auto-reload)
-uvicorn main:app --reload --host 0.0.0.0 --port 8001
-
-# Production (multi-worker)
-uvicorn main:app --host 0.0.0.0 --port 8001 --workers 4
-```
-
-Service berjalan di: `http://localhost:8001`
-Dokumentasi API: `http://localhost:8001/docs`
-
-### Alternatif  Jalankan dengan Docker
-
-```bash
-cd apps/ai
-docker-compose up --build
-```
-
-> Docker image memerlukan minimal **8GB RAM** (untuk model ML surya-ai & faster-whisper).
-
----
-
-## 💻 4. Frontend React (`apps/personal`)
-
-### Setup Pertama Kali
-
-```bash
+# Frontend
 cd apps/personal
-
-# Install dependencies
+cp .env.example .env                # lalu edit .env
 pnpm install
 ```
 
-### Konfigurasi Environment
+## Service per Fitur
 
-Buat file `.env.local` di `apps/personal/`:
+| Fitur | PostgreSQL | API | Queue Worker | AI FastAPI | LLM Key |
+|-------|:----------:|:---:|:------------:|:----------:|:-------:|
+| Text | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Image | ✅ | ✅ | ✅ | ✅ | ✅ |
+| File | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Audio | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-```env
-VITE_API_URL=http://127.0.0.1:8000/api
-```
+> Queue Worker WAJIB jalan. Tanpanya hasil tracker tidak akan diproses ke database.
 
-### Menjalankan Frontend
+## API Endpoints
 
-```bash
-cd apps/personal
-pnpm dev
-# Berjalan di: http://localhost:5173 (atau port yang tersedia)
-```
-
----
-
-## 🌐 5. Caddy Server (Local HTTPS)
-
-Project ini menyertakan `Caddyfile` di *root directory* untuk memudahkan akses melalui HTTPS menggunakan custom domain `*.localhost`. Caddy berfungsi sebagai *Reverse Proxy* untuk service-service di atas.
-
-### Setup Caddy
-Install Caddy (macOS menggunakan Homebrew):
-```bash
-brew install caddy
-```
-
-### Konfigurasi Domain
-Berdasarkan `Caddyfile`, port yang diarahkan adalah:
-- **morapi.localhost** ──→ `127.0.0.1:5173` (Frontend)
-- **api.morapi.localhost** ──→ `127.0.0.1:8000` (Laravel API)
-- **ai.morapi.localhost** ──→ `127.0.0.1:8001` (AI Service)
-
-### Menjalankan Caddy
-Buka terminal di **folder root project (`morapi/`)**:
-```bash
-caddy start  # Menjalankan di background
-# ATAU
-caddy run    # Menjalankan di foreground (terlihat log)
-```
-
-Setelah Caddy dan aplikasi lain berjalan, Anda bisa mengakses project di:
-- **Frontend:** [https://morapi.localhost](https://morapi.localhost)
-- **API:** [https://api.morapi.localhost](https://api.morapi.localhost)
-- **AI Service:** [https://ai.morapi.localhost](https://ai.morapi.localhost)
-
----
-
-## 🌍 6. Akses Publik (Cloudflare Tunnel)
-
-Untuk mengakses aplikasi dari internet (misalnya untuk testing di HP atau akses dari luar) tanpa perlu deploy ke server, Anda bisa menggunakan Cloudflare Tunnel yang diarahkan ke Caddy.
-
-### 1. Konfigurasi `Caddyfile`
-Pastikan `Caddyfile` Anda sudah mendengarkan permintaan HTTP dari domain publik Anda (contoh: `morapi.domain-anda.com`). Caddy akan bertugas sebagai router (Reverse Proxy) yang meneruskan request dari Cloudflare ke port lokal.
-*(Catatan: Konfigurasi default di project ini sudah mencakup `http://morapi.devstudio.click` dan `http://morapi-api.devstudio.click` sebagai referensi).*
-
-### 2. Setup `cloudflared`
-1. Install cloudflared (contoh macOS: `brew install cloudflare/cloudflare/cloudflared`).
-2. Login ke akun Cloudflare: `cloudflared tunnel login`
-3. Buat tunnel baru: `cloudflared tunnel create morapi`
-4. Arahkan domain Anda ke tunnel tersebut:
-   ```bash
-   cloudflared tunnel route dns morapi morapi.domain-anda.com
-   cloudflared tunnel route dns morapi morapi-api.domain-anda.com
-   ```
-
-### 3. Buat Konfigurasi Tunnel
-Buat file `~/.cloudflared/config.yml` (di folder home OS Anda) dan atur `ingress` agar Cloudflare meneruskan trafik ke port `80` (tempat Caddy berjalan):
-```yaml
-tunnel: morapi
-credentials-file: /Users/<user-anda>/.cloudflared/<UUID-TUNNEL>.json
-
-ingress:
-  - hostname: morapi.domain-anda.com
-    service: http://127.0.0.1:80
-    originRequest:
-      httpHostHeader: morapi.domain-anda.com
-  - hostname: morapi-api.domain-anda.com
-    service: http://127.0.0.1:80
-    originRequest:
-      httpHostHeader: morapi-api.domain-anda.com
-  - service: http_status:404
-```
-
-### Menjalankan Tunnel
-Jika API, Frontend, dan Caddy (`caddy run`) sudah berjalan, Anda cukup menjalankan perintah ini di terminal baru:
-```bash
-cloudflared tunnel run morapi
-```
-Aplikasi Anda kini bisa diakses dari internet menggunakan domain publik Anda!
-
----
-
-## 🚀 Urutan Menjalankan Semua Service
-
-### Quick Start (setelah setup pertama kali selesai)
-
-Buka **4 terminal** secara bersamaan:
-
-**Terminal 1  Laravel API Server**
-```bash
-cd apps/api
-php artisan serve
-# Berjalan di: http://127.0.0.1:8000
-```
-
-**Terminal 2  Queue Worker ⚠️ WAJIB**
-```bash
-cd apps/api
-php artisan queue:work --tries=3
-# Restart queue
-php artisan queue:restart
-# Memproses job LLM (AI result → transaksi)
-# Tanpa ini, hasil tracker TIDAK akan tersimpan ke database
-```
-
-**Terminal 3  AI FastAPI ML Service** 
-```bash
-cd apps/ai
-source venv/bin/activate
-uvicorn main:app --reload --host 0.0.0.0 --port 8001
-# Berjalan di: http://localhost:8001
-# Dibutuhkan untuk tracker Image, File, dan Audio
-# Tracker Text TIDAK memerlukan service ini
-```
-
-**Terminal 4  Frontend React**
-```bash
-cd apps/personal
-pnpm dev
-# Berjalan di: http://localhost:5173
-```
-
-**Terminal 5  Caddy (Reverse Proxy)**
-```bash
-caddy run
-# Mengarahkan domain *.localhost ke port di atas
-```
-
-> ✨ **Akses Aplikasi:** Setelah semua service berjalan, buka browser Anda ke:
-> - 🌐 **[http://morapi.localhost](http://morapi.localhost)** (Untuk melihat tampilan UI/Frontend)
-> - ⚙️ **[http://api.morapi.localhost](http://api.morapi.localhost)** (Untuk mengakses API backend)
-
-> 💡 **Shortcut:** Untuk Terminal 1 + 2 sekaligus, gunakan `composer run dev` di `apps/api`. Perintah ini menjalankan Laravel server, queue worker, dan log viewer dalam satu proses menggunakan `concurrently`.
-
-```bash
-# Alternatif  Terminal 1 & 2 digabung
-cd apps/api && composer run dev
-```
-
----
-
-## 🗺️ Arsitektur & Alur per Fitur Tracker
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Frontend (React/Vite)                       │
-│                         :5173                                       │
-└─────────────────────────┬───────────────────────────────────────────┘
-                          │ HTTP Request
-                          ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      Laravel API (PHP 8.3)                          │
-│                      :8000                                          │
-│                                                                     │
-│  POST /api/documents/upload  ──→ [upload()]                         │
-│  POST /api/documents/text    ──→ [processText()]                    │
-└──────────────┬───────────────────────────────┬──────────────────────┘
-               │                               │
-     (Image/File/Audio)               (Text  bypass AI)
-               │                               │
-               ▼                               │
-┌──────────────────────────┐                   │
-│   AI FastAPI (Python)   │                   │
-│   :8001/api/extract      │                   │
-│   surya-ai / whisper    │                   │
-└──────────────┬───────────┘                   │
-               │ raw_text                      │ raw_text
-               └───────────────┬───────────────┘
-                                ▼
-                    ┌─────────────────────┐
-                    │  Database Queue     │
-                    │  (PostgreSQL)       │
-                    └──────────┬──────────┘
-                                │
-                                ▼
-                    ┌─────────────────────┐
-                    │  Queue Worker       │
-                    │  ProcessAIResult   │
-                    │  (php artisan       │
-                    │   queue:work)       │
-                    └──────────┬──────────┘
-                                │
-                                ▼
-                    ┌─────────────────────┐
-                    │  LLM Mapper         │
-                    │  (Gemini / Groq)    │
-                    └──────────┬──────────┘
-                                │ structured JSON
-                                ▼
-                    ┌─────────────────────┐
-                    │  transactions table │
-                    │  (PostgreSQL)       │
-                    └─────────────────────┘
-```
-
-### Service yang Dibutuhkan per Fitur
-
-| Fitur Tracker | PostgreSQL | Laravel API | Queue Worker | AI FastAPI | LLM Key |
-|---------------|:----------:|:-----------:|:------------:|:-----------:|:-------:|
-| **Text**      | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **Image**     | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **File**      | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Audio**     | ✅ | ✅ | ✅ | ✅ | ✅ |
-
----
-
-## 🔑 API Endpoints Utama
-
-| Method | Endpoint | Keterangan |
-|--------|----------|------------|
-| POST | `/api/auth/register` | Registrasi user |
-| POST | `/api/auth/verify-otp` | Verifikasi OTP registrasi |
-| POST | `/api/auth/login` | Login user |
-| POST | `/api/auth/forgot-password` | Request OTP reset password |
-| POST | `/api/auth/reset-password` | Reset password dengan OTP |
-| POST | `/api/auth/resend-otp` | Kirim ulang OTP |
-| POST | `/api/auth/logout` | Logout user |
-| POST | `/api/auth/refresh` | Refresh token |
-| GET | `/api/auth/me` | Dapatkan data user yang login |
+| Method | Endpoint | Fungsi |
+|--------|----------|--------|
+| POST | `/api/auth/login` | Login |
+| POST | `/api/auth/register` | Registrasi |
 | GET | `/api/transactions` | List transaksi |
-| POST | `/api/documents/upload` | Upload file (AI) |
-| POST | `/api/documents/text` | Input teks langsung (bypass AI) |
+| POST | `/api/documents/upload` | Upload file (Image/File/Audio) |
+| POST | `/api/documents/text` | Input teks langsung |
 | GET | `/api/budgets` | List budget |
 | GET | `/api/currencies` | List mata uang |
 
----
+## Troubleshooting
 
-## 🐛 Troubleshooting
+**Login gagal ("Email atau password salah")**
+- Cek PostgreSQL sudah jalan
+- Cek `php artisan migrate --seed` sudah dijalankan
 
-### `"The selected doc type is invalid."`
-- Pastikan `doc_type` yang dikirim adalah salah satu dari: `invoice`, `receipt`, `ktp`, `audio_note`, `expense`
+**401 Unauthorized**
+- Login dulu lewat halaman login
 
-### Transaksi tidak muncul setelah upload
-- Pastikan **Queue Worker** berjalan: `php artisan queue:work`
-- Cek log: `php artisan pail` atau `storage/logs/laravel.log`
-- Cek status job: `SELECT * FROM jobs;` di database
+**403 Forbidden**
+- Cek `VITE_API_KEY` di frontend `.env` sama dengan `API_KEY` di backend `.env`
 
-### AI Service tidak bisa diakses
-- Pastikan venv aktif sebelum menjalankan uvicorn
-- Pastikan port 8001 tidak dipakai proses lain: `lsof -i :8001`
-- Pastikan `API_KEY` di `.env` AI sama dengan `AI_KEY` di `.env` Laravel
+**Transaksi tidak muncul setelah upload**
+- Queue worker belum jalan: `php artisan queue:work --tries=3`
 
-### Error saat install requirements.txt (AI)
-- Pastikan Poppler terinstall: `brew install poppler`
-- Jika `surya-ai` gagal, pastikan Python >= 3.10 dan pip terbaru: `pip install --upgrade pip`
+## Stop Services
 
----
-
-## 🔄 Reset & Fresh Install
+### Lokal
 
 ```bash
-# Reset database Laravel
-cd apps/api
-php artisan migrate:fresh --seed
+lsof -ti :8000 -ti :5173 | xargs kill
+caddy stop
+```
 
-# Clear cache Laravel
-php artisan cache:clear
-php artisan config:clear
-php artisan queue:clear
+### Docker
 
-# Reinstall frontend
-cd apps/personal
-rm -rf node_modules
-pnpm install
-
-# Reinstall AI Python
-cd apps/ai
-rm -rf venv
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+```bash
+docker compose down
 ```

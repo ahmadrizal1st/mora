@@ -1,11 +1,11 @@
-morapi.localhost, http://morapi.devstudio.click {
-    reverse_proxy 127.0.0.1:5173
+morapi.localhost {
+	reverse_proxy 127.0.0.1:5173
 }
 
-api.morapi.localhost, http://morapi-api.devstudio.click {
-    reverse_proxy 127.0.0.1:8000
+api.morapi.localhost {
+	reverse_proxy 127.0.0.1:8000
 }
 
-ai.morapi.localhost, http://ai.morapi.devstudio.click {
-    reverse_proxy 127.0.0.1:8001
+ai.morapi.localhost {
+	reverse_proxy 127.0.0.1:8001
 }

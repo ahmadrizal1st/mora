@@ -14,29 +14,26 @@ Monorepo ini mendukung deployment menggunakan Docker & Docker Compose untuk memu
 
 ## 🚀 Quick Start
 
-### 1. Persiapan Environment
-
-Pastikan file `.env` sudah ada di setiap aplikasi.
+### 1 Perintah
 
 ```bash
+./run.sh docker
+```
+
+### Atau Manual
+
+```bash
+# 1. Persiapan .env
 cp apps/api/.env.example apps/api/.env
 cp apps/ai/.env.template apps/ai/.env
-# Update DB_HOST=db di apps/api/.env
-```
 
-### 2. Jalankan Docker Compose
+# 2. Build & jalankan
+docker compose up -d --build
 
-```bash
-docker-compose up -d --build
-```
-
-### 3. Setup Awal Laravel (Sekali saja)
-
-Setelah container berjalan, jalankan perintah setup di dalam container API:
-
-```bash
-docker exec -it morapi_api php artisan key:generate
-docker exec -it morapi_api php artisan migrate --force
+# 3. Setup awal Laravel (sekali)
+docker exec morapi_api php artisan key:generate --force
+docker exec morapi_api php artisan migrate --force
+docker exec morapi_api php artisan db:seed --force
 ```
 
 ---
