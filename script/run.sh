@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
 API_DIR="$DIR/apps/api"
 PERSONAL_DIR="$DIR/apps/personal"
 
@@ -117,7 +117,7 @@ EOF
     cd "$DIR"
     if command -v caddy &>/dev/null; then
         caddy fmt --overwrite 2>/dev/null || true
-        caddy start 2>/dev/null && info "Caddy        → https://morapi.localhost"
+        caddy run 2>/dev/null &
     fi
 
     sleep 3

@@ -13,7 +13,7 @@ Monorepo fintech personal finance management. Terdiri dari **3 aplikasi**:
 ### Lokal (langsung)
 
 ```bash
-./run.sh
+./morapi run
 ```
 
 Akses: **https://morapi.localhost** — Login: `user@morapi.com` / `password`
@@ -23,7 +23,7 @@ Akses: **https://morapi.localhost** — Login: `user@morapi.com` / `password`
 ### Docker
 
 ```bash
-./run.sh docker
+./morapi run docker
 ```
 
 Akses: **http://localhost:5173** (tidak perlu Caddy)
@@ -126,8 +126,7 @@ pnpm install
 ### Lokal
 
 ```bash
-lsof -ti :8000 -ti :5173 | xargs kill
-caddy stop
+./morapi stop
 ```
 
 ### Docker
