@@ -65,4 +65,17 @@ export const AuthService = {
     const response = await api.post<{ data: AuthResponse }>('auth/refresh')
     return response.data.data
   },
+
+  async updateProfile(data: { name?: string; email?: string; avatar?: string }): Promise<User> {
+    const response = await api.patch<{ user?: User; data?: User }>('auth/me', data)
+    const result = response.data.user || response.data.data
+    if (!result) {
+      throw new Error('Invalid response structure from profile update')
+    }
+    return result
+  },
+
+  async changePassword(data: { current_password: string; new_password: string }): Promise<void> {
+    await api.patch('auth/me/password', data)
+  },
 }

@@ -215,8 +215,8 @@ export function ReportRecapPage() {
                 </div>
                 <div className="col-6">
                   <button 
-                    className="btn btn-light w-100 rounded-3 py-2 d-flex justify-content-center align-items-center gap-2 border" 
-                    style={{ fontSize: '13px', color: '#64748b' }}
+                    className="btn w-100 rounded-3 py-2 d-flex justify-content-center align-items-center gap-2 border bg-surface text-secondary" 
+                    style={{ fontSize: '13px' }}
                     onClick={() => setHideNominal(!hideNominal)}
                   >
                     {hideNominal ? (
@@ -247,7 +247,7 @@ export function ReportRecapPage() {
                         style={{ 
                           width: '20px', 
                           height: '20px', 
-                          backgroundColor: '#ffffff',
+                          backgroundColor: 'var(--tblr-bg-surface)',
                           WebkitMaskImage: 'url("/logo/logo-nobg-fill.png")',
                           maskImage: 'url("/logo/logo-nobg-fill.png")',
                           WebkitMaskSize: 'contain',
@@ -318,7 +318,7 @@ export function ReportRecapPage() {
                   </div>
 
                   <div className="d-flex justify-content-center align-items-center gap-2">
-                    <div className="bg-white rounded p-1">
+                    <div className="bg-surface rounded p-1">
                       <Icon icon="qrcode" size={24} stroke={1.5} style={{ color: 'var(--tblr-primary)' }} />
                     </div>
                     <span className="badge rounded-pill" style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '11px', padding: '6px 10px', fontWeight: '500' }}>
@@ -334,8 +334,8 @@ export function ReportRecapPage() {
                 <span 
                   className="badge rounded-pill" 
                   style={{ 
-                    backgroundColor: activeTheme === 'auto' ? 'var(--tblr-primary)' : 'rgba(0,0,0,0.05)', 
-                    color: activeTheme === 'auto' ? 'white' : 'rgba(0,0,0,0.5)', 
+                    backgroundColor: activeTheme === 'auto' ? 'var(--tblr-primary)' : 'var(--tblr-bg-surface-secondary)', 
+                    color: activeTheme === 'auto' ? '#ffffff' : 'var(--tblr-secondary-color)', 
                     fontSize: '11px', 
                     padding: '6px 12px',
                     cursor: 'pointer',
@@ -381,7 +381,7 @@ export function ReportRecapPage() {
                     </div>
                     <div>
                       <h4 className="fw-bold text-primary mb-2" style={{ fontSize: '14px' }}>Rekomendasi Finansial</h4>
-                      <p className="mb-0 text-dark opacity-75 leading-tight" style={{ fontSize: '13px' }}>
+                      <p className="mb-0 text-body opacity-75 leading-tight" style={{ fontSize: '13px' }}>
                         {savingRate >= 20 
                           ? "Pertahankan performamu! Tingkat menabung Anda berada di zona aman (di atas 20%). Disarankan untuk mulai mengalokasikan dana dingin Anda ke tabungan impian (Goals) atau instrumen investasi pasif." 
                           : "Tingkat menabung Anda masih berada di bawah target ideal 20%. Cobalah meninjau pengeluaran non-primer di kategori Makanan & Minuman untuk meningkatkan saldo tersimpan bulan depan."
@@ -410,7 +410,7 @@ export function ReportRecapPage() {
                     { label: 'Pinjaman terbesar ke', value: hideNominal ? '••••' : pinjamanTerbesarKeStr },
                     { label: 'Perubahan net worth', value: hideNominal ? '••••' : `+ ${(income - expense).toLocaleString('id-ID')}` },
                   ].map((item, idx, arr) => (
-                    <div key={idx} className="d-flex justify-content-between px-4 py-3" style={{ borderBottom: idx < arr.length - 1 ? '1px solid #f0f0f0' : undefined, fontSize: '13px' }}>
+                    <div key={idx} className="d-flex justify-content-between px-4 py-3 border-bottom" style={{ borderBottomColor: idx < arr.length - 1 ? 'var(--tblr-border-color)' : 'transparent', fontSize: '13px' }}>
                       <span className="text-secondary">{item.label}</span>
                       <span className="fw-semibold">{item.value}</span>
                     </div>
@@ -428,7 +428,7 @@ export function ReportRecapPage() {
                   </div>
                   <div className="d-flex justify-content-between mb-2 text-secondary" style={{ fontSize: '13px' }}>
                     <span>Prediksi Pengeluaran Bulan Depan</span>
-                    <span className="fw-semibold text-dark">Rp {(expense * 1.05).toLocaleString('id-ID')}</span>
+                    <span className="fw-semibold text-body">Rp {(expense * 1.05).toLocaleString('id-ID')}</span>
                   </div>
                   <div className="d-flex justify-content-between mb-2 text-secondary" style={{ fontSize: '13px' }}>
                     <span>Potensi Tabungan 1 Tahun</span>
@@ -436,14 +436,14 @@ export function ReportRecapPage() {
                   </div>
                   <div className="d-flex justify-content-between text-secondary" style={{ fontSize: '13px' }}>
                     <span>Estimasi Hari Bebas Belanja (Bulan Ini)</span>
-                    <span className="fw-semibold text-dark">{noSpendDays} Hari</span>
+                    <span className="fw-semibold text-body">{noSpendDays} Hari</span>
                   </div>
                 </div>
               </div>
 
               <button 
-                className="btn w-100 rounded-3 py-3 d-flex justify-content-center align-items-center gap-2 border-0" 
-                style={{ backgroundColor: '#f0f2f5', color: '#64748b', fontSize: '13px' }}
+                className="btn w-100 rounded-3 py-3 d-flex justify-content-center align-items-center gap-2 border-0 bg-surface text-secondary" 
+                style={{ fontSize: '13px' }}
                 onClick={() => navigate({ to: `/reports/recap/${dateFrom.substring(0, 4)}` })}
               >
                 <Icon icon="file-check" size={16} stroke={2} />

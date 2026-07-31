@@ -27,7 +27,7 @@ export function InvoicesTableCard({
       date: '2024-01-10',
       status: 'Paid',
       statusColor: 'success',
-      price: '$1,800',
+      price: 'Rp 1,800',
     },
     {
       id: '001402',
@@ -37,7 +37,7 @@ export function InvoicesTableCard({
       date: '2024-01-14',
       status: 'Pending',
       statusColor: 'warning',
-      price: '$20,000',
+      price: 'Rp 20,000',
     },
     {
       id: '001403',
@@ -47,7 +47,7 @@ export function InvoicesTableCard({
       date: '2024-01-18',
       status: 'Overdue',
       statusColor: 'danger',
-      price: '$3,200',
+      price: 'Rp 3,200',
     },
   ],
   hideHeader,

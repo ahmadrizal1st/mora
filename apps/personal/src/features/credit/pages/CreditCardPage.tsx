@@ -3,6 +3,7 @@ import { Icon, Chart, Button } from '@/shared/components/ui'
 import { useCredits } from '../hooks/useCredits'
 import { useCreditLayoutContext } from '../context/CreditLayoutContext'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
+import { TransactionsListCard } from '@/features/reports/components/TransactionsListCard'
 
 export function CreditCardPage() {
   const { openFormForType, openForm } = useCreditLayoutContext()
@@ -341,87 +342,8 @@ export function CreditCardPage() {
                 </button>
               </div>
             </div>
-            <div className="card-body p-0 d-flex flex-column">
-              <div className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom flex-shrink-0">
-                <span className="fw-bold" style={{ fontSize: '13px' }}>Transaksi Terbaru</span>
-                <span className="text-secondary" style={{ fontSize: '12px' }}>3 item</span>
-              </div>
-              <div className="d-flex flex-column flex-grow-1">
-                {[
-                  {
-                    name: 'Tokopedia',
-                    date: '2026-05-12',
-                    amount: -450000,
-                    category: 'Shopping',
-                    color: '#ff922b',
-                  },
-                  {
-                    name: 'Starbucks Coffee',
-                    date: '2026-05-11',
-                    amount: -55000,
-                    category: 'Food & Bev',
-                    color: '#51cf66',
-                  },
-                  {
-                    name: 'Grab Transport',
-                    date: '2026-05-10',
-                    amount: -25000,
-                    category: 'Transport',
-                    color: '#339af0',
-                  },
-                ].map((t, i) => {
-                  const txDate = new Date(t.date)
-                  const formattedDate = txDate.toLocaleDateString('id-ID', {
-                    day: 'numeric',
-                    month: 'short',
-                  }) + ', 07:00'
-                  
-                  const itemsLength = 3
-                  return (
-                    <div 
-                      key={i}
-                      className="d-flex justify-content-between align-items-center px-3 py-2"
-                      style={{ 
-                        borderBottom: i < itemsLength - 1 ? '1px solid #f1f5f9' : undefined,
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s ease'
-                      }}
-                    >
-                      <div className="flex-grow-1 overflow-hidden me-2">
-                        <div className="fw-semibold text-truncate text-body" style={{ fontSize: '13.5px', marginBottom: '2px' }}>
-                          {t.name}
-                        </div>
-                        <div className="d-flex align-items-center gap-2 flex-wrap" style={{ fontSize: '11px', color: 'var(--tblr-gray-500)' }}>
-                          <span className="rounded-pill px-2 fw-bold d-inline-flex align-items-center justify-content-center" style={{ background: t.color + '15', color: t.color, fontSize: '9px', height: '18px' }}>
-                            {t.category}
-                          </span>
-                          <span>&middot;</span>
-                          <span>{formattedDate}</span>
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center gap-2">
-                        <div className="fw-bold flex-shrink-0" style={{ color: '#e53e3e', fontSize: '13.5px' }}>
-                          - {formatCurrency(Math.abs(t.amount))}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-            <div className="card-footer d-flex flex-column flex-md-row align-items-center justify-content-between bg-transparent border-top py-2 gap-3">
-              <div className="text-secondary small d-flex align-items-center">
-                Menampilkan&nbsp;<strong>1</strong>&nbsp;–&nbsp;
-                <strong>3</strong>&nbsp;dari&nbsp;<strong>3</strong>
-                &nbsp;data
-              </div>
-              <div className="pagination-wrapper">
-                <ul className="pagination m-0 pagination-sm">
-                  <li className="page-item disabled"><a className="page-link" href="#" tabIndex={-1} aria-disabled="true">‹</a></li>
-                  <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                  <li className="page-item disabled"><a className="page-link" href="#">›</a></li>
-                </ul>
-              </div>
+            <div className="card-body p-3">
+              <TransactionsListCard accountId={card.id} defaultPerPage={5} />
             </div>
           </div>
       </div>

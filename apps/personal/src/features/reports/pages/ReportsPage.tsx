@@ -10,6 +10,7 @@ import { Datepicker } from '@/shared/components/ui/Datepicker'
 import { Chart } from '@/shared/components/ui/Chart'
 import { CategoryBreakdownCard } from '@/features/reports/components/CategoryBreakdownCard'
 import { DailyHeatmapCard } from '@/features/reports/components/DailyHeatmapCard'
+import { TransactionsListCard } from '@/features/reports/components/TransactionsListCard'
 import { Icon } from '@/shared/components/ui/Icon'
 
 type PeriodMode = 'sekarang' | 'monthly' | 'custom'
@@ -90,25 +91,25 @@ function CustomPeriodCard({ title, from, to }: { title: string; from: string; to
       onClick={() => navigate({ to: `/reports/${from}_${to}` })}
     >
       <div
-        className="position-relative d-flex align-items-center justify-content-center py-3 px-4"
-        style={{ borderBottom: '1px solid #f0f0f0', minHeight: '52px' }}
+        className="position-relative d-flex align-items-center justify-content-center py-3 px-4 border-bottom"
+        style={{ minHeight: '52px' }}
       >
-        <span className="fw-semibold text-dark" style={{ fontSize: '14px' }}>
+        <span className="fw-semibold text-body" style={{ fontSize: '14px' }}>
           {title}
         </span>
-        <Icon icon="chevron-right" size={18} stroke={2} className="position-absolute end-0 me-3" style={{ color: '#aaa' }} />
+        <Icon icon="chevron-right" size={18} stroke={2} className="position-absolute end-0 me-3 text-secondary" />
       </div>
       <div>
-        <div className="d-flex justify-content-between align-items-center px-4" style={{ padding: '10px 24px', borderBottom: '1px solid #fafafa', fontSize: '14px' }}>
-          <span style={{ color: '#718096' }}>Pengeluaran</span>
+        <div className="d-flex justify-content-between align-items-center px-4 py-2 border-bottom text-secondary" style={{ fontSize: '14px' }}>
+          <span>Pengeluaran</span>
           <span style={{ color: '#e53e3e', fontWeight: 500 }}>- {fmt(expense)}</span>
         </div>
-        <div className="d-flex justify-content-between align-items-center px-4" style={{ padding: '10px 24px', borderBottom: '1px solid #fafafa', fontSize: '14px' }}>
-          <span style={{ color: '#718096' }}>Pemasukan</span>
+        <div className="d-flex justify-content-between align-items-center px-4 py-2 border-bottom text-secondary" style={{ fontSize: '14px' }}>
+          <span>Pemasukan</span>
           <span style={{ color: '#38a169', fontWeight: 500 }}>+ {fmt(income)}</span>
         </div>
-        <div className="d-flex justify-content-between align-items-center px-4" style={{ padding: '10px 24px', borderBottom: '1px solid #fafafa', fontSize: '14px' }}>
-          <span style={{ color: '#718096' }}>Saldo</span>
+        <div className="d-flex justify-content-between align-items-center px-4 py-2 border-bottom text-secondary" style={{ fontSize: '14px' }}>
+          <span>Saldo</span>
           <span style={{ color: saldo >= 0 ? '#38a169' : '#e53e3e', fontWeight: 500 }}>{saldo >= 0 ? '+' : '-'} {fmt(saldo)}</span>
         </div>
       </div>
@@ -187,8 +188,7 @@ function TodayDashboard() {
 
       {/* Morapi Rewind Banner */}
       <div 
-        className="card border rounded-4 shadow-sm" 
-        style={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', color: '#1e293b', cursor: 'pointer' }}
+        className="card border rounded-4 shadow-sm cursor-pointer" 
         onClick={() => {
           navigate({ to: `/reports/recap/${dateFrom.substring(0, 7)}` })
         }}
@@ -213,11 +213,11 @@ function TodayDashboard() {
               />
             </div>
             <div>
-              <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>Morapi Rewind {new Date(dateFrom).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })} siap dibuka</div>
+              <div className="fw-bold text-body" style={{ fontSize: '15px' }}>Morapi Rewind {new Date(dateFrom).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })} siap dibuka</div>
               <div className="text-secondary" style={{ fontSize: '12px' }}>Putar sekarang, lihat rangkuman performa bulan ini</div>
             </div>
           </div>
-          <div style={{ color: '#64748b' }}>
+          <div className="text-secondary">
             <Icon icon="chevron-right" size={20} stroke={2.5} />
           </div>
         </div>
@@ -226,7 +226,7 @@ function TodayDashboard() {
       {/* Row 1: Score & Insights */}
       <div className="row g-3">
         <div className="col-12 col-md-4">
-          <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '20px', background: 'linear-gradient(145deg, #ffffff, #f8fafc)' }}>
+          <div className="card border-0 shadow-sm h-100 rounded-4">
             <div className="card-body p-4 d-flex flex-column justify-content-center">
               <div className="d-flex align-items-center gap-3">
                 <div className="position-relative" style={{ width: '60px', height: '60px', flexShrink: 0 }}>
@@ -249,7 +249,7 @@ function TodayDashboard() {
                 </div>
                 <div>
                   <div className="fw-bold text-secondary mb-1" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>SKOR FINANSIAL</div>
-                  <h4 className="fw-bold mb-0 text-dark" style={{ fontSize: '15px' }}>{getScoreLabel(healthScore)}</h4>
+                  <h4 className="fw-bold mb-0 text-body" style={{ fontSize: '15px' }}>{getScoreLabel(healthScore)}</h4>
                   <div className="text-secondary" style={{ fontSize: '11px' }}>
                     Saving rate: {savingRate.toFixed(1)}%
                   </div>
@@ -260,7 +260,7 @@ function TodayDashboard() {
         </div>
 
         <div className="col-12 col-md-4">
-          <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '20px', background: 'linear-gradient(145deg, #ffffff, #f8fafc)' }}>
+          <div className="card border-0 shadow-sm h-100 bg-surface rounded-4">
             <div className="card-body p-4 d-flex flex-column justify-content-center">
               <div className="d-flex align-items-center gap-3">
                 <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '42px', height: '42px', backgroundColor: 'rgba(var(--tblr-primary-rgb), 0.1)', color: 'var(--tblr-primary)' }}>
@@ -268,7 +268,7 @@ function TodayDashboard() {
                 </div>
                 <div>
                   <div className="fw-bold text-secondary mb-1" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>RASIO ARUS KAS</div>
-                  <h4 className="fw-bold mb-0 text-dark" style={{ fontSize: '15px' }}>{cashFlowRatio.toFixed(1)}x ({getRatioLabel(cashFlowRatio)})</h4>
+                  <h4 className="fw-bold mb-0 text-body" style={{ fontSize: '15px' }}>{cashFlowRatio.toFixed(1)}x ({getRatioLabel(cashFlowRatio)})</h4>
                   <div className="text-secondary" style={{ fontSize: '11px' }}>
                     Pemasukan vs Pengeluaran
                   </div>
@@ -287,7 +287,7 @@ function TodayDashboard() {
                 </div>
                 <div>
                   <div className="fw-bold text-primary mb-1" style={{ fontSize: '12px' }}>Insight Finansial</div>
-                  <p className="mb-0 text-dark opacity-75 leading-tight" style={{ fontSize: '11px' }}>
+                  <p className="mb-0 text-body opacity-75 leading-tight" style={{ fontSize: '11px' }}>
                     {savingRate >= 20 
                       ? "Disiplin menabung Anda sangat baik!" 
                       : savingRate > 0 
@@ -355,15 +355,15 @@ function TodayDashboard() {
           <div className="row g-3 text-center">
             <div className="col-4 border-end">
               <div className="text-secondary mb-1" style={{ fontSize: '11px' }}>Rata-rata / Transaksi</div>
-              <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>Rp {fmt(avgTx)}</div>
+              <div className="fw-bold text-body" style={{ fontSize: '15px' }}>Rp {fmt(avgTx)}</div>
             </div>
             <div className="col-4 border-end">
               <div className="text-secondary mb-1" style={{ fontSize: '11px' }}>Transaksi Terbesar</div>
-              <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>Rp {fmt(maxTx)}</div>
+              <div className="fw-bold text-body" style={{ fontSize: '15px' }}>Rp {fmt(maxTx)}</div>
             </div>
             <div className="col-4">
               <div className="text-secondary mb-1" style={{ fontSize: '11px' }}>Frekuensi</div>
-              <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>{totalTransactions} kali</div>
+              <div className="fw-bold text-body" style={{ fontSize: '15px' }}>{totalTransactions} kali</div>
             </div>
           </div>
         </div>
@@ -380,47 +380,17 @@ function TodayDashboard() {
           <div className="card-body p-0">
             <div className="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
               <span className="fw-bold" style={{ fontSize: '14px' }}>Transaksi Terbaru</span>
-              <Link to={`/reports/${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`} className="text-primary text-decoration-none" style={{ fontSize: '13px' }}>
+              <Link
+                to="/reports/$periodId"
+                params={{ periodId: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}` }}
+                className="text-primary text-decoration-none"
+                style={{ fontSize: '13px' }}
+              >
                 Lihat Semua
               </Link>
             </div>
-            <div>
-              {txData?.data && txData.data.map((tx, i) => {
-                const isExp = tx.type === 'expense'
-                const isInc = tx.type === 'income'
-                const prefix = isExp ? '-' : isInc ? '+' : '↔'
-                const color = isExp ? '#e53e3e' : isInc ? '#38a169' : 'var(--tblr-primary)'
-                const acctColor = tx.account?.color || '#ccc'
-                const d = new Date(tx.tx_date + 'T00:00:00')
-                return (
-                  <div
-                    key={tx.id}
-                    className="d-flex justify-content-between align-items-center px-4 py-3 hover-bg-surface transition-all"
-                    style={{ borderBottom: i < txData.data.length - 1 ? '1px solid #fafafa' : undefined }}
-                  >
-                    <div className="flex-grow-1 overflow-hidden me-2">
-                      <div className="fw-semibold text-truncate" style={{ fontSize: '14px', color: '#1a202c' }}>
-                        {tx.merchant || tx.category?.name || (isInc ? 'Pemasukan' : isExp ? 'Pengeluaran' : 'Transfer')}
-                      </div>
-                      <div className="d-flex align-items-center gap-1 flex-wrap mt-1" style={{ fontSize: '11px', color: '#a0aec0' }}>
-                        {tx.account?.name && (
-                          <span className="rounded px-1.5 py-0.5 fw-semibold" style={{ background: acctColor + '1a', color: acctColor, fontSize: '9px' }}>
-                            {tx.account.name}
-                          </span>
-                        )}
-                        {tx.category?.name && <span>{tx.category.name}</span>}
-                        <span>&middot; {d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}</span>
-                      </div>
-                    </div>
-                    <div className="fw-bold flex-shrink-0" style={{ color, fontSize: '14px' }}>
-                      {prefix}{fmt(tx.amount)}
-                    </div>
-                  </div>
-                )
-              })}
-              {txData?.data && txData.data.length === 0 && (
-                <div className="text-center py-5 text-secondary small">Belum ada transaksi bulan ini.</div>
-              )}
+            <div className="p-3">
+              <TransactionsListCard dateFrom={dateFrom} dateTo={dateTo} hideHeader={true} defaultPerPage={10} />
             </div>
           </div>
         </div>
@@ -556,7 +526,7 @@ export function ReportsPage() {
       <div className="d-flex flex-column gap-4">
           <div className="w-100">
             <div className="w-100">
-              <div className="d-flex w-100" style={{ borderBottom: '1px solid #e6e8eb' }} role="tablist">
+              <div className="d-flex w-100" style={{ borderBottom: '1px solid var(--tblr-border-color)' }} role="tablist">
                   {([
                     { key: 'sekarang', label: 'Sekarang' },
                     { key: 'monthly', label: 'Bulanan' },
@@ -577,9 +547,9 @@ export function ReportsPage() {
                           outline: 'none',
                           border: 'none',
                           backgroundColor: 'transparent',
-                          color: isActive ? '#1e293b' : '#64748b',
+                          color: isActive ? 'var(--tblr-body-color)' : 'var(--tblr-secondary-color)',
                           fontWeight: isActive ? '800' : '600',
-                          borderBottom: isActive ? '3px solid #ff6b00' : '3px solid transparent',
+                          borderBottom: isActive ? '3px solid var(--tblr-primary)' : '3px solid transparent',
                           marginBottom: '-1px',
                         }}
                         role="tab"
@@ -613,8 +583,7 @@ export function ReportsPage() {
               <div className="row g-3">
                 <div className="col-12">
                   <div 
-                    className="card border rounded-4 shadow-sm" 
-                    style={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', color: '#1e293b', cursor: 'pointer' }}
+                    className="card border rounded-4 shadow-sm cursor-pointer" 
                     onClick={() => {
                       if (months[0]) {
                         navigate({ to: `/reports/recap/${months[0].from.substring(0, 7)}` })
@@ -641,11 +610,11 @@ export function ReportsPage() {
                           />
                         </div>
                         <div>
-                          <div className="fw-bold text-dark" style={{ fontSize: '15px' }}>Morapi Rewind {months[0] ? new Date(months[0].from + 'T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) : ''} siap dibuka</div>
+                          <div className="fw-bold text-body" style={{ fontSize: '15px' }}>Morapi Rewind {months[0] ? new Date(months[0].from + 'T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) : ''} siap dibuka</div>
                           <div className="text-secondary" style={{ fontSize: '12px' }}>Putar sekarang, cuma butuh 1 menit</div>
                         </div>
                       </div>
-                      <div style={{ color: '#000000' }}>
+                      <div className="text-body">
                         <Icon icon="chevron-right" size={20} stroke={2.5} />
                       </div>
                     </div>
@@ -679,10 +648,12 @@ export function ReportsPage() {
                           ],
                           datalabels: false,
                           legend: false,
-                          plotOptions: {
-                            bar: {
-                              borderRadius: 4,
-                              columnWidth: '40%',
+                          extend: {
+                            plotOptions: {
+                              bar: {
+                                borderRadius: 4,
+                                columnWidth: '40%',
+                              }
                             }
                           }
                         }}
@@ -712,13 +683,14 @@ export function ReportsPage() {
                           ],
                           datalabels: false,
                           legend: false,
-                          stroke: { curve: 'smooth', width: 2 },
+                          strokeCurve: 'smooth',
+                          strokeWidth: [2],
                         }}
                       />
                     </div>
-                    <div className="card-footer bg-white border-0 pt-0 pb-3 d-flex justify-content-between text-secondary" style={{ fontSize: '12px' }}>
-                      <span>Sekarang: {fmt(netWorthData.currentNetWorth)}</span>
-                      <span className="fw-semibold" style={{ color: '#1a202c' }}>{netWorthChangeText}</span>
+                    <div className="card-footer bg-surface border-0 pt-0 pb-3 d-flex justify-content-between text-secondary" style={{ fontSize: '12px' }}>
+                      <span>Perubahan Saldo</span>
+                      <span className="fw-semibold text-body">{netWorthChangeText}</span>
                     </div>
                   </div>
                 </div>
@@ -741,7 +713,7 @@ export function ReportsPage() {
           {mode === 'custom' && customReports.length === 0 && (
             <div className="d-flex flex-column align-items-center justify-content-center text-secondary" style={{ minHeight: '40vh' }}>
               <Icon icon="chart-bar" size={48} stroke={1.5} className="mb-3 opacity-50" />
-              <div className="fw-bold text-dark mb-1" style={{ fontSize: '16px' }}>Belum ada laporan buatanmu</div>
+              <div className="fw-bold text-body mb-1" style={{ fontSize: '16px' }}>Belum ada laporan buatanmu</div>
               <div style={{ fontSize: '13px' }}>Ketuk + buat laporan dengan rentang tanggal sendiri.</div>
             </div>
           )}
@@ -756,17 +728,16 @@ export function ReportsPage() {
 
         {/* FAB for Kustom */}
         {mode === 'custom' && (
-          <Button
-            color="primary"
-            className="rounded-3 shadow-lg position-fixed d-flex align-items-center justify-content-center"
-            style={{ width: '48px', height: '48px', bottom: '24px', right: '24px', zIndex: 1000, padding: 0 }}
+          <button
+            className="btn btn-primary btn-icon rounded-circle shadow-lg position-fixed"
+            style={{ width: '48px', height: '48px', bottom: '24px', right: '24px', zIndex: 1000 }}
             onClick={() => setIsAddingCustom(true)}
           >
-            <Icon icon="plus" size={24} stroke={2} />
-          </Button>
+            <Icon icon="plus" size={24} stroke={2.5} />
+          </button>
         )}
         
-      <Modal show={isAddingCustom} onClose={() => setIsAddingCustom(false)} size="md">
+      <Modal show={isAddingCustom} onClose={() => setIsAddingCustom(false)}>
         <ModalHeader title="Tambah Laporan" onClose={() => setIsAddingCustom(false)} />
         <div className="modal-body p-4">
             <div>

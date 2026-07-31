@@ -21,7 +21,7 @@ export function StoreProductGrid({ products = [] }: StoreProductGridProps) {
               <img src={`/static/products/${product.image}`} alt={product.name} className="mb-3" />
               <h3 className="mb-0">{product.name}</h3>
               <div className="text-secondary mb-2">{product.producer}</div>
-              <h1 className="text-azure">{product.price}$</h1>
+              <h1 className="text-azure">Rp {product.price}</h1>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="stars">
                   {[1, 2, 3, 4, 5].map((i) => (

@@ -41,7 +41,7 @@ function getTextColor(amount: number, max: number): string {
   return ratio >= 0.65 ? '#fff' : '#333'
 }
 
-export function DailyHeatmapCard({ dateFrom, dateTo, type = 'expense' }: DailyHeatmapCardProps) {
+export function DailyHeatmapCard({ type = 'expense' }: DailyHeatmapCardProps) {
   const today = new Date()
   const [viewYear, setViewYear] = useState(today.getFullYear())
   const [viewMonth, setViewMonth] = useState(today.getMonth())
@@ -97,17 +97,14 @@ export function DailyHeatmapCard({ dateFrom, dateTo, type = 'expense' }: DailyHe
   const primaryColor = type === 'expense' ? '#ef4444' : '#22c55e'
 
   const renderCalendar = () => (
-    <div className="bg-light rounded-4 p-3 flex-grow-1 d-flex flex-column justify-content-center">
+    <div className="bg-surface-secondary rounded-4 p-3 flex-grow-1 d-flex flex-column justify-content-center">
       {/* Month nav */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <button
           className="btn btn-icon btn-sm btn-light rounded-circle"
           onClick={prevMonth}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-            <path d="M15 6l-6 6l6 6" />
-          </svg>
+          <Icon icon="chevron-left" size={16} />
         </button>
         <span className="fw-bold" style={{ fontSize: '14px' }}>
           {MONTH_NAMES[viewMonth]} {viewYear}
@@ -116,10 +113,7 @@ export function DailyHeatmapCard({ dateFrom, dateTo, type = 'expense' }: DailyHe
           className="btn btn-icon btn-sm btn-light rounded-circle"
           onClick={nextMonth}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-            <path d="M9 6l6 6l-6 6" />
-          </svg>
+          <Icon icon="chevron-right" size={16} />
         </button>
       </div>
 
@@ -189,7 +183,7 @@ export function DailyHeatmapCard({ dateFrom, dateTo, type = 'expense' }: DailyHe
     if (sortOrder === 'desc') daysWithData.reverse()
 
     return (
-      <div className="bg-light rounded-4 p-0 flex-grow-1 overflow-auto" style={{ maxHeight: '400px' }}>
+      <div className="bg-surface-secondary rounded-4 p-0 flex-grow-1 overflow-auto" style={{ maxHeight: '400px' }}>
         {daysWithData.length === 0 ? (
           <div className="text-center text-secondary py-5" style={{ fontSize: '13px' }}>
             Tidak ada {type === 'expense' ? 'pengeluaran' : 'pemasukan'} di bulan ini.
@@ -201,8 +195,8 @@ export function DailyHeatmapCard({ dateFrom, dateTo, type = 'expense' }: DailyHe
               const dateObj = new Date(viewYear, viewMonth, day)
               const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })
               return (
-                <div key={day} className="d-flex justify-content-between align-items-center px-4 py-3" style={{ borderBottom: i < daysWithData.length - 1 ? '1px solid #f0f0f0' : undefined }}>
-                  <div className="fw-medium text-dark" style={{ fontSize: '13px' }}>{dateStr}</div>
+                <div key={day} className="d-flex justify-content-between align-items-center px-4 py-3 border-bottom" style={{ borderBottomColor: i < daysWithData.length - 1 ? 'var(--tblr-border-color)' : 'transparent' }}>
+                  <div className="fw-medium text-body" style={{ fontSize: '13px' }}>{dateStr}</div>
                   <div className="fw-bold" style={{ color: primaryColor, fontSize: '14px' }}>
                     {type === 'expense' ? '-' : '+'}{formatCurrency(amount)}
                   </div>
@@ -220,7 +214,7 @@ export function DailyHeatmapCard({ dateFrom, dateTo, type = 'expense' }: DailyHe
     const data = Array.from({ length: daysInMonth }, (_, i) => dailyTotals[i + 1] || 0)
 
     return (
-      <div className="bg-light rounded-4 p-3 flex-grow-1 d-flex flex-column justify-content-center pt-4">
+      <div className="bg-surface-secondary rounded-4 p-3 flex-grow-1 d-flex flex-column justify-content-center pt-4">
         <Chart
           chartId={`daily-chart-${type}`}
           chartData={{

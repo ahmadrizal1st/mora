@@ -7,7 +7,7 @@ interface FooterProps {
   className?: string
 }
 
-export function Footer({ version, siteTitle = 'Tabler', className }: FooterProps) {
+export function Footer({ version, siteTitle = 'Morapi', className }: FooterProps) {
   return (
     <footer
       className={clsx(

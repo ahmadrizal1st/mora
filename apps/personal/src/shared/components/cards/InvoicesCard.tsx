@@ -25,7 +25,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '15 Dec 2017',
     status: 'success',
     statusName: 'Paid',
-    price: '$887,00',
+    price: 'Rp 887,00',
   },
   {
     name: 'Online Store Design & Development',
@@ -35,7 +35,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '12 Apr 2017',
     status: 'warning',
     statusName: 'Pending',
-    price: '$1.200,00',
+    price: 'Rp 1.200,00',
   },
   {
     name: 'App Design',
@@ -45,7 +45,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '23 Oct 2017',
     status: 'warning',
     statusName: 'Pending',
-    price: '$534,00',
+    price: 'Rp 534,00',
   },
   {
     name: 'Design Logos',
@@ -55,7 +55,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '2 Sep 2017',
     status: 'success',
     statusName: 'Paid',
-    price: '$478,00',
+    price: 'Rp 478,00',
   },
   {
     name: 'Promotion Campaign',
@@ -65,7 +65,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '29 Jan 2018',
     status: 'success',
     statusName: 'Paid',
-    price: '$3.500,00',
+    price: 'Rp 3.500,00',
   },
   {
     name: 'Packaging Design',
@@ -75,7 +75,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '10 Feb 2018',
     status: 'danger',
     statusName: 'Overdue',
-    price: '$2.100,00',
+    price: 'Rp 2.100,00',
   },
   {
     name: 'Brand Identity',
@@ -85,7 +85,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '15 Mar 2018',
     status: 'success',
     statusName: 'Paid',
-    price: '$1.800,00',
+    price: 'Rp 1.800,00',
   },
   {
     name: 'Consulting',
@@ -95,7 +95,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '20 Apr 2018',
     status: 'warning',
     statusName: 'Pending',
-    price: '$5.000,00',
+    price: 'Rp 5.000,00',
   },
   {
     name: 'Web Design',
@@ -105,7 +105,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '25 May 2018',
     status: 'success',
     statusName: 'Paid',
-    price: '$2.500,00',
+    price: 'Rp 2.500,00',
   },
   {
     name: 'Social Media Management',
@@ -115,7 +115,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '30 Jun 2018',
     status: 'success',
     statusName: 'Paid',
-    price: '$4.200,00',
+    price: 'Rp 4.200,00',
   },
   {
     name: 'SEO Optimization',
@@ -125,7 +125,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '15 Jul 2018',
     status: 'warning',
     statusName: 'Pending',
-    price: '$1.200,00',
+    price: 'Rp 1.200,00',
   },
   {
     name: 'Content Marketing',
@@ -135,7 +135,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '20 Aug 2018',
     status: 'success',
     statusName: 'Paid',
-    price: '$3.000,00',
+    price: 'Rp 3.000,00',
   },
   {
     name: 'Email Marketing',
@@ -145,7 +145,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '25 Sep 2018',
     status: 'danger',
     statusName: 'Overdue',
-    price: '$1.500,00',
+    price: 'Rp 1.500,00',
   },
   {
     name: 'PPC Campaign',
@@ -155,7 +155,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '30 Oct 2018',
     status: 'success',
     statusName: 'Paid',
-    price: '$2.800,00',
+    price: 'Rp 2.800,00',
   },
   {
     name: 'Influencer Marketing',
@@ -165,7 +165,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '15 Nov 2018',
     status: 'warning',
     statusName: 'Pending',
-    price: '$4.500,00',
+    price: 'Rp 4.500,00',
   },
   {
     name: 'Video Production',
@@ -175,7 +175,7 @@ const DEFAULT_INVOICES: Invoice[] = [
     date: '20 Dec 2018',
     status: 'success',
     statusName: 'Paid',
-    price: '$6.000,00',
+    price: 'Rp 6.000,00',
   },
 ]
 

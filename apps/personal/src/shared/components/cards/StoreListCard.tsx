@@ -13,10 +13,10 @@ interface StoreListCardProps {
 
 export function StoreListCard({
   items = [
-    { name: 'Wireless Headphones', price: '$89.99', reviews: 42, offers: 12, isNew: true },
-    { name: 'Mechanical Keyboard', price: '$149.00', reviews: 87, offers: 5 },
-    { name: 'USB-C Hub', price: '$39.99', reviews: 23, offers: 18, isNew: true },
-    { name: 'Monitor Stand', price: '$59.00', reviews: 31, offers: 7 },
+    { name: 'Wireless Headphones', price: 'Rp 89.99', reviews: 42, offers: 12, isNew: true },
+    { name: 'Mechanical Keyboard', price: 'Rp 149.00', reviews: 87, offers: 5 },
+    { name: 'USB-C Hub', price: 'Rp 39.99', reviews: 23, offers: 18, isNew: true },
+    { name: 'Monitor Stand', price: 'Rp 59.00', reviews: 31, offers: 7 },
   ],
 }: StoreListCardProps) {
   return (

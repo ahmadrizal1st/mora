@@ -64,6 +64,12 @@ export default function DashboardCrypto() {
 
   return (
     <BaseLayout pageTitle="Crypto Dashboard" pagePretitle="Dashboards">
+      <div className="alert alert-info d-flex align-items-center mb-3" role="alert">
+        <span className="badge bg-info text-white me-2">Demo Mode</span>
+        <div>
+          Halaman Dashboard Crypto ini berjalan menggunakan data simulasi/prototipe.
+        </div>
+      </div>
       <div className="row row-cards">
         <div className="col-12">
           <div className="row row-cards">

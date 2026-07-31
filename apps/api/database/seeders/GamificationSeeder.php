@@ -157,17 +157,13 @@ class GamificationSeeder extends Seeder
             );
         }
 
-        // Ensure current test user has some XP so they don't look like they have 0
-        $currentUser = User::where('email', 'macbook@example.com')->first(); // Just a guess or we can grab first user
-        if (!$currentUser) {
-            $currentUser = User::first();
-        }
-
-        if ($currentUser) {
+        // Ensure test users (user@morapi.com, admin@morapi.com) have GamificationProfiles
+        $mainUsers = User::whereIn('email', ['user@morapi.com', 'admin@morapi.com'])->get();
+        foreach ($mainUsers as $mainUser) {
             GamificationProfile::firstOrCreate(
-                ['user_id' => $currentUser->id],
+                ['user_id' => $mainUser->id],
                 [
-                    'xp' => 12450, // Like the static mockup
+                    'xp' => 12450,
                     'coins' => 100,
                     'gemfin' => 0,
                     'level' => 12

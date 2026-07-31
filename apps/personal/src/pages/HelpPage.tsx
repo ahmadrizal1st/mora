@@ -28,6 +28,27 @@ export default function HelpPage() {
     },
   ]
 
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [category, setCategory] = useState('Pilih kategori...')
+  const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const handleSubmitTicket = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name || !email || category === 'Pilih kategori...' || !message) return
+    setIsSubmitting(true)
+    setTimeout(() => {
+      setIsSubmitting(false)
+      setIsSubmitted(true)
+      setName('')
+      setEmail('')
+      setCategory('Pilih kategori...')
+      setMessage('')
+    }, 800)
+  }
+
   const filteredFaqs = faqs.filter(
     (faq) =>
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -153,11 +174,17 @@ export default function HelpPage() {
                 <h3 className="card-title">Kirim Tiket Bantuan</h3>
               </div>
               <div className="card-body">
+                {isSubmitted && (
+                  <div className="alert alert-success mb-3" role="alert">
+                    <Icon icon="circle-check" className="me-2" />
+                    Tiket Bantuan Anda telah berhasil dikirim! Tim support kami akan menghubungi Anda melalui email.
+                  </div>
+                )}
                 <p className="text-secondary small mb-4">
                   Tidak menemukan jawaban yang Anda cari? Silakan isi formulir di bawah ini, tim
                   support kami akan membalas dalam waktu kurang dari 1 jam.
                 </p>
-                <form onSubmit={(e) => e.preventDefault()} className="row g-3">
+                <form onSubmit={handleSubmitTicket} className="row g-3">
                   <div className="col-12">
                     <label className="form-label" htmlFor="ticket-name">
                       Nama Lengkap
@@ -167,6 +194,9 @@ export default function HelpPage() {
                       className="form-control"
                       id="ticket-name"
                       placeholder="Masukkan nama lengkap Anda"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="col-12">
@@ -178,19 +208,28 @@ export default function HelpPage() {
                       className="form-control"
                       id="ticket-email"
                       placeholder="nama@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="col-12">
                     <label className="form-label" htmlFor="ticket-category">
                       Kategori Masalah
                     </label>
-                    <select className="form-select" id="ticket-category">
-                      <option>Pilih kategori...</option>
-                      <option>Keamanan Akun & Login</option>
-                      <option>Transaksi Finansial / Pembayaran</option>
-                      <option>Portofolio Wealth & Aset</option>
-                      <option>Bug Aplikasi / Kendala Sistem</option>
-                      <option>Lainnya</option>
+                    <select
+                      className="form-select"
+                      id="ticket-category"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      required
+                    >
+                      <option disabled>Pilih kategori...</option>
+                      <option value="Keamanan Akun & Login">Keamanan Akun & Login</option>
+                      <option value="Transaksi Finansial / Pembayaran">Transaksi Finansial / Pembayaran</option>
+                      <option value="Portofolio Wealth & Aset">Portofolio Wealth & Aset</option>
+                      <option value="Bug Aplikasi / Kendala Sistem">Bug Aplikasi / Kendala Sistem</option>
+                      <option value="Lainnya">Lainnya</option>
                     </select>
                   </div>
                   <div className="col-12">
@@ -202,10 +241,19 @@ export default function HelpPage() {
                       id="ticket-message"
                       rows={4}
                       placeholder="Tuliskan sedetail mungkin kendala yang Anda alami..."
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      required
                     ></textarea>
                   </div>
                   <div className="col-12 mt-4">
-                    <Button text="Kirim Tiket Bantuan" color="primary" className="w-100" />
+                    <Button
+                      type="submit"
+                      text={isSubmitting ? 'Mengirim Tiket...' : 'Kirim Tiket Bantuan'}
+                      color="primary"
+                      className="w-100"
+                      disabled={isSubmitting}
+                    />
                   </div>
                 </form>
               </div>

@@ -1,15 +1,37 @@
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { Avatar, Button, Icon, Timeline, TimelineItem } from '@/shared/components/ui'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useAccountSummary, useAccounts } from '@/features/transaction/hooks/useAccounts'
+import { useGoals } from '@/features/planning/hooks/usePlanning'
+import { useGamificationStats } from '@/features/gamification/hooks/useGamification'
+import { useTransactions } from '@/features/transaction/hooks/useTransactions'
+import { Link } from '@tanstack/react-router'
 
 export default function ProfilePage() {
   const { user } = useAuth()
+  const { data: accountSummary } = useAccountSummary()
+  const { data: accounts } = useAccounts()
+  const { data: goals } = useGoals()
+  const { data: gamificationStats } = useGamificationStats()
+  const { data: transactionsData } = useTransactions({ per_page: 5, sort_by: 'tx_date', sort_dir: 'desc' } as any)
 
   const person = {
-    full_name: user?.name || 'Andrew Forbist',
-    email: user?.email || 'andrew.forbist@morapi.com',
-    photo: user?.avatar || '002m.jpg',
+    full_name: user?.name || 'User',
+    email: user?.email || '',
+    photo: user?.avatar || undefined,
   }
+
+  const formatCurrency = (val?: number) => {
+    if (val === undefined || val === null) return 'Rp 0'
+    return `Rp ${val.toLocaleString('id-ID')}`
+  }
+
+  const totalBalance = accountSummary?.total_balance ?? 0
+  const totalAccounts = Array.isArray(accounts) ? accounts.length : (accounts as any)?.data?.length ?? 0
+  const activeGoalsCount = goals?.goals?.length ?? 0
+  const streakDays = gamificationStats?.current_streak ?? 0
+
+  const recentTransactions = transactionsData?.data || []
 
   return (
     <BaseLayout flush noContainer bodyClass="p-0">
@@ -26,8 +48,7 @@ export default function ProfilePage() {
             <div className="col">
               <h1 className="fw-bold m-0">{person.full_name}</h1>
               <div className="my-2 text-secondary">
-                Premium Member. Membentuk masa depan finansial yang sehat melalui alokasi aset
-                cerdas dan anggaran disiplin.
+                Membentuk masa depan finansial yang sehat melalui alokasi aset cerdas dan anggaran disiplin.
               </div>
               <div className="list-inline list-inline-dots text-secondary justify-content-center justify-content-md-start">
                 <div className="list-inline-item">
@@ -40,20 +61,20 @@ export default function ProfilePage() {
                   </a>
                 </div>
                 <div className="list-inline-item d-none d-sm-inline-block">
-                  <Icon icon="flame" className="text-danger" /> 12 Hari Beruntun
+                  <Icon icon="flame" className="text-danger" /> {streakDays} Hari Beruntun
                 </div>
               </div>
             </div>
             <div className="col-auto ms-md-auto w-100 w-md-auto">
               <div className="btn-list justify-content-center justify-content-md-start">
-                <Button icon="dots" iconOnly />
-                <Button icon="settings" iconOnly />
-                <Button
-                  icon="edit"
-                  color="primary"
-                  text="Edit Profil"
-                  className="flex-fill flex-md-grow-0"
-                />
+                <Link to="/settings">
+                  <Button
+                    icon="edit"
+                    color="primary"
+                    text="Edit Profil"
+                    className="flex-fill flex-md-grow-0"
+                  />
+                </Link>
               </div>
             </div>
           </div>
@@ -63,123 +84,33 @@ export default function ProfilePage() {
       <div className="page-body">
         <div className="container-xl">
           <div className="row g-3">
-            <div className="col">
+            <div className="col-lg-8">
+              <h3 className="mb-3">Aktivitas & Transaksi Terakhir</h3>
               <Timeline>
-                <TimelineItem
-                  time="2 jam lalu"
-                  title="Peringatan Anggaran"
-                  description="Kategori Makanan & Minuman telah mencapai 92% dari batas anggaran bulanan Anda (Rp 2.000.000)."
-                  icon="alert-triangle"
-                  iconBg="warning"
-                />
-                <TimelineItem
-                  time="10 jam lalu"
-                  title="Transaksi Baru Dilacak"
-                  description="Pembayaran langganan Netflix Premium sebesar Rp 186.000 telah otomatis terdata pada Cashflow Anda."
-                  icon="receipt"
-                  iconBg="azure"
-                />
-                <TimelineItem
-                  time="1 hari lalu"
-                  title="Goal Tercapai! 🎉"
-                  description="Selamat! Goal finansial 'Dana Darurat 3 Bulan' Anda telah terkumpul 100% sebesar Rp 15.000.000."
-                  icon="trophy"
-                  iconBg="yellow"
-                />
-                <TimelineItem
-                  time="1 day ago"
-                  title="Kenaikan Skor Kredit"
-                  description="Skor kredit Anda naik 15 poin menjadi 765 (Sangat Baik) karena catatan pembayaran tepat waktu."
-                  icon="credit-card"
-                  iconBg="success"
-                />
-                <TimelineItem
-                  time="2 days ago"
-                  title="Rekening Aktif Terhubung"
-                  icon="building-bank"
-                  iconBg="blue"
-                >
-                  <div className="avatar-list mt-3">
-                    <span
-                      className="avatar rounded bg-white border"
-                      style={{
-                        backgroundImage:
-                          'url(https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg)',
-                        backgroundSize: '75%',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                      }}
-                      title="BCA"
+                {recentTransactions.length > 0 ? (
+                  recentTransactions.map((tx: any) => (
+                    <TimelineItem
+                      key={tx.id}
+                      time={new Date(tx.tx_date || tx.created_at).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                      })}
+                      title={tx.description || tx.category?.name || 'Transaksi'}
+                      description={`${tx.type === 'expense' ? '-' : '+'}${formatCurrency(Number(tx.amount))} • ${tx.account?.name || 'Rekening'}`}
+                      icon={tx.type === 'expense' ? 'arrow-up-right' : 'arrow-down-left'}
+                      iconBg={tx.type === 'expense' ? 'danger' : 'success'}
                     />
-                    <span
-                      className="avatar rounded bg-white border"
-                      style={{
-                        backgroundImage:
-                          'url(https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg)',
-                        backgroundSize: '75%',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                      }}
-                      title="Mandiri"
-                    />
-                    <span
-                      className="avatar rounded bg-white border"
-                      style={{
-                        backgroundImage:
-                          'url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Gopay_logo.svg/1280px-Gopay_logo.svg.png)',
-                        backgroundSize: '75%',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                      }}
-                      title="GoPay"
-                    />
-                  </div>
-                </TimelineItem>
-                <TimelineItem
-                  time="3 days ago"
-                  title="Misi Finansial Terselesaikan"
-                  icon="award"
-                  iconBg="purple"
-                >
-                  <div className="mt-3">
-                    <div className="row g-2">
-                      <div className="col-4">
-                        <div className="p-3 bg-body-tertiary rounded text-center">
-                          <Icon icon="pig-money" className="text-success mb-1" size="md" />
-                          <div className="small fw-bold">Smart Saver</div>
-                          <div className="text-muted" style={{ fontSize: '9px' }}>
-                            +100 XP
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div className="p-3 bg-body-tertiary rounded text-center">
-                          <Icon icon="target-arrow" className="text-primary mb-1" size="md" />
-                          <div className="small fw-bold">Budget Master</div>
-                          <div className="text-muted" style={{ fontSize: '9px' }}>
-                            +150 XP
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div className="p-3 bg-body-tertiary rounded text-center">
-                          <Icon icon="shield-check" className="text-warning mb-1" size="md" />
-                          <div className="small fw-bold">Safe Guard</div>
-                          <div className="text-muted" style={{ fontSize: '9px' }}>
-                            +50 XP
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </TimelineItem>
-                <TimelineItem
-                  time="2 weeks ago"
-                  title="Skor Kredit Diperbarui"
-                  description="Laporan skor kredit bulanan Anda telah siap dan dapat diakses di menu Credit."
-                  icon="settings"
-                  iconBg="secondary"
-                />
+                  ))
+                ) : (
+                  <TimelineItem
+                    time="Hari ini"
+                    title="Belum Ada Transaksi"
+                    description="Catat transaksi pertama Anda di menu Tracker atau Cashflow."
+                    icon="info-circle"
+                    iconBg="secondary"
+                  />
+                )}
               </Timeline>
             </div>
 
@@ -188,31 +119,27 @@ export default function ProfilePage() {
                 <div className="col-12">
                   <div className="card">
                     <div className="card-body">
-                      <div className="card-title">Informasi Keuangan</div>
+                      <div className="card-title">Informasi Keuangan Real-time</div>
 
                       <div className="mb-2">
                         <Icon icon="building-bank" className="me-2 text-secondary" />
-                        Rekening Terhubung: <strong>4 Akun</strong>
-                      </div>
-                      <div className="mb-2">
-                        <Icon icon="credit-card" className="me-2 text-secondary" />
-                        Skor Kredit: <strong>765 (Sangat Baik)</strong>
+                        Rekening Terhubung: <strong>{totalAccounts} Akun</strong>
                       </div>
                       <div className="mb-2">
                         <Icon icon="wallet" className="me-2 text-secondary" />
-                        Kekayaan Bersih: <strong>Rp 142.500.000</strong>
+                        Total Saldo: <strong>{formatCurrency(totalBalance)}</strong>
                       </div>
                       <div className="mb-2">
                         <Icon icon="coin" className="me-2 text-secondary" />
                         Mata Uang Utama: <strong>IDR (Rupiah)</strong>
                       </div>
                       <div className="mb-2">
-                        <Icon icon="crown" className="me-2 text-secondary" />
-                        Level Keanggotaan: <strong>Premium</strong>
+                        <Icon icon="flame" className="me-2 text-danger" />
+                        Streak Aktif: <strong>{streakDays} Hari</strong>
                       </div>
                       <div>
                         <Icon icon="target" className="me-2 text-secondary" />
-                        Goal Finansial Aktif: <strong>3 Target</strong>
+                        Goal Finansial Aktif: <strong>{activeGoalsCount} Target</strong>
                       </div>
                     </div>
                   </div>
@@ -227,10 +154,7 @@ export default function ProfilePage() {
                           style={{ fontSize: '13px', lineHeight: '1.6' }}
                         >
                           Profil keuangan Anda dianalisis secara otomatis berdasarkan aktivitas
-                          transaksi, perencanaan anggaran bulanan, dan kedisiplinan pembayaran
-                          kredit. Tingkatkan skor kredit dengan membayar tagihan tepat waktu dan
-                          raih kebebasan finansial dengan disiplin menabung pada menu target
-                          finansial.
+                          transaksi, perencanaan anggaran bulanan, dan kedisiplinan pencatatan.
                         </p>
                       </div>
                     </div>

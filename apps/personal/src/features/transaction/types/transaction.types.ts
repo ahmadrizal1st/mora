@@ -66,6 +66,8 @@ export interface Account {
 
 export interface AccountFilters {
   group_by?: 'day' | 'week' | 'month' | 'year'
+  date_from?: string
+  date_to?: string
   filter?: {
     name?: string
     account_type?: string

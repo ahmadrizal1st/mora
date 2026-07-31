@@ -1,5 +1,4 @@
 import { Chart } from '@/shared/components/ui/Chart'
-import chartsData from '@/shared/data/charts.json'
 import { Icon } from '@/shared/components/ui/Icon'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
 
@@ -8,13 +7,7 @@ interface NetWorthGrowthCardProps {
 }
 
 export function NetWorthGrowthCard({ currentNetWorth }: NetWorthGrowthCardProps) {
-  const cashflowData = (chartsData as Record<string, unknown>)['visual-cashflow'] as Record<
-    string,
-    unknown
-  >
-
   const customGrowthData = {
-    ...cashflowData,
     type: 'area',
     sparkline: true,
     height: 8,

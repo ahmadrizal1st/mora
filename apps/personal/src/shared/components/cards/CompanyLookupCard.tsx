@@ -32,7 +32,7 @@ export function CompanyLookupCard({
     { label: 'Founded', value: '1995' },
     { label: 'Type', value: 'Public' },
     { label: 'Employees', value: '341,400' },
-    { label: 'Revenue', value: '$135B' },
+    { label: 'Revenue', value: 'Rp 135T' },
   ],
   location = '207 Boren Ave, Seattle, WA 98109, USA',
   timezone = 'America/Los_Angeles',

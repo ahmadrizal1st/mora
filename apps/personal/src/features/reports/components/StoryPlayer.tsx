@@ -132,7 +132,7 @@ export function StoryPlayer({
         {Array.from({ length: totalSlides }).map((_, index) => (
           <div key={index} className="flex-grow-1 rounded-pill overflow-hidden" style={{ height: '3px', backgroundColor: 'rgba(255,255,255,0.3)' }}>
             <div 
-              className="h-100 bg-white rounded-pill" 
+              className="h-100 bg-surface rounded-pill" 
               style={{ 
                 width: index < activeSlide ? '100%' : index === activeSlide ? `${progress}%` : '0%',
                 transition: index === activeSlide ? 'width 50ms linear' : 'none'
@@ -404,7 +404,7 @@ export function StoryPlayer({
                     style={{ 
                       width: '18px', 
                       height: '18px', 
-                      backgroundColor: '#ffffff',
+                      backgroundColor: 'var(--tblr-bg-surface)',
                       WebkitMaskImage: 'url("/logo/logo-nobg-fill.png")',
                       maskImage: 'url("/logo/logo-nobg-fill.png")',
                       WebkitMaskSize: 'contain',
@@ -465,7 +465,7 @@ export function StoryPlayer({
               </div>
 
               <div className="d-flex justify-content-center align-items-center gap-2">
-                <div className="bg-white rounded p-1">
+                <div className="bg-surface rounded p-1">
                   <Icon icon="qrcode" size={20} stroke={1.5} style={{ color: 'var(--tblr-primary)' }} />
                 </div>
                 <span className="badge rounded-pill" style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px', fontWeight: '500' }}>
@@ -477,7 +477,7 @@ export function StoryPlayer({
 
           <button 
             onClick={handleShare}
-            className="btn bg-white w-100 rounded-3 py-2 mb-3 fw-bold d-flex justify-content-center align-items-center gap-2 shadow position-relative z-3" 
+            className="btn bg-surface text-body w-100 rounded-3 py-2 mb-3 fw-bold d-flex justify-content-center align-items-center gap-2 shadow position-relative z-3" 
             style={{ color: 'var(--tblr-primary)', fontSize: '14px' }}
           >
             <Icon icon="upload" size={16} stroke={2} />

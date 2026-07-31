@@ -268,7 +268,7 @@ export default function AchievementsPage() {
                             {user.name}
                           </div>
                           <div className="text-muted" style={{ fontSize: '10px' }}>
-                            Tier 1 Saver
+                            {user.tier || `Rank #${user.rank}`}
                           </div>
                         </div>
                         <div className="text-end">

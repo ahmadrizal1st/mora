@@ -23,10 +23,10 @@ export function NavbarSideUser({ hideUsername, dark }: NavbarSideUserProps) {
 
   const person: Person = {
     id: user?.id || parseInt(String(defaultPerson.id)),
-    full_name: user?.name || 'Andrew Forbist',
-    job_title: 'CEO & Founder',
+    full_name: user?.name || 'User',
+    job_title: user?.email || defaultPerson.email,
     email: user?.email || defaultPerson.email,
-    photo: user?.avatar || defaultPerson.photo,
+    photo: user?.avatar || undefined,
   }
 
   const handleLogout = async (e: React.MouseEvent) => {

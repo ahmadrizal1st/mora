@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             TransactionSeeder::class,
             LlmProviderSeeder::class,
+            GamificationSeeder::class,
         ]);
     }
 }

@@ -1,0 +1,105 @@
+
+  GET|HEAD        / ......................................... routes/web.php:5
+  GET|HEAD        api/accounts ...... accounts.index › AccountController@index
+  POST            api/accounts ...... accounts.store › AccountController@store
+  GET|HEAD        api/accounts-analytics ......... AccountController@analytics
+  GET|HEAD        api/accounts-summary ............. AccountController@summary
+  GET|HEAD        api/accounts/{account} accounts.show › AccountController@sh…
+  PUT|PATCH       api/accounts/{account} accounts.update › AccountController@…
+  DELETE          api/accounts/{account} accounts.destroy › AccountController…
+  POST            api/accounts/{account}/credit ....... CreditController@store
+  GET|HEAD        api/accounts/{account}/credit ........ CreditController@show
+  PUT             api/accounts/{account}/credit ...... CreditController@update
+  DELETE          api/accounts/{account}/credit ..... CreditController@destroy
+  GET|HEAD        api/assets ............ assets.index › AssetController@index
+  POST            api/assets ............ assets.store › AssetController@store
+  GET|HEAD        api/assets/{asset} ...... assets.show › AssetController@show
+  PUT|PATCH       api/assets/{asset} .. assets.update › AssetController@update
+  DELETE          api/assets/{asset} assets.destroy › AssetController@destroy
+  POST            api/auth/forgot-password Auth\PasswordController@forgotPass…
+  POST            api/auth/google ...... Auth\GoogleAuthController@googleLogin
+  POST            api/auth/login ................... Auth\AuthController@login
+  POST            api/auth/logout ................. Auth\AuthController@logout
+  GET|HEAD        api/auth/me .................... Auth\ProfileController@show
+  PATCH           api/auth/me .................. Auth\ProfileController@update
+  PATCH           api/auth/me/password Auth\PasswordController@changePassword
+  POST            api/auth/refresh ............... Auth\AuthController@refresh
+  POST            api/auth/register ......... Auth\RegisterController@register
+  POST            api/auth/resend-otp .............. Auth\OtpController@resend
+  POST            api/auth/reset-password Auth\PasswordController@resetPasswo…
+  POST            api/auth/verify-otp ...... Auth\RegisterController@verifyOtp
+  GET|HEAD        api/budgets ......... budgets.index › BudgetController@index
+  POST            api/budgets ......... budgets.store › BudgetController@store
+  GET|HEAD        api/budgets-utilization ....... BudgetController@utilization
+  GET|HEAD        api/budgets/history ............... BudgetController@history
+  GET|HEAD        api/budgets/insights ............. BudgetController@insights
+  GET|HEAD        api/budgets/{budget} .. budgets.show › BudgetController@show
+  PUT|PATCH       api/budgets/{budget} budgets.update › BudgetController@upda…
+  DELETE          api/budgets/{budget} budgets.destroy › BudgetController@des…
+  POST            api/budgets/{id}/duplicate ...... BudgetController@duplicate
+  GET|HEAD        api/categories .................... CategoryController@index
+  POST            api/chat/send .......................... ChatController@send
+  GET|HEAD        api/chat/sessions .................. ChatController@sessions
+  POST            api/chat/sessions ............. ChatController@createSession
+  DELETE          api/chat/sessions ............ ChatController@deleteSessions
+  GET|HEAD        api/chat/sessions/{sessionId}/messages ChatController@messa…
+  GET|HEAD        api/credits ......................... CreditController@index
+  GET|HEAD        api/currencies ................. LookupController@currencies
+  GET|HEAD        api/debts ............... debts.index › DebtController@index
+  POST            api/debts ............... debts.store › DebtController@store
+  GET|HEAD        api/debts/{debt} .......... debts.show › DebtController@show
+  PUT|PATCH       api/debts/{debt} ...... debts.update › DebtController@update
+  DELETE          api/debts/{debt} .... debts.destroy › DebtController@destroy
+  POST            api/extractions/media .... ExtractionController@uploadDirect
+  POST            api/extractions/text ...... ExtractionController@processText
+  POST            api/extractions/upload ......... ExtractionController@upload
+  GET|HEAD        api/extractions/{extraction} ..... ExtractionController@show
+  GET|HEAD        api/gamification/achievements GamificationController@achiev…
+  POST            api/gamification/achievements/{id}/claim GamificationContro…
+  GET|HEAD        api/gamification/leaderboard GamificationController@leaderb…
+  GET|HEAD        api/gamification/stats ........ GamificationController@stats
+  GET|HEAD        api/goals ............... goals.index › GoalController@index
+  POST            api/goals ............... goals.store › GoalController@store
+  GET|HEAD        api/goals/{goal} .......... goals.show › GoalController@show
+  PUT|PATCH       api/goals/{goal} ...... goals.update › GoalController@update
+  DELETE          api/goals/{goal} .... goals.destroy › GoalController@destroy
+  GET|HEAD        api/notifications ............. NotificationController@index
+  POST            api/notifications/read-all NotificationController@markAllAs…
+  GET|HEAD        api/notifications/unread-count NotificationController@unrea…
+  DELETE          api/notifications/{id} ...... NotificationController@destroy
+  POST            api/notifications/{id}/read NotificationController@markAsRe…
+  POST            api/notifications/{id}/star NotificationController@toggleSt…
+  GET|HEAD        api/prompt-templates ........ PromptTemplateController@index
+  POST            api/prompt-templates ........ PromptTemplateController@store
+  PUT             api/prompt-templates/{id} .. PromptTemplateController@update
+  DELETE          api/prompt-templates/{id} . PromptTemplateController@destroy
+  POST            api/prompt-templates/{id}/use . PromptTemplateController@use
+  GET|HEAD        api/providers ..................... ProviderController@index
+  POST            api/providers ..................... ProviderController@store
+  GET|HEAD        api/recurring-types ........ LookupController@recurringTypes
+  GET|HEAD        api/reports/recap ................ ReportController@getRecap
+  GET|HEAD        api/statuses ..................... LookupController@statuses
+  GET|HEAD        api/subscriptions subscriptions.index › SubscriptionControl…
+  POST            api/subscriptions subscriptions.store › SubscriptionControl…
+  GET|HEAD        api/subscriptions/{subscription} subscriptions.show › Subsc…
+  PUT|PATCH       api/subscriptions/{subscription} subscriptions.update › Sub…
+  DELETE          api/subscriptions/{subscription} subscriptions.destroy › Su…
+  GET|HEAD        api/tags .................. tags.index › TagController@index
+  POST            api/tags .................. tags.store › TagController@store
+  PUT|PATCH       api/tags/{tag} .......... tags.update › TagController@update
+  DELETE          api/tags/{tag} ........ tags.destroy › TagController@destroy
+  GET|HEAD        api/transactions transactions.index › TransactionController…
+  POST            api/transactions transactions.store › TransactionController…
+  GET|HEAD        api/transactions-history ..... TransactionController@history
+  GET|HEAD        api/transactions-statistics TransactionController@statistics
+  GET|HEAD        api/transactions-summary ..... TransactionController@summary
+  GET|HEAD        api/transactions/{transaction} transactions.show › Transact…
+  PUT|PATCH       api/transactions/{transaction} transactions.update › Transa…
+  DELETE          api/transactions/{transaction} transactions.destroy › Trans…
+  GET|HEAD        sanctum/csrf-cookie sanctum.csrf-cookie › Laravel\Sanctum  …
+  GET|HEAD        storage/{path} storage.local › vendor/laravel/framework/src…
+  PUT             storage/{path} storage.local.upload › vendor/laravel/framew…
+  GET|HEAD        up vendor/laravel/framework/src/Illuminate/Foundation/Confi…
+
+                                                          Showing [101] routes
+

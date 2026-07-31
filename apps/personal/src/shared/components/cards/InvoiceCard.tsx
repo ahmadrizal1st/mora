@@ -24,34 +24,34 @@ const defaultItems: InvoiceItem[] = [
     name: 'Logo Creation',
     description: 'Logo and business cards design',
     qty: 1,
-    unit: '$1.800,00',
-    amount: '$1.800,00',
+    unit: 'Rp 1.800.000',
+    amount: 'Rp 1.800.000',
   },
   {
     no: 2,
     name: 'Online Store Design & Development',
     description: 'Design/Development for all popular modern browsers',
     qty: 1,
-    unit: '$20.000,00',
-    amount: '$20.000,00',
+    unit: 'Rp 20.000.000',
+    amount: 'Rp 20.000.000',
   },
   {
     no: 3,
     name: 'App Design',
     description: 'Promotional mobile application',
     qty: 1,
-    unit: '$3.200,00',
-    amount: '$3.200,00',
+    unit: 'Rp 3.200.000',
+    amount: 'Rp 3.200.000',
   },
 ]
 
 export function InvoiceCard({
   invoiceNumber = 'INV/001/15',
   items = defaultItems,
-  subtotal = '$25.000,00',
+  subtotal = 'Rp 25.000.000',
   vatRate = '20%',
-  vatDue = '$5.000,00',
-  total = '$30.000,00',
+  vatDue = 'Rp 5.000.000',
+  total = 'Rp 30.000.000',
 }: InvoiceCardProps) {
   return (
     <div className="card card-lg">

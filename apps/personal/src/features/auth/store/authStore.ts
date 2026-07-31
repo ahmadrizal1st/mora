@@ -14,6 +14,7 @@ export interface AuthState {
   register: (credentials: RegisterCredentials) => Promise<void>
   logout: () => Promise<void>
   refreshUser: () => Promise<void>
+  updateProfile: (data: { name?: string; email?: string; avatar?: string }) => Promise<void>
   _hasHydrated: boolean
   setHasHydrated: (state: boolean) => void
   setIsLoading: (loading: boolean) => void
@@ -91,6 +92,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           await AuthService.logout()
         } catch {
+          // Ignore network errors when logging out
         } finally {
           set({ user: null, token: null, isAuthenticated: false })
           localStorage.removeItem('token')
@@ -106,6 +108,12 @@ export const useAuthStore = create<AuthState>()(
         } catch {
           get().logout()
         }
+      },
+
+      updateProfile: async (data: { name?: string; email?: string; avatar?: string }) => {
+        const updatedUser = await AuthService.updateProfile(data)
+        localStorage.setItem('user', JSON.stringify(updatedUser))
+        set({ user: updatedUser })
       },
     }),
     {

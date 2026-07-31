@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import BaseLayout from '@/shared/layouts/BaseLayout'
 import { Icon, Button, Modal, ModalHeader, Spinner } from '@/shared/components/ui'
+import { ErrorAlert } from '@/shared/components/ui/ErrorAlert'
 import {
   useAccounts,
   useCreateAccount,
@@ -17,6 +18,8 @@ export const AccountsPage: React.FC = () => {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
   const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'year'>('day')
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
   const { data: response, isLoading } = useAccounts({
     group_by: groupBy,
     filter: { is_archived: showArchived ? '1' : '0' },
@@ -104,32 +107,35 @@ export const AccountsPage: React.FC = () => {
   const deleteMutation = useDeleteAccount()
 
   const handleCreate = async (data: AccountFormValues) => {
+    setErrorMsg(null)
     try {
       await createMutation.mutateAsync({ ...data, is_archived: data.is_archived ?? false })
       setIsModalOpen(false)
     } catch (error: unknown) {
-      alert(getApiErrorMessage(error, 'Gagal membuat akun baru.'))
+      setErrorMsg(getApiErrorMessage(error, 'Gagal membuat akun baru.'))
     }
   }
 
   const handleUpdate = async (data: AccountFormValues) => {
     if (!editingAccount) return
+    setErrorMsg(null)
     try {
       await updateMutation.mutateAsync({ id: editingAccount.id, data })
       setIsModalOpen(false)
       setEditingAccount(undefined)
     } catch (error: unknown) {
-      alert(getApiErrorMessage(error, 'Gagal memperbarui akun.'))
+      setErrorMsg(getApiErrorMessage(error, 'Gagal memperbarui akun.'))
     }
   }
 
   const handleDelete = async (id: string) => {
+    setErrorMsg(null)
     try {
       await deleteMutation.mutateAsync(id)
       setIsModalOpen(false)
       setEditingAccount(undefined)
     } catch (error: unknown) {
-      alert(getApiErrorMessage(error, 'Gagal menghapus akun.'))
+      setErrorMsg(getApiErrorMessage(error, 'Gagal menghapus akun.'))
     }
   }
 
@@ -248,6 +254,11 @@ export const AccountsPage: React.FC = () => {
             }}
           />
           <div className="modal-body">
+            {errorMsg && (
+              <div className="mb-3">
+                <ErrorAlert message={errorMsg} />
+              </div>
+            )}
             {modalView === 'form' ? (
               <AccountForm
                 initialData={editingAccount}

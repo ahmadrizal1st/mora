@@ -6,7 +6,7 @@ interface CoinestCardProps {
   name?: string
 }
 
-export function CoinestCard({ balance = '$12,540,000', name = 'Oliver Bennet' }: CoinestCardProps) {
+export function CoinestCard({ balance = 'Rp 12.540.000', name = 'Pengguna' }: CoinestCardProps) {
   const [visible, setVisible] = useState(true)
 
   const blobStyles: React.CSSProperties[] = [
@@ -76,7 +76,7 @@ export function CoinestCard({ balance = '$12,540,000', name = 'Oliver Bennet' }:
         <div className="d-flex align-items-center mb-4">
           <div>
             <div style={{ fontSize: '0.6rem', opacity: 0.6, lineHeight: 1, marginBottom: 2 }}>
-              Good Day!
+              Halo!
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 600, letterSpacing: '0.01em' }}>
               {name}
@@ -87,7 +87,7 @@ export function CoinestCard({ balance = '$12,540,000', name = 'Oliver Bennet' }:
         <div>
           <div className="d-flex align-items-center mb-1" style={{ gap: 6 }}>
             <span style={{ fontSize: '0.6rem', opacity: 0.6, letterSpacing: '0.3px' }}>
-              Account Balance
+              Total Saldo Akun
             </span>
             <button
               onClick={() => setVisible((v) => !v)}
@@ -122,7 +122,7 @@ export function CoinestCard({ balance = '$12,540,000', name = 'Oliver Bennet' }:
               transition: 'opacity 0.25s ease',
             }}
           >
-            {visible ? balance : '$ ••• ••• •••'}
+            {visible ? balance : 'Rp ••• ••• •••'}
           </div>
         </div>
       </div>

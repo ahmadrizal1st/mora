@@ -115,21 +115,21 @@ export function CategoryBreakdownCard({ title = 'Kategori', type = 'expense', da
                         }}
                       />
                       <span
-                        className="text-truncate"
-                        style={{ fontSize: '12px', color: '#475569', fontWeight: 500, maxWidth: '90px' }}
+                        className="text-truncate text-secondary"
+                        style={{ fontSize: '12px', fontWeight: 500, maxWidth: '90px' }}
                       >
                         {item.name}
                       </span>
                     </div>
                     <div className="d-flex align-items-baseline gap-1 flex-shrink-0">
-                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e293b' }}>
+                      <span className="text-body" style={{ fontSize: '12px', fontWeight: 700 }}>
                         {fmt(item.value)}
                       </span>
-                      <span style={{ fontSize: '10px', color: '#94a3b8' }}>{pctDisplay}%</span>
+                      <span className="text-muted" style={{ fontSize: '10px' }}>{pctDisplay}%</span>
                     </div>
                   </div>
                   {/* Progress bar */}
-                  <div style={{ height: '3px', backgroundColor: '#f1f5f9', borderRadius: '99px' }}>
+                  <div style={{ height: '3px', backgroundColor: 'var(--tblr-border-color)', borderRadius: '99px' }}>
                     <div
                       style={{
                         height: '3px',

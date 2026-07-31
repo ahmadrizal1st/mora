@@ -16,8 +16,8 @@ interface PricingPlanProps {
 
 export function PricingPlan({
   tier = 'Professional',
-  price = '$199',
-  period = '/ month',
+  price = 'Rp 199.000',
+  period = '/ bulan',
   color = 'pink',
   features = [
     { text: 'Target Audience', label: 'Unlimited', available: true },

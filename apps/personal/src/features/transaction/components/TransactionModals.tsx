@@ -1,6 +1,7 @@
 import { Modal, ModalHeader } from '@/shared/components/ui/Modal'
 import { TransactionForm, type TransactionFormValues } from './TransactionForm'
 import { Icon, Button } from '@/shared/components/ui'
+import { ErrorAlert } from '@/shared/components/ui/ErrorAlert'
 import type { Transaction } from '../types/transaction.types'
 
 interface TransactionModalsProps {
@@ -14,6 +15,7 @@ interface TransactionModalsProps {
   onDeleteConfirm: () => Promise<void>
   onRequestDelete: (id: string) => void
   isDeleteLoading: boolean
+  errorMsg?: string | null
 }
 
 export const TransactionModals: React.FC<TransactionModalsProps> = ({
@@ -27,6 +29,7 @@ export const TransactionModals: React.FC<TransactionModalsProps> = ({
   onDeleteConfirm,
   onRequestDelete,
   isDeleteLoading,
+  errorMsg,
 }) => {
   return (
     <>
@@ -36,6 +39,11 @@ export const TransactionModals: React.FC<TransactionModalsProps> = ({
           onClose={onFormClose}
         />
         <div className="modal-body p-4">
+          {errorMsg && (
+            <div className="mb-3">
+              <ErrorAlert message={errorMsg} />
+            </div>
+          )}
           <TransactionForm
             key={editingTransaction?.id || 'new'}
             initialData={editingTransaction}

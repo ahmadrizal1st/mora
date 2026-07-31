@@ -197,7 +197,11 @@ export function DebtRemindersWidget({ debts = [], onAdd }: { debts?: DebtRecord[
                   <button 
                     className="btn btn-light w-100 rounded-pill py-2 border shadow-none text-success fw-medium d-flex align-items-center justify-content-center gap-2" 
                     onClick={() => {
-                      alert('Buka WhatsApp untuk ' + selectedDebt?.personName)
+                      if (selectedDebt) {
+                        const message = `Halo ${selectedDebt.personName}, sekadar mengingatkan terkait tagihan/piutang sebesar Rp ${selectedDebt.amount.toLocaleString('id-ID')} yang jatuh tempo pada ${new Date(selectedDebt.dueDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}. Terima kasih!`
+                        const url = `https://wa.me/?text=${encodeURIComponent(message)}`
+                        window.open(url, '_blank')
+                      }
                     }}
                   >
                     <Icon icon="brand-whatsapp" size={18} />

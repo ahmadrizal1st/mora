@@ -63,18 +63,18 @@ export function PeriodSummaryCard({
         {/* Metric cards row */}
         <div className="row g-2 mt-1">
           <div className="col-6">
-            <div className="bg-light rounded-3 p-2 h-100">
+            <div className="bg-surface-secondary rounded-3 p-2 h-100">
               <div className="text-secondary mb-1" style={{ fontSize: '10px', letterSpacing: '0.5px', fontWeight: 600 }}>TINGKAT MENABUNG</div>
-              <div className="fw-bold" style={{ fontSize: '22px', color: savingPct != null && savingPct < 0 ? '#e53e3e' : '#2d7d46' }}>
+              <div className="fw-bold" style={{ fontSize: '22px', color: savingPct != null && savingPct < 0 ? 'var(--tblr-danger)' : 'var(--tblr-success)' }}>
                 {savingPct != null ? `${savingPct}%` : 'N/A'}
               </div>
               <div className="text-secondary" style={{ fontSize: '10px' }}>Target: ≥ 20%</div>
             </div>
           </div>
           <div className="col-6">
-            <div className="bg-light rounded-3 p-2 h-100">
+            <div className="bg-surface-secondary rounded-3 p-2 h-100">
               <div className="text-secondary mb-1" style={{ fontSize: '10px', letterSpacing: '0.5px', fontWeight: 600 }}>RATA-RATA HARIAN</div>
-              <div className="fw-bold" style={{ fontSize: '18px', color: '#333' }}>
+              <div className="fw-bold text-body" style={{ fontSize: '18px' }}>
                 {formatCurrency(Math.round(averageDaily))}
               </div>
               <div className="text-secondary" style={{ fontSize: '10px' }}>per hari &middot; pengeluaran</div>
