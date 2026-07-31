@@ -179,7 +179,7 @@ export function ReportRecapPage() {
           {/* Header Title */}
           <div className="text-center">
             <h2 className="fw-bold mb-1" style={{ fontSize: '22px' }}>{label}</h2>
-            <span className="badge rounded-pill" style={{ backgroundColor: isCurrentPeriod ? '#f3ece6' : '#e6f4ea', color: isCurrentPeriod ? '#8c6e5a' : '#137333', fontWeight: '500', fontSize: '11px', padding: '4px 12px' }}>
+            <span className="badge rounded-pill" style={{ backgroundColor: isCurrentPeriod ? 'var(--tblr-warning-lt)' : 'var(--tblr-success-lt)', color: isCurrentPeriod ? 'var(--tblr-warning)' : 'var(--tblr-success)', fontWeight: '500', fontSize: '11px', padding: '4px 12px' }}>
               {isCurrentPeriod ? 'Masih berjalan' : 'Periode selesai'}
             </span>
           </div>

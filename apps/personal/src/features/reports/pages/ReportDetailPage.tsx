@@ -122,7 +122,7 @@ export function ReportDetailPage() {
 
               {/* Global TxType Toggle */}
               <div className="w-100 mb-2">
-                <div className="d-flex w-100" style={{ borderBottom: '1px solid #e6e8eb' }} role="tablist">
+                <div className="d-flex w-100" style={{ borderBottom: '1px solid var(--tblr-border-color)' }} role="tablist">
                   {(['expense', 'income'] as const).map((key) => {
                     const label = key === 'expense' ? 'Pengeluaran' : 'Pemasukan';
                     const isActive = globalTxType === key;

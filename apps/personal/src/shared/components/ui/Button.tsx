@@ -81,7 +81,7 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const El = element || 'a'
+  const El = element || (href || to ? 'a' : 'button')
   const hasContent = !iconOnly && (children || text)
   const spinnerClass = hasContent ? 'me-2' : undefined
 
@@ -145,15 +145,14 @@ export function Button({
 
   const linkProps = useLinkProps({
     to: (to || '') as string,
-
-    params: params as any,
-
-    search: search as any,
+    params: params as Record<string, unknown>,
+    search: search as Record<string, unknown>,
     hash,
     disabled,
   })
 
   const routingProps = to ? linkProps : {}
+  const routingOnClick = (routingProps as { onClick?: (e: React.MouseEvent<HTMLElement>) => void }).onClick
 
   const content = (
     <>
@@ -184,10 +183,10 @@ export function Button({
       href={El === 'a' && !to ? href : undefined}
       {...(El === 'button' ? { type: type || 'button', disabled } : {})}
       id={id}
-      {...(routingProps as any)}
+      {...(routingProps as Record<string, unknown>)}
       onClick={(e: React.MouseEvent<HTMLElement>) => {
-        if ((routingProps as any).onClick) {
-          ;(routingProps as any).onClick(e)
+        if (routingOnClick) {
+          routingOnClick(e)
         }
         handleOnClick(e)
       }}

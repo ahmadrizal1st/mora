@@ -1,14 +1,15 @@
 import { useState, useMemo, useContext, useEffect } from 'react'
-import { Link } from '@tanstack/react-router'
 import { GoalsOverviewCard } from '../components/goals/GoalsOverviewCard'
 import { GoalCard } from '../components/goals/GoalCard'
 import { GoalTrajectoryChart } from '../components/goals/GoalTrajectoryChart'
 import { Modal, ModalHeader, Icon, Button } from '@/shared/components/ui'
 import { formatCurrency } from '@/shared/utils/currencyUtils'
 import { PlanningContext } from './PlanningLayout'
+import type { Goal, GoalMilestone } from '../types'
 
 export function GoalsPage() {
-  const { goalsData, handleOpenAddGoal, handleEditGoal } = useContext(PlanningContext)
+  const planningContext = useContext(PlanningContext) || {}
+  const { goalsData, handleOpenAddGoal, handleEditGoal } = planningContext
   const data = goalsData || { totalSaved: 0, totalTarget: 0, goals: [], milestones: [] }
   const { totalSaved, totalTarget, goals, milestones } = data
 
@@ -22,7 +23,7 @@ export function GoalsPage() {
   const [modalTargetFilter, setModalTargetFilter] = useState<'all' | 'under30' | 'above30'>('all')
 
   const filteredGoals = useMemo(() => {
-    return goals.filter((goal: any) => {
+    return goals.filter((goal: Goal) => {
       const isAchieved = goal.saved >= goal.target
       if (statusFilter === 'active' && isAchieved) return false
       if (statusFilter === 'achieved' && !isAchieved) return false
@@ -35,7 +36,7 @@ export function GoalsPage() {
   }, [goals, statusFilter, targetFilter])
 
   const modalFilteredGoals = useMemo(() => {
-    return goals.filter((goal: any) => {
+    return goals.filter((goal: Goal) => {
       const isAchieved = goal.saved >= goal.target
       if (modalStatusFilter === 'active' && isAchieved) return false
       if (modalStatusFilter === 'achieved' && !isAchieved) return false
@@ -267,7 +268,7 @@ export function GoalsPage() {
                     </div>
                   </div>
                 ) : (
-                  filteredGoals.map((goal: any) => (
+                  filteredGoals.map((goal: Goal) => (
                     <div key={goal.id} className="col-12 col-md-6">
                       <GoalCard goal={goal} onClick={() => handleEditGoal?.(goal)} />
                     </div>
@@ -298,7 +299,7 @@ export function GoalsPage() {
                 {milestones && milestones.length > 0 ? (
                   <div className="flex-grow-1 overflow-y-auto no-scrollbar" style={{ minHeight: 0 }}>
                     <div className="position-relative ms-3 ps-4 border-start border-2 border-orange-lt">
-                      {milestones.map((m: any, i: number) => (
+                      {milestones.map((m: GoalMilestone, i: number) => (
                         <div key={i} className="mb-4 position-relative">
                           <div
                             className={`position-absolute rounded-circle border border-white d-flex align-items-center justify-content-center ${m.type === 'achievement' ? 'bg-success' : 'bg-orange'}`}
@@ -537,7 +538,7 @@ export function GoalsPage() {
           ) : (
             <div className="card-body p-0 m-0">
               <div>
-                {modalFilteredGoals.map((g: any, i: number) => {
+                {modalFilteredGoals.map((g: Goal, i: number) => {
                   const pct = g.target > 0 ? Math.round((g.saved / g.target) * 100) : 0
                   return (
                     <div

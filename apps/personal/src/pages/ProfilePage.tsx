@@ -5,7 +5,7 @@ import { useAccountSummary, useAccounts } from '@/features/transaction/hooks/use
 import { useGoals } from '@/features/planning/hooks/usePlanning'
 import { useGamificationStats } from '@/features/gamification/hooks/useGamification'
 import { useTransactions } from '@/features/transaction/hooks/useTransactions'
-import { Link } from '@tanstack/react-router'
+import type { Transaction, AccountResponse } from '@/features/transaction/types/transaction.types'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -13,7 +13,7 @@ export default function ProfilePage() {
   const { data: accounts } = useAccounts()
   const { data: goals } = useGoals()
   const { data: gamificationStats } = useGamificationStats()
-  const { data: transactionsData } = useTransactions({ per_page: 5, sort_by: 'tx_date', sort_dir: 'desc' } as any)
+  const { data: transactionsData } = useTransactions({ per_page: 5, sort_by: 'tx_date', sort_dir: 'desc' })
 
   const person = {
     full_name: user?.name || 'User',
@@ -27,7 +27,7 @@ export default function ProfilePage() {
   }
 
   const totalBalance = accountSummary?.total_balance ?? 0
-  const totalAccounts = Array.isArray(accounts) ? accounts.length : (accounts as any)?.data?.length ?? 0
+  const totalAccounts = Array.isArray(accounts) ? accounts.length : (accounts as AccountResponse | undefined)?.data?.length ?? 0
   const activeGoalsCount = goals?.goals?.length ?? 0
   const streakDays = gamificationStats?.current_streak ?? 0
 
@@ -67,14 +67,13 @@ export default function ProfilePage() {
             </div>
             <div className="col-auto ms-md-auto w-100 w-md-auto">
               <div className="btn-list justify-content-center justify-content-md-start">
-                <Link to="/settings">
-                  <Button
-                    icon="edit"
-                    color="primary"
-                    text="Edit Profil"
-                    className="flex-fill flex-md-grow-0"
-                  />
-                </Link>
+                <Button
+                  to="/settings"
+                  icon="edit"
+                  color="primary"
+                  text="Edit Profil"
+                  className="flex-fill flex-md-grow-0"
+                />
               </div>
             </div>
           </div>
@@ -88,7 +87,7 @@ export default function ProfilePage() {
               <h3 className="mb-3">Aktivitas & Transaksi Terakhir</h3>
               <Timeline>
                 {recentTransactions.length > 0 ? (
-                  recentTransactions.map((tx: any) => (
+                  recentTransactions.map((tx: Transaction) => (
                     <TimelineItem
                       key={tx.id}
                       time={new Date(tx.tx_date || tx.created_at).toLocaleDateString('id-ID', {
@@ -96,7 +95,7 @@ export default function ProfilePage() {
                         month: 'short',
                         year: 'numeric'
                       })}
-                      title={tx.description || tx.category?.name || 'Transaksi'}
+                      title={tx.merchant || tx.notes || tx.category?.name || 'Transaksi'}
                       description={`${tx.type === 'expense' ? '-' : '+'}${formatCurrency(Number(tx.amount))} • ${tx.account?.name || 'Rekening'}`}
                       icon={tx.type === 'expense' ? 'arrow-up-right' : 'arrow-down-left'}
                       iconBg={tx.type === 'expense' ? 'danger' : 'success'}

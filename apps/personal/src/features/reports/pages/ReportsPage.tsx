@@ -15,11 +15,15 @@ import { Icon } from '@/shared/components/ui/Icon'
 
 type PeriodMode = 'sekarang' | 'monthly' | 'custom'
 
-function getMonthRange(year: number, month: number) {
-  const from = `${year}-${String(month + 1).padStart(2, '0')}-01`
-  const lastDay = new Date(year, month + 1, 0).getDate()
-  const to = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`
-  return { from, to }
+function getMonthRange(year: number, monthIndex: number) {
+  const d = new Date(year, monthIndex, 1)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const lastDay = String(new Date(y, d.getMonth() + 1, 0).getDate()).padStart(2, '0')
+  return {
+    from: `${y}-${m}-01`,
+    to: `${y}-${m}-${lastDay}`
+  }
 }
 
 function getLastMonths(n: number) {
@@ -159,7 +163,8 @@ function TodayDashboard() {
   const scoreColor = getScoreColor(healthScore)
   const radius = 36
   const circumference = 2 * Math.PI * radius
-  const strokeDashoffset = circumference - (healthScore / 100) * circumference
+  const validScore = Number.isNaN(healthScore) ? 0 : healthScore
+  const strokeDashoffset = circumference - (validScore / 100) * circumference
   const filteredTxs = (txData?.data || []).filter(t => t.type === txFilter)
   const totalTransactions = filteredTxs.length
   const maxTx = filteredTxs.length > 0 ? Math.max(...filteredTxs.map(t => t.amount)) : 0
@@ -303,7 +308,7 @@ function TodayDashboard() {
 
       {/* Tab Switcher */}
       <div className="w-100 mb-2">
-        <div className="d-flex w-100" style={{ borderBottom: '1px solid #e6e8eb' }} role="tablist">
+        <div className="d-flex w-100" style={{ borderBottom: '1px solid var(--tblr-border-color)' }} role="tablist">
           {[
             { key: 'expense', label: 'Pengeluaran' },
             { key: 'income', label: 'Pemasukan' },

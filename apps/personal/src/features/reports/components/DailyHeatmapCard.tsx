@@ -245,8 +245,8 @@ export function DailyHeatmapCard({ type = 'expense' }: DailyHeatmapCardProps) {
             {/* Sort Order Toggle (only for list view) */}
             {viewType === 'list' && (
               <button
-                className="btn btn-light btn-sm rounded-pill d-flex align-items-center gap-1 px-3"
-                style={{ fontSize: '12px', backgroundColor: '#f4f5f7', border: 'none', color: '#4a5568' }}
+                className="btn btn-sm rounded-pill d-flex align-items-center gap-1 px-3 text-secondary bg-surface-secondary border-0"
+                style={{ fontSize: '12px' }}
                 onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
               >
                 <Icon icon="arrows-sort" size={14} stroke={2} />
@@ -255,7 +255,7 @@ export function DailyHeatmapCard({ type = 'expense' }: DailyHeatmapCardProps) {
             )}
 
             {/* View Type Segmented Control */}
-            <div className="nav nav-pills d-flex p-1 rounded-pill" style={{ gap: '2px', backgroundColor: '#f4f5f7' }}>
+            <div className="nav nav-pills d-flex p-1 rounded-pill bg-surface-secondary" style={{ gap: '2px' }}>
               <button
                 className={`rounded-circle p-0 border-0 d-flex align-items-center justify-content-center ${viewType === 'list' ? 'shadow-sm text-white' : 'text-secondary bg-transparent'}`}
                 style={{ width: '28px', height: '28px', backgroundColor: viewType === 'list' ? 'var(--tblr-primary)' : 'transparent', outline: 'none' }}
