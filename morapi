@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_PATH="$(readlink "$0" 2>/dev/null || echo "$0")"
+DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 
 case "${1:-}" in
     run)
@@ -9,7 +10,7 @@ case "${1:-}" in
         exec "$DIR/script/run.sh" "$@"
         ;;
     stop)
-        lsof -ti :8000 -ti :5173 2>/dev/null | xargs kill -9 2>/dev/null || true
+        lsof -ti :8000 -ti :5173 -ti :8001 2>/dev/null | xargs kill -9 2>/dev/null || true
         caddy stop 2>/dev/null || true
         echo "[OK] Services stopped"
         ;;

@@ -15,17 +15,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->owner()->create([
-            'name' => 'Admin',
-            'email' => 'admin@morapi.com',
-            'password'=> bcrypt('password'),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@morapi.com'],
+            [
+                'name' => 'Admin',
+                'password' => bcrypt('password'),
+                'role' => 'owner',
+            ]
+        );
 
-        User::factory()->employee()->create([
-            'name' => 'User',
-            'email' => 'user@morapi.com',
-            'password'=> bcrypt('password'),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'user@morapi.com'],
+            [
+                'name' => 'User',
+                'password' => bcrypt('password'),
+                'role' => 'employee',
+            ]
+        );
 
         $this->call([
             TransactionSeeder::class,

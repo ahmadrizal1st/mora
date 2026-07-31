@@ -13,17 +13,31 @@ Monorepo fintech personal finance management. Terdiri dari **3 aplikasi**:
 ### Lokal (langsung)
 
 ```bash
-./morapi run
+# Jalankan semua service (default)
+morapi run
+
+# Jalankan service spesifik sesuai kebutuhan
+morapi run api personal
+morapi run api queue db seed
+morapi run ai
 ```
 
 Akses: **https://morapi.localhost** — Login: `user@morapi.com` / `password`
 
-> Butuh `caddy` untuk akses HTTPS via `*.morapi.localhost`. Install: `brew install caddy`
+Flag yang tersedia:
+- `api` : Laravel API (`:8000`)
+- `personal` : React Vite Frontend (`:5173`)
+- `ai` : FastAPI AI Service (`:8001`)
+- `queue` : Laravel Queue Worker
+- `db` : Jalankan PostgreSQL & Migration
+- `seed` : Jalankan Database Seeder
+- `caddy` : Caddy Reverse Proxy (`*.morapi.localhost`)
+- `all` : Jalankan semua service (default)
 
 ### Docker
 
 ```bash
-./morapi run docker
+morapi run docker
 ```
 
 Akses: **http://localhost:5173** (tidak perlu Caddy)
@@ -63,7 +77,10 @@ API_KEY=morapipipi_secure_api_key_2026
 ### Frontend (`apps/personal/.env`)
 
 ```env
-VITE_API_URL=http://127.0.0.1:8000
+VITE_DOMAIN=morapi.localhost
+VITE_SECURE=true
+VITE_API_URL=https://api.morapi.localhost
+VITE_WS_URL=wss://api.morapi.localhost
 VITE_API_KEY=morapipipi_secure_api_key_2026   # Harus sama dengan API_KEY di api/.env
 ```
 
@@ -81,6 +98,13 @@ php artisan migrate --seed
 cd apps/personal
 cp .env.example .env                # lalu edit .env
 pnpm install
+
+# AI Service (FastAPI)
+cd apps/ai
+cp .env.template .env
+python3.14 -m venv venv
+./venv/bin/pip install -r requirements.txt
+./venv/bin/python -m uvicorn main:app --host 127.0.0.1 --port 8001
 ```
 
 ## Service per Fitur
@@ -94,7 +118,13 @@ pnpm install
 
 > Queue Worker WAJIB jalan. Tanpanya hasil tracker tidak akan diproses ke database.
 
-## API Endpoints
+## API Endpoints & Domains
+
+| Service | Host Domain | Local Endpoint |
+|---------|-------------|----------------|
+| Frontend | `https://morapi.localhost` | `http://localhost:5173` |
+| Laravel API | `https://api.morapi.localhost` | `http://127.0.0.1:8000` |
+| AI Service | `https://ai.morapi.localhost/docs` | `http://127.0.0.1:8001/docs` |
 
 | Method | Endpoint | Fungsi |
 |--------|----------|--------|
@@ -119,14 +149,14 @@ pnpm install
 - Cek `VITE_API_KEY` di frontend `.env` sama dengan `API_KEY` di backend `.env`
 
 **Transaksi tidak muncul setelah upload**
-- Queue worker belum jalan: `php artisan queue:work --tries=3`
+- Queue worker belum jalan: `php artisan queue:work --tries=3` atau `morapi run queue`
 
 ## Stop Services
 
 ### Lokal
 
 ```bash
-./morapi stop
+morapi stop
 ```
 
 ### Docker
